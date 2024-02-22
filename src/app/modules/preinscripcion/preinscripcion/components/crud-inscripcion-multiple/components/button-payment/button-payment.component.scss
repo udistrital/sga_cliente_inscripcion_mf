@@ -1,0 +1,26 @@
+
+button {
+    border-radius:3px;
+    outline: none;
+    border: none;
+    background-color: rgb(60, 141, 188);
+    color: #fff;
+    text-align: center;
+    font-size: 0.78rem;
+    //width: 95px;
+    height: 30px;   
+}
+
+label {
+    font-size: 0.9rem;
+}
+
+.boton-icon{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.icon{
+    font-size: 15pt;
+}

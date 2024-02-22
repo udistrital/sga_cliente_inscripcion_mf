@@ -1,0 +1,35 @@
+.mat-expansion-panel-header {
+    border-bottom-style: solid;
+    border-bottom-color: #00d977;
+    border-bottom-width: thin;
+}
+
+.exp-card {
+    align-content: center;
+    cursor: pointer;
+    width: 13.5rem;
+    height: 14.5rem;
+    transition: background-color 1s;
+}
+
+.exp-card:hover {
+    background-color: #3fc380;
+}
+
+.icon-form {
+    vertical-align: middle;
+}
+
+.percentage {
+    font-size: 1.6rem;
+}
+
+mat-card {
+    width: 100%;
+  }
+
+  :host ::ng-deep .mat-mdc-tab-group, .mat-mdc-tab-nav-bar{
+    --mat-tab-header-active-ripple-color: white !important;
+    --mat-tab-header-inactive-ripple-color: white !important;
+}
+

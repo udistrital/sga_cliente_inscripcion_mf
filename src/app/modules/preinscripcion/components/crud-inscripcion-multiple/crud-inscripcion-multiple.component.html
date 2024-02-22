@@ -1,0 +1,108 @@
+<div class="dinamic-form">
+    <fieldset [ngClass]="{'fieldseter':true}">
+        <mat-card>
+            <mat-card-header>
+                {{ 'inscripcion.listado' | translate }}
+            </mat-card-header>
+            <mat-card-content *ngIf="showInscription">
+                <div class="preinscription-alert">
+                    {{ 'inscripcion.warning_info' | translate }}
+                </div>
+                <fieldset [ngClass]="{'fieldseter':true}" style="overflow:auto;">
+                    <legend>{{ 'inscripcion.recibos_generados' | translate }}</legend>
+                    <!-- <ng2-smart-table [settings]="settings"
+                                     [source]="dataSource"
+                                     (rowSelect)="itemSelect($event)">
+                    </ng2-smart-table> -->
+                    <hr width="0%">
+                    <div class="text-center">
+                        <button mat-button type="button" (click)="nuevaPreinscripcion()">
+                            {{ 'inscripcion.nueva' | translate }}
+                        </button>
+                    </div>
+                </fieldset>
+                <hr width="100%">
+
+                <!-- select periodo -->
+                <mat-form-field style="width: 40%;" *ngIf="showNew">
+                    <mat-label>{{ 'inscripcion.aviso_periodo' | translate }}:</mat-label>
+                    <mat-select [(ngModel)]="periodo" [disabled]="true">
+                        <mat-option>--Seleccionar--</mat-option>
+                        <mat-option *ngFor="let item of periodos" [value]="item">
+                            {{ item.Nombre }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- select Nivel -->
+                <mat-form-field style="width: 100%;" *ngIf="showNew">
+                    <mat-select [formControl]="CampoControl"
+                                [(ngModel)]="selectedLevel"
+                                placeholder="{{ 'calendario.para' | translate }}"
+                                (selectionChange)="onSelectLevel()">
+                        <mat-option>--Seleccionar--</mat-option>
+                        <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">
+                            {{ nivel.Nombre }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="CampoControl.hasError('required')">
+                        {{ 'inscripcion.erro_selec_nivel' | translate }}
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- select proyecto academico -->
+                <mat-form-field style="width: 100%;" *ngIf="showProyectoCurricular">
+                    <mat-select [formControl]="Campo1Control"
+                                [(ngModel)]="selectedProject"
+                                placeholder="{{ 'oferta.proyecto' | translate }}"
+                                (selectionChange)="onSelectProyecto()">
+                        <mat-option>--Seleccionar--</mat-option>
+                        <mat-option *ngFor="let project of inscripcionProjects" [value]="project.ProyectoId">
+                            {{ project.NombreProyecto }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="Campo1Control.hasError('required')">
+                        {{ 'inscripcion.erro_selec' | translate }}
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- select tipo de inscripcion -->
+                <mat-form-field style="width: 100%;" *ngIf="showTipoInscripcion">
+                    <mat-select [formControl]="Campo2Control"
+                                [(ngModel)]="tipo_inscripcion_selected"
+                                placeholder="{{ 'inscripcion.aviso_tipo' | translate }}"
+                                (selectionChange)="onSelectTipoInscripcion($event)">
+                        <mat-option>--Seleccionar--</mat-option>
+                        <mat-option *ngFor="let item of tipo_inscripciones" [value]="item.Id">
+                            {{ item.Nombre }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="Campo2Control.hasError('required')">
+                        {{ 'inscripcion.aviso_tipo' | translate }}
+                    </mat-error>
+                </mat-form-field>
+
+                <div style="width: 100%;" *ngIf="showInfo">
+                    <fieldset [ngClass]="{'fieldseter':true}">
+                        <legend>{{ 'inscripcion.opciones_usuario' | translate }}</legend>
+
+                        <mat-card class="exp-card text-center">
+                            <mat-card-header>{{ 'inscripcion.generar_recibo' | translate }}</mat-card-header>
+                            <mat-card-content class="icon-form text-center">
+                                <button class="fa fa-barcode fa-5x" (click)="generar_recibo()"></button>
+                            </mat-card-content>
+                        </mat-card>
+
+                    </fieldset>
+                </div>
+            </mat-card-content>
+            <mat-card-content *ngIf="!showInscription">
+                <ngx-inscripcion_general (changeTab)="return()"
+                                         (ocultarBarra)="ocultarBarraExterna($event)"
+                                         [inscripcion_id]="inscripcion_id">
+                </ngx-inscripcion_general>
+            </mat-card-content>
+        </mat-card>
+    </fieldset>
+</div>
+

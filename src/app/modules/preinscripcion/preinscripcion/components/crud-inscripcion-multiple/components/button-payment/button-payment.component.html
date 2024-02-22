@@ -1,0 +1,18 @@
+<!--Botón de pago cuando el recibo se encuentra en estado de "No pago"-->
+<button *ngIf="notPaid" (click)="showOptions()" class="boton-icon">
+    {{ 'inscripcion.pagar_recibo' | translate }} <mat-icon class="icon"> attach_money</mat-icon>
+  </button>
+  
+  <!--Botón de pago cuando el recibo se encuentra en estado de "pago"-->
+  <button *ngIf="isPaid" (click)="showInscription()" class="boton-icon"> 
+    <ng-container *ngIf="!yaInscrito">
+      {{ 'inscripcion.btn_inscribirme' | translate }} <mat-icon class="icon"> edit </mat-icon>
+    </ng-container>
+    <ng-container *ngIf="yaInscrito">
+      {{ 'inscripcion.btn_ver_inscripcion' | translate }} <mat-icon class="icon">remove_red_eye</mat-icon>
+    </ng-container>
+  
+  </button>
+  
+  <!--Label cuando el recibo de pago se encuentra vencido-->
+  <label *ngIf="vencido"> {{ 'inscripcion.lbl_sin_pago' | translate }} </label>

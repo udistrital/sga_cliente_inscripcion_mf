@@ -1,0 +1,6 @@
+<div class="my-3">
+    <mat-progress-spinner *ngIf="loading" mode="indeterminate" diameter="100" color="primary">
+    </mat-progress-spinner>
+    <ngx-dinamicform [normalform]="formUniversidad" [modeloData]="info_universidad" (result)="validarForm($event)" [clean]="clean" (percentage)="setPercentage($event)">
+    </ngx-dinamicform>
+</div>
