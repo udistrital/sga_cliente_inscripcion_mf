@@ -2,7 +2,9 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, 
 import { MatDatepicker } from '@angular/material/datepicker';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Subject, combineLatest, debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs';
+import { validateLang } from 'src/app/app.component';
 import { AnyService } from 'src/app/services/any.service';
 
 @Component({
@@ -32,7 +34,9 @@ export class DynamicFormComponent implements OnInit, OnChanges{
     private sanitization: DomSanitizer,
     private anyService: AnyService,
     private matDialog: MatDialog,
+    private translate: TranslateService
   ) {
+    validateLang(this.translate);
     this.data = {
       valid: true,
       confirm: true,

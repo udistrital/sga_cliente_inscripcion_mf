@@ -1,6 +1,8 @@
-<div class="my-3">
-    <mat-progress-spinner *ngIf="loading" mode="indeterminate" diameter="100" color="primary">
-    </mat-progress-spinner>
-    <ngx-dinamicform [normalform]="formIcfes" [modeloData]="info_icfes" (result)="validarForm($event)" [clean]="clean" (interlaced)="getSeleccion($event)" (percentage)="setPercentage($event)">
-    </ngx-dinamicform>
+<div class="content-container" [class.content-loading]="loading">
+    <mat-spinner *ngIf="loading" class="spinner-overlay"></mat-spinner>
+    <div class="my-3">
+        <ngx-dinamicform [normalform]="formIcfes" [modeloData]="info_icfes" (result)="validarForm($event)"
+            [clean]="clean" (interlaced)="getSeleccion($event)" (percentage)="setPercentage($event)">
+        </ngx-dinamicform>
+    </div>
 </div>

@@ -368,7 +368,6 @@ export class CrudInscripcionMultipleComponent implements OnInit{
                 },
               );
               }
-
             })
             this.loading = false;
           }

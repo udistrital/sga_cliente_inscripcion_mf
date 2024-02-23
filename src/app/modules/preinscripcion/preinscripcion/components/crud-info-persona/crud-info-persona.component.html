@@ -1,13 +1,10 @@
-<mat-progress-spinner *ngIf="loading" mode="indeterminate" diameter="100" color="primary">
-</mat-progress-spinner>
-<div class="my-3">
-    <ngx-dinamicform [normalform]="formInfoPersona"
-                     [modeloData]="info_info_persona"
-                     (result)="validarForm($event)"
-                     [clean]="clean"
-                     (percentage)="setPercentage($event)"
-                     (interlaced)="checkExistePersona($event)">
-    </ngx-dinamicform> 
+<div class="content-container" [class.content-loading]="loading">
+  <mat-spinner *ngIf="loading" class="spinner-overlay"></mat-spinner>
+  <!-- Your content goes here -->
+  <div>
+    <ngx-dinamicform [normalform]="formInfoPersona" [modeloData]="info_info_persona" (result)="validarForm($event)"
+      [clean]="clean" (percentage)="setPercentage($event)" (interlaced)="checkExistePersona($event)">
+    </ngx-dinamicform>
 
     <div class="text-center mt-3">
       <button (click)="openVideoModal('video7')" class="round-button btn boton-help">
@@ -16,5 +13,6 @@
           <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
         </div>
       </button>
-    </div>    
+    </div> 
   </div>
+</div>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
 import { getCookie } from './utils/cookie';
+import { UserService } from './services/users.service';
 
 @Component({
   selector: 'sga-inscripcion-mf',
@@ -13,10 +14,12 @@ export class AppComponent {
 
   ngOnInit(): void {
     validateLang(this.translate);
+    this.userService.getPersonaId()
   }
 
   constructor(
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userService: UserService
   ) {}
 }
 

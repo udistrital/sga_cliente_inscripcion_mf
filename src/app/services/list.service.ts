@@ -46,7 +46,6 @@ export class ListService {
             this.tercerosService.get('info_complementaria?query=GrupoInfoComplementariaId.Id:6,Activo:true&limit=0')
               .subscribe(
                 (result: any[]) => {
-                  console.log(result)
                   this.addList(REDUCER_LIST.Genero, result);
                   resolve();
                 },
@@ -310,7 +309,6 @@ export class ListService {
             .subscribe(
               (result: any[]) => {
                 this.addList(REDUCER_LIST.Pais, result);
-                console.log(this.addList(REDUCER_LIST.Pais, result))
               },
               (error:any) => {
                 this.addList(REDUCER_LIST.Pais, []);

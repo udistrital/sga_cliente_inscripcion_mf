@@ -107,16 +107,15 @@ export class PreinscripcionComponent implements OnInit{
     }
   }
 
-  setPercentage_info(number:any, tab:any) {
-    setTimeout(() => {
-      this.percentage_tab_info[tab] = (number * 100) / 2;
-      this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info));
-      if (number === 1) {
-        this.habilitar_inscripcion = false;
-      }
-      this.setPercentage_total();
-    });
+setPercentage_info(number:any, tab:any) {
+  this.percentage_tab_info[tab] = (number * 100) / 2;
+  this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info[tab]));
+  if (number === 1) {
+    this.habilitar_inscripcion = false;
   }
+  this.setPercentage_total();
+}
+
 
   setPercentage_acad(number:any, tab:any) {
     this.percentage_tab_acad[tab] = (number * 100) / 2;

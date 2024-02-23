@@ -1,9 +1,11 @@
-<div class="my-3">
-    <mat-progress-spinner *ngIf="loading" mode="indeterminate" diameter="100" color="primary">
-    </mat-progress-spinner>
-    <div *ngIf="!denied_acces">
-        //(interlaced)="getSeleccion($event)" 
-        <ngx-dinamicform [normalform]="formInformacionFamiliar" [modeloData]="info_info_familiar" (result)="validarForm($event)" [clean]="clean" (percentage)="setPercentage($event)">
-        </ngx-dinamicform>
+<div class="content-container" [class.content-loading]="loading">
+    <mat-spinner *ngIf="loading" class="spinner-overlay"></mat-spinner>
+    <div class="my-3">
+        <div *ngIf="!denied_acces">
+            //(interlaced)="getSeleccion($event)"
+            <ngx-dinamicform [normalform]="formInformacionFamiliar" [modeloData]="info_info_familiar"
+                (result)="validarForm($event)" [clean]="clean" (percentage)="setPercentage($event)">
+            </ngx-dinamicform>
+        </div>
     </div>
 </div>
