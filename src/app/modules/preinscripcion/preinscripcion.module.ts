@@ -40,6 +40,11 @@ import { CrudPreguntasComponent } from './preinscripcion/components/crud-inscrip
 import { ListFormacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/formacion-academica/list-formacion-academica/list-formacion-academica.component';
 import { CrudFormacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/formacion-academica/crud-formacion-academica/crud-formacion-academica.component';
 import { NewTerceroComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/formacion-academica/new-tercero/new-tercero.component';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { DialogPreviewFileComponent } from '../components/dialog-preview-file/dialog-preview-file.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -66,9 +71,13 @@ export function createTranslateLoader(http: HttpClient) {
     ListFormacionAcademicaComponent,
     CrudFormacionAcademicaComponent,
     NewTerceroComponent,
-    
+    DialogPreviewFileComponent
   ],
   imports: [
+    MatTooltipModule,
+    NgxExtendedPdfViewerModule,
+    MatCheckboxModule,
+    MatStepperModule,
     MatTableModule,
     MatIconModule,
     MatInputModule,

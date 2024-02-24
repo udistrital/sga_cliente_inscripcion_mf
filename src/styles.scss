@@ -77,5 +77,22 @@ html {
   .progress-bar{
     background-color: #03678f !important;
   }
+  
+  .mat-calendar-body-cell-content.mat-focus-indicator:hover {
+    color: #fff !important;
+}
 
+.mat-calendar-body-cell-content .mat-focus-indicator .mat-calendar-body-selected{
+    color: #fff !important;
+    padding-left: 5px !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #03678f !important;
+  color: #fff;
+  font-size: 1em;
+}
   

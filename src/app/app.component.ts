@@ -14,7 +14,6 @@ export class AppComponent {
 
   ngOnInit(): void {
     validateLang(this.translate);
-    this.userService.getPersonaId()
   }
 
   constructor(

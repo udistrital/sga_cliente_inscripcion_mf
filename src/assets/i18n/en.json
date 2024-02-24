@@ -964,5 +964,15 @@
         "tooltip_crear": "Create academic training",
         "actualizar": "Do you wish to update your academic training?",
         "eliminar": "Do you wish to remove your academic training?"
+    },
+    "informacion_academica": {
+        "informacion_academica_no_registrada": "Academic information not registered",
+        "informacion_academica_registrada": "Academic information registered",
+        "documento_informacion_academica_no_registrado": "Error uploading support document",
+        "seguro_continuar_registrar": "Are you sure you want to register this academic information?",
+        "error_cargar_universidad": "An error happened loading the university information",
+        "crear_entidad": "Do you want to create a new institution?",
+        "titulo2_crear_entidad": "not found",
+        "titulo1_crear_entidad": "The Nit. "
     }
 }

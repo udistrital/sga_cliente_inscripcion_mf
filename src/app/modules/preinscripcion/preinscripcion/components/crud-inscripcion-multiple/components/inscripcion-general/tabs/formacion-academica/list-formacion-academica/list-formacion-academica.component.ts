@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -37,6 +38,8 @@ export class ListFormacionAcademicaComponent implements OnInit {
   loading: boolean = true;
   percentage!: number;
 
+  selected = 0;
+
   constructor(
     private translate: TranslateService,
     private popUpManager: PopUpManager,
@@ -46,11 +49,9 @@ export class ListFormacionAcademicaComponent implements OnInit {
     private utilidades: UtilidadesService,
     private snackBar: MatSnackBar) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.cargarCampos();
     });
     this.persona_id = this.userService.getPersonaId();
     //this.loadData();
-    this.cargarCampos();
     this.loading = true;
   }
 
@@ -59,90 +60,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.result.emit(this.percentage);
   }
 
-  cargarCampos() {
-    this.settings = {
-      columns: {
-        Nit: {
-          title: this.translate.instant('GLOBAL.nit'),
-          width: '5%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-        NombreCompleto: {
-          title: this.translate.instant('GLOBAL.nombre_universidad'),
-          width: '25%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-        Ubicacion: {
-          title: this.translate.instant('GLOBAL.pais_universidad'),
-          width: '15%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-        ProgramaAcademico: {
-          title: this.translate.instant('GLOBAL.programa_academico'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-        },
-        FechaInicio: {
-          title: this.translate.instant('GLOBAL.fecha_inicio'),
-          width: '10%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-        FechaFinalizacion: {
-          title: this.translate.instant('GLOBAL.fecha_fin'),
-          width: '10%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-        Estado: {
-          title: this.translate.instant('admision.estado'),
-          width: '5%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-        Observacion: {
-          title: this.translate.instant('admision.observacion'),
-          width: '5%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-      },
-      mode: 'external',
-      actions: {
-        add: true,
-        edit: true,
-        delete: true,
-        position: 'right',
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="' + this.translate.instant('formacion_academica.tooltip_crear') + '"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="nb-edit" title="' + this.translate.instant('formacion_academica.tooltip_editar') + '"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="nb-trash" title="' + this.translate.instant('formacion_academica.tooltip_eliminar') + '"></i>',
-        confirmDelete: true,
-      },
-    };
-  }
 
   useLanguage(language: string) {
     this.translate.use(language);
@@ -213,7 +130,11 @@ export class ListFormacionAcademicaComponent implements OnInit {
   }
 
   activetab(): void {
-    this.cambiotab = !this.cambiotab;
+    if(this.selected==0){
+      this.selected = 1
+    }else{
+      this.selected = 0
+    }
   }
 
   onEdit(event:any): void {
@@ -230,6 +151,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
   }
 
   selectTab(event:any): void {
+    console.log(event)
     if (event.tabTitle === this.translate.instant('GLOBAL.lista')) {
       this.cambiotab = false;
     } else {

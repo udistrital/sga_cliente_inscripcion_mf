@@ -163,43 +163,43 @@ export class DynamicFormComponent implements OnInit, OnChanges{
     })
   }
 
-  // download(url:any, title:any, w:any, h:any, previewForm?:any, message?:any) {
-  //   if (previewForm !== undefined) {
-  //     switch (previewForm) {
-  //       case "preview":
-  //         this.preview(url, title, message);
-  //         break;
-  //       case "nopreview":
-  //         this.nopreview(url, title);
-  //         break;
-  //       case "both":
-  //         const spliturl = url.split('|');
-  //         this.preview(spliturl[0], title, message);
-  //         this.nopreview(spliturl[1], title);
-  //         break;
-  //       default:
-  //         this.preview(url, title, message);
-  //         break;
-  //     }
-  //   } else {
-  //     this.preview(url, title, message);
-  //   }
-  // }
+  download(url:any, title:any, w:any, h:any, previewForm?:any, message?:any) {
+    if (previewForm !== undefined) {
+      switch (previewForm) {
+        case "preview":
+          this.preview(url, title, message);
+          break;
+        case "nopreview":
+          this.nopreview(url, title);
+          break;
+        case "both":
+          const spliturl = url.split('|');
+          this.preview(spliturl[0], title, message);
+          this.nopreview(spliturl[1], title);
+          break;
+        default:
+          this.preview(url, title, message);
+          break;
+      }
+    } else {
+      this.preview(url, title, message);
+    }
+  }
 
-  // preview(url:any, title:any, message:any) {
-  //   /* const left = (screen.width / 2) - (w / 2);
-  //   const top = (screen.height / 2) - (h / 2);
-  //   let prev = window.open(url, title, 'toolbar=no,' +
-  //     'location=no, directories=no, status=no, menubar=no,' +
-  //     'scrollbars=no, resizable=no, copyhistory=no, ' +
-  //     'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-  //   prev.document.title = title; */
-  //   const dialogDoc = new MatDialogConfig();
-  //   dialogDoc.width = '80vw';
-  //   dialogDoc.height = '90vh';
-  //   dialogDoc.data = {url, title, message};
-  //   this.matDialog.open(DialogPreviewFileComponent, dialogDoc);
-  // }
+  preview(url:any, title:any, message:any) {
+    /* const left = (screen.width / 2) - (w / 2);
+    const top = (screen.height / 2) - (h / 2);
+    let prev = window.open(url, title, 'toolbar=no,' +
+      'location=no, directories=no, status=no, menubar=no,' +
+      'scrollbars=no, resizable=no, copyhistory=no, ' +
+      'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+    prev.document.title = title; */
+    const dialogDoc = new MatDialogConfig();
+    dialogDoc.width = '80vw';
+    dialogDoc.height = '90vh';
+    dialogDoc.data = {url, title, message};
+    // this.matDialog.open(DialogPreviewFileComponent, dialogDoc);
+  }
 
   nopreview(url:any, title:any) {
     const download = document.createElement("a");
@@ -565,6 +565,31 @@ export class DynamicFormComponent implements OnInit, OnChanges{
     c.alerta = '';
 }
 
+getUniqueSteps(campos: any[]): number[] {
+  const uniqueSteps: number[] = [];
+  for (const campo of campos) {
+    const step = campo.step;
+    if (!uniqueSteps.includes(step)) {
+      uniqueSteps.push(step);
+    }
+  }
+  return uniqueSteps;
+}
+
+getFieldsInStep(step: number): any[] {
+  return this.normalform.campos.filter((c:any) => c.step === step);
+}
+
+handleKeyUp(event: KeyboardEvent, c: any): void {
+  const target = event.target as HTMLInputElement;
+  this.searchTerm$.next({
+    text: target.value,
+    path: c.path,
+    query: c.query,
+    field: c,
+    keyToFilter: c.keyToFilter
+  });
+}
 
   ngOnDestroy() {
     this.clearForm();

@@ -16,6 +16,7 @@ import * as moment from 'moment-timezone';
 import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import * as momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
+import { verifyHostBindings } from '@angular/compiler';
 
 @Component({
   selector: 'ngx-crud-info-persona',

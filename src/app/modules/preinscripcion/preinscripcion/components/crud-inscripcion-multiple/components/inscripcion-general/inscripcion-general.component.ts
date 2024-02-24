@@ -1375,6 +1375,12 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     }
   }
 
+  volverATabs(){
+    const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
+    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
+    this.loadSuitePrograma(IdPeriodo, this.selectedValue, IdTipo)
+  }
+
   redirectBecauseObservations() {
     if (this.estado_inscripcion_nombre == "INSCRITO CON OBSERVACIÓN"){
       this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.inscripcion'), 

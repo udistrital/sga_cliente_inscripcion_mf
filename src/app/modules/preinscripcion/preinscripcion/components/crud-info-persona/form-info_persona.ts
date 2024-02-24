@@ -9,7 +9,7 @@ export let FORM_INFO_PERSONA = {
             etiqueta: 'input',
             claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
             nombre: 'PrimerNombre',
-            label_i18n: 'cerrar',
+            label_i18n: 'primer_nombre',
             placeholder_i18n: 'primer_nombre',
             requerido: true,
             tipo: 'text',
