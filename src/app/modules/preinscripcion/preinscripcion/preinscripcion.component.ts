@@ -56,12 +56,12 @@ export class PreinscripcionComponent implements OnInit{
 
   total: boolean = false;
 
-  percentage_tab_info: { [key: string]: number } = {};
-  percentage_tab_acad: { [key: string]: number } = {};
-  percentage_tab_proy: { [key: string]: number } = {};
-  percentage_tab_prod: { [key: string]: number } = {};
-  percentage_tab_desc: { [key: string]: number } = {};
-  percentage_tab_docu: { [key: string]: number } = {};
+  percentage_tab_info:any[] = [];
+  percentage_tab_acad:any[] = [];
+  percentage_tab_proy:any[] = [];
+  percentage_tab_prod:any[] = [];
+  percentage_tab_desc:any[] = [];
+  percentage_tab_docu:any[] = [];
   
 
   show_info = false;
@@ -109,7 +109,7 @@ export class PreinscripcionComponent implements OnInit{
 
 setPercentage_info(number:any, tab:any) {
   this.percentage_tab_info[tab] = (number * 100) / 2;
-  this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info[tab]));
+  this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info));
   if (number === 1) {
     this.habilitar_inscripcion = false;
   }

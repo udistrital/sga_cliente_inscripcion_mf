@@ -77,6 +77,10 @@ html {
   .progress-bar{
     background-color: #03678f !important;
   }
+
+.progress, .progress-stacked{
+  margin: 12px !important;
+}
   
   .mat-calendar-body-cell-content.mat-focus-indicator:hover {
     color: #fff !important;

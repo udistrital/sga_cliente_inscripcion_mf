@@ -1,0 +1,25 @@
+<div class="content-container" [class.content-loading]="loading">
+    <mat-spinner *ngIf="loading" class="spinner-overlay"></mat-spinner>
+    <div class="info my-3">
+        <mat-icon class="info-icon">info</mat-icon> &nbsp;
+        <span>{{ 'inscripcion.alerta_experiencia_laboral' | translate }}</span>
+    </div>
+    <ngx-dinamicform *ngIf="!nuevoTercero" [normalform]="formInfoExperienciaLaboral"
+        [modeloData]="info_experiencia_laboral" (result)="validarForm($event)"
+        (resultAux)="searchNit($event); updateFinishDate($event)" (dateChange)="onChangeDate()" [clean]="clean"
+        (interlaced)="getSeleccion($event)" (percentage)="setPercentage($event)">
+    </ngx-dinamicform>
+
+    <div class="row">
+        <ngx-new-tercero *ngIf="nuevoTercero" (result)="NuevoTercero($event)">
+        </ngx-new-tercero>
+
+        <div class="d-flex justify-content-center">
+            <div class="col-2">
+                <button *ngIf="nuevoTercero" align="center" class="btn boton-primary btn-sm"
+                    (click)="nuevoTercero=false">{{
+                    'GLOBAL.cancelar' | translate }}</button>
+            </div>
+        </div>
+    </div>
+</div>

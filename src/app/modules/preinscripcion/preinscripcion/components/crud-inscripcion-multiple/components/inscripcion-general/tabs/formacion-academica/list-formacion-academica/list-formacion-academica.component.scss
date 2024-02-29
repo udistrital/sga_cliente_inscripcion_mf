@@ -63,6 +63,8 @@
 .mat-column-acciones{
     max-width: 10%;
     border-right: 1px solid #edf1f7;
+    display: flex;
+    justify-content: center;
 }
 
 .link:hover {

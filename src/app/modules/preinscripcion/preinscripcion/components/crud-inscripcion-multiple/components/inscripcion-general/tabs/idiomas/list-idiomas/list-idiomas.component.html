@@ -1,0 +1,101 @@
+<div class="col-md-12 col-lg-12 ">
+    <div>
+        <mat-card-content>
+            <div class="info my-3">
+                <mat-icon class="info-icon">info</mat-icon> &nbsp;
+                <span>{{ 'inscripcion.alerta_idiomas' | translate }}</span>
+            </div>
+            <mat-tab-group fullWidth [selectedIndex]="selected">
+                <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
+                    <br />
+                    <div class="d-flex justify-content-end">
+                        <button class="btn boton-primary mx-4" (click)="onCreate()" mat-button>
+                            <mat-icon>add</mat-icon>
+                            {{ 'GLOBAL.agregar' | translate }}
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <mat-table [dataSource]="dataSource" class="demo-table">
+                            <ng-container matColumnDef="idioma">
+                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.idioma' | translate }}</b>
+
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.IdiomaId.Nombre }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="escritura">
+                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.nivel_escribe' | translate }}</b>
+
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.NivelEscribeId.Nombre}} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="escucha">
+                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.nivel_escucha' | translate }}</b>
+
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.NivelEscuchaId.Nombre }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="habla">
+                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.nivel_habla' | translate }}</b>
+
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.NivelHablaId.Nombre }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="lee">
+                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.nivel_lee' | translate }}</b>
+
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.NivelLeeId.Nombre }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="lectura">
+                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.nivel_lee' | translate }}</b>
+
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.Observacion }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="acciones">
+                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.acciones' | translate }}</b>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <mat-icon class="link icono" (click)="onEdit(row)" aria-hidden="false"
+                                        title="{{'formacion_academica.tooltip_editar' | translate}}"
+                                        fontIcon="edit_outline"></mat-icon>
+
+                                    <mat-icon class="link icono" (click)="onDelete(row)" aria-hidden="false"
+                                        title="{{'formacion_academica.tooltip_eliminar' | translate}}"
+                                        fontIcon="delete_outline"></mat-icon>
+                                </mat-cell>
+
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="displayedColumns" class="encabezado"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                        </mat-table>
+                    </div>
+                    <!-- <div class="text-center">
+                        <button (click)="activetab()" class="btn btn-info btn-sm">
+                          <i class="nb-plus"></i> {{ 'GLOBAL.agregar' | translate }}
+                        </button>
+                    </div> -->
+                </mat-tab>
+                <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
+                    <ngx-crud-idiomas
+                        [info_idioma_id]="uid"
+                        [inscripcion_id]="inscripcion_id"
+                        (eventChange)="onChange($event)"
+                        (result)="getPercentage($event)"
+                        (crear_inscripcion)="crear_inscripcion($event)">
+                    </ngx-crud-idiomas>
+                    <button (click)="activetab()" class="btn boton-primary btn-sm" style="max-height: 35px;">
+                        <mat-icon>arrow_back_ios</mat-icon>
+                        <p class="mt-1">{{ 'GLOBAL.regresar' | translate }}</p>
+                    </button>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card-content>
+    </div>
+</div>

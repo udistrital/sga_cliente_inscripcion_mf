@@ -17,6 +17,7 @@ import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import * as momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
 import { verifyHostBindings } from '@angular/compiler';
+import { validateLang } from 'src/app/app.component';
 
 @Component({
   selector: 'ngx-crud-info-persona',
@@ -50,7 +51,7 @@ export class CrudInfoPersonaComponent implements OnInit {
 
   @Output() eventChange = new EventEmitter();
   // tslint:disable-next-line: no-output-rename
-  @Output('result') result: EventEmitter<any> = new EventEmitter();
+  @Output('result') result: EventEmitter<any> = new EventEmitter(true);
 
   // tslint:disable-next-line: no-output-rename
   @Output('success') success: EventEmitter<any> = new EventEmitter();

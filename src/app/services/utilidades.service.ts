@@ -16,11 +16,9 @@ export class UtilidadesService {
 
     static getSumArray(array:any): any {
       let sum = 0;
-      if (Array.isArray(array)) {
-        array.forEach((element:any) => {
-          sum += element;
-        });
-      } 
+      array.forEach((element:any) => {
+        sum += element;
+    });
       return sum;
     }
 

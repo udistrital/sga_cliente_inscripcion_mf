@@ -45,6 +45,12 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { DialogPreviewFileComponent } from '../components/dialog-preview-file/dialog-preview-file.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { ListIdiomasComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/idiomas/list-idiomas/list-idiomas.component';
+import { CrudIdiomasComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/idiomas/crud-idiomas/crud-idiomas.component';
+import { ListExperienciaLaboralComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/laboral/list-experiencia-laboral/list-experiencia-laboral.component';
+import { CrudExperienciaLaboralComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/laboral/crud-experiencia-laboral/crud-experiencia-laboral.component';
+import { ListProduccionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/produccion-academica/list-produccion-academica/list-produccion-academica.component';
+import { CrudProduccionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/produccion-academica/crud-produccion-academica/crud-produccion-academica.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -71,7 +77,13 @@ export function createTranslateLoader(http: HttpClient) {
     ListFormacionAcademicaComponent,
     CrudFormacionAcademicaComponent,
     NewTerceroComponent,
-    DialogPreviewFileComponent
+    DialogPreviewFileComponent,
+    ListIdiomasComponent,
+    CrudIdiomasComponent,
+    ListExperienciaLaboralComponent,
+    CrudExperienciaLaboralComponent,
+    ListProduccionAcademicaComponent,
+    CrudProduccionAcademicaComponent
   ],
   imports: [
     MatTooltipModule,
@@ -104,8 +116,7 @@ export function createTranslateLoader(http: HttpClient) {
         useFactory: (createTranslateLoader),
         deps: [HttpClient]
       }
-    }),
-
+    })
   ]
 })
 export class PreinscripcionModule { }

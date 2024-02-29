@@ -60,7 +60,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   }
 
   @Output() eventChange = new EventEmitter();
-  @Output('result') result: EventEmitter<any> = new EventEmitter();
+  @Output('result') result: EventEmitter<any> = new EventEmitter(true);
   @Output('ocultarBarra') ocultarBarra: EventEmitter<boolean> = new EventEmitter();
 
 

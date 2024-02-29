@@ -96,7 +96,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
         this.loading = false;
       } else {
         this.getPercentage(0);
-        //this.source.load([]);
+        this.dataSource = new MatTableDataSource();
         this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
       }
       } else {
@@ -145,7 +145,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.activetab();
   }
 
-  onCreate(event:any): void {
+  onCreate(): void {
     this.uid = 0;
     this.activetab();
   }
@@ -163,9 +163,9 @@ export class ListFormacionAcademicaComponent implements OnInit {
   }
 
   itemselec(event:any): void {
-    this.id = event.data.Id;
-    this.uid = event.data.Nit;
-    this.pid = event.data.ProgramaAcademico.Id;
+    this.id = event.Id;
+    this.uid = event.Nit;
+    this.pid = event.ProgramaAcademico.Id;
   }
 
   onDelete(event:any): void {
@@ -183,10 +183,10 @@ export class ListFormacionAcademicaComponent implements OnInit {
       .then((willDelete) => {
         this.loading = true;
         if (willDelete.value) {
-          this.sgaMidService.delete('formacion_academica', event.data).subscribe(res => {
+          this.sgaMidService.delete('formacion_academica', event).subscribe(res => {
             if (res !== null) {
               this.loadData();
-                this.snackBar.open(this.translate.instant('GLOBAL.formacion_academica'), '', { duration: 3000, panelClass: ['info-snackbar'] })
+                this.snackBar.open(this.translate.instant('GLOBAL.confirmarEliminar'), '', { duration: 3000, panelClass: ['info-snackbar'] })
             }
             this.loading = false;
           },

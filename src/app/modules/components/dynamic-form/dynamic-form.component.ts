@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Subject, combineLatest, debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs';
 import { validateLang } from 'src/app/app.component';
 import { AnyService } from 'src/app/services/any.service';
+import { DialogPreviewFileComponent } from '../dialog-preview-file/dialog-preview-file.component';
 
 @Component({
   selector: 'ngx-dinamicform',
@@ -198,7 +199,7 @@ export class DynamicFormComponent implements OnInit, OnChanges{
     dialogDoc.width = '80vw';
     dialogDoc.height = '90vh';
     dialogDoc.data = {url, title, message};
-    // this.matDialog.open(DialogPreviewFileComponent, dialogDoc);
+    this.matDialog.open(DialogPreviewFileComponent, dialogDoc);
   }
 
   nopreview(url:any, title:any) {

@@ -37,6 +37,7 @@ import { UserService } from './services/users.service';
 import { UtilidadesService } from './services/utilidades.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentoService } from './services/documento.service';
+import { ProduccionAcademicaService } from './services/produccion_academica.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -89,7 +90,8 @@ export function createTranslateLoader(http: HttpClient) {
     TimeService,
     UbicacionService,
     UserService,
-    UtilidadesService
+    UtilidadesService,
+    ProduccionAcademicaService,
   ],
   bootstrap: [AppComponent]
 })

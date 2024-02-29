@@ -115,14 +115,14 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
   total: boolean = false;
 
-  percentage_tab_info: { [key: string]: number } = {};
-  percentage_tab_expe: { [key: string]: number } = {};
-  percentage_tab_acad: { [key: string]: number } = {};
-  percentage_tab_idio: { [key: string]: number } = {};
-  percentage_tab_proy: { [key: string]: number } = {};
-  percentage_tab_prod: { [key: string]: number } = {};
-  percentage_tab_desc: { [key: string]: number } = {};
-  percentage_tab_docu: { [key: string]: number } = {};
+  percentage_tab_info: any[] = [];
+  percentage_tab_expe: any[] = [];;
+  percentage_tab_acad: any[] = [];;
+  percentage_tab_idio: any[] = [];;
+  percentage_tab_proy: any[] = [];;
+  percentage_tab_prod: any[] = [];;
+  percentage_tab_desc: any[] = [];;
+  percentage_tab_docu: any[] = [];;
   posgrados!: any[];
   tipo_inscripciones = [];
 
@@ -882,14 +882,14 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     this.percentage_docu = 0;
     this.percentage_desc = 0;
     this.percentage_proy = 0;
-    this.percentage_tab_info = {};
-    this.percentage_tab_acad = {};
-    this.percentage_tab_idio = {};
-    this.percentage_tab_expe = {};
-    this.percentage_tab_prod = {};
-    this.percentage_tab_docu = {};
-    this.percentage_tab_desc = {};
-    this.percentage_tab_proy = {};
+    this.percentage_tab_info = [];
+    this.percentage_tab_acad = [];
+    this.percentage_tab_idio = [];
+    this.percentage_tab_expe = [];
+    this.percentage_tab_prod = [];
+    this.percentage_tab_docu = [];
+    this.percentage_tab_desc = [];
+    this.percentage_tab_proy = [];
   }
 
   realizarInscripcion() {
