@@ -444,7 +444,7 @@ export class CrudIcfesComponent implements OnInit {
               if (r !== null && r.Type !== 'error') {
                 this.loading = false;
                 this.eventChange.emit(true);
-                this.snackBar.open(this.translate.instant('icfes_colegio.icfes_colegio_registrado'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
+                this.snackBar.open(this.translate.instant('icfes_colegio.icfes_colegio_registrado'), '', { duration: 3000, panelClass: ['success-snackbar'] }) 
                 this.clean = !this.clean;
               } else {
                 this.snackBar.open(this.translate.instant('icfes_colegio.icfes_colegio_no_registrado'), '', { duration: 3000, panelClass: ['error-snackbar'] })

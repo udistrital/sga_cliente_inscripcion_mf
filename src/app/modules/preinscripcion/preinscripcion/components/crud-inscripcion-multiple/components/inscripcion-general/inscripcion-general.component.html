@@ -762,7 +762,7 @@
         </div>
 
         <!-- <mat-card [hidden]="!show_docu"> -->
-        <!-- <mat-card *ngIf="show_docu">
+        <div *ngIf="show_docu">
             <mat-card-content>
                 <div class="row">
                     <div class="col-md-11">
@@ -780,7 +780,7 @@
                 <mat-tab-group fullWidth (changeTab)="selectTab($event)">
                     <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
                         <ngx-list-documento-programa (result)="setPercentage_docu($event,0)"
-                            persona_id="{{this.info_persona_id}}" inscripcion_id="{{this.inscripcion_id}}">
+                            [persona_id]="info_persona_id" [inscripcion_id]="inscripcion_id">
                         </ngx-list-documento-programa>
                     </mat-tab>
                 </mat-tab-group>
@@ -794,7 +794,7 @@
                     </button>
                 </div>
             </mat-card-content>
-        </mat-card> -->
+        </div>
 
         <!-- <mat-card [hidden]="!show_desc"> -->
         <!-- <mat-card *ngIf="show_desc">

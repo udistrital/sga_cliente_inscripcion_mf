@@ -793,11 +793,12 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       Swal.fire(opt)
         .then((willMake) => {
           if (willMake.value) {
+            console.log(infoTercero)
             infoTercero.Activo = false;
 
             this.sgaMidService.post("persona/guardar_autor", infoTercero).subscribe((res:any) => {
               if (res.Type !== 'error') {
-                this.snackBar.open(this.translate.instant('produccion_academia.autor_creado'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
+                this.snackBar.open(this.translate.instant('produccion_academia.autor_creado'), '', { duration: 3000, panelClass: ['success-snackbar'] }) 
                 resolve(res);
               } else {
                 this.snackBar.open(this.translate.instant('produccion_academia.autor_no_creado'), '', { duration: 3000, panelClass: ['error-snackbar'] }) 
@@ -814,7 +815,8 @@ export class CrudProduccionAcademicaComponent implements OnInit {
 
   validarFormNuevoAutor(event:any) {
     if (event.valid) {
-      const formData = event.Autor;
+      const formData = event.data.Autor;
+      console.log(event)
       this.createInfoAutor(formData).then(newAutor => {
         let d: any = newAutor
         this.autorSeleccionado = d;

@@ -963,6 +963,7 @@
         "tooltip_editar": "Edit academic training",
         "tooltip_eliminar": "Remove academic training",
         "tooltip_crear": "Create academic training",
+        "tooltip_expandir": "Expand",
         "actualizar": "Do you wish to update your academic training?",
         "eliminar": "Do you wish to remove your academic training?"
     },
@@ -1258,5 +1259,21 @@
         "codigo_fuente": "Software source code support",
         "archivo_video": "Audiovisual production support",
         "soportes": "Supports list"
+    },
+    "documento_programa": {
+        "descuento_academico_no_registrado": "Academic discount not registered",
+        "descuento_academico_registrado": "Academic discount registered",
+        "documento_descuento_academico_no_registrado": "Error uploading support document",
+        "tooltip_crear": "Create document",
+        "seguro_continuar_registrar": "Are you sure you want to register this academic discount?",
+        "no_documentos": "There are no registered documents.",
+        "documento_cambiar": "Please select the replacement document for the chosen item.",
+        "documento_documento_programa_no_registrado": "Error uploading support document",
+        "documento_programa_no_registrado": "Document not registered",
+        "documento_programa_registrado": "Document registered",
+        "no_permite_borrar": "In this state, it is not possible to remove the document.",
+        "seguro_borrar": "Are you sure you want to remove the document?",
+        "documento_eliminado": "Document removed",
+        "mensaje_eliminado": "The document has been successfully deleted."
     }
 }

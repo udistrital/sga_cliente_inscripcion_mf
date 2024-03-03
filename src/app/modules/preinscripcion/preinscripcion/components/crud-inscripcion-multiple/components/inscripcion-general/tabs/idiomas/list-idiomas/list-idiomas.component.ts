@@ -45,79 +45,14 @@ export class ListIdiomasComponent implements OnInit {
     private popUpManager: PopUpManager,
   ) {
     this.loadData();
-    this.cargarCampos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.cargarCampos();
+
     });
     this.loading = false;
   }
 
   crear_inscripcion(data:any) {
     this.bridge_create_inscripcion.emit(data);
-  }
-
-  cargarCampos() {
-    this.settings = {
-      columns: {
-        IdiomaId: {
-          title: this.translate.instant('GLOBAL.idioma'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-        },
-        NivelEscribeId: {
-          title: this.translate.instant('GLOBAL.nivel_escribe'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-        },
-        NivelEscuchaId: {
-          title: this.translate.instant('GLOBAL.nivel_escucha'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-        },
-        NivelHablaId: {
-          title: this.translate.instant('GLOBAL.nivel_habla'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-        },
-        NivelLeeId: {
-          title: this.translate.instant('GLOBAL.nivel_lee'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-        },
-      },
-      mode: 'external',
-      actions: {
-        add: true,
-        edit: true,
-        delete: true,
-        position: 'right',
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="' + this.translate.instant('idiomas.tooltip_crear') + '"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="nb-edit" title="' + this.translate.instant('idiomas.tooltip_editar') + '"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="nb-trash" title="' + this.translate.instant('idiomas.tooltip_eliminar') + '"></i>',
-        confirmDelete: true,
-      },
-    };
   }
 
   useLanguage(language: string) {
@@ -152,7 +87,7 @@ export class ListIdiomasComponent implements OnInit {
     if (event) {
       this.uid = 0;
       this.loadData();
-      this.cambiotab = false;
+      this.selected = 0
     }
   }
 
@@ -190,6 +125,7 @@ export class ListIdiomasComponent implements OnInit {
 
   ngOnInit() {
     this.uid = 0;
+    this.selected = 0
   }
 
   onEdit(event:any): void {
@@ -200,14 +136,6 @@ export class ListIdiomasComponent implements OnInit {
   onCreate(): void {
     this.uid = 0;
     this.activetab();
-  }
-
-  selectTab(event:any): void {
-    if (event.tabTitle === this.translate.instant('GLOBAL.lista')) {
-      this.cambiotab = false;
-    } else {
-      this.cambiotab = true;
-    }
   }
 
   activetab(): void {

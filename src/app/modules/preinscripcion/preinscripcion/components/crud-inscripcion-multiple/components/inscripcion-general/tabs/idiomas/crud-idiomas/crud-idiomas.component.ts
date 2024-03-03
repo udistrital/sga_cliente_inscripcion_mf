@@ -151,7 +151,7 @@ export class CrudIdiomasComponent implements OnInit {
           this.popUpManager.showErrorAlert(this.translate.instant('idiomas.error_nativo_examen'));
         } else if (this.info_idioma.SeleccionExamen === true && this.idioma_examen !== undefined) {
           // this.info_idioma.Idioma.Id !== this.idioma_examen) {
-          this.popUpManager.showErrorAlert(this.translate.instant('idiomas.doble_examen'))
+          this.popUpManager.showErrorAlert(this.translate.instant('idiomas.error_doble_examen'))
         } else {
           this.info_idioma.Activo = true;
           this.idiomaService.post('conocimiento_idioma', this.info_idioma)
@@ -239,7 +239,7 @@ export class CrudIdiomasComponent implements OnInit {
           this.popUpManager.showErrorAlert(this.translate.instant('idiomas.error_nativo_examen'));
         } else if (this.info_idioma.SeleccionExamen === true && this.idioma_examen !== undefined) {
           // this.info_idioma.Idioma.Id !== this.idioma_examen) {
-          this.popUpManager.showErrorAlert(this.translate.instant('idiomas.doble_examen'))
+          this.popUpManager.showErrorAlert(this.translate.instant('idiomas.error_doble_examen'))
         } else {
           this.idiomaService.put('conocimiento_idioma', this.info_idioma).subscribe(
             (resp: any) => {

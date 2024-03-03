@@ -963,6 +963,7 @@
         "tooltip_editar": "Editar formación",
         "tooltip_eliminar": "Eliminar formación",
         "tooltip_crear": "Crear formación",
+        "tooltip_expandir": "Expandir",
         "actualizar": "¿Desea actualizar el registro de formación académica?",
         "eliminar": "¿Desea eliminar el registro de formación académica?"
     },
@@ -1258,5 +1259,21 @@
         "archivo_video": "Soporte de producción audiovisual",
         "soportes": "Lista de soportes",
         "inscrito": "Ha sido inscrito al período académico:"
+    },
+    "documento_programa": {
+        "documento_programa_no_registrado": "Documento no registrado",
+        "documento_programa_registrado": "Documento registrado",
+        "documento_documento_programa_no_registrado": "Error subiendo el documento de soporte",
+        "tooltip_crear": "Crear documento",
+        "seguro_continuar_registrar": "¿Está seguro de registrar este documento?",
+        "no_documentos": "No tiene documentos registrados.",
+        "documento_cambiar": "Seleccione el reemplazo para el tipo de documento elegido.",
+        "descuento_academico_no_registrado": "Descuento académico no registrado",
+        "descuento_academico_registrado": "Descuento académico registrado",
+        "documento_descuento_academico_no_registrado": "Error subiendo el documento de soporte",
+        "no_permite_borrar": "En este estado no es posible eliminar el documento.",
+        "seguro_borrar": "¿Esta seguro que desea eliminar el documento?",
+        "documento_eliminado": "Documento eliminado",
+        "mensaje_eliminado": "Se ha eliminado exitosamente el documento."
     }
 }

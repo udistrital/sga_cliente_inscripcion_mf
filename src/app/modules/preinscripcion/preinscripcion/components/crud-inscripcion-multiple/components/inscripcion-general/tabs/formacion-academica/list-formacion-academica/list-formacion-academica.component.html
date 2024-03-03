@@ -27,14 +27,14 @@
                                 <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.nombre_universidad' | translate
                                         }}</b>
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.Nit}} </mat-cell>
+                                <mat-cell *matCellDef="let row"> {{row.NombreCompleto}} </mat-cell>
                             </ng-container>
 
                             <ng-container matColumnDef="pais">
                                 <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.pais_universidad' |
                                         translate }}</b>
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.Nit }} </mat-cell>
+                                <mat-cell *matCellDef="let row"> {{row.Ubicacion }} </mat-cell>
                             </ng-container>
 
                             <ng-container matColumnDef="programa">

@@ -23,7 +23,6 @@ export class ListExperienciaLaboralComponent implements OnInit {
   uid!: number;
   id!: number;
   eid!: number;
-  cambiotab: boolean = false;
   settings: any;
   //source: LocalDataSource = new LocalDataSource();
   data!: Array<any>;
@@ -63,90 +62,13 @@ export class ListExperienciaLaboralComponent implements OnInit {
     if (this.eid !== undefined && this.eid !== null && this.eid.toString() !== '') {
       this.loadData();
     }
-    this.cargarCampos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.cargarCampos();
     });
     this.loading = false;
     this.persona_id = this.userService.getPersonaId();
     if (this.persona_id !== undefined && this.persona_id !== null && this.persona_id.toString() !== '') {
       this.loadData();
     }
-  }
-
-  cargarCampos() {
-    this.settings = {
-      columns: {
-        NombreEmpresa: {
-          title: this.translate.instant('GLOBAL.nombre_empresa'),
-          width: '35%',
-          valuePrepareFunction: (value:any) => {
-            return value.NombreCompleto;
-          },
-        },
-        Cargo: {
-          title: this.translate.instant('GLOBAL.cargo'),
-          width: '25%',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-        },
-        FechaInicio: {
-          title: this.translate.instant('GLOBAL.fecha_inicio'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            return formatDate(value, 'yyyy-MM-dd', 'en');
-          },
-        },
-        FechaFinalizacion: {
-          title: this.translate.instant('GLOBAL.fecha_fin'),
-          width: '20%',
-          valuePrepareFunction: (value:any) => {
-            if(value !== ''){
-              return formatDate(value, 'yyyy-MM-dd', 'en');
-            }else{
-              return ('Actual')
-            }
-          },
-        },
-        Estado: {
-          title: this.translate.instant('admision.estado'),
-          width: '5%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-        Observacion: {
-          title: this.translate.instant('admision.observacion'),
-          width: '5%',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-        },
-      },
-      mode: 'external',
-      actions: {
-        add: true,
-        edit: true,
-        delete: true,
-        position: 'right',
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="' + this.translate.instant('experiencia_laboral.tooltip_crear') + '"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="nb-edit" title="' + this.translate.instant('experiencia_laboral.tooltip_editar') + '"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="nb-trash" title="' + this.translate.instant('experiencia_laboral.tooltip_eliminar') + '"></i>',
-        confirmDelete: true,
-      },
-    };
   }
 
   useLanguage(language: string) {
@@ -208,6 +130,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
     this.uid = 0;
     this.indexSelect = NaN;
     this.detalleExp = undefined;
+    this.selected = 0
   }
 
   onEdit(event:any): void {
@@ -228,14 +151,6 @@ export class ListExperienciaLaboralComponent implements OnInit {
     this.activetab();
   }
 
-  selectTab(event:any): void {
-    if (event.tabTitle === this.translate.instant('GLOBAL.lista')) {
-      this.cambiotab = false;
-    } else {
-      this.cambiotab = true;
-    }
-  }
-
   activetab(): void {
     if(this.selected==0){
       this.selected = 1
@@ -250,8 +165,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
       this.indexSelect = NaN;
       this.detalleExp = undefined;
       this.loadData();
-      this.cargarCampos();
-      this.cambiotab = false;
+      this.selected = 0
     }
   }
 

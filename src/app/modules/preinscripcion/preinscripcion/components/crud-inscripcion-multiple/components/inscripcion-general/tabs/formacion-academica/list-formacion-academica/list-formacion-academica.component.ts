@@ -22,7 +22,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
   id!: number;
   pid!: number;
   UpdateInfo: boolean = false;
-  cambiotab: boolean = false;
   settings: any;
   persona_id: number;
 
@@ -125,8 +124,8 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.uid = 0;
     this.pid = 0;
     this.UpdateInfo = false;
+    this.selected = 0
     this.loadData();
-    this.cambiotab = false;
   }
 
   activetab(): void {
@@ -150,16 +149,8 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.activetab();
   }
 
-  selectTab(event:any): void {
-    console.log(event)
-    if (event.tabTitle === this.translate.instant('GLOBAL.lista')) {
-      this.cambiotab = false;
-    } else {
-      this.cambiotab = true;
-    }
-  }
-
   onChange(event:any) {
+    this.selected = 0
   }
 
   itemselec(event:any): void {

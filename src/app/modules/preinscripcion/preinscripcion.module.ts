@@ -51,6 +51,8 @@ import { ListExperienciaLaboralComponent } from './preinscripcion/components/cru
 import { CrudExperienciaLaboralComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/laboral/crud-experiencia-laboral/crud-experiencia-laboral.component';
 import { ListProduccionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/produccion-academica/list-produccion-academica/list-produccion-academica.component';
 import { CrudProduccionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/produccion-academica/crud-produccion-academica/crud-produccion-academica.component';
+import { ListDocumentoProgramaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/documento-programa/list-documento-programa/list-documento-programa.component';
+import { CrudDocumentoProgramaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/documento-programa/crud-documento-programa/crud-documento-programa.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -83,7 +85,9 @@ export function createTranslateLoader(http: HttpClient) {
     ListExperienciaLaboralComponent,
     CrudExperienciaLaboralComponent,
     ListProduccionAcademicaComponent,
-    CrudProduccionAcademicaComponent
+    CrudProduccionAcademicaComponent,
+    ListDocumentoProgramaComponent,
+    CrudDocumentoProgramaComponent
   ],
   imports: [
     MatTooltipModule,
