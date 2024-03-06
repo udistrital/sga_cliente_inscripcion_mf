@@ -13,13 +13,15 @@ export class AppComponent {
   title = 'sga-cliente-inscripcion-mf';
 
   ngOnInit(): void {
-    validateLang(this.translate);
+    
   }
 
   constructor(
     private translate: TranslateService,
     private userService: UserService
-  ) {}
+  ) {
+    validateLang(this.translate);
+  }
 }
 
 export function validateLang(translate: TranslateService) {

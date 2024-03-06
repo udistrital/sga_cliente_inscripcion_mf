@@ -7,14 +7,14 @@
                 </ngb-progressbar>
             </div>
         </div>
-        <mat-tab-group fullWidth>
+        <mat-tab-group fullWidth >
             <mat-tab label="{{ 'inscripcion.info_persona' | translate }}">
                 <ngx-crud-info-persona [info_persona_id]="info_persona_id" [inscripcion_id]="inscripcion_id"
                     (eventChange)="perfil_editar('info_preinscripcion')" (success)="cambioTab()"
                     (result)="setPercentage_info($event,0)">
                 </ngx-crud-info-persona>
             </mat-tab>
-            <mat-tab label="{{ 'inscripcion.preinscripcion' | translate }}">
+            <mat-tab  label="{{ 'inscripcion.preinscripcion' | translate }}">
                 <ngx-crud-inscripcion-multiple [info_persona_id]="info_persona_id"
                 [inscripcion_id]="inscripcion_id" (eventChange)="perfil_editar('default')"
                     (result)="setPercentage_info(1,1)" (ocultarBarra)="ocultarBarra($event)">

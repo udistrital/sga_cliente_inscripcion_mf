@@ -797,7 +797,7 @@
         </div>
 
         <!-- <mat-card [hidden]="!show_desc"> -->
-        <!-- <mat-card *ngIf="show_desc">
+        <div *ngIf="show_desc">
             <mat-card-content>
                 <div class="row">
                     <div class="col-md-11">
@@ -815,7 +815,7 @@
                 <mat-tab-group fullWidth (changeTab)="selectTab($event)">
                     <mat-tab label="{{ 'inscripcion.descuento_matricula' | translate }}">
                         <ngx-list-descuento-academico (result)="setPercentage_desc($event,0)"
-                            persona_id="{{this.info_persona_id}}" inscripcion_id="{{this.inscripcion_id}}">
+                            [persona_id]="info_persona_id" [inscripcion_id]="inscripcion_id">
                         </ngx-list-descuento-academico>
                     </mat-tab>
                 </mat-tab-group>
@@ -829,10 +829,10 @@
                     </button>
                 </div>
             </mat-card-content>
-        </mat-card> -->
+        </div>
 
         <!-- <mat-card [hidden]="!show_proy"> -->
-        <!-- <mat-card *ngIf="show_proy">
+        <div *ngIf="show_proy">
             <mat-card-content>
                 <div class="row">
                     <div class="col-md-11">
@@ -849,22 +849,22 @@
                 </div>
                 <mat-tab-group fullWidth (changeTab)="selectTab($event)">
                     <mat-tab label="{{ 'inscripcion.propuesta_grado' | translate }}">
-                        <ngx-crud-propuesta-grado (result)="setPercentage_proy($event,0)" persona_id="{{this.info_ente_id}}"
-                            inscripcion_id="{{this.inscripcion_id}}" (crear_inscripcion)="create_inscription($event)">
+                        <ngx-crud-propuesta-grado (result)="setPercentage_proy($event,0)" [persona_id]="info_ente_id"
+                            [inscripcion_id]="inscripcion_id" (crear_inscripcion)="create_inscription($event)">
                         </ngx-crud-propuesta-grado>
                     </mat-tab>
                 </mat-tab-group>
             </mat-card-content>
-        </mat-card>-->
+        </div>
 
         <!--Vista de perfil------------------------------------------------------------->
 
         <!-- <div [hidden]="!show_profile"> -->
-        <!-- <div *ngIf="show_profile">
+        <div *ngIf="show_profile">
             <ngx-perfil class="text-center" [SuiteTags]="tagsObject" [en_revision]="false" (revisar_doc)="revisarDocumento($event)" (url_editar)="perfil_editar($event)" info_persona_id="{{this.info_persona_id}}"
-                inscripcion_id="{{this.inscripcion_id}}" imprimir="{{this.imprimir}}">
+                [inscripcion_id]="inscripcion_id" [imprimir]="imprimir">
             </ngx-perfil>
-        </div> -->
+        </div>
         <div *ngIf="showRegreso && !hide_header_labels">
             <button (click)="activateTab()" class="btn boton-primary btn-sm" style="max-height: 35px;">
                 <div class="d-flex">

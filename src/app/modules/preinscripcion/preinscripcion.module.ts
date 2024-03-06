@@ -53,6 +53,20 @@ import { ListProduccionAcademicaComponent } from './preinscripcion/components/cr
 import { CrudProduccionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/produccion-academica/crud-produccion-academica/crud-produccion-academica.component';
 import { ListDocumentoProgramaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/documento-programa/list-documento-programa/list-documento-programa.component';
 import { CrudDocumentoProgramaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/documento-programa/crud-documento-programa/crud-documento-programa.component';
+import { CrudDescuentoAcademicoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/descuento_academico/crud-descuento-academico/crud-descuento-academico.component';
+import { ListDescuentoAcademicoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/descuento_academico/list-descuento-academico/list-descuento-academico.component';
+import { CrudPropuestaGradoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/propuesta_grado/crud-propuesta-grado/crud-propuesta-grado.component';
+import { ViewDescuentoAcademicoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/descuento_academico/view-descuento-academico/view-descuento-academico.component';
+import { ViewDocumentoProgramaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/documento-programa/view-documento-programa/view-documento-programa.component';
+import { ViewFormacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/formacion-academica/view-formacion-academica/view-formacion-academica.component';
+import { ViewExperienciaLaboralComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/laboral/view-experiencia-laboral/view-experiencia-laboral.component';
+import { ViewIdiomasComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/idiomas/view-idiomas/view-idiomas.component';
+import { ViewInfoPersonaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/informacion-basica/view-info-persona/view-info-persona.component';
+import { ViewProduccionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/produccion-academica/view-produccion-academica/view-produccion-academica.component';
+import { ViewPropuestaGradoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/propuesta_grado/view-propuesta-grado/view-propuesta-grado.component';
+import { PerfilComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/perfil/perfil.component';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { ViewInscripcionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/perfil/view-inscripcion/view-inscripcion.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -60,16 +74,16 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({
   declarations: [
+    CrudInfoPersonaComponent,
+    PreinscripcionComponent,
+    DynamicFormComponent,
     VideoModalComponent,
     DialogoDocumentosComponent,
     VideoModalComponent,
     CrudInscripcionMultipleComponent,
-    CrudInfoPersonaComponent,
     ButtonPaymentComponent,
     LinkDownloadComponent,
     InscripcionGeneralComponent,
-    DynamicFormComponent,
-    PreinscripcionComponent,
     CrudInfoCaracteristicaPregradoComponent,
     CrudInformacionContactoComponent,
     CrudInformacionFamiliarComponent,
@@ -87,9 +101,23 @@ export function createTranslateLoader(http: HttpClient) {
     ListProduccionAcademicaComponent,
     CrudProduccionAcademicaComponent,
     ListDocumentoProgramaComponent,
-    CrudDocumentoProgramaComponent
+    CrudDocumentoProgramaComponent,
+    CrudDescuentoAcademicoComponent,
+    ListDescuentoAcademicoComponent,
+    CrudPropuestaGradoComponent,
+    ViewDescuentoAcademicoComponent,
+    ViewDocumentoProgramaComponent,
+    ViewFormacionAcademicaComponent,
+    ViewExperienciaLaboralComponent,
+    ViewIdiomasComponent,
+    ViewInfoPersonaComponent,
+    ViewProduccionAcademicaComponent,
+    ViewPropuestaGradoComponent,
+    PerfilComponent,
+    ViewInscripcionComponent
   ],
   imports: [
+    MatExpansionModule,
     MatTooltipModule,
     NgxExtendedPdfViewerModule,
     MatCheckboxModule,

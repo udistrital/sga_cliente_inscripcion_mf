@@ -18,6 +18,7 @@ import * as momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
 import { verifyHostBindings } from '@angular/compiler';
 import { validateLang } from 'src/app/app.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'ngx-crud-info-persona',
@@ -77,13 +78,13 @@ export class CrudInfoPersonaComponent implements OnInit {
     private listService: ListService,
     private dialog: MatDialog,
   ) {
-      this.formInfoPersona = UtilidadesService.hardCopy(FORM_INFO_PERSONA);
+    this.formInfoPersona = UtilidadesService.hardCopy(FORM_INFO_PERSONA);
+    this.construirForm();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
-      this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-        this.construirForm();
-      });
-      this.loading = true;
-      Promise.all([
+    });
+    this.loading = true;
+    Promise.all([
       this.listService.findGenero(),
       this.listService.findTipoIdentificacion()]).then(() => {
         this.loadLists();
@@ -92,15 +93,14 @@ export class CrudInfoPersonaComponent implements OnInit {
 
   construirForm() {
     // this.formInfoPersona.titulo = this.translate.instant('GLOBAL.info_persona');
-    this.formInfoPersona.btn = this.translate.instant('GLOBAL.guardar');
-    for (let i = 0; i < this.formInfoPersona.campos.length; i++) {
-      this.formInfoPersona.campos[i].label = this.translate.instant('GLOBAL.' + this.formInfoPersona.campos[i].label_i18n);
-      this.formInfoPersona.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formInfoPersona.campos[i].label_i18n);
-    }
-  }
-
-  useLanguage(language: string) {
-    this.translate.use(language);
+    validateLang(this.translate)
+    setTimeout(() => {
+      this.formInfoPersona.btn = this.translate.instant('GLOBAL.guardar');
+      for (let i = 0; i < this.formInfoPersona.campos.length; i++) {
+        this.formInfoPersona.campos[i].label = this.translate.instant('GLOBAL.' + this.formInfoPersona.campos[i].label_i18n);
+        this.formInfoPersona.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formInfoPersona.campos[i].label_i18n);
+      }
+    }, 500);
   }
 
   getIndexForm(nombre: String): number {
@@ -122,7 +122,7 @@ export class CrudInfoPersonaComponent implements OnInit {
             const temp = <InfoPersona>res;
             this.aceptaTerminos = true;
             this.info_info_persona = temp;
-            this.datosEncontrados = {...res}
+            this.datosEncontrados = { ...res }
             const files = []
             this.formInfoPersona.btn = '';
             if (temp.Genero && (temp.Genero.Nombre != "NO APLICA")) {
@@ -131,33 +131,33 @@ export class CrudInfoPersonaComponent implements OnInit {
             this.formInfoPersona.campos[this.getIndexForm('TipoIdentificacion')].valor = temp.TipoIdentificacion;
             if (temp.FechaNacimiento != null) {
               temp.FechaNacimiento = temp.FechaNacimiento.replace("T00:00:00Z", "T05:00:00Z");
-              this.formInfoPersona.campos[this.getIndexForm('FechaNacimiento')].valor = moment(temp.FechaNacimiento,"YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
+              this.formInfoPersona.campos[this.getIndexForm('FechaNacimiento')].valor = moment(temp.FechaNacimiento, "YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
             }
             if (temp.FechaExpedicion != null) {
               temp.FechaExpedicion = temp.FechaExpedicion.replace("T00:00:00Z", "T05:00:00Z");
-              this.formInfoPersona.campos[this.getIndexForm('FechaExpedicion')].valor = moment(temp.FechaExpedicion,"YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
+              this.formInfoPersona.campos[this.getIndexForm('FechaExpedicion')].valor = moment(temp.FechaExpedicion, "YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
             }
-            this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'),1);
-            this.formInfoPersona.campos.forEach((campo:any) => {
+            this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
+            this.formInfoPersona.campos.forEach((campo: any) => {
               campo.deshabilitar = true;
             });
             if (temp.Telefono == null || temp.Telefono == undefined) {
-              this.popUpManager.showAlert(this.translate.instant('GLOBAL.info_persona'),this.translate.instant('inscripcion.sin_telefono'))
+              this.popUpManager.showAlert(this.translate.instant('GLOBAL.info_persona'), this.translate.instant('inscripcion.sin_telefono'))
             }
           }
           this.loading = false;
         },
-        (error: HttpErrorResponse) => {
-          this.loading = false;
-          Swal.fire({
-            icon: 'info',
-            title: this.translate.instant('GLOBAL.info_persona'),
-            text: this.translate.instant('GLOBAL.no_info_persona'),
-            footer: this.translate.instant('GLOBAL.cargar') + '-' +
-              this.translate.instant('GLOBAL.info_persona'),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          (error: HttpErrorResponse) => {
+            this.loading = false;
+            Swal.fire({
+              icon: 'info',
+              title: this.translate.instant('GLOBAL.info_persona'),
+              text: this.translate.instant('GLOBAL.no_info_persona'),
+              footer: this.translate.instant('GLOBAL.cargar') + '-' +
+                this.translate.instant('GLOBAL.info_persona'),
+              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+            });
           });
-        });
     } else {
       this.info_info_persona = undefined
       this.clean = !this.clean;
@@ -167,46 +167,46 @@ export class CrudInfoPersonaComponent implements OnInit {
     this.formInfoPersona.campos[this.getIndexForm('CorreoElectronico')].valor = this.autenticationService.getPayload().email;
   }
 
-  checkExistePersona(e:any) {
+  checkExistePersona(e: any) {
     let doc = this.formInfoPersona.campos[this.getIndexForm('NumeroIdentificacion')].valor;
     let verif = this.formInfoPersona.campos[this.getIndexForm('VerificarNumeroIdentificacion')].valor
-    if((doc && verif) && (doc == verif) && !this.aceptaTerminos) {
+    if ((doc && verif) && (doc == verif) && !this.aceptaTerminos) {
       this.loading = true;
-      this.sgamidService.get('persona/existe_persona/'+doc).subscribe(
+      this.sgamidService.get('persona/existe_persona/' + doc).subscribe(
         (res) => {
           this.loading = false;
           this.info_info_persona = res[0];
-          this.datosEncontrados = {...res[0]};
+          this.datosEncontrados = { ...res[0] };
           if (res[0].FechaNacimiento != null) {
             res[0].FechaNacimiento = res[0].FechaNacimiento.replace("T00:00:00Z", "T05:00:00Z");
-            this.formInfoPersona.campos[this.getIndexForm('FechaNacimiento')].valor = moment(res[0].FechaNacimiento,"YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
+            this.formInfoPersona.campos[this.getIndexForm('FechaNacimiento')].valor = moment(res[0].FechaNacimiento, "YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
           }
           if (res[0].FechaExpedicion != null) {
             res[0].FechaExpedicion = res[0].FechaExpedicion.replace("T00:00:00Z", "T05:00:00Z");
-            this.formInfoPersona.campos[this.getIndexForm('FechaExpedicion')].valor = moment(res[0].FechaExpedicion,"YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
+            this.formInfoPersona.campos[this.getIndexForm('FechaExpedicion')].valor = moment(res[0].FechaExpedicion, "YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
           }
           if (res[0].Genero.Nombre != "NO APLICA") {
             this.formInfoPersona.campos[this.getIndexForm('Genero')].valor = res[0].Genero;
           }
-          
-          this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'),1);
 
-          this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.persona_ya_existe'), this.translate.instant('inscripcion.info_persona_ya_existe'),'info',false).then(()=>{
+          this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
+
+          this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.persona_ya_existe'), this.translate.instant('inscripcion.info_persona_ya_existe'), 'info', false).then(() => {
             let UsuarioExistente = <string>this.info_info_persona.UsuarioWSO2;
             let correoActual = <string>this.autenticationService.getPayload().email;
             if (UsuarioExistente.match(UtilidadesService.ListaPatrones.correo)) {
               if (UsuarioExistente != correoActual) {
                 this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.info_persona'), this.translate.instant('inscripcion.ya_existe_usuarioCorreo') + '<br>'
-                                                  + this.translate.instant('inscripcion.correo_anterior') + ': ' + UsuarioExistente + '<br>'
-                                                  + this.translate.instant('inscripcion.correo_actual') + ': ' + correoActual, 'info', true).then(
-                  action => {
-                    if (action.value) {
-                      this.forzarCambioUsuario = true;
-                    } else {
-                      this.autenticationService.logout('from inscripcion');
+                  + this.translate.instant('inscripcion.correo_anterior') + ': ' + UsuarioExistente + '<br>'
+                  + this.translate.instant('inscripcion.correo_actual') + ': ' + correoActual, 'info', true).then(
+                    action => {
+                      if (action.value) {
+                        this.forzarCambioUsuario = true;
+                      } else {
+                        this.autenticationService.logout('from inscripcion');
+                      }
                     }
-                  }
-                );
+                  );
               }
             } else {
               this.forzarCambioUsuario = true;
@@ -230,54 +230,54 @@ export class CrudInfoPersonaComponent implements OnInit {
       Complementarios: {
         Genero: { hasId: null, data: {} },
         Telefono: { hasId: null, data: {} },
-      } 
+      }
     }
 
     prepareUpdate.Tercero.hasId = infoPersona.Id;
 
-    if(!this.datosEncontrados.PrimerNombre) {
+    if (!this.datosEncontrados.PrimerNombre) {
       prepareUpdate.Tercero.data["PrimerNombre"] = infoPersona.PrimerNombre;
     }
-    if(!this.datosEncontrados.SegundoNombre) {
+    if (!this.datosEncontrados.SegundoNombre) {
       prepareUpdate.Tercero.data["SegundoNombre"] = infoPersona.SegundoNombre;
     }
-    if(!this.datosEncontrados.PrimerApellido) {
+    if (!this.datosEncontrados.PrimerApellido) {
       prepareUpdate.Tercero.data["PrimerApellido"] = infoPersona.PrimerApellido;
     }
-    if(!this.datosEncontrados.SegundoApellido) {
+    if (!this.datosEncontrados.SegundoApellido) {
       prepareUpdate.Tercero.data["SegundoApellido"] = infoPersona.SegundoApellido;
     }
-    if(!this.datosEncontrados.FechaNacimiento) {
+    if (!this.datosEncontrados.FechaNacimiento) {
       prepareUpdate.Tercero.data["FechaNacimiento"] = momentTimezone.tz(infoPersona.FechaNacimiento, 'America/Bogota').format('YYYY-MM-DD HH:mm:ss') + ' +0000 +0000';
     }
-    if(!this.datosEncontrados.UsuarioWSO2 || this.forzarCambioUsuario) {
+    if (!this.datosEncontrados.UsuarioWSO2 || this.forzarCambioUsuario) {
       prepareUpdate.Tercero.hasId = infoPersona.Id;
       prepareUpdate.Tercero.data["UsuarioWSO2"] = this.autenticationService.getPayload().email;
     }
 
-    if(!this.datosEncontrados.FechaExpedicion) {
+    if (!this.datosEncontrados.FechaExpedicion) {
       prepareUpdate.Identificacion.hasId = this.datosEncontrados.IdentificacionId;
       prepareUpdate.Identificacion.data = {
         FechaExpedicion: momentTimezone.tz(infoPersona.FechaExpedicion, 'America/Bogota').format('YYYY-MM-DD HH:mm:ss') + ' +0000 +0000',
       }
     }
 
-    if(this.datosEncontrados.hasOwnProperty('Genero')){
+    if (this.datosEncontrados.hasOwnProperty('Genero')) {
       prepareUpdate.Complementarios.Genero.hasId = this.datosEncontrados.GeneroId;
     }
     prepareUpdate.Complementarios.Genero.data = infoPersona.Genero;
 
-    if(this.datosEncontrados.hasOwnProperty('Telefono')){
+    if (this.datosEncontrados.hasOwnProperty('Telefono')) {
       prepareUpdate.Complementarios.Telefono.hasId = this.datosEncontrados.TelefonoId;
     }
-    let dataTel = {principal: infoPersona.Telefono, alterno: this.datosEncontrados.TelefonoAlterno? this.datosEncontrados.TelefonoAlterno : null}
+    let dataTel = { principal: infoPersona.Telefono, alterno: this.datosEncontrados.TelefonoAlterno ? this.datosEncontrados.TelefonoAlterno : null }
     prepareUpdate.Complementarios.Telefono.data = JSON.stringify(dataTel);
 
-    this.tercerosMidService.put('persona/actualizar_persona',prepareUpdate).subscribe((response:any) => {
+    this.tercerosMidService.put('persona/actualizar_persona', prepareUpdate).subscribe((response: any) => {
       this.faltandatos = false;
       this.existePersona = false;
       this.formInfoPersona.btn = '';
-      this.formInfoPersona.campos.forEach((campo:any) => {
+      this.formInfoPersona.campos.forEach((campo: any) => {
         campo.deshabilitar = true;
       });
       window.localStorage.setItem('ente', response.tercero.Id);
@@ -289,10 +289,10 @@ export class CrudInfoPersonaComponent implements OnInit {
       this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.persona_actualizado'));
       this.success.emit();
     },
-    (error: HttpErrorResponse) => {
-      this.loading = false;
-      this.popUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_actualizar_persona'));
-    });
+      (error: HttpErrorResponse) => {
+        this.loading = false;
+        this.popUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_actualizar_persona'));
+      });
   }
 
   createInfoPersona(infoPersona: any): void {
@@ -311,9 +311,9 @@ export class CrudInfoPersonaComponent implements OnInit {
         window.localStorage.setItem('persona_id', r.Id);
         this.info_persona_id = r.Id;
         sessionStorage.setItem('IdTercero', String(this.info_persona_id));
-        this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'),1);
+        this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
         this.formInfoPersona.btn = '';
-        this.formInfoPersona.campos.forEach((campo:any) => {
+        this.formInfoPersona.campos.forEach((campo: any) => {
           campo.deshabilitar = true;
         });
         this.setPercentage(1);
@@ -324,29 +324,29 @@ export class CrudInfoPersonaComponent implements OnInit {
       }
       this.loading = false;
     },
-    (error: HttpErrorResponse) => {
-      this.loading = false;
-      Swal.fire({
-        icon: 'error',
-        title: error.status + '',
-        text: this.translate.instant('ERROR.' + error.status),
-        footer: this.translate.instant('GLOBAL.crear') + '-' +
-                this.translate.instant('GLOBAL.info_persona'),
-                confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+      (error: HttpErrorResponse) => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: error.status + '',
+          text: this.translate.instant('ERROR.' + error.status),
+          footer: this.translate.instant('GLOBAL.crear') + '-' +
+            this.translate.instant('GLOBAL.info_persona'),
+          confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+        });
       });
-    });
   }
 
   ngOnInit() {
   }
 
-  validarForm(event:any) {
+  validarForm(event: any) {
     if (event.valid) {
       if (this.info_inscripcion === undefined) {
-         this.validarTerminos(event);
+        this.validarTerminos(event);
       } else {
         if (this.info_inscripcion.AceptaTerminos !== true) {
-         this.validarTerminos(event);
+          this.validarTerminos(event);
         } else {
           this.formInfoPersona.btn = '';
         }
@@ -354,39 +354,39 @@ export class CrudInfoPersonaComponent implements OnInit {
     }
   }
 
-  validarTerminos(event:any) {
+  validarTerminos(event: any) {
     Swal.fire({
       title: this.translate.instant('GLOBAL.terminos_datos'),
       width: 800,
       allowOutsideClick: false,
       allowEscapeKey: true,
-      html: '<embed src="/assets/pdf/politicasUD.pdf" type="application/pdf" style="width:100%; height:375px;" frameborder="0"></embed>',
+      html: '<embed src='+environment.apiUrl+'/assets/pdf/politicasUD.pdf" type="application/pdf" style="width:100%; height:375px;" frameborder="0"></embed>',
       input: 'checkbox',
       inputPlaceholder: this.translate.instant('GLOBAL.acepto_terminos'),
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
     })
       .then((result) => {
         if (result.value) {
-            this.aceptaTerminos = true;
-            if(this.existePersona || this.faltandatos){
-              this.popUpManager.showPopUpGeneric(this.translate.instant('GLOBAL.actualizar'),this.translate.instant('GLOBAL.actualizar_info_persona'),'warning',true)
-                .then((action) => {
-                  if (action.value) {
-                    this.updateInfoPersona(event.data.InfoPersona);
-                  } else {
-                    this.aceptaTerminos = false;
-                  }
-                });
-            } else {
-              this.popUpManager.showPopUpGeneric(this.translate.instant('GLOBAL.crear'),this.translate.instant('GLOBAL.crear_info_persona'),'warning',true)
-                .then((action) => {
-                    if (action.value) {
-                      this.createInfoPersona(event.data.InfoPersona);
-                    } else {
-                      this.aceptaTerminos = false;
-                    }
-                });
-            }
+          this.aceptaTerminos = true;
+          if (this.existePersona || this.faltandatos) {
+            this.popUpManager.showPopUpGeneric(this.translate.instant('GLOBAL.actualizar'), this.translate.instant('GLOBAL.actualizar_info_persona'), 'warning', true)
+              .then((action) => {
+                if (action.value) {
+                  this.updateInfoPersona(event.data.InfoPersona);
+                } else {
+                  this.aceptaTerminos = false;
+                }
+              });
+          } else {
+            this.popUpManager.showPopUpGeneric(this.translate.instant('GLOBAL.crear'), this.translate.instant('GLOBAL.crear_info_persona'), 'warning', true)
+              .then((action) => {
+                if (action.value) {
+                  this.createInfoPersona(event.data.InfoPersona);
+                } else {
+                  this.aceptaTerminos = false;
+                }
+              });
+          }
         } else if (result.value === 0) {
           Swal.fire({
             icon: 'error',
@@ -398,16 +398,16 @@ export class CrudInfoPersonaComponent implements OnInit {
       });
   }
 
-  setPercentage(event:any) {
+  setPercentage(event: any) {
     if (this.aceptaTerminos) {
       this.percentage = event;
     } else {
-      this.percentage = event*0.98;
+      this.percentage = event * 0.98;
     }
     this.result.emit(this.percentage);
-    if(event < 1.0) {
-      this.formInfoPersona.campos.forEach((campo:any) => {
-        if(!campo.valor) {
+    if (event < 1.0) {
+      this.formInfoPersona.campos.forEach((campo: any) => {
+        if (!campo.valor) {
           campo.deshabilitar = false;
         }
       });
@@ -420,7 +420,7 @@ export class CrudInfoPersonaComponent implements OnInit {
     this.store.select((state) => state).subscribe(
       (list) => {
         if (list.listGenero && Array.isArray(list.listGenero)) {
-          this.formInfoPersona.campos[this.getIndexForm('Genero')].opciones = (<any>list.listGenero[0]).filter((g:any) => g.Nombre != "NO APLICA");
+          this.formInfoPersona.campos[this.getIndexForm('Genero')].opciones = (<any>list.listGenero[0]).filter((g: any) => g.Nombre != "NO APLICA");
         }
         if (list.listTipoIdentificacion && Array.isArray(list.listTipoIdentificacion)) {
           this.formInfoPersona.campos[this.getIndexForm('TipoIdentificacion')].opciones = list.listTipoIdentificacion[0];
@@ -428,14 +428,14 @@ export class CrudInfoPersonaComponent implements OnInit {
       },
     );
   }
-  
+
 
   openVideoModal(videoId: string): void {
     const dialogRef = this.dialog.open(VideoModalComponent, {
-      width: '600px', 
+      width: '600px',
       data: { videoId: videoId }
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       console.log('Modal cerrado');
     });

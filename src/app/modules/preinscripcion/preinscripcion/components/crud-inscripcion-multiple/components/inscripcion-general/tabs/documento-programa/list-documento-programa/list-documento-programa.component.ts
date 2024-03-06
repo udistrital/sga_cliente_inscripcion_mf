@@ -67,61 +67,10 @@ export class ListDocumentoProgramaComponent implements OnInit {
     private newNuxeoService: NewNuxeoService,
     private utilidades: UtilidadesService
   ) {
-    this.cargarCampos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.cargarCampos();
     });
     this.loading = false;
     this.percentage = 0;
-  }
-
-  cargarCampos() {
-    this.settings = {
-      columns: {
-        TipoDocumento: {
-          title: this.translate.instant('GLOBAL.tipo_documento_programa'),
-          width: '30%',
-          editable: false,
-        },
-        EstadoObservacion: {
-          title: this.translate.instant('admision.estado'),
-          width: '20%',
-          editable: false,
-        },
-        Observacion: {
-          title: this.translate.instant('admision.observacion'),
-          width: '40%',
-          editable: false,
-        },
-      },
-      mode: 'external',
-      actions: {
-        position: 'right',
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
-        add: true,
-        edit: false,
-        delete: false,
-        custom: [
-          {
-            name: 'open',
-            title: '<i class="nb-compose" title="' + this.translate.instant('GLOBAL.tooltip_ver_registro') + '"></i>',
-          },
-          {
-            name: 'edit',
-            title: '<i class="nb-edit" title="' + this.translate.instant('GLOBAL.tooltip_editar_registro') + '"></i>',
-          },
-          {
-            name: 'delete',
-            title: '<i class="nb-trash" title="' + this.translate.instant('GLOBAL.eliminar') + '"></i>',
-          },
-        ],
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="' + this.translate.instant('documento_programa.tooltip_crear') + '"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-    };
   }
 
   async loadData() {
@@ -330,7 +279,6 @@ export class ListDocumentoProgramaComponent implements OnInit {
     if (event) {
       this.uid = 0;
       this.loadData();
-      this.activetab()
       this.selected = 0
     } /*else {
       // this.getPercentage(this.soporteDocumento.length / event)

@@ -84,7 +84,6 @@ export class PreinscripcionComponent implements OnInit{
   periodo: any;
   selectednivel: any;
   habilitar_inscripcion: boolean = true;
-
   loading: boolean = false;
 
   constructor(
@@ -99,6 +98,11 @@ export class PreinscripcionComponent implements OnInit{
     this.show_info = true;
   }
 
+  ngOnInit() {
+    this.loadData();
+    validateLang(this.translate);
+  }
+  
   async loadData() {
     try {
       this.info_persona_id = this.userService.getPersonaId();
@@ -161,22 +165,6 @@ setPercentage_info(number:any, tab:any) {
         this.show_profile = false;
         break;
     }
-  }
-
-  selectTab(event:any): void {
-    if (event.tabTitle === this.translate.instant('GLOBAL.info_persona')) {
-      if (this.info_persona)
-        this.perfil_editar('info_persona');
-    } else if (event.tabTitle === this.translate.instant('GLOBAL.info_caracteristica')) {
-      this.perfil_editar('info_caracteristica');
-    } else if (event.tabTitle === this.translate.instant('GLOBAL.informacion_contacto')) {
-      this.perfil_editar('info_contacto');
-    }
-  }
-
-  ngOnInit() {
-    this.loadData();
-    validateLang(this.translate);
   }
 
   cambioTab() {
