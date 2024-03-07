@@ -79,8 +79,8 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     this.listService.findGrupoSanguineo();
     this.listService.findOrientacionSexual(),
     this.listService.findIdentidadGenero(),
-    this.listService.findEstadoCivil().then(()=> this.loadLists())
-    // this.loadLists();
+    this.listService.findEstadoCivil()
+    this.loadLists();
     // this.loadInfoCaracteristica();
   }
 
@@ -270,10 +270,9 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
       this.denied_acces = false;
-      this.tercerosMidService.get('personas/consultar_complementarios/' + this.info_persona_id)
+      this.tercerosMidService.get('persona/consultar_complementarios/' + this.info_persona_id)
         .subscribe(async res => {
           if (res !== null && res.Response.Code !== '404') {
-            console.log(res.Response)
             this.datosGet = <InfoCaracteristicaGet>res.Response.Body[0].Data;
             this.info_info_caracteristica = <InfoCaracteristica>res.Response.Body[0].Data;
             this.info_info_caracteristica.Ente = (1 * this.info_caracteristica_id);
@@ -528,7 +527,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        console.log(this.store)
         this.formInfoCaracteristica.campos[this.getIndexForm('PaisNacimiento')].opciones = list.listPais[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].opciones = list.listTipoPoblacion[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].opciones = list.listTipoDiscapacidad[0];

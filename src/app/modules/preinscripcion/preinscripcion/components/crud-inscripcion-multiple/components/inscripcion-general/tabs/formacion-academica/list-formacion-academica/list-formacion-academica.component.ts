@@ -3,6 +3,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Documento } from 'src/app/models/documento/documento';
@@ -89,7 +90,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
           element.Observacion = estadoDoc.observacion;
           dataInfo.push(element);
           this.getPercentage(1);
-          console.log(dataInfo)
           this.dataSource = new MatTableDataSource(dataInfo);
         });
         this.loading = false;
@@ -124,16 +124,8 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.uid = 0;
     this.pid = 0;
     this.UpdateInfo = false;
-    this.selected = 0
+    this.irAIndexTab(0)
     this.loadData();
-  }
-
-  activetab(): void {
-    if(this.selected==0){
-      this.selected = 1
-    }else{
-      this.selected = 0
-    }
   }
 
   onEdit(event:any): void {
@@ -141,16 +133,16 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.uid = event.Nit;
     this.pid = event.ProgramaAcademico.Id;
     this.UpdateInfo = true;
-    this.activetab();
+    this.irAIndexTab(1)
   }
 
   onCreate(): void {
     this.uid = 0;
-    this.activetab();
+    this.irAIndexTab(1)
   }
 
   onChange(event:any) {
-    this.selected = 0
+    this.irAIndexTab(0)
   }
 
   itemselec(event:any): void {
@@ -195,5 +187,13 @@ export class ListFormacionAcademicaComponent implements OnInit {
         }
         this.loading = false;
       });
+  }
+
+  tabChanged(event: MatTabChangeEvent) {
+    this.irAIndexTab(event.index)
+  }
+
+  irAIndexTab(index:number){
+    this.selected = index
   }
 }

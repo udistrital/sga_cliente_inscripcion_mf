@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { SolicitudDescuento } from 'src/app/models/descuento/solicitud_descuento';
@@ -143,7 +144,6 @@ export class ListDescuentoAcademicoComponent implements OnInit {
             docDesc["EstadoObservacion"] = estadoDoc.estadoObservacion;
             docDesc["Observacion"] = estadoDoc.observacion;
             docDesc["Aprobado"] = estadoDoc.aprobado;
-            console.log(this.data)
             this.dataSource = new MatTableDataSource(this.data)
           });
           this.getPercentage(1);
@@ -178,21 +178,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
 
   ngOnInit() {
     this.uid = 0;
-    this.selected = 0
-  }
-
-  onAction(event:any): void {
-    switch (event.action) {
-      case 'open':
-        this.onOpen(event);
-        break;
-      case 'edit':
-        this.onEdit(event);
-        break;
-      case 'delete':
-        this.onDelete(event);
-        break;
-    }
+    this.irAIndexTab(0)
   }
 
   onOpen(event:any) {
@@ -221,7 +207,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   onEdit(event:any): void {
     if (event.Aprobado != true) {
       this.uid = event.Id;
-      this.activetab();
+      this.irAIndexTab(1)
     } else {
       this.popUpManager.showAlert(
         this.translate.instant('GLOBAL.info'),
@@ -232,7 +218,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
 
   onCreate(): void {
     this.uid = 0;
-    this.activetab();
+    this.irAIndexTab(1)
   }
 
   onDelete(event:any): void {
@@ -292,20 +278,11 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     }
   }
 
-  activetab(): void {
-    if(this.selected==0){
-      this.selected = 1
-    }else{
-      this.selected = 0
-    }
-  }
-
   onChange(event:any) {
-    console.log(event)
     if (event) {
       this.uid = 0;
       this.loadData();
-      this.selected = 0
+      this.irAIndexTab(0)
     }
   }
 
@@ -315,5 +292,13 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   getPercentage(event:any) {
     this.percentage = event;
     this.result.emit(this.percentage);
+  }
+
+  tabChanged(event: MatTabChangeEvent) {
+    this.irAIndexTab(event.index)
+  }
+
+  irAIndexTab(index:number){
+    this.selected = index
   }
 }

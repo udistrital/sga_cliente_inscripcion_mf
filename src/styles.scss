@@ -4,6 +4,8 @@
 @import 'bootstrap/scss/bootstrap';
 @import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
 $primary: (
     50: var(--primary),
     100: var(--primary),
@@ -97,3 +99,6 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
   font-size: 1em;
 }
   
+.link:hover{
+  cursor: pointer !important;
+}

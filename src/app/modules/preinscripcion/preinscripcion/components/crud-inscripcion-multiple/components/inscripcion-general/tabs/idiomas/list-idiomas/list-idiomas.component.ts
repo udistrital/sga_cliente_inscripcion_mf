@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { IdiomaService } from 'src/app/services/idioma.service';
@@ -87,7 +88,7 @@ export class ListIdiomasComponent implements OnInit {
     if (event) {
       this.uid = 0;
       this.loadData();
-      this.selected = 0
+      this.irAIndexTab(0)
     }
   }
 
@@ -125,27 +126,28 @@ export class ListIdiomasComponent implements OnInit {
 
   ngOnInit() {
     this.uid = 0;
-    this.selected = 0
+    this.irAIndexTab(0)
   }
 
   onEdit(event:any): void {
     this.uid = event.Id;
-    this.activetab();
+    this.irAIndexTab(1)
   }
 
   onCreate(): void {
     this.uid = 0;
-    this.activetab();
-  }
-
-  activetab(): void {
-    if(this.selected==0){
-      this.selected = 1
-    }else{
-      this.selected = 0
-    }
+    this.irAIndexTab(1)
+    
   }
 
   itemselec(event:any): void {
+  }
+
+  tabChanged(event: MatTabChangeEvent) {
+    this.irAIndexTab(event.index)
+  }
+
+  irAIndexTab(index:number){
+    this.selected = index
   }
 }

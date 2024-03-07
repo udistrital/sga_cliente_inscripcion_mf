@@ -34,6 +34,8 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   nuevoTercero: boolean = false;
   nit: any;
 
+  
+
   @Input('info_experiencia_laboral_id')
   set name(info_experiencia_laboral_id: number) {
     this.info_experiencia_laboral_id = info_experiencia_laboral_id;

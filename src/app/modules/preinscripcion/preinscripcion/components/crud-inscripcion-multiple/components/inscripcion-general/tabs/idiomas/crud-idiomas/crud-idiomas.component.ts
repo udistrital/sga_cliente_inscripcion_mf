@@ -22,6 +22,8 @@ export class CrudIdiomasComponent implements OnInit {
   info_idioma_id!: number;
   inscripcion_id!: number;
 
+  
+
   @Input('info_idioma_id')
   set name(info_idioma_id: number) {
     this.info_idioma_id = info_idioma_id;
@@ -288,5 +290,4 @@ export class CrudIdiomasComponent implements OnInit {
       },
     );
   }
-
 }

@@ -1433,6 +1433,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   revisarDocumento(doc: any) {
+      console.log(doc)
       const assignConfig = new MatDialogConfig();
       assignConfig.width = '1300px';
       assignConfig.height = '750px';

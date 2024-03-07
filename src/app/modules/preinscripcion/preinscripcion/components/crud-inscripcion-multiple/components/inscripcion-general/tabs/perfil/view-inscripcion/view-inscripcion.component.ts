@@ -60,7 +60,6 @@ export class ViewInscripcionComponent implements OnInit {
     this.inscripcion.Programa = sessionStorage.getItem('ProgramaAcademico');
     this.inscripcionService.get('inscripcion?query=Id:' + this.inscripcion_id).subscribe(
       (response: any) => {
-        console.log(response)
         if (Object.keys(response[0]).length > 0) {
         this.inscripcion.Estado = response[0].EstadoInscripcionId.Nombre;
         this.estadoCarga.emit({EstadoInscripcion: this.inscripcion.Estado});

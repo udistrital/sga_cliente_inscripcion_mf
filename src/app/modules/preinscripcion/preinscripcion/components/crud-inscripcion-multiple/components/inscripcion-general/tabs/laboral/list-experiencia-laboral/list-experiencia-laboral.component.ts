@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Documento } from 'src/app/models/documento/documento';
@@ -87,7 +88,6 @@ export class ListExperienciaLaboralComponent implements OnInit {
             let estadoDoc = await <any>this.cargarEstadoDocumento(expLab.Soporte);
             expLab.Estado = estadoDoc.estadoObservacion;
             expLab.Observacion = estadoDoc.observacion;
-            console.log(this.data)
             this.dataSource = new MatTableDataSource(this.data)
           });
         } else if (response !== null && response.Data.Code === '404') {
@@ -130,17 +130,16 @@ export class ListExperienciaLaboralComponent implements OnInit {
     this.uid = 0;
     this.indexSelect = NaN;
     this.detalleExp = undefined;
-    this.selected = 0
+    this.irAIndexTab(0)
   }
 
   onEdit(event:any): void {
-    console.log(event)
     this.id = event.Id;
     this.uid = event.Nit;
     this.indexSelect = event.index;
     this.detalleExp = this.data[0];
     this.crud = true;
-    this.activetab();
+    this.irAIndexTab(1)
   }
 
   onCreate(): void {
@@ -148,15 +147,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
     this.crud = true;
     this.indexSelect = NaN;
     this.detalleExp = undefined;
-    this.activetab();
-  }
-
-  activetab(): void {
-    if(this.selected==0){
-      this.selected = 1
-    }else{
-      this.selected = 0
-    }
+    this.irAIndexTab(1)
   }
 
   onChange(event:any) {
@@ -165,7 +156,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
       this.indexSelect = NaN;
       this.detalleExp = undefined;
       this.loadData();
-      this.selected = 0
+      this.irAIndexTab(0)
     }
   }
 
@@ -214,5 +205,13 @@ export class ListExperienciaLaboralComponent implements OnInit {
         }
         this.loading = false;
       });
+  }
+
+  tabChanged(event: MatTabChangeEvent) {
+    this.irAIndexTab(event.index)
+  }
+
+  irAIndexTab(index:number){
+    this.selected = index
   }
 }

@@ -20,6 +20,7 @@ export class DialogoDocumentosComponent implements OnInit {
   loading!: boolean;
   observando!: boolean;
   isPDF: boolean = true;
+  validsafe: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<DialogoDocumentosComponent>,
@@ -54,7 +55,9 @@ export class DialogoDocumentosComponent implements OnInit {
     if (this.data.documento.Documento.changingThisBreaksApplicationSecurity) {
       this.documento = this.data.documento.Documento['changingThisBreaksApplicationSecurity'];
     } else {
-      this.documento = this.data.documento.Documento.url;
+      this.documento = this.sanitization.bypassSecurityTrustUrl(this.data.documento.Documento.url);
+      this.validsafe = this.documento.changingThisBreaksApplicationSecurity !== undefined;
+      console.log(this.validsafe)
       this.isPDF = this.data.documento.Documento.type == '.pdf';
       if(!this.isPDF) {
         this.documento = this.sanitization.bypassSecurityTrustUrl(this.documento);

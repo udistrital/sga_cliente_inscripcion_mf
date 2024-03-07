@@ -26,6 +26,8 @@ export class CrudDocumentoProgramaComponent implements OnInit {
   listed: number[] = [];
   isEdit: boolean = false;
 
+  
+
   @Input('documento_programa_id')
   set name(documento_programa_id: number) {
     this.documento_programa_id = documento_programa_id;

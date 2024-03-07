@@ -5,7 +5,7 @@
                 <mat-icon class="info-icon">info</mat-icon> &nbsp;
                 <span>{{ 'inscripcion.alerta_idiomas' | translate }}</span>
             </div>
-            <mat-tab-group fullWidth [selectedIndex]="selected">
+            <mat-tab-group fullWidth [selectedIndex]="selected" (selectedTabChange)="tabChanged($event)">
                 <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
                     <br />
                     <div class="d-flex justify-content-end">
@@ -88,9 +88,10 @@
                         [inscripcion_id]="inscripcion_id"
                         (eventChange)="onChange($event)"
                         (result)="getPercentage($event)"
-                        (crear_inscripcion)="crear_inscripcion($event)">
+                        (crear_inscripcion)="crear_inscripcion($event)"
+                        >
                     </ngx-crud-idiomas>
-                    <button (click)="activetab()" class="btn boton-primary btn-sm" style="max-height: 35px;">
+                    <button (click)="irAIndexTab(0)" class="btn boton-primary btn-sm" style="max-height: 35px;">
                         <mat-icon>arrow_back_ios</mat-icon>
                         <p class="mt-1">{{ 'GLOBAL.regresar' | translate }}</p>
                     </button>

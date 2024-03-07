@@ -5,7 +5,7 @@
                 <mat-icon class="info-icon">info</mat-icon> &nbsp;
                 <span>{{ 'inscripcion.alerta_formacion' | translate }}</span>
             </div>
-            <mat-tab-group fullWidth [selectedIndex]="selected">
+            <mat-tab-group fullWidth [selectedIndex]="selected" (selectedTabChange)="tabChanged($event)">
                 <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
                     <br />
                     <div class="d-flex justify-content-end">
@@ -94,9 +94,10 @@
                 <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
                     <ngx-crud-formacion-academica [info_formacion_academica_id]="uid" [info_proyecto_id]="pid"
                         [info_id_formacion]="id" [edit_status]="UpdateInfo" (eventChange)="onChange($event)"
-                        (result)="getPercentage($event)" (updateFormacion)="ngOnInit()">
+                        (result)="getPercentage($event)" (updateFormacion)="ngOnInit()"
+                        >
                     </ngx-crud-formacion-academica>
-                    <button (click)="activetab()" class="btn boton-primary btn-sm" style="max-height: 35px;">
+                    <button (click)="irAIndexTab(0)" class="btn boton-primary btn-sm" style="max-height: 35px;">
                         <mat-icon>arrow_back_ios</mat-icon>
                         <p class="mt-1">{{ 'GLOBAL.regresar' | translate }}</p>
                     </button>

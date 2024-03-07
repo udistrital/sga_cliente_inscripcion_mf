@@ -68,6 +68,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   @Output() eventChange = new EventEmitter();
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
+  
 
   info_descuento_academico: any;
   formDescuentoAcademico: any;
@@ -427,7 +428,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.loadDescuentoAcademico();
   }
 
   setPercentage(event:any) {
@@ -454,4 +454,5 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
       // this.result.emit(event);
     }
   }
+
 }

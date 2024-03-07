@@ -48,6 +48,8 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     this.loadProduccionAcademica();
   }
 
+  
+
   @Output()
   eventChange = new EventEmitter();
 
@@ -109,40 +111,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       this.construirForm();
     });
     this.loadOptions();
-    this.settings_authors = {
-      add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="nb-trash"></i>',
-        confirmDelete: true,
-      },
-      actions: {
-        edit: false,
-        position: 'right',
-      },
-      mode: 'external',
-      columns: {
-        Nombre: {
-          title: this.translate.instant('produccion_academica.nombre_autor'),
-          // type: 'string;',
-          valuePrepareFunction: (value:any) => {
-            return value;
-          },
-          width: '60%',
-        },
-        EstadoAutorProduccionId: {
-          title: this.translate.instant('produccion_academica.estado_autor'),
-          // type: 'string;',
-          valuePrepareFunction: (value:any) => {
-            return value.Nombre;
-          },
-          width: '30%',
-        },
-      },
-    };
     this.listService.findTipoDocumento();
     this.listService.findTipoContribuyente();
     this.loadLists();
@@ -368,39 +336,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
         });
       });
   }
-
-  /*
-  loadOptionsCiudadPublicacion(): void {
-    let ciudadPublicacion: Array<any> = [];
-      this.ubicacionesService.get('lugar/?query=TipoLugar.Id:2')
-        .subscribe(res => {
-          if (res !== null) {
-            ciudadPublicacion = <Array<Lugar>>res;
-          }
-          this.formProduccionAcademica.campos[this.getIndexForm('Ubicacion')].opciones = ciudadPublicacion;
-        },
-        (error: HttpErrorResponse) => {
-          Swal.fire({
-            icon:'error',
-            title: error.status + '',
-            text: this.translate.instant('ERROR.' + error.status),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-          });
-        });
-  }
-  */
-
-  /*
-  getIndexForm(nombre: String): number {
-    for (let index = 0; index < this.formProduccionAcademica.campos.length; index++) {
-      const element = this.formProduccionAcademica.campos[index];
-      if (element.nombre === nombre) {
-        return index
-      }
-    }
-    return 0;
-  }
-  */
 
   public loadProduccionAcademica(): void {
     if (this.produccion_academica_selected !== undefined) {
@@ -687,14 +622,12 @@ export class CrudProduccionAcademicaComponent implements OnInit {
           confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
         });
       } else {
-        console.log(this.info_produccion_academica);
         const caracteresEspeciales1: RegExp = /[\"\\\/\b\f]/g;  // pueden romper JSON string in api GO
         const caracteresEspeciales2: RegExp = /[\t\n\r]/g;  // pueden romper JSON string in api GO
         const multiespacio: RegExp = /\s\s+/g; // bonus: quitar muchos espacios juntos
         this.info_produccion_academica.Resumen.replace(caracteresEspeciales1,'');
         this.info_produccion_academica.Resumen.replace(caracteresEspeciales2,' '); // tabs y enter se reemplazan por espacio
         this.info_produccion_academica.Resumen.replace(multiespacio, ' ');
-        console.log(this.info_produccion_academica);
         const promises = [];
         if (event.ProduccionAcademica) {
           // Subir archivos y verificar los
@@ -793,7 +726,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       Swal.fire(opt)
         .then((willMake) => {
           if (willMake.value) {
-            console.log(infoTercero)
             infoTercero.Activo = false;
 
             this.sgaMidService.post("persona/guardar_autor", infoTercero).subscribe((res:any) => {
@@ -816,7 +748,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   validarFormNuevoAutor(event:any) {
     if (event.valid) {
       const formData = event.data.Autor;
-      console.log(event)
       this.createInfoAutor(formData).then(newAutor => {
         let d: any = newAutor
         this.autorSeleccionado = d;
