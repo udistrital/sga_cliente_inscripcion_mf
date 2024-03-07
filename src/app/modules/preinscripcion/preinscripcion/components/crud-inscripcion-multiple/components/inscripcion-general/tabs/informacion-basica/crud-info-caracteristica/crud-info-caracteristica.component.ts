@@ -507,6 +507,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
       }
     }
   }
+  
 
   setPercentage(event:any) {
     if (event > 1 || this.porcentaje > 1) {
