@@ -11,6 +11,7 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
+import { decrypt } from 'src/app/utils/util-encrypt';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -29,7 +30,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   solicituddescuento: any;
   listAlreadyUploaded: number[] = [];
   selected = 0
-  displayedColumns = ['tipo_documento', 'estado', 'observacion','acciones'];
+  displayedColumns = ['tipo_documento', 'estado', 'observacion', 'acciones'];
   dataSource!: MatTableDataSource<any>;
 
   @Input('persona_id')
@@ -75,7 +76,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         DescuentosDependenciaId: {
           title: this.translate.instant('GLOBAL.tipo_descuento_matricula'),
           width: '30%',
-          valuePrepareFunction: (value:any) => {
+          valuePrepareFunction: (value: any) => {
             return value.TipoDescuentoId.Nombre;
           },
         },
@@ -125,8 +126,9 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   }
 
   loadData(): void {
+    const id = decrypt(window.localStorage.getItem('persona_id'));
     this.sgaMidService.get('descuento_academico/descuentopersonaperiododependencia?' +
-      'PersonaId=' + Number(window.localStorage.getItem('persona_id')) + '&DependenciaId=' +
+      'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
       .subscribe((result: any) => {
         const r = <any>result.Data.Body[1];
@@ -134,10 +136,10 @@ export class ListDescuentoAcademicoComponent implements OnInit {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource()
-          
+
         } else {
           this.data = <Array<SolicitudDescuento>>r;
-          this.data.forEach(async (docDesc:any) => {
+          this.data.forEach(async (docDesc: any) => {
             let estadoDoc = await <any>this.cargarEstadoDocumento(docDesc["DocumentoId"]);
             this.listAlreadyUploaded.push(docDesc["DescuentosDependenciaId"].TipoDescuentoId.Id);
             docDesc["EstadoObservacion"] = estadoDoc.estadoObservacion;
@@ -181,7 +183,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     this.selected = 0
   }
 
-  onAction(event:any): void {
+  onAction(event: any): void {
     switch (event.action) {
       case 'open':
         this.onOpen(event);
@@ -195,7 +197,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     }
   }
 
-  onOpen(event:any) {
+  onOpen(event: any) {
     const filesToGet = [
       {
         Id: event.DocumentoId,
@@ -218,7 +220,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     );
   }
 
-  onEdit(event:any): void {
+  onEdit(event: any): void {
     if (event.Aprobado != true) {
       this.uid = event.Id;
       this.activetab();
@@ -235,7 +237,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     this.activetab();
   }
 
-  onDelete(event:any): void {
+  onDelete(event: any): void {
     let estado: string = event.EstadoObservacion;
     let esAprobado: boolean = estado === "Aprobado";
 
@@ -293,14 +295,14 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   }
 
   activetab(): void {
-    if(this.selected==0){
+    if (this.selected == 0) {
       this.selected = 1
-    }else{
+    } else {
       this.selected = 0
     }
   }
 
-  onChange(event:any) {
+  onChange(event: any) {
     console.log(event)
     if (event) {
       this.uid = 0;
@@ -309,10 +311,10 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     }
   }
 
-  itemselec(event:any): void {
+  itemselec(event: any): void {
   }
 
-  getPercentage(event:any) {
+  getPercentage(event: any) {
     this.percentage = event;
     this.result.emit(this.percentage);
   }

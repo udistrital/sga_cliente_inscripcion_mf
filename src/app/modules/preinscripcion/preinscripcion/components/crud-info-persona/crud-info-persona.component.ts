@@ -19,6 +19,7 @@ import { VideoModalComponent } from 'src/app/modules/components/video-modal.comp
 import { verifyHostBindings } from '@angular/compiler';
 import { validateLang } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
+import { encrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
   selector: 'ngx-crud-info-persona',
@@ -281,7 +282,9 @@ export class CrudInfoPersonaComponent implements OnInit {
         campo.deshabilitar = true;
       });
       window.localStorage.setItem('ente', response.tercero.Id);
-      window.localStorage.setItem('persona_id', response.tercero.Id);
+      const tercero_id = encrypt(response.tercero.Id.toString());
+      window.localStorage.setItem('persona_id', tercero_id);
+      //window.localStorage.setItem('persona_id', response.tercero.Id);
       this.info_persona_id = response.tercero.Id;
       sessionStorage.setItem('IdTercero', String(this.info_persona_id));
       this.setPercentage(1);
@@ -308,7 +311,9 @@ export class CrudInfoPersonaComponent implements OnInit {
       const r = <any>res
       if (r !== null && r.Type !== 'error') {
         window.localStorage.setItem('ente', r.Id);
-        window.localStorage.setItem('persona_id', r.Id);
+        const r_id = encrypt(r.Id.toString());
+        window.localStorage.setItem('persona_id', r_id);
+        //window.localStorage.setItem('persona_id', r.Id);
         this.info_persona_id = r.Id;
         sessionStorage.setItem('IdTercero', String(this.info_persona_id));
         this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
