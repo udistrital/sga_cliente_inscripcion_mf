@@ -83,13 +83,9 @@
                     </div> -->
                 </mat-tab>
                 <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
-                    <ngx-crud-idiomas
-                        [info_idioma_id]="uid"
-                        [inscripcion_id]="inscripcion_id"
-                        (eventChange)="onChange($event)"
-                        (result)="getPercentage($event)"
-                        (crear_inscripcion)="crear_inscripcion($event)"
-                        >
+                    <ngx-crud-idiomas [info_idioma_id]="uid" [inscripcion_id]="inscripcion_id"
+                        (eventChange)="onChange($event)" (result)="getPercentage($event)"
+                        (crear_inscripcion)="crear_inscripcion($event)">
                     </ngx-crud-idiomas>
                     <button (click)="irAIndexTab(0)" class="btn boton-primary btn-sm" style="max-height: 35px;">
                         <mat-icon>arrow_back_ios</mat-icon>

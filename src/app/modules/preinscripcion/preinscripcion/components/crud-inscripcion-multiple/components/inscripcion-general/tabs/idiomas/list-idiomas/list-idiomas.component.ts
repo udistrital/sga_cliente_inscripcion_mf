@@ -1,11 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { IdiomaService } from 'src/app/services/idioma.service';
 import { UserService } from 'src/app/services/users.service';
+import { CrudIdiomasComponent } from '../crud-idiomas/crud-idiomas.component';
 
 @Component({
   selector: 'ngx-list-idiomas',

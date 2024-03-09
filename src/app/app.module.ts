@@ -38,6 +38,9 @@ import { UtilidadesService } from './services/utilidades.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentoService } from './services/documento.service';
 import { ProduccionAcademicaService } from './services/produccion_academica.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SpinnerInterceptor } from './interceptors/snipper.interceptor';
+import { CustomizeButtonComponent } from './modules/components/customize-button/customize-button.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -45,7 +48,7 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     MatSnackBarModule,
@@ -92,6 +95,7 @@ export function createTranslateLoader(http: HttpClient) {
     UserService,
     UtilidadesService,
     ProduccionAcademicaService,
+    {provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi:true}
   ],
   bootstrap: [AppComponent]
 })

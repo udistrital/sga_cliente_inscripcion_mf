@@ -128,8 +128,8 @@ export class ListExperienciaLaboralComponent implements OnInit {
 
   ngOnInit() {
     this.uid = 0;
-    this.indexSelect = NaN;
-    this.detalleExp = undefined;
+    this.indexSelect = 0;
+    this.detalleExp = [];
     this.irAIndexTab(0)
   }
 
@@ -145,16 +145,16 @@ export class ListExperienciaLaboralComponent implements OnInit {
   onCreate(): void {
     this.uid = 0;
     this.crud = true;
-    this.indexSelect = NaN;
-    this.detalleExp = undefined;
+    this.indexSelect = 0;
+    this.detalleExp = [];
     this.irAIndexTab(1)
   }
 
   onChange(event:any) {
     if (event) {
       this.uid = 0;
-      this.indexSelect = NaN;
-      this.detalleExp = undefined;
+      this.indexSelect = 0;
+      this.detalleExp = [];
       this.loadData();
       this.irAIndexTab(0)
     }

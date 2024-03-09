@@ -1,8 +1,5 @@
-<div class="content-container" [class.content-loading]="loading">
-    <mat-spinner *ngIf="loading" class="spinner-overlay"></mat-spinner>
-    <div class="my-3">
-        <ngx-dinamicform [normalform]="formUniversidad" [modeloData]="info_universidad" (result)="validarForm($event)"
-            [clean]="clean" (percentage)="setPercentage($event)">
-        </ngx-dinamicform>
-    </div>
+<div class="my-3">
+    <ngx-dinamicform [normalform]="formUniversidad" [modeloData]="info_universidad" (result)="validarForm($event)"
+        [clean]="clean" (percentage)="setPercentage($event)">
+    </ngx-dinamicform>
 </div>

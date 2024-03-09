@@ -30,7 +30,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   solicituddescuento: any;
   listAlreadyUploaded: number[] = [];
   selected = 0
-  displayedColumns = ['tipo_documento', 'estado', 'observacion','acciones'];
+  displayedColumns = ['tipo_documento', 'estado', 'observacion', 'acciones'];
   dataSource!: MatTableDataSource<any>;
 
   @Input('persona_id')
@@ -76,7 +76,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         DescuentosDependenciaId: {
           title: this.translate.instant('GLOBAL.tipo_descuento_matricula'),
           width: '30%',
-          valuePrepareFunction: (value:any) => {
+          valuePrepareFunction: (value: any) => {
             return value.TipoDescuentoId.Nombre;
           },
         },
@@ -135,10 +135,10 @@ export class ListDescuentoAcademicoComponent implements OnInit {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource()
-          
+
         } else {
           this.data = <Array<SolicitudDescuento>>r;
-          this.data.forEach(async (docDesc:any) => {
+          this.data.forEach(async (docDesc: any) => {
             let estadoDoc = await <any>this.cargarEstadoDocumento(docDesc["DocumentoId"]);
             this.listAlreadyUploaded.push(docDesc["DescuentosDependenciaId"].TipoDescuentoId.Id);
             docDesc["EstadoObservacion"] = estadoDoc.estadoObservacion;
@@ -181,7 +181,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     this.irAIndexTab(0)
   }
 
-  onOpen(event:any) {
+  onOpen(event: any) {
     const filesToGet = [
       {
         Id: event.DocumentoId,
@@ -204,7 +204,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     );
   }
 
-  onEdit(event:any): void {
+  onEdit(event: any): void {
     if (event.Aprobado != true) {
       this.uid = event.Id;
       this.irAIndexTab(1)
@@ -221,7 +221,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     this.irAIndexTab(1)
   }
 
-  onDelete(event:any): void {
+  onDelete(event: any): void {
     let estado: string = event.EstadoObservacion;
     let esAprobado: boolean = estado === "Aprobado";
 
@@ -278,7 +278,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     }
   }
 
-  onChange(event:any) {
+  onChange(event: any) {
     if (event) {
       this.uid = 0;
       this.loadData();
@@ -286,10 +286,10 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     }
   }
 
-  itemselec(event:any): void {
+  itemselec(event: any): void {
   }
 
-  getPercentage(event:any) {
+  getPercentage(event: any) {
     this.percentage = event;
     this.result.emit(this.percentage);
   }
@@ -298,7 +298,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     this.irAIndexTab(event.index)
   }
 
-  irAIndexTab(index:number){
+  irAIndexTab(index: number) {
     this.selected = index
   }
 }

@@ -67,13 +67,20 @@ import { ViewPropuestaGradoComponent } from './preinscripcion/components/crud-in
 import { PerfilComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/perfil/perfil.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { ViewInscripcionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/perfil/view-inscripcion/view-inscripcion.component';
-
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { SpinnerComponent } from '../components/spinner/spinner.component';
+import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
+import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
+import { TransferenciaComponent } from '../transferencia/transferencia.component';
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
 }
 
 @NgModule({
   declarations: [
+    TransferenciaComponent,
+    CustomizeButtonComponent,
+    DialogoDocumentosTransferenciasComponent,
     CrudInfoPersonaComponent,
     PreinscripcionComponent,
     DynamicFormComponent,
@@ -114,9 +121,11 @@ export function createTranslateLoader(http: HttpClient) {
     ViewProduccionAcademicaComponent,
     ViewPropuestaGradoComponent,
     PerfilComponent,
-    ViewInscripcionComponent
+    ViewInscripcionComponent,
+    SpinnerComponent
   ],
   imports: [
+    PdfViewerModule,
     MatExpansionModule,
     MatTooltipModule,
     NgxExtendedPdfViewerModule,
