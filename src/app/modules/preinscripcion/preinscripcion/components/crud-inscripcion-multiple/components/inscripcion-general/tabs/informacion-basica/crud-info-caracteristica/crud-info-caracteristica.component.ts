@@ -353,7 +353,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar')).then(() => {
                 this.loadInfoCaracteristica();
               });
-              this.popUpManager.showToast('info', this.translate.instant('inscripcion.cambiar_tab'));
             },
               (error: HttpErrorResponse) => {
                 this.loading = false;
@@ -398,7 +397,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
                 this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.guardar')).then(() => {
                   this.loadInfoCaracteristica();
                 });
-                this.popUpManager.showToast('info', this.translate.instant('inscripcion.cambiar_tab'));
               }
               this.loading = false;
             },
@@ -507,7 +505,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
       }
     }
   }
-  
 
   setPercentage(event:any) {
     if (event > 1 || this.porcentaje > 1) {

@@ -1,11 +1,8 @@
-<div class="content-container" [class.content-loading]="loading">
-    <mat-spinner *ngIf="loading" class="spinner-overlay"></mat-spinner>
-    <div class="my-3">
-        <div *ngIf="!denied_acces">
-            <ngx-dinamicform [normalform]="formInformacionContacto" [modeloData]="info_informacion_contacto"
-                (result)="validarForm($event)" [clean]="clean" (interlaced)="getSeleccion($event)"
-                (percentage)="setPercentage($event)">
-            </ngx-dinamicform>
-        </div>
+<div class="my-3">
+    <div *ngIf="!denied_acces">
+        <ngx-dinamicform [normalform]="formInformacionContacto" [modeloData]="info_informacion_contacto"
+            (result)="validarForm($event)" [clean]="clean" (interlaced)="getSeleccion($event)"
+            (percentage)="setPercentage($event)">
+        </ngx-dinamicform>
     </div>
 </div>

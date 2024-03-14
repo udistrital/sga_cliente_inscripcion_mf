@@ -1,1 +1,41 @@
-<p>transferencia works!</p>
+<ngx-spinner></ngx-spinner>
+<div>
+    <mat-card-header>
+        {{ 'inscripcion.solicitud_transferencia' | translate }}
+    </mat-card-header>
+    <mat-card-content>
+        <fieldset [ngClass]="{'fieldseter':true} " *ngIf="listadoSolicitudes">
+            <legend> {{ 'inscripcion.listado_solicitudes' | translate }} </legend>
+            <!-- <ng2-smart-table *ngIf="listadoSolicitudes" [settings]="settings" [source]="dataSource">
+            </ng2-smart-table> -->
+            <hr width="0%">
+            <div class="text-center" *ngIf="actions">
+                <button *ngIf="listadoSolicitudes" mat-button type="button" (click)="descargarNormativa()">
+                    {{ 'inscripcion.btn_descargar_normativa' | translate }}
+                </button>
+                <button *ngIf="listadoSolicitudes" mat-button type="button" (click)="nuevaSolicitud()">
+                    {{ 'inscripcion.btn_nueva_solicitud' | translate }}
+                </button>
+            </div>
+        </fieldset>
+
+        <!-- (eventChange)="onChange($event)" -->
+        <ngx-crud-info-persona *ngIf="!listadoSolicitudes" [info_persona_id]="uid"
+            (success)="loadInfoPersona()">
+        </ngx-crud-info-persona>
+        <ngx-dinamicform *ngIf="!listadoSolicitudes" [modeloData]="dataTransferencia" [normalform]="formTransferencia"
+            (interlaced)="seleccion($event)" (result)="validarForm($event)">
+        </ngx-dinamicform>
+
+        <div class="container-button-column" *ngIf="!listadoSolicitudes">
+            <button mat-button type="button" (click)="clean(); listadoSolicitudes = true">
+                {{ 'GLOBAL.cancelar' | translate }}
+            </button>
+            <br><br><br>
+            <button class="btn-barcode btn btn-light" (click)="generarRecibo()" *ngIf="recibo">
+                {{ 'derechos_pecuniarios.generar_recibo' | translate }}
+                <i class="fa fa-barcode fa-5x"></i>
+            </button>
+        </div>
+    </mat-card-content>
+</div>
