@@ -531,6 +531,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
         this.formInfoCaracteristica.campos[this.getIndexForm('GrupoSanguineo')].opciones = list.listGrupoSanguineo[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('Rh')].opciones = list.listFactorRh[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('EstadoCivil')].opciones = list.listEstadoCivil[0];
+        console.log(list.listEstadoCivil[0])
         this.formInfoCaracteristica.campos[this.getIndexForm('IdentidadGenero')].opciones = list.listIdentidadGenero[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('OrientacionSexual')].opciones = list.listOrientacionSexual[0];
       },

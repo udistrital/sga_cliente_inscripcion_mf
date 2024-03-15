@@ -28,7 +28,6 @@ import { VideoModalComponent } from 'src/app/modules/components/video-modal.comp
   styleUrls: ['./inscripcion-general.component.scss']
 })
 export class InscripcionGeneralComponent implements OnInit, OnChanges {
-  toasterService: any;
   hide_header_labels!: boolean;
   basic_info_button: boolean = false;
   formacion_academica_button: boolean = false;
