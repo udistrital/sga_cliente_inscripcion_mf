@@ -166,11 +166,11 @@
       [animated]="true">
     </ngb-progressbar>
     <br>
-    <div class="info my-3" *ngIf="imprimir">
+    <div class="info my-3" *ngIf="estado_inscripcion=='INSCRITO'">
       <mat-icon class="info-icon">info</mat-icon> &nbsp;
       <span>{{ 'inscripcion.info_impresion_auto' | translate }}</span>
     </div>
-    <div class="info-comprobante" *ngIf="imprimir">
+    <div class="info-comprobante" *ngIf="estado_inscripcion=='INSCRITO'">
       {{ 'inscripcion.info_comprobante' | translate }}
     </div>
     <br>
@@ -216,10 +216,10 @@
         mat-raised-button color="primary" (click)="notificar_observaciones_aspirante()">
         {{ 'admision.notificar_observaciones' | translate }}
       </button>
-      <button *ngIf="imprimir" class="boton-primary" mat-raised-button color="primary"
+      <button *ngIf="estado_inscripcion=='INSCRITO'" class="boton-primary" mat-raised-button color="primary"
         (click)="editar($event,'salir_preinscripcion')">{{
         'GLOBAL.regresar' | translate }}</button>
-      <button *ngIf="imprimir" class="boton-primary" mat-raised-button color="link"
+      <button *ngIf="estado_inscripcion=='INSCRITO'" class="boton-primary" mat-raised-button color="link"
         (click)="descargar_comprobante_inscription()">{{
         'inscripcion.generar_comprobante' | translate }}</button>
     </div>

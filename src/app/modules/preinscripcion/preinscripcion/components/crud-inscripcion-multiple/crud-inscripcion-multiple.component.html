@@ -137,11 +137,11 @@
                 <fieldset [ngClass]="{'fieldseter':true}">
                     <legend>{{ 'inscripcion.opciones_usuario' | translate }}</legend>
 
-                    <div class="">
-                        <mat-card-content class="icon-form text-center">
-                            <b>{{ 'inscripcion.generar_recibo' | translate }}</b>
-                            <button class="recibo-boton" (click)="generar_recibo()">	<mat-icon class="recibo-icon">receipt</mat-icon></button>
-                        </mat-card-content>
+                    <div class="center">
+                        <button class="btn btn-light border" style="display: grid;" (click)="generarRecibo()">
+                            {{ 'inscripcion.generar_recibo' | translate }}
+                            <i class="fa fa-barcode fa-5x"></i>
+                        </button>
                     </div>
 
                 </fieldset>

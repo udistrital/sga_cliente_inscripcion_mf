@@ -7,11 +7,12 @@ import { Subject } from 'rxjs';
 
     isLoading$ = new Subject<boolean>();
 
-    show():void{
-        this.isLoading$.next(true)
+    show(): void {
+        setTimeout(() => this.isLoading$.next(true));
     }
 
-    hide():void{
-        this.isLoading$.next(false)
+    hide(): void {
+        setTimeout(() => this.isLoading$.next(false));
     }
+
 }

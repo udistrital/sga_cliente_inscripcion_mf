@@ -6,7 +6,7 @@ export const FORM_TRANSFERENCIA_INTERNA = {
     campos: [
         {
             etiqueta: 'select',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'Periodo',
             label_i18n: 'periodo_preinscripcion',
             placeholder_i18n: 'placeholder_periodo_preinscripcion',
@@ -18,7 +18,7 @@ export const FORM_TRANSFERENCIA_INTERNA = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'CalendarioAcademico',
             label_i18n: 'calendario_academico',
             placeholder_i18n: 'placeholder_calendario_academico',
@@ -30,7 +30,7 @@ export const FORM_TRANSFERENCIA_INTERNA = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'TipoInscripcion',
             label_i18n: 'tipo_inscripcion',
             placeholder_i18n: 'placeholder_tipo_inscripcion',
@@ -43,7 +43,7 @@ export const FORM_TRANSFERENCIA_INTERNA = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'ProyectoCurricular',
             label_i18n: 'proyecto_curricular',
             placeholder_i18n: 'proyecto_curricular',
@@ -66,7 +66,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
     campos: [
         {
             etiqueta: 'input',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'UniversidadOrigen',
             label_i18n: 'universidad_origen',
             placeholder_i18n: 'placeholder_universidad_origen',
@@ -76,7 +76,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'ProgramaOrigen',
             label_i18n: 'programa_origen',
             placeholder_i18n: 'placeholder_programa_origen',
@@ -88,7 +88,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'input',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'ProgramaOrigenInput',
             label_i18n: 'programa_origen',
             placeholder_i18n: 'placeholder_programa_origen',
@@ -98,7 +98,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'CodigoEstudiante',
             label_i18n: 'codigo_estudiante',
             placeholder_i18n: 'codigo_estudiante',
@@ -110,7 +110,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'input',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'CodigoEstudianteExterno',
             label_i18n: 'codigo_estudiante',
             placeholder_i18n: 'codigo_estudiante',
@@ -140,7 +140,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'checkbox',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'Cancelo',
             label_i18n: 'cancelo',
             requerido: false,
@@ -149,7 +149,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'ProgramaDestino',
             label_i18n: 'programa_destino',
             placeholder_i18n: 'placeholder_programa_destino',
@@ -161,7 +161,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'textarea',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'MotivoCambio',
             label_i18n: 'motivo_cambio',
             placeholder_i18n: 'placeholder_motivo_cambio',
@@ -186,7 +186,7 @@ export const FORM_SOLICITUD_TRANSFERENCIA = {
         },
         {
             etiqueta: 'checkbox',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'Acuerdo',
             label_i18n: 'acuerdo',
             requerido: false,
@@ -229,7 +229,7 @@ export const FORM_RESPUESTA_SOLICITUD = {
         },
         {
             etiqueta: 'textarea',
-            claseGrid: 'col-sm-12 col-xs-12',
+            claseGrid: 'col-sm-6 col-xs-6',
             nombre: 'Observacion',
             label_i18n: 'comentarios',
             placeholder_i18n: 'placeholder_comentarios',

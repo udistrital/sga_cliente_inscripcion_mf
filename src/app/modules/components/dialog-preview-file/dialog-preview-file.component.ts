@@ -24,6 +24,7 @@ export class DialogPreviewFileComponent implements OnInit {
 
   ngOnInit() {
     this.ulrfileSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.data.url);
+    console.log(this.ulrfileSafe)
     this.validsafe = this.ulrfileSafe.changingThisBreaksApplicationSecurity !== undefined;
     if (this.validsafe) {
       this.title = this.data.title || "";
