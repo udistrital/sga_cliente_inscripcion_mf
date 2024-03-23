@@ -35,7 +35,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean = true;
   percentage!: number;
 
   selected = 0;
@@ -52,7 +51,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
     });
     this.persona_id = this.userService.getPersonaId();
     //this.loadData();
-    this.loading = true;
   }
 
   getPercentage(event:any) {
@@ -66,11 +64,9 @@ export class ListFormacionAcademicaComponent implements OnInit {
   }
 
   loadData(): void {
-    this.loading = true;
     this.sgaMidService.get('formacion_academica?Id=' + this.persona_id)
     .subscribe(response => {
       if (response !== null && response.Response.Code === '404') {
-        this.loading = false;
         this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
       } else if (response !== null && response.Response.Code === '200') {
         if (Object.keys(response.Response.Body[0]).length > 0) {
@@ -92,19 +88,16 @@ export class ListFormacionAcademicaComponent implements OnInit {
           this.getPercentage(1);
           this.dataSource = new MatTableDataSource(dataInfo);
         });
-        this.loading = false;
       } else {
         this.getPercentage(0);
         this.dataSource = new MatTableDataSource();
         this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
       }
       } else {
-        this.loading = false;
         this.popUpManager.showErrorToast(this.translate.instant('ERROR.400'));
       }
     },
     (error: HttpErrorResponse) => {
-      this.loading = false;
       this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
     });
   }
@@ -164,17 +157,14 @@ export class ListFormacionAcademicaComponent implements OnInit {
     };
     Swal.fire(opt)
       .then((willDelete) => {
-        this.loading = true;
         if (willDelete.value) {
           this.sgaMidService.delete('formacion_academica', event).subscribe(res => {
             if (res !== null) {
               this.loadData();
                 this.snackBar.open(this.translate.instant('GLOBAL.confirmarEliminar'), '', { duration: 3000, panelClass: ['info-snackbar'] })
             }
-            this.loading = false;
           },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               Swal.fire({
                 icon: 'error',
                 title: error.status + '',
@@ -185,7 +175,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
               });
             });
         }
-        this.loading = false;
       });
   }
 

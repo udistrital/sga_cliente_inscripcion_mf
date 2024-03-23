@@ -37,7 +37,6 @@ export class TransferenciaComponent implements OnInit {
   uid: any;
   sub: any;
   process: string = '';
-  loading!: boolean;
   info_info_persona!: InfoPersona;
   inscripcionProjects!: any[];
   proyectosCurriculares!: any[];
@@ -112,7 +111,6 @@ export class TransferenciaComponent implements OnInit {
       this.actions = (this.process === 'my');
 
       this.createTable(this.process);
-        this.loading = true;
         await this.loadDataTercero(this.process).then(e => {
           Swal.fire({
             icon: 'warning',
@@ -135,7 +133,6 @@ export class TransferenciaComponent implements OnInit {
         }
       });
     } else {
-      this.loading = false;
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
   }
@@ -231,7 +228,6 @@ export class TransferenciaComponent implements OnInit {
 
   async loadDataAll(process: any) {
     await this.cargarPeriodo();
-    this.loading = true;
 
     this.sgaMidService.get('transferencia/solicitudes')
       .subscribe(response => {
@@ -269,8 +265,6 @@ export class TransferenciaComponent implements OnInit {
                   class: "btn btn-primary"
                 }
 
-                this.loading = true;
-
                 dataInfo.push(element);
 
                 console.log(dataInfo)
@@ -279,39 +273,31 @@ export class TransferenciaComponent implements OnInit {
 
                 // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
 
-                this.loading = false;
               },
               error => {
-                this.loading = false;
                 this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
               },
             );
           });
         }
-        this.loading = false;
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
         });
   }
 
   async loadDataTercero(process: any) {
     await this.cargarPeriodo();
-    this.loading = true;
 
     this.sgaMidService.get('transferencia/estado_recibos/' + this.uid)
       .subscribe(response => {
         if (response !== null && response.Response.Code === '400') {
           this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
-          this.loading = false;
         } else if ((response != null && response.Response.Code === '404') || response.Response.Body.length == 0) {
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
-          this.loading = false;
         } else {
           const inscripciones = <Array<any>>response.Response.Body;
           const dataInfo = <Array<any>>[];
-          this.loading = true;
           inscripciones.forEach(element => {
             this.projectService.get('proyecto_academico_institucion/' + element.Programa).subscribe(
               res => {
@@ -366,11 +352,8 @@ export class TransferenciaComponent implements OnInit {
                 console.log(dataInfo)
                 this.dataSource = new MatTableDataSource(dataInfo)
                 // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
-
-                this.loading = false;
               },
               error => {
-                this.loading = false;
                 this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
               },
             );
@@ -378,7 +361,6 @@ export class TransferenciaComponent implements OnInit {
         }
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
         });
   }
@@ -389,12 +371,11 @@ export class TransferenciaComponent implements OnInit {
 
   async nuevaSolicitud() {
     this.listadoSolicitudes = false;
-    await this.loadPeriodo().catch(e => this.loading = false);
+    await this.loadPeriodo();
     this.construirForm();
   }
 
   cargarPeriodo() {
-    this.loading = true;
     return new Promise((resolve, reject) => {
       this.parametrosService.get('periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=1')
         .subscribe(res => {
@@ -410,7 +391,6 @@ export class TransferenciaComponent implements OnInit {
           }
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             reject([]);
           });
     });
@@ -418,7 +398,6 @@ export class TransferenciaComponent implements OnInit {
 
   loadPeriodo() {
     return new Promise((resolve, reject) => {
-      this.loading = true;
       this.sgaMidService.get('transferencia/consultar_periodo').subscribe(
         (response: any) => {
           if (response.Success) {
@@ -431,7 +410,6 @@ export class TransferenciaComponent implements OnInit {
                 }
               }
             });
-            this.loading = false;
             resolve(response.Data)
           } else {
 
@@ -466,7 +444,6 @@ export class TransferenciaComponent implements OnInit {
     if (event.nombre === 'CalendarioAcademico' && !this.recibo && event.valor != null) {
 
       let parametros = await this.loadParams(this.dataTransferencia.CalendarioAcademico!.Id).catch(e => {
-        this.loading = false;
         return false;
       }) as any;
 
@@ -524,16 +501,12 @@ export class TransferenciaComponent implements OnInit {
         }
       });
     }
-
-    this.loading = false
   }
 
   loadParams(calendarioId: any) {
     return new Promise((resolve, reject) => {
-      this.loading = true;
       this.sgaMidService.get('transferencia/consultar_parametros/' + calendarioId + '/' + this.uid).subscribe(
         (response: any) => {
-          this.loading = false;
           if (response.Success) {
             resolve(response);
           } else {
@@ -547,7 +520,6 @@ export class TransferenciaComponent implements OnInit {
         },
         error => {
           this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
-          this.loading = false;
           reject(error);
         },
       );
@@ -566,7 +538,6 @@ export class TransferenciaComponent implements OnInit {
     this.popUpManager.showConfirmAlert(this.translate.instant('inscripcion.seguro_inscribirse')).then(
       async ok => {
         if (ok.value) {
-          this.loading = true;
           if (this.info_info_persona === undefined) {
             this.sgaMidService.get('persona/consultar_persona/' + this.uid)
               .subscribe(async res => {
@@ -578,7 +549,6 @@ export class TransferenciaComponent implements OnInit {
                 }
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon: 'error',
                     title: error.status + '',
@@ -590,7 +560,6 @@ export class TransferenciaComponent implements OnInit {
                 });
           } else {
             await this.generar_inscripcion();
-            this.loading = false;
           }
         }
       },
@@ -614,7 +583,6 @@ export class TransferenciaComponent implements OnInit {
         FechaPago: '',
       };
 
-      this.loading = true;
       let periodo = localStorage.getItem('IdPeriodo');
       this.sgaMidService.get('consulta_calendario_proyecto/nivel/' + this.dataTransferencia.TipoInscripcion!.NivelId + '/periodo/' + periodo).subscribe(
         (response: any[]) => {
@@ -633,33 +601,27 @@ export class TransferenciaComponent implements OnInit {
                       this.clean();
 
                       this.loadDataTercero(this.process);
-                      this.loading = false;
 
                       resolve(response);
                       this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
                     } else if (response.Code === '204') {
-                      this.loading = false;
                       reject([]);
                       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
                     } else if (response.Code === '400') {
-                      this.loading = false;
                       reject([]);
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     }
                   },
                   (error: HttpErrorResponse) => {
-                    this.loading = false;
                     this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
                     reject([]);
                   },
                 );
               }
             });
-            this.loading = false;
           }
         },
         error => {
-          this.loading = false;
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
           reject([]);
         },

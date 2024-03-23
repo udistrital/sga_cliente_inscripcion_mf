@@ -36,7 +36,6 @@ export class ListService {
 
   }
 
-  loading: boolean = false;
 
   public findGenero() {
     return new Promise<void>((resolve, reject) => {
@@ -659,7 +658,6 @@ export class ListService {
                 },
               );
           }
-          // this.loading = false;
         },
       );
     })

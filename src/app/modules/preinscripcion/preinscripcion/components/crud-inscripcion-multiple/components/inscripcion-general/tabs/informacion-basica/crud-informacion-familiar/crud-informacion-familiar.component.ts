@@ -53,7 +53,6 @@ export class CrudInformacionFamiliarComponent implements OnInit {
   datosPost: any;
   datosGet: any;
   datosPut: any;
-  loading: boolean = false;
 
   constructor(
     private popUpManager: PopUpManager,
@@ -70,7 +69,6 @@ export class CrudInformacionFamiliarComponent implements OnInit {
       this.construirForm();
     });
     this.loadOptionsParentesco();
-    this.loading = false;
   }
 
   construirForm() {
@@ -103,7 +101,6 @@ export class CrudInformacionFamiliarComponent implements OnInit {
   }
 
   public loadInfoPersona(): void {
-    this.loading = true;
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
         this.sgaMidService.get('persona/consultar_familiar/' + this.info_persona_id)
@@ -114,19 +111,15 @@ export class CrudInformacionFamiliarComponent implements OnInit {
             //MENSAJE DE ALGO ANDA MAL
           } else if (res !== null && res.Response.Code == '200'){
             this.info_info_familiar = <any>res.Response.Body[1];
-            this.loading = false;
           }
-          this.loading = false;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
           });
     } else {
       this.info_info_familiar = undefined;
       this.clean = !this.clean;
       this.denied_acces = false; // no muestra el formulario a menos que se le pase un id del ente info_caracteristica_id
-      this.loading = false;
     }
   }
 
@@ -137,18 +130,15 @@ export class CrudInformacionFamiliarComponent implements OnInit {
   }
 
   loadOptionsParentesco(): void {
-    this.loading = true;
     let parentescos: Array<any> = [];
     this.tercerosService.get('tipo_parentesco?limit=0&query=Activo:true')
       .subscribe(res => {
         if (res !== null) {
           parentescos = <Array<TipoParentesco>>res;
         }
-        this.loading = false;
         this.formInformacionFamiliar.campos[ this.getIndexForm('Parentesco') ].opciones = parentescos;
         this.formInformacionFamiliar.campos[ this.getIndexForm('ParentescoAlterno') ].opciones = parentescos;
       });
-      this.loading = false;
   }
 
   public validarForm(event: any) {
@@ -309,9 +299,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           //FUNCION PUT
-          this.loading = true;
           this.sgaMidService.put('persona/info_familiar', info_familiar).subscribe(
             (res: any) => {
               if(res !== null && res.Response.Code == '404'){
@@ -319,14 +307,11 @@ export class CrudInformacionFamiliarComponent implements OnInit {
               } else if (res !== null && res.Response.Code == '400'){
                 this.popUpManager.showAlert('', this.translate.instant('inscripcion.error_update'));
               } else if (res !== null && res.Response.Code == '200'){
-                this.loading = false;
                 this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar'));
                 this.loadInfoPersona();
               }
-              this.loading = false;
             },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               Swal.fire({
                 icon:'error',
                 title: error.status + '',
@@ -342,7 +327,6 @@ export class CrudInformacionFamiliarComponent implements OnInit {
   }
 
   createInfoFamiliar(info_familiar: any){
-    this.loading = true;
     this.sgaMidService.post('inscripciones/post_informacion_familiar', info_familiar)
       .subscribe((res: any) => {
         if (res.Type === 'error') {
@@ -357,9 +341,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
           } else {
             this.snackBar.open(this.translate.instant('informacion_familiar.informacion_familiar_actualizada'), '', { duration: 3000, panelClass: ['success-snackbar'] });
           }
-          this.loading = false;
       }, () => {
-        this.loading = false;
         this.snackBar.open(this.translate.instant('informacion_familiar.informacion_familiar_no_actualizada'), '', { duration: 3000, panelClass: ['error-snackbar'] });
       });
   }
