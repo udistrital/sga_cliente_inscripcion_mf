@@ -46,7 +46,6 @@
         <ngx-dinamicform [normalform]="formTransferencia" [modeloData]="dataTransferencia"
             (result)="validarForm($event)">
             <div *ngIf="solicitudCreada && mostrarDocumento" class="files-container">
-                <!-- (loading)="changeLoading($event)" -->
                 <ngx-download-file-nuxeo [idDoc]="file.id" [label]="file.label">
                 </ngx-download-file-nuxeo>
             </div>

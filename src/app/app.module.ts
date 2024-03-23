@@ -39,7 +39,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentoService } from './services/documento.service';
 import { ProduccionAcademicaService } from './services/produccion_academica.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SpinnerInterceptor } from './interceptors/snipper.interceptor';
+import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -74,8 +74,8 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    HttpClientModule
-    
+    HttpClientModule,
+    SpinnerUtilModule
   ],
   providers: [
     TranslateService,
@@ -106,7 +106,7 @@ export function createTranslateLoader(http: HttpClient) {
     UserService,
     UtilidadesService,
     ProduccionAcademicaService,
-    {provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi:true},
+    {provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi:true},
     { provide: MatDialogRef, useValue: {} },
     { 
       provide: MAT_TOOLTIP_SCROLL_STRATEGY,

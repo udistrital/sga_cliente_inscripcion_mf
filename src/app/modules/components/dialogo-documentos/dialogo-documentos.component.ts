@@ -17,7 +17,6 @@ export class DialogoDocumentosComponent implements OnInit {
   documento: any;
   nombreDocumento: string = "";
   verEstado: string = "";
-  loading!: boolean;
   observando!: boolean;
   isPDF: boolean = true;
   validsafe: boolean = false;
@@ -36,7 +35,6 @@ export class DialogoDocumentosComponent implements OnInit {
 
   ngOnInit() {
     this.isPDF = true;
-    this.loading = true;
     this.tabName = this.data.documento.tabName || "";
     if(this.data.documento.hasOwnProperty('nombreDocumento')){
       this.nombreDocumento = this.data.documento.nombreDocumento;
@@ -60,7 +58,6 @@ export class DialogoDocumentosComponent implements OnInit {
       if(!this.isPDF) {
         this.documento = this.sanitization.bypassSecurityTrustUrl(this.documento);
       }
-      this.loading = false;
     }
     this.observando = this.data.documento.observando ? true : false;
     this.revisionForm.setValue({
@@ -115,7 +112,6 @@ export class DialogoDocumentosComponent implements OnInit {
   }
 
   docCargado() {
-    this.loading = false;
   }
 
 }

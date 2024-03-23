@@ -35,7 +35,6 @@ export class CrudPreguntasComponent implements OnInit {
   temp: any;
   clean!: boolean;
   percentage!: number;
-  loading: boolean = false;
 
   constructor(
     private translate: TranslateService,
@@ -116,7 +115,6 @@ export class CrudPreguntasComponent implements OnInit {
     };
     Swal.fire(opt)
       .then((willDelete) => {
-        this.loading = true;
         if (willDelete.value) {
           this.info_universidad = <any>infoUniversidad;
           this.sgaMidService.post('inscripciones/info_complementaria_universidad', this.info_universidad)
@@ -130,10 +128,8 @@ export class CrudPreguntasComponent implements OnInit {
               } else {
                 this.snackBar.open(this.translate.instant('universidad_form.universidad_form_no_registrado'), '', { duration: 3000, panelClass: ['error-snackbar'] })
               }
-              this.loading = false;
             },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               this.snackBar.open(this.translate.instant('universidad_form.universidad_form_no_registrado'), '', { duration: 3000, panelClass: ['error-snackbar'] })
             });
           }

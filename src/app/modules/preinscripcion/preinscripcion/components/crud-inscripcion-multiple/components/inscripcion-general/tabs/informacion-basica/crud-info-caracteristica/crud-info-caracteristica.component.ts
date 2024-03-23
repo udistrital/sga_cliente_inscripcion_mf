@@ -53,7 +53,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
   mensaje_poblacion_discapcidades: boolean = false;
   clean!: boolean;
   denied_acces: boolean = false;
-  loading: boolean;
 
   constructor(
     private popUpManager: PopUpManager,
@@ -71,7 +70,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loading = true;
     this.listService.findPais();
     this.listService.findTipoPoblacion();
     this.listService.findTipoDiscapacidad();
@@ -144,7 +142,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
   }
 
   loadOptionsDepartamentoNacimiento(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const departamentoNacimiento: Array<any> = [];
     if (this.paisSeleccionado) {
@@ -157,11 +154,9 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
                 departamentoNacimiento.push(consultaHijos[i].LugarHijoId);
               }
             }
-            this.loading = false;
             this.formInfoCaracteristica.campos[this.getIndexForm('DepartamentoNacimiento')].opciones = departamentoNacimiento;
           },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -172,13 +167,10 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
           });
-    } else {
-      this.loading = false;
     }
   }
 
   loadOptionsCiudadNacimiento(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const ciudadNacimiento: Array<any> = [];
     if (this.departamentoSeleccionado) {
@@ -191,11 +183,9 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
               ciudadNacimiento.push(consultaHijos[i].LugarHijoId);
             }
           }
-          this.loading = false;
           this.formInfoCaracteristica.campos[this.getIndexForm('Lugar')].opciones = ciudadNacimiento;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -206,8 +196,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
           });
-    } else {
-      this.loading = false;
     }
   }
 
@@ -223,13 +211,11 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
 
   cargarDocs(files:any) {
     return new Promise((resolve, reject) => {
-      this.loading = true;
       files.forEach((file:any) => {
         const filesll = []
         filesll.push(file)
         this.newNuxeoService.get(filesll).subscribe(
           response => {
-            this.loading = true;
             const filesResponse = <Array<any>>response;
             if (Object.keys(filesResponse).length === filesll.length) {
               filesResponse.forEach(fileR => {
@@ -245,7 +231,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
                   this.formInfoCaracteristica.campos[this.getIndexForm('ComprobanteDiscapacidad')].estadoDoc = estadoDoc;
                 }
               })
-              this.loading = false;
             }
           },
             (error: HttpErrorResponse) => {
@@ -266,7 +251,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
   }
 
   public loadInfoCaracteristica(): void {
-    this.loading = true;
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
       this.denied_acces = false;
@@ -312,25 +296,21 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
             let carga = await this.cargarDocs(files);
 
           } else {
-            this.loading = false;
             this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
             this.datosGet = undefined;
           }
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
           });
     } else {
       this.info_info_caracteristica = undefined;
       this.clean = !this.clean;
       this.denied_acces = false; // no muestra el formulario a menos que se le pase un id del ente info_caracteristica_id
-      this.loading = false;
     }
   }
 
   updateInfoCaracteristica(infoCaracteristica: any): void {
-    this.loading = false;
     const opt: any = {
       title: this.translate.instant('GLOBAL.actualizar'),
       text: this.translate.instant('inscripcion.update'),
@@ -344,10 +324,9 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
           this.info_info_caracteristica.Ente = this.info_persona_id;
-          //console.log("put: ", this.info_info_caracteristica); this.loading = false;
+          //console.log("put: ", this.info_info_caracteristica);
           this.tercerosMidService.put('persona/actualizar_complementarios', this.info_info_caracteristica)
             .subscribe(res => {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar')).then(() => {
@@ -355,7 +334,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
               });
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -365,14 +343,11 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               });
-        } else {
-          this.loading = false;
         }
       });
   }
 
   createInfoCaracteristica(infoCaracteristica: any): void {
-    this.loading = false;
     const opt: any = {
       title: this.translate.instant('GLOBAL.crear'),
       text: this.translate.instant('inscripcion.crear'),
@@ -386,7 +361,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           const info_info_caracteristica_post = <any>infoCaracteristica;
           info_info_caracteristica_post.TipoRelacionUbicacionEnte = 1;
           info_info_caracteristica_post.Tercero = this.info_persona_id;
@@ -398,18 +372,14 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
                   this.loadInfoCaracteristica();
                 });
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
                   text: this.translate.instant('ERROR.' + error.status),
                 });
               });
-        } else {
-          this.loading = false;
         }
       });
   }
@@ -421,7 +391,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
   validarForm(event:any) {
     if (event.valid) {
       if (typeof event.data.InfoCaracteristica.ComprobantePoblacion.file !== 'undefined' && event.data.InfoCaracteristica.ComprobantePoblacion.file !== null) {
-        this.loading = true;
         const file = [{
           IdDocumento: 64,
           nombre: 'Comprobante_Poblacion',

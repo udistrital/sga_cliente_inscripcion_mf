@@ -76,7 +76,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   temp: any;
   info_temp: any;
   clean!: boolean;
-  loading!: boolean;
   percentage!: number;
 
   constructor(
@@ -103,7 +102,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   }
 
   findDescuentoAcademico(programa: any) {
-    this.loading = true;
     // this.descuentoAcademicoService.get('tipo_descuento/?limit=0&query=Activo:true')
     this.sgaMidService.get('descuento_academico/descuentoAcademicoByID/' + programa)
     .subscribe(
@@ -119,10 +117,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             }
           });
         }
-        this.loading = false;
       },
       error => {
-        this.loading = false;
         this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].opciones = []
       },
     );
@@ -130,7 +126,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
 
   /* cargarPeriodo() {
     return new Promise((resolve, reject) => {
-      this.loading = true;
       this.coreService.get('periodo?query=Activo:true&sortby=Id&order=desc&limit=1')
       .subscribe(res => {
         const r = <any>res;
@@ -138,10 +133,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
           this.periodo = <any>res[0].Id;
           resolve(this.periodo);
         }
-        this.loading = false;
       },
       (error: HttpErrorResponse) => {
-        this.loading = false;
         reject(error);
       });
     });
@@ -189,7 +182,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   }
 
   public loadDescuentoAcademico(): void {
-    this.loading = true;
     this.temp = {};
     this.SoporteDescuento = [];
     this.info_descuento_academico = {};
@@ -202,19 +194,14 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             if (solicitud !== null) {
               this.temp = <SolicitudDescuento>solicitud;
               this.info_descuento_academico = this.temp;
-              this.loading = false;
                     this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].valor = (this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId && this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id) ?
                     { Id: this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id,
                       Nombre: this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id + '. ' + this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Nombre} :
                       { Id: 0, Nombre: 'No registrado' };
                     this.info_descuento_academico.Periodo = Number(window.sessionStorage.getItem('IdPeriodo'));
-                    
-            } else {
-              this.loading = false;
             }
           },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -230,7 +217,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
       this.filesUp = <any>{};
       this.info_descuento_academico = undefined;
       this.clean = !this.clean;
-      this.loading = false;
     }
   }
 
@@ -248,7 +234,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;
           const files = [];
           if (this.info_descuento_academico.Documento.file !== undefined) {
@@ -277,7 +262,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                       /* if (documentos_actualizados['SoporteDescuento'] !== undefined) {
                         this.info_descuento_academico.Documento = documentos_actualizados['SoporteDescuento'].url + '';
                       } */
-                      this.loading = false;
                       this.eventChange.emit(true);
                       this.popUpManager.showSuccessAlert(this.translate.instant('descuento_academico.descuento_actualizado'));
                       this.clean = !this.clean;
@@ -298,7 +282,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                 }
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon:'error',
                     title: error.status + '',
@@ -318,7 +301,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
 
             this.sgaMidService.put('descuento_academico', this.info_descuento_academico)
               .subscribe(res => {
-                this.loading = false;
                 this.eventChange.emit(true);
                 this.popUpManager.showSuccessAlert(this.translate.instant('descuento_academico.descuento_actualizado'));
                 this.clean = !this.clean;
@@ -327,7 +309,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                 this.loadDescuentoAcademico();
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon:'error',
                     title: error.status + '',
@@ -356,7 +337,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           const files = [];
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;
           this.info_descuento_academico.PersonaId = Number(window.localStorage.getItem('persona_id'));
@@ -398,10 +378,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                       // this.showToast('error', this.translate.instant('GLOBAL.error'),
                       //   this.translate.instant('descuento_academico.descuento_academico_no_registrado'));
                     }
-                    this.loading = false;
                   },
                   (error: HttpErrorResponse) => {
-                    this.loading = false;
                     Swal.fire({
                       icon: 'error',
                       title: error.status + '',
@@ -411,10 +389,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                     });
                   });
               }
-              this.loading = false;
             },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               Swal.fire({
                 icon: 'error',
                 title: error.status + '',
