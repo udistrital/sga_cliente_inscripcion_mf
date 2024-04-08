@@ -2,6 +2,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TransferenciaComponent } from './modules/transferencia/transferencia.component';
+import { SolicitudTransferenciaComponent } from './modules/transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
 
 const routes: Routes = [
   { 
@@ -16,6 +17,10 @@ const routes: Routes = [
     path: "transferencia",
     component: TransferenciaComponent
   },
+  {
+    path: 'solicitud-transferencia/:id/:process',
+    component: SolicitudTransferenciaComponent,
+  }
 ];
 
 @NgModule({

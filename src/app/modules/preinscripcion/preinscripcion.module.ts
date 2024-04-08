@@ -72,12 +72,18 @@ import { SpinnerComponent } from '../components/spinner/spinner.component';
 import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
 import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { TransferenciaComponent } from '../transferencia/transferencia.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { DownloadFileNuxeoComponent } from '../transferencia/components/solicitud-transferencia/components/download-file-nuxeo/download-file-nuxeo.component';
+import { SolicitudTransferenciaComponent } from '../transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
+
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
 }
 
 @NgModule({
   declarations: [
+    SolicitudTransferenciaComponent,
     TransferenciaComponent,
     CustomizeButtonComponent,
     DialogoDocumentosTransferenciasComponent,
@@ -122,13 +128,16 @@ export function createTranslateLoader(http: HttpClient) {
     ViewPropuestaGradoComponent,
     PerfilComponent,
     ViewInscripcionComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    DownloadFileNuxeoComponent,
   ],
   imports: [
+    NgxDocViewerModule,
+    NgxExtendedPdfViewerModule,
+    MatMenuModule, 
     PdfViewerModule,
     MatExpansionModule,
     MatTooltipModule,
-    NgxExtendedPdfViewerModule,
     MatCheckboxModule,
     MatStepperModule,
     MatTableModule,

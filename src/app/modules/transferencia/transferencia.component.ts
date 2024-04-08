@@ -20,6 +20,7 @@ import Swal from 'sweetalert2';
 import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
 import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-transferencia',
@@ -33,7 +34,7 @@ export class TransferenciaComponent implements OnInit {
   actions: boolean = true;
   recibo: boolean = false;
   settings: any = null;
-  uid:any;
+  uid: any;
   sub: any;
   process: string = '';
   loading!: boolean;
@@ -43,7 +44,10 @@ export class TransferenciaComponent implements OnInit {
   codigosEstudiante!: any[];
   parametros_pago: any;
   periodo!: Periodo;
-  periodos:any[]= [];
+  periodos: any[] = [];
+
+  displayedColumns = ['recibo', 'concepto', 'programa', 'fecha', 'estado', 'respuesta', 'solicitar'];
+  dataSource!: MatTableDataSource<any>;
 
   dataTransferencia: TransferenciaInterna = {
     Periodo: null,
@@ -76,7 +80,7 @@ export class TransferenciaComponent implements OnInit {
   construirForm() {
     this.formTransferencia.btn = this.translate.instant('GLOBAL.guardar');
     this.utilidades.translateFields(this.formTransferencia, 'inscripcion.', 'inscripcion.');
-    this.formTransferencia.campos.forEach((campo:any) => {
+    this.formTransferencia.campos.forEach((campo: any) => {
       if (campo.nombre === 'Periodo') {
         campo.valor = campo.opciones[0];
       }
@@ -102,14 +106,12 @@ export class TransferenciaComponent implements OnInit {
     };
     this.loadInfoPersona();
 
-    //this.dataSource.load([]);
+    this.dataSource = new MatTableDataSource()
     this.sub = this._Activatedroute.paramMap.subscribe(async (params: any) => {
       const { process } = params.params;
-      this.process = atob(process);
       this.actions = (this.process === 'my');
 
       this.createTable(this.process);
-      if (this.process === 'my') {
         this.loading = true;
         await this.loadDataTercero(this.process).then(e => {
           Swal.fire({
@@ -118,10 +120,6 @@ export class TransferenciaComponent implements OnInit {
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
         });
-      } else {
-        this.loading = true;
-        await this.loadDataAll(this.process);
-      }
     });
   }
 
@@ -142,7 +140,7 @@ export class TransferenciaComponent implements OnInit {
     }
   }
 
-  createTable(process:any) {
+  createTable(process: any) {
     this.settings = {
       actions: false,
       columns: {
@@ -184,8 +182,8 @@ export class TransferenciaComponent implements OnInit {
             filter: false,
             renderComponent: CustomizeButtonComponent,
             type: 'custom',
-            onComponentInitFunction: (instance:any) => {
-              instance.save.subscribe((data:any) => {
+            onComponentInitFunction: (instance: any) => {
+              instance.save.subscribe((data: any) => {
                 this.nuxeo.get([{ 'Id': data.VerRespuesta.DocRespuesta }]).subscribe(
                   (documentos) => {
                     const assignConfig = new MatDialogConfig();
@@ -207,8 +205,8 @@ export class TransferenciaComponent implements OnInit {
           filter: false,
           renderComponent: CustomizeButtonComponent,
           type: 'custom',
-          onComponentInitFunction: (instance:any) => {
-            instance.save.subscribe((data:any) => {
+          onComponentInitFunction: (instance: any) => {
+            instance.save.subscribe((data: any) => {
               if (data.Estado == 'Pendiente pago') {
                 this.abrirPago(data)
               } else {
@@ -231,7 +229,7 @@ export class TransferenciaComponent implements OnInit {
     }
   }
 
-  async loadDataAll(process:any) {
+  async loadDataAll(process: any) {
     await this.cargarPeriodo();
     this.loading = true;
 
@@ -275,7 +273,9 @@ export class TransferenciaComponent implements OnInit {
 
                 dataInfo.push(element);
 
-                // this.dataSource.load(dataInfo);
+                console.log(dataInfo)
+
+                this.dataSource = new MatTableDataSource(dataInfo)
 
                 // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
 
@@ -296,7 +296,7 @@ export class TransferenciaComponent implements OnInit {
         });
   }
 
-  async loadDataTercero(process:any) {
+  async loadDataTercero(process: any) {
     await this.cargarPeriodo();
     this.loading = true;
 
@@ -363,9 +363,8 @@ export class TransferenciaComponent implements OnInit {
                 }
 
                 dataInfo.push(element);
-
-                // this.dataSource.load(dataInfo);
-
+                console.log(dataInfo)
+                this.dataSource = new MatTableDataSource(dataInfo)
                 // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
 
                 this.loading = false;
@@ -424,7 +423,7 @@ export class TransferenciaComponent implements OnInit {
         (response: any) => {
           if (response.Success) {
 
-            this.formTransferencia.campos.forEach((campo:any) => {
+            this.formTransferencia.campos.forEach((campo: any) => {
               if (campo.etiqueta === 'select') {
                 campo.opciones = response.Data[campo.nombre];
                 if (campo.nombre === 'Periodo') {
@@ -456,11 +455,11 @@ export class TransferenciaComponent implements OnInit {
     });
   }
 
-  async seleccion(event:any) {
+  async seleccion(event: any) {
     this.recibo = false;
     this.formTransferencia.btn = this.translate.instant('GLOBAL.guardar');
 
-    this.formTransferencia.campos.forEach((campo:any) => {
+    this.formTransferencia.campos.forEach((campo: any) => {
       (this.dataTransferencia as any)[campo.nombre] = campo.valor;
     });
 
@@ -470,10 +469,10 @@ export class TransferenciaComponent implements OnInit {
         this.loading = false;
         return false;
       }) as any;
-      
+
 
       if (parametros == false) {
-        this.formTransferencia.campos.forEach((campo:any) => {
+        this.formTransferencia.campos.forEach((campo: any) => {
           if (campo.nombre === 'ProyectoCurricular' || campo.nombre === 'TipoInscripcion') {
             campo.opciones = null;
             campo.ocultar = true;
@@ -484,7 +483,7 @@ export class TransferenciaComponent implements OnInit {
         this.codigosEstudiante = parametros["Data"]["CodigoEstudiante"];
         this.proyectosCurriculares = parametros["Data"]["ProyectoCurricular"];
 
-        this.formTransferencia.campos.forEach((campo:any) => {
+        this.formTransferencia.campos.forEach((campo: any) => {
 
           if (campo.nombre === 'ProyectoCurricular' || campo.nombre === 'TipoInscripcion') {
             campo.opciones = parametros["Data"][campo.nombre];
@@ -495,7 +494,7 @@ export class TransferenciaComponent implements OnInit {
     }
 
     if (event.nombre === 'TipoInscripcion' && !this.recibo && event.valor != null) {
-      this.formTransferencia.campos.forEach((campo:any) => {
+      this.formTransferencia.campos.forEach((campo: any) => {
 
         if (event.valor.Nombre === 'Transferencia interna' || event.valor.Nombre === 'Reingreso') {
           Swal.fire({
@@ -529,7 +528,7 @@ export class TransferenciaComponent implements OnInit {
     this.loading = false
   }
 
-  loadParams(calendarioId:any) {
+  loadParams(calendarioId: any) {
     return new Promise((resolve, reject) => {
       this.loading = true;
       this.sgaMidService.get('transferencia/consultar_parametros/' + calendarioId + '/' + this.uid).subscribe(
@@ -555,7 +554,7 @@ export class TransferenciaComponent implements OnInit {
     });
   }
 
-  validarForm(event:any) {
+  validarForm(event: any) {
     if (event.valid) {
       this.recibo = true;
       this.formTransferencia.btn = '';
@@ -622,8 +621,9 @@ export class TransferenciaComponent implements OnInit {
           if (response !== null && response.length !== 0) {
             this.inscripcionProjects = response;
             this.inscripcionProjects.forEach(proyecto => {
+              console.log(proyecto)
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
-                inscripcion.FechaPago = moment(proyecto.Evento[0].FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
                 this.sgaMidService.post('inscripciones/generar_inscripcion', inscripcion).subscribe(
                   (response: any) => {
@@ -675,7 +675,7 @@ export class TransferenciaComponent implements OnInit {
       CodigoEstudiante: null,
       ProyectoCurricular: null,
     };
-    this.formTransferencia.campos.forEach((campo:any) => {
+    this.formTransferencia.campos.forEach((campo: any) => {
       if (campo.nombre === 'ProyectoCurricular' || campo.nombre === 'TipoInscripcion') {
         campo.ocultar = true;
       }
@@ -685,7 +685,7 @@ export class TransferenciaComponent implements OnInit {
     });
   }
 
-  abrirPago(data:any) {
+  abrirPago(data: any) {
     this.parametros_pago.NUM_DOC_IDEN = this.info_info_persona.NumeroIdentificacion;
     this.parametros_pago.REFERENCIA = data['Recibo'];
     this.parametros_pago.TIPO_DOC_IDEN = this.info_info_persona.TipoIdentificacion.CodigoAbreviacion;
@@ -699,4 +699,37 @@ export class TransferenciaComponent implements OnInit {
       }
     }, 5000);
   }
+
+  descargarArchivo(data:any){
+    this.nuxeo.get([{ 'Id': data.VerRespuesta.DocRespuesta }]).subscribe(
+      (documentos) => {
+        const assignConfig = new MatDialogConfig();
+        assignConfig.width = '1300px';
+        assignConfig.height = '800px';
+        let aux = { ...documentos[0], observacion: data.VerRespuesta.Observacion, fecha: data.VerRespuesta.FechaEvaluacion, terceroResponsable: data.VerRespuesta.TerceroResponsable }
+        assignConfig.data = { documento: aux, observando: true }
+        const dialogo = this.dialog.open(DialogoDocumentosTransferenciasComponent, assignConfig);
+      }
+    );
+  }
+
+  solicitar(data:any){
+    if (data.Estado == 'Pendiente pago') {
+      this.abrirPago(data)
+    } else {
+      const idInscripcion = data['Id'];
+
+      sessionStorage.setItem('IdInscripcion', data.Id)
+      sessionStorage.setItem('ProgramaAcademico', data.Programa)
+      sessionStorage.setItem('IdPeriodo', data.Periodo)
+      sessionStorage.setItem('IdTipoInscripcion', data.IdTipoInscripcion)
+      sessionStorage.setItem('ProgramaAcademicoId', data.IdPrograma)
+      sessionStorage.setItem('NivelId', data.Nivel)
+
+      this.router.navigate([`solicitud-transferencia/${idInscripcion}/${btoa(data)}`])
+    }
+  }
+
+
+
 }

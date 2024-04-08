@@ -1,19 +1,70 @@
 <ngx-spinner></ngx-spinner>
-<div>
+<mat-card style="width: 98vw;">
     <mat-card-header>
         {{ 'inscripcion.solicitud_transferencia' | translate }}
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content class="my-3">
         <fieldset [ngClass]="{'fieldseter':true} " *ngIf="listadoSolicitudes">
-            <legend> {{ 'inscripcion.listado_solicitudes' | translate }} </legend>
-            <!-- <ng2-smart-table *ngIf="listadoSolicitudes" [settings]="settings" [source]="dataSource">
-            </ng2-smart-table> -->
+            <legend class="pl-2"> {{ 'inscripcion.listado_solicitudes' | translate }} </legend>
+            <div class="table-container">
+                <mat-table [dataSource]="dataSource" class="demo-table">
+                    <ng-container matColumnDef="recibo">
+                        <mat-header-cell *matHeaderCellDef><b>{{ 'inscripcion.recibo' | translate}}</b>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.Recibo }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="concepto">
+                        <mat-header-cell *matHeaderCellDef><b>{{ 'inscripcion.concepto' | translate }}</b>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.Concepto }} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="programa">
+                        <mat-header-cell *matHeaderCellDef><b>{{ 'inscripcion.programa' | translate }}</b>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.Programa }} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="fecha">
+                        <mat-header-cell *matHeaderCellDef><b>{{ 'inscripcion.fecha_generacion' | translate }}</b>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{ row.FechaGeneracion }}</mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="estado">
+                        <mat-header-cell *matHeaderCellDef><b>{{ 'inscripcion.estado' | translate }}</b>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.Estado }} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="respuesta">
+                        <mat-header-cell *matHeaderCellDef><b>{{ 'derechos_pecuniarios.ver_respuesta' | translate }}</b>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <ngx-customize-button class="p-2" [value]="row.Descargar" [rowData]="row" (save)="descargarArchivo($event)"></ngx-customize-button>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="solicitar">
+                        <mat-header-cell *matHeaderCellDef><b>{{ 'derechos_pecuniarios.solicitar' | translate }}</b>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <ngx-customize-button class="p-2" [value]="row.Opcion" [rowData]="row"
+                            (save)="solicitar($event)"></ngx-customize-button>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns" class="encabezado"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                </mat-table>
+            </div>
             <hr width="0%">
-            <div class="text-center" *ngIf="actions">
-                <button *ngIf="listadoSolicitudes" mat-button type="button" (click)="descargarNormativa()">
+            <div class="text-center" *ngIf="!actions">
+                <button *ngIf="listadoSolicitudes" class="btn boton-primary" type="button" (click)="descargarNormativa()">
                     {{ 'inscripcion.btn_descargar_normativa' | translate }}
                 </button>
-                <button *ngIf="listadoSolicitudes" mat-button type="button" (click)="nuevaSolicitud()">
+                <button *ngIf="listadoSolicitudes" class="btn boton-primary" type="button" (click)="nuevaSolicitud()">
                     {{ 'inscripcion.btn_nueva_solicitud' | translate }}
                 </button>
             </div>
@@ -28,14 +79,14 @@
         </ngx-dinamicform>
 
         <div class="container-button-column" *ngIf="!listadoSolicitudes">
-            <button mat-button type="button" (click)="clean(); listadoSolicitudes = true">
+            <button class="btn boton-primary" type="button" (click)="clean(); listadoSolicitudes = true">
                 {{ 'GLOBAL.cancelar' | translate }}
             </button>
             <br><br><br>
-            <button class="btn-barcode btn btn-light" (click)="generarRecibo()" *ngIf="recibo">
+            <button class="btn btn-light border" style="display: grid;" (click)="generarRecibo()" *ngIf="recibo">
                 {{ 'derechos_pecuniarios.generar_recibo' | translate }}
                 <i class="fa fa-barcode fa-5x"></i>
             </button>
         </div>
     </mat-card-content>
-</div>
+</mat-card>

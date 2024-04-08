@@ -462,7 +462,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
 
   }
 
-  generar_recibo() {
+  generarRecibo() {
     if (this.recibos_pendientes >= 3) {
       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.maximo_recibos'));
     } else {
