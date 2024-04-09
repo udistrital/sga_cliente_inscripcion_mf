@@ -20,6 +20,7 @@ export class DialogoDocumentosComponent implements OnInit {
   loading!: boolean;
   observando!: boolean;
   isPDF: boolean = true;
+  validsafe: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<DialogoDocumentosComponent>,

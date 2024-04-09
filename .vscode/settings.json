@@ -1,0 +1,6 @@
+{
+    "search.exclude": {
+        "op-chaining-support.js": true
+    },
+    "search.useIgnoreFiles": false
+}

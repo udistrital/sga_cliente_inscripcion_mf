@@ -101,7 +101,7 @@ export class CrudInfoPersonaComponent implements OnInit {
         this.formInfoPersona.campos[i].label = this.translate.instant('GLOBAL.' + this.formInfoPersona.campos[i].label_i18n);
         this.formInfoPersona.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formInfoPersona.campos[i].label_i18n);
       }
-    }, 500);
+    }, 1000);
   }
 
   getIndexForm(nombre: String): number {
@@ -365,7 +365,7 @@ export class CrudInfoPersonaComponent implements OnInit {
       width: 800,
       allowOutsideClick: false,
       allowEscapeKey: true,
-      html: '<embed src='+environment.apiUrl+'/assets/pdf/politicasUD.pdf" type="application/pdf" style="width:100%; height:375px;" frameborder="0"></embed>',
+      html: '<embed src='+environment.apiUrl+'assets/pdf/politicasUD.pdf'+' type="application/pdf" style="width:100%; height:375px;" frameborder="0"></embed>',
       input: 'checkbox',
       inputPlaceholder: this.translate.instant('GLOBAL.acepto_terminos'),
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),

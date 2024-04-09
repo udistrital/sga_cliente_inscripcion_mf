@@ -6,9 +6,9 @@ import { InfoComplementariaTercero } from "../terceros/info_complementaria_terce
 import { TipoInscripcion } from "./tipo_inscripcion";
 
 export class TransferenciaInterna {
-    Periodo!: Periodo;
-    CalendarioAcademico!: Calendario;
-    TipoInscripcion!: TipoInscripcion;
-    CodigoEstudiante!: InfoComplementariaTercero;
-    ProyectoCurricular!: ProyectoAcademicoInstitucion;
+    Periodo: Periodo | null = new Periodo;
+    CalendarioAcademico: Calendario | null = new Calendario;
+    TipoInscripcion: TipoInscripcion | null = new TipoInscripcion;
+    CodigoEstudiante: InfoComplementariaTercero | null = new InfoComplementariaTercero;
+    ProyectoCurricular: ProyectoAcademicoInstitucion | null = new ProyectoAcademicoInstitucion;
 }

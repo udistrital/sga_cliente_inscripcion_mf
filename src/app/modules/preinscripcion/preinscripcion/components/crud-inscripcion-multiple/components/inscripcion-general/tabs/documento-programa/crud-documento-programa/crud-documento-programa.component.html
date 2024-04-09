@@ -1,6 +1,3 @@
-<div class="content-container" [class.content-loading]="loading">
-    <mat-spinner *ngIf="loading" class="spinner-overlay"></mat-spinner>
-    <ngx-dinamicform [normalform]="formDocumentoPrograma" [modeloData]="info_documento_programa"
-        (result)="validarForm($event)" [clean]="clean">
-    </ngx-dinamicform>
-</div>
+<ngx-dinamicform [normalform]="formDocumentoPrograma" [modeloData]="info_documento_programa"
+    (result)="validarForm($event)" [clean]="clean">
+</ngx-dinamicform>

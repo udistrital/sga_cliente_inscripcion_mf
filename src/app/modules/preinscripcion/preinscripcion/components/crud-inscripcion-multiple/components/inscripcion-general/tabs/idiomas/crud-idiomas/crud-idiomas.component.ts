@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
@@ -12,6 +12,7 @@ import { UserService } from 'src/app/services/users.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_IDIOMAS } from './form-idiomas';
+import { DynamicFormComponent } from 'src/app/modules/components/dynamic-form/dynamic-form.component';
 
 @Component({
   selector: 'ngx-crud-idiomas',
@@ -21,6 +22,7 @@ import { FORM_IDIOMAS } from './form-idiomas';
 export class CrudIdiomasComponent implements OnInit {
   info_idioma_id!: number;
   inscripcion_id!: number;
+
 
   @Input('info_idioma_id')
   set name(info_idioma_id: number) {
@@ -66,9 +68,6 @@ export class CrudIdiomasComponent implements OnInit {
     private popUpManager: PopUpManager) {
     this.formInfoIdioma = FORM_IDIOMAS;
     this.construirForm();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
-    });
     this.listService.findIdioma();
     this.listService.findNivelIdioma();
     this.listService.findClasificacionNivelIdioma();
@@ -288,5 +287,4 @@ export class CrudIdiomasComponent implements OnInit {
       },
     );
   }
-
 }

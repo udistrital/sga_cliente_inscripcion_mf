@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ProduccionAcademicaPost } from 'src/app/models/produccion_academica/produccion_academica';
@@ -38,7 +39,6 @@ export class ListProduccionAcademicaComponent implements OnInit {
   }
 
   getPercentage(event:any) {
-    console.log('getPercentage', event);
     this.percentage = event;
     this.result.emit(this.percentage);
   }
@@ -80,13 +80,13 @@ export class ListProduccionAcademicaComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
-    this.selected = 0
+    this.irAIndexTab(0)
   }
 
   onEdit(event:any): void {
     if (event.EstadoEnteAutorId.EstadoAutorProduccionId.Id === 1 || event.EstadoEnteAutorId.EstadoAutorProduccionId.Id === 2) {
       this.prod_selected = event;
-      this.activetab();
+      this.irAIndexTab(1)
     } else if (event.EstadoEnteAutorId.EstadoAutorProduccionId.Id === 3) {
       this.updateEstadoAutor(event);
     } else {
@@ -96,7 +96,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
 
   onCreate(): void {
     this.prod_selected = undefined;
-    this.activetab();
+    this.irAIndexTab(1)
   }
 
   onDelete(event:any): void {
@@ -203,23 +203,22 @@ export class ListProduccionAcademicaComponent implements OnInit {
       });
   }
 
-  activetab(): void {
-    if(this.selected==0){
-      this.selected = 1
-    }else{
-      this.selected = 0
-    }
-  }
-
   onChange(event:any) {
-    console.log("onChange", event);
     if (event) {
       this.loadData();
-      this.selected = 0
+      this.irAIndexTab(0)
     }
   }
 
   itemselec(event:any): void {
     // console.log("afssaf");
+  }
+
+  tabChanged(event: MatTabChangeEvent) {
+    this.irAIndexTab(event.index)
+  }
+
+  irAIndexTab(index:number){
+    this.selected = index
   }
 }

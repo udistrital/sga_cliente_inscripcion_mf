@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Documento } from 'src/app/models/documento/documento';
@@ -143,7 +144,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
       this.loadData();
     }
     this.loadLists();
-    this.selected = 0
+    this.irAIndexTab(0)
   }
 
   public loadLists() {
@@ -188,11 +189,10 @@ export class ListDocumentoProgramaComponent implements OnInit {
   }
 
   onEdit(event:any): void {
-    console.log(event)
     if(event.Aprobado == false) {
       this.uid = event.TipoDocumentoId;
       this.soporteId = event.SoporteDocumentoId;
-      this.activetab();
+      this.irAIndexTab(1)
     } else {
       this.popUpManager.showAlert(
         this.translate.instant('GLOBAL.info'),
@@ -203,7 +203,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
 
   onCreate(): void {
     this.uid = 0;
-    this.activetab();
+    this.irAIndexTab(1)
   }
 
   onDelete(event:any): void {
@@ -261,29 +261,12 @@ export class ListDocumentoProgramaComponent implements OnInit {
     }
   }
 
-  onAction(event:any): void {
-    switch (event.action) {
-      case 'open':
-        this.onOpen(event);
-        break;
-      case 'edit':
-        this.onEdit(event);
-        break;
-      case 'delete':
-        this.onDelete(event);
-        break;
-    }
-  }
-
   onChange(event:any) {
     if (event) {
       this.uid = 0;
       this.loadData();
-      this.selected = 0
-    } /*else {
-      // this.getPercentage(this.soporteDocumento.length / event)
-      this.getPercentage(event:any)
-    }*/
+      this.irAIndexTab(0)
+    }
   }
 
   getPercentage(event:any) {
@@ -299,11 +282,11 @@ export class ListDocumentoProgramaComponent implements OnInit {
     }
   }
 
-  activetab(): void {
-    if(this.selected==0){
-      this.selected = 1
-    }else{
-      this.selected = 0
-    }
+  tabChanged(event: MatTabChangeEvent) {
+    this.irAIndexTab(event.index)
+  }
+
+  irAIndexTab(index:number){
+    this.selected = index
   }
 }

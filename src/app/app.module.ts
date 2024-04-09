@@ -38,6 +38,15 @@ import { UtilidadesService } from './services/utilidades.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentoService } from './services/documento.service';
 import { ProduccionAcademicaService } from './services/produccion_academica.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SpinnerInterceptor } from './interceptors/snipper.interceptor';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
+import { Overlay } from '@angular/cdk/overlay';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -45,11 +54,16 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
+    NgxExtendedPdfViewerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
     MatSnackBarModule,
     BrowserModule,
+    MatDialogModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     StoreModule.forRoot(rootReducer),
@@ -92,6 +106,13 @@ export function createTranslateLoader(http: HttpClient) {
     UserService,
     UtilidadesService,
     ProduccionAcademicaService,
+    {provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi:true},
+    { provide: MatDialogRef, useValue: {} },
+    { 
+      provide: MAT_TOOLTIP_SCROLL_STRATEGY,
+      deps: [Overlay],
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.reposition({ scrollThrottle: 20 })
+    }
   ],
   bootstrap: [AppComponent]
 })

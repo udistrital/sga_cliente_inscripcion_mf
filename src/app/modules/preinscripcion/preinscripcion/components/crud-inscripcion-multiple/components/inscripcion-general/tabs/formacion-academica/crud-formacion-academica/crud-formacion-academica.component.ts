@@ -47,6 +47,8 @@ export class CrudFormacionAcademicaComponent implements OnInit {
   isLinear = true;
   data: any = {};
 
+  
+
   @Input('info_formacion_academica_id')
   set name(info_formacion_academica_id: number) {
     this.info_formacion_academica_id = info_formacion_academica_id;

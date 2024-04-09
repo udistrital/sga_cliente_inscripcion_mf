@@ -37,7 +37,6 @@ export class DynamicFormComponent implements OnInit, OnChanges{
     private matDialog: MatDialog,
     private translate: TranslateService
   ) {
-    validateLang(this.translate);
     this.data = {
       valid: true,
       confirm: true,
@@ -188,13 +187,7 @@ export class DynamicFormComponent implements OnInit, OnChanges{
   }
 
   preview(url:any, title:any, message:any) {
-    /* const left = (screen.width / 2) - (w / 2);
-    const top = (screen.height / 2) - (h / 2);
-    let prev = window.open(url, title, 'toolbar=no,' +
-      'location=no, directories=no, status=no, menubar=no,' +
-      'scrollbars=no, resizable=no, copyhistory=no, ' +
-      'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-    prev.document.title = title; */
+    console.log(url)
     const dialogDoc = new MatDialogConfig();
     dialogDoc.width = '80vw';
     dialogDoc.height = '90vh';
@@ -302,6 +295,12 @@ export class DynamicFormComponent implements OnInit, OnChanges{
       }
       if (!d.deshabilitar) {
         d.deshabilitar = false;
+      }
+
+      if (!d.valor && d.etiqueta !== 'checkbox') {
+        d.valor = '';
+      } else if (d.etiqueta === 'checkbox') { 
+        d.valor = false; 
       }
       if (d.etiqueta === 'fileRev') {
         d.File = undefined;

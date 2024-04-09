@@ -1,8 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 /* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
 @import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
 $primary: (
     50: var(--primary),
@@ -87,13 +88,7 @@ html {
     color: #fff !important;
     padding-left: 5px !important;
 }
-
-div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
-  border: 0;
-  border-radius: 0.25em;
-  background: initial;
-  background-color: #03678f !important;
-  color: #fff;
-  font-size: 1em;
-}
   
+.link:hover{
+  cursor: pointer !important;
+}
