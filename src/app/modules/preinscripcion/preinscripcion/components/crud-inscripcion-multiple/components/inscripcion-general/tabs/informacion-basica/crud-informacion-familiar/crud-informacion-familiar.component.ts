@@ -13,6 +13,8 @@ import { UserService } from 'src/app/services/users.service';
 import Swal from 'sweetalert2';
 import { FORM_INFORMACION_FAMILIAR } from './form-informacion_familiar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
   selector: 'ngx-crud-informacion-familiar',
@@ -58,9 +60,8 @@ export class CrudInformacionFamiliarComponent implements OnInit {
   constructor(
     private popUpManager: PopUpManager,
     private translate: TranslateService,
-    private campusMidService: CampusMidService,
-    private sgaMidService: SgaMidService,
-    private ubicacionesService: UbicacionService,
+    private terceroMidService: TerceroMidService,
+    private inscripcionMidService: InscripcionMidService,
     private userService: UserService,
     private tercerosService: TercerosService,
     private snackBar: MatSnackBar) {
@@ -106,14 +107,14 @@ export class CrudInformacionFamiliarComponent implements OnInit {
     this.loading = true;
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
-        this.sgaMidService.get('persona/consultar_familiar/' + this.info_persona_id)
+        this.terceroMidService.get('personas/'+ this.info_persona_id +'/familiar')
         .subscribe(res => {
-          if(res !== null && res.Response.Code == '404'){
+          if(res !== null && res.status == '404'){
             this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
-          } else if (res !== null && res.Response.Code == '400'){
+          } else if (res !== null && res.status == '400'){
             //MENSAJE DE ALGO ANDA MAL
-          } else if (res !== null && res.Response.Code == '200'){
-            this.info_info_familiar = <any>res.Response.Body[1];
+          } else if (res !== null && res.status == '200'){
+            this.info_info_familiar = <any>res.data;
             this.loading = false;
           }
           this.loading = false;
@@ -312,13 +313,13 @@ export class CrudInformacionFamiliarComponent implements OnInit {
           this.loading = true;
           //FUNCION PUT
           this.loading = true;
-          this.sgaMidService.put('persona/info_familiar', info_familiar).subscribe(
+          this.terceroMidService.put('personas/info-familiar', info_familiar).subscribe(
             (res: any) => {
-              if(res !== null && res.Response.Code == '404'){
+              if(res !== null && res.status == '404'){
                 this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_data'));
-              } else if (res !== null && res.Response.Code == '400'){
+              } else if (res !== null && res.status == '400'){
                 this.popUpManager.showAlert('', this.translate.instant('inscripcion.error_update'));
-              } else if (res !== null && res.Response.Code == '200'){
+              } else if (res !== null && res.status == '200'){
                 this.loading = false;
                 this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar'));
                 this.loadInfoPersona();
@@ -343,13 +344,13 @@ export class CrudInformacionFamiliarComponent implements OnInit {
 
   createInfoFamiliar(info_familiar: any){
     this.loading = true;
-    this.sgaMidService.post('inscripciones/post_informacion_familiar', info_familiar)
+    this.inscripcionMidService.post('inscripciones/informacion-familiar', info_familiar)
       .subscribe((res: any) => {
-        if (res.Type === 'error') {
+        if (res.message === 'error') {
           Swal.fire({
             icon:'error',
             title: res.Code,
-            text: this.translate.instant('ERROR.' + res.Code),
+            text: this.translate.instant('ERROR.' + res.status),
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
           

@@ -16,6 +16,7 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_INFO_CARACTERISTICA } from './form-info_caracteristica';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
   selector: 'ngx-crud-info-caracteristica',
@@ -58,8 +59,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
   constructor(
     private popUpManager: PopUpManager,
     private translate: TranslateService,
-    private sgamidService: SgaMidService,
-    private tercerosMidService: TercerosMidService,
+    private terceroMidService: TerceroMidService,
     private userService: UserService,
     private ubicacionesService: UbicacionService,
     private store: Store<IAppState>,
@@ -270,11 +270,11 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
       this.denied_acces = false;
-      this.tercerosMidService.get('persona/consultar_complementarios/' + this.info_persona_id)
+      this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(async res => {
-          if (res !== null && res.Response.Code !== '404') {
-            this.datosGet = <InfoCaracteristicaGet>res.Response.Body[0].Data;
-            this.info_info_caracteristica = <InfoCaracteristica>res.Response.Body[0].Data;
+          if (res !== null && res.status != '404') {
+            this.datosGet = <InfoCaracteristicaGet>res.data;
+            this.info_info_caracteristica = <InfoCaracteristica>res.data;
             this.info_info_caracteristica.Ente = (1 * this.info_caracteristica_id);
             this.info_info_caracteristica.TipoRelacionUbicacionEnte = 1;
             this.info_info_caracteristica.IdLugarEnte = this.datosGet.Lugar.Id;
@@ -347,8 +347,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
           this.loading = true;
           this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
           this.info_info_caracteristica.Ente = this.info_persona_id;
-          //console.log("put: ", this.info_info_caracteristica); this.loading = false;
-          this.tercerosMidService.put('persona/actualizar_complementarios', this.info_info_caracteristica)
+          this.terceroMidService.put('personas/complementarios', this.info_info_caracteristica)
             .subscribe(res => {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar')).then(() => {
                 this.loadInfoCaracteristica();
@@ -390,7 +389,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
           const info_info_caracteristica_post = <any>infoCaracteristica;
           info_info_caracteristica_post.TipoRelacionUbicacionEnte = 1;
           info_info_caracteristica_post.Tercero = this.info_persona_id;
-          this.tercerosMidService.post('persona/guardar_complementarios', info_info_caracteristica_post)
+          this.terceroMidService.post('personas/complementarios', info_info_caracteristica_post)
             .subscribe(res => {
               if (res !== null) {
                 this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
@@ -531,7 +530,6 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
         this.formInfoCaracteristica.campos[this.getIndexForm('GrupoSanguineo')].opciones = list.listGrupoSanguineo[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('Rh')].opciones = list.listFactorRh[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('EstadoCivil')].opciones = list.listEstadoCivil[0];
-        console.log(list.listEstadoCivil[0])
         this.formInfoCaracteristica.campos[this.getIndexForm('IdentidadGenero')].opciones = list.listIdentidadGenero[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('OrientacionSexual')].opciones = list.listOrientacionSexual[0];
       },

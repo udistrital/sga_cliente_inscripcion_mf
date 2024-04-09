@@ -8,6 +8,7 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Documento } from 'src/app/models/documento/documento';
 import { DocumentoService } from 'src/app/services/documento.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
@@ -44,7 +45,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
     private translate: TranslateService,
     private popUpManager: PopUpManager,
     private userService: UserService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
     private snackBar: MatSnackBar) {
@@ -67,14 +68,14 @@ export class ListFormacionAcademicaComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
-    this.sgaMidService.get('formacion_academica?Id=' + this.persona_id)
+    this.inscripcionMidService.get('academico/formacion/?Id=' + this.persona_id)
     .subscribe(response => {
-      if (response !== null && response.Response.Code === '404') {
+      if (response !== null && response.status == '404') {
         this.loading = false;
         this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
-      } else if (response !== null && response.Response.Code === '200') {
-        if (Object.keys(response.Response.Body[0]).length > 0) {
-        const data = <Array<any>>response.Response.Body[0];
+      } else if (response !== null && response.status == '200') {
+        if (Object.keys(response.data).length > 0) {
+        const data = <Array<any>>response.data;
         const dataInfo = <Array<any>>[];
         data.forEach(async element => {
           const FechaI = element.FechaInicio;
@@ -162,11 +163,13 @@ export class ListFormacionAcademicaComponent implements OnInit {
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
+    console.log(event)
     Swal.fire(opt)
       .then((willDelete) => {
         this.loading = true;
         if (willDelete.value) {
-          this.sgaMidService.delete('formacion_academica', event).subscribe(res => {
+          //todo, raro el ednpoint
+          this.inscripcionMidService.delete('academico/formacion', event).subscribe(res => {
             if (res !== null) {
               this.loadData();
                 this.snackBar.open(this.translate.instant('GLOBAL.confirmarEliminar'), '', { duration: 3000, panelClass: ['info-snackbar'] })

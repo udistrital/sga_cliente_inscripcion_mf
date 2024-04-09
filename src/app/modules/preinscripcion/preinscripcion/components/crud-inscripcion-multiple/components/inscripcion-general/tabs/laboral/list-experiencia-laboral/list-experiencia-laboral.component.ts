@@ -10,6 +10,7 @@ import { Documento } from 'src/app/models/documento/documento';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { ExperienciaService } from 'src/app/services/experiencia.service';
 import { OrganizacionService } from 'src/app/services/organizacion.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
@@ -51,12 +52,11 @@ export class ListExperienciaLaboralComponent implements OnInit {
   displayedColumns = ['empresa', 'cargo', 'fecha_inicio', 'fecha_fin', 'estado', 'observacion', 'acciones'];
   dataSource!: MatTableDataSource<any>;
 
-  constructor(private translate: TranslateService,
-    private sgaMidService: SgaMidService,
-    private experienciaService: ExperienciaService,
+  constructor(
+    private translate: TranslateService,
     private userService: UserService,
     private popUpManager: PopUpManager,
-    private organizacionService: OrganizacionService,
+    private inscripcionMidService: InscripcionMidService,
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
     private snackBar: MatSnackBar) {
@@ -78,10 +78,10 @@ export class ListExperienciaLaboralComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
-    this.sgaMidService.get('experiencia_laboral/by_tercero?Id=' + this.persona_id).subscribe(
+    this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.persona_id).subscribe(
       (response: any) => {
-        if (response !== null && response.Data.Code === '200') {
-          this.data = <Array<any>>response.Data.Body[1];
+        if (response !== null && response.status == '200') {
+          this.data = <Array<any>>response.data;
           this.loading = false;
           this.getPercentage(1);
           this.data.forEach(async (expLab) => {
@@ -90,7 +90,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
             expLab.Observacion = estadoDoc.observacion;
             this.dataSource = new MatTableDataSource(this.data)
           });
-        } else if (response !== null && response.Data.Code === '404') {
+        } else if (response !== null && response.status == '404') {
           this.popUpManager.showAlert('', this.translate.instant('experiencia_laboral.no_data'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource();
@@ -184,7 +184,8 @@ export class ListExperienciaLaboralComponent implements OnInit {
       .then((willDelete) => {
         this.loading = true;
         if (willDelete.value) {
-          this.sgaMidService.delete('experiencia_laboral', event).subscribe(res => {
+          //todo: falta parametro
+          this.inscripcionMidService.delete('experiencia-laboral/', event).subscribe(res => {
             if (res !== null) {
               this.loadData();
               this.snackBar.open(this.translate.instant('GLOBAL.experiencia_laboral'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 

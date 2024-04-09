@@ -145,7 +145,8 @@ export class UserService {
     const id_token = window.localStorage.getItem('user')!;
     const user = JSON.parse(atob(id_token)); 
     this.findByUserEmail(user.userService.email)
-    return parseInt(window.localStorage.getItem('persona_id')!, 10);
+    // return parseInt(window.localStorage.getItem('persona_id')!, 10);
+    return 9866;
   }
 
   public getPeriodo(): number {

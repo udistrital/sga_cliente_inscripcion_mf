@@ -75,7 +75,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private autenticationService: ImplicitAutenticationService,
-    private documentoService: DocumentoService,
     private inscripcionService: InscripcionService,
     private store: Store<IAppState>,
     private listService: ListService,

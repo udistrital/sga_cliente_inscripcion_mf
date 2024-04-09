@@ -21,6 +21,9 @@ import { EvaluacionInscripcionService } from 'src/app/services/evaluacion_inscri
 import { TimeService } from 'src/app/services/time.service';
 import { DialogoDocumentosComponent } from 'src/app/modules/components/dialogo-documentos/dialogo-documentos.component';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
   selector: 'ngx-inscripcion-general',
@@ -176,7 +179,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     private userService: UserService,
     private parametrosService: ParametrosService,
     private programaService: ProyectoAcademicoService,
-    private sgaMidService: SgaMidService,
+    private terceroMidService: TerceroMidService,
+    private inscripcionMidService: InscripcionMidService,
+    private calendarioMidService: CalendarioMidService,
     private dialog: MatDialog,
     private evaluacionInscripcionService: EvaluacionInscripcionService,
     private timeService: TimeService,
@@ -218,12 +223,12 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     const IdNivel = parseInt(sessionStorage.getItem('IdNivel')!, 10);
     this.loading = true;
     let periodo = localStorage.getItem('IdPeriodo');
-    this.sgaMidService.get('consulta_calendario_proyecto/nivel/' + IdNivel + '/periodo/' + periodo).subscribe(
+    this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
       response => {
         const r = <any>response;
         this.loading = false;
         if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
-          const inscripcionP = <Array<any>>response;
+          const inscripcionP = <Array<any>>response.data;
           this.posgrados = inscripcionP;
           this.selectedValue = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10);
         } else {
@@ -492,24 +497,14 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.total = true;
       }
     }
-    // if (this.info_inscripcion !== undefined) {
-    //   if (this.info_inscripcion.EstadoInscripcionId.Id > 1) {
-    //     this.percentage_total = 100;
-    //   }
-    //   if (this.percentage_total >= 100) {
-    //     if (this.info_inscripcion.EstadoInscripcionId.Id === 1) {
-    //       this.total = false;
-    //     }
-    //   }
-    // }
   }
 
   loadPercentageInfoCaracteristica(factor: number) {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('persona/consultar_complementarios/' + this.info_persona_id)
+      this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Response.Code !== '404') {
+          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2));
             this.percentage_tab_info[1] = Number((100 / factor));
             this.loading = false;
@@ -531,9 +526,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageInfoContacto(factor: number) {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('inscripciones/info_complementaria_tercero/' + this.info_persona_id)
+      this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.info_persona_id)
         .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Response.Code !== '404') {
+          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2));
             this.percentage_tab_info[2] = Number((100 / factor));
             this.loading = false;
@@ -555,9 +550,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageInfoFamiliar(factor: number) {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('persona/consultar_familiar/' + this.info_persona_id)
+      this.terceroMidService.get('personas/' + this.info_persona_id + '/familiar')
         .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Response.Code !== '404') {
+          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2)) + 0.01;
             this.percentage_tab_info[3] = Number((100 / factor));
             this.loading = false;
@@ -579,9 +574,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageFormacionAcademica() {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('formacion_academica?Id=' + this.info_persona_id)
+      this.inscripcionMidService.get('academico/formacion/?Id=' + this.info_persona_id)
         .subscribe(res => {
-          if (res.Response.Code === '200' && (Object.keys(res.Response.Body[0]).length > 0)) {
+          if (res.status == '200' && (Object.keys(res.data).length > 0)) {
             this.percentage_acad = 100;
             this.percentage_tab_acad[0] = 100;
             this.loading = false;
@@ -603,9 +598,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageFormacionAcademicaPregado(factor:any) {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('persona/consultar_formacion_pregrado/' + this.info_persona_id)
+      this.terceroMidService.get('personas/' + this.info_persona_id + '/formacion-pregrado')
         .subscribe(res => {
-          if (res.Status === '200') {
+          if (res.Status == '200') {
             this.percentage_acad = this.percentage_acad + (100 / factor);
             this.percentage_tab_acad[0] = (100 / factor);
             this.loading = false;
@@ -651,9 +646,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageExperienciaLaboral() {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('experiencia_laboral/by_tercero?Id=' + this.info_persona_id)
+      this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.info_persona_id)
         .subscribe((res: any) => {
-          if (res.Data.Code === '200') {
+          if (res.status == '200') {
             this.percentage_expe = 100;
             this.percentage_tab_expe[0] = 100;
             this.loading = false;
@@ -675,9 +670,10 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageProduccionAcademica() {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('produccion_academica/pr_academica/' + this.info_persona_id)
+      //todo: backend repetido
+      this.inscripcionMidService.get('academico/produccion/' + this.info_persona_id)
         .subscribe(res => {
-          if (res.Response.Code === '200') {
+          if (res.status == '200') {
             this.percentage_prod = 100;
             this.percentage_tab_prod[0] = 100;
             this.loading = false;
@@ -728,11 +724,11 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageDescuentos() {
     this.loading = true;
     return new Promise((resolve, reject) => {
-      this.sgaMidService.get('descuento_academico/descuentopersonaperiododependencia?' + 'PersonaId=' +
+      this.inscripcionMidService.get('academico/descuento/detalle?' + 'PersonaId=' +
         Number(window.localStorage.getItem('persona_id')) + '&DependenciaId=' +
         Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
         .subscribe((res: any) => {
-          if (res.Data.Code === '200') {
+          if (res.status == '200') {
             this.percentage_desc = 100;
             this.percentage_tab_desc[0] = 100;
             this.loading = false;

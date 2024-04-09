@@ -4,18 +4,16 @@ import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
-import { DocumentoService } from 'src/app/services/documento.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
-import { TercerosService } from 'src/app/services/terceros.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_EXPERIENCIA_LABORAL } from './form-experiencia_laboral';
 import { Organizacion } from 'src/app/models/ente/organizacion';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
   selector: 'ngx-crud-experiencia-laboral',
@@ -82,11 +80,9 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   constructor(
     private autenticationService: ImplicitAutenticationService,
     private translate: TranslateService,
-    private sgaMidService: SgaMidService,
-    private documentoService: DocumentoService,
+    private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>,
     private listService: ListService,
-    private tercerosService: TercerosService,
     private newNuxeoService: NewNuxeoService,
     private popUpManager: PopUpManager,
     private users: UserService,
@@ -312,16 +308,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         break;
 
       case "selected_value_autocomplete_Cargo":
-          // NO SE QUE HACE ESTO AQUI ???
-          // let IdEmpresa = event.value.Id
-          // this.tercerosService.get('datos_identificacion?query=TerceroId__Id:' + IdEmpresa).subscribe(
-          //   (res: any) => {
-          //     console.log(res[0]['Numero'])
-          //     this.searchOrganizacion(res[0]['Numero'])
-          //   },
-          //   (error: HttpErrorResponse) => {
-          //   },
-          //   )
           break;
     }
     
@@ -332,7 +318,8 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     if(nombre){
       let consultaEmpresa: Array<any> = [];
     const empresa: Array<any> = [];
-    this.sgaMidService.get('experiencia_laboral/informacion_empresa?nombre=' + nombre)
+    //todo: endpoint no existe?
+    this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?nombre=' + nombre)
       .subscribe(res => {
         if (res !== null) {
           consultaEmpresa = <Array<InfoPersona>>res;
@@ -368,8 +355,9 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       const itel = this.getIndexForm('Telefono');
       const icorreo = this.getIndexForm('Correo');
       const ipais = this.getIndexForm('Pais');
-      this.sgaMidService.get('experiencia_laboral/informacion_empresa?Id=' + nit)
+      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?Id=' + nit)
         .subscribe((res: any) => {
+          res = res.data
           this.formInfoExperienciaLaboral.campos[init].valor = res.NumeroIdentificacion;
           this.formInfoExperienciaLaboral.campos[inombre].valor = (res.NombreCompleto &&
             res.NombreCompleto.Id) ? res.NombreCompleto : { Id: 0, NombreCompleto: 'No registrado' };
@@ -546,7 +534,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
 
   putExperianciaLaboral() {
     this.loading = true;
-    this.sgaMidService.put('experiencia_laboral', this.info_experiencia_laboral)
+    this.inscripcionMidService.put('experiencia_laboral/', this.info_experiencia_laboral)
       .subscribe(res => {
         const r = <any>res;
         if (r !== null && r.Type !== 'error') {
@@ -578,7 +566,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
 
   postExperianciaLaboral() {
     this.loading = true;
-    this.sgaMidService.post('experiencia_laboral/', this.info_experiencia_laboral)
+    this.inscripcionMidService.post('experiencia-laboral/', this.info_experiencia_laboral)
       .subscribe(res => {
         const r = <any>res;
         if (r !== null && r.Type !== 'error') {

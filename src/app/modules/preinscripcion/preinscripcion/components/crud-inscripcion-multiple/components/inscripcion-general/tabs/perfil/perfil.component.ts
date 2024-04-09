@@ -5,6 +5,7 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { PivotDocument } from 'src/app/services/pivot_document.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
 
@@ -83,7 +84,7 @@ export class PerfilComponent implements OnInit {
     public pivotDocument: PivotDocument,
     private zipManagerService: ZipManagerService,
     private popUpManager: PopUpManager,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private gestorDocumentalService: NewNuxeoService,
     private inscripcionService: InscripcionService,) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -206,10 +207,10 @@ export class PerfilComponent implements OnInit {
     })
     this.data.DOCUMENTACION = documentacionOrganizada;
 
-    this.sgaMidService.post('generar_recibo/comprobante_inscripcion', this.data).subscribe(
+    this.inscripcionMidService.post('recibos/comprobante-inscripcion', this.data).subscribe(
       (response: any) => {
         this.loading = false;
-        const dataComprobante = new Uint8Array(atob(response['Data']).split('').map((char: any) => char.charCodeAt(0)));
+        const dataComprobante = new Uint8Array(atob(response['data']).split('').map((char: any) => char.charCodeAt(0)));
         let comprobante_generado = window.URL.createObjectURL(new Blob([dataComprobante], { type: 'application/pdf' }));
         let nombre: any = sessionStorage.getItem('nameFolder');
         this.guardar_archivo(comprobante_generado, nombre, ".pdf");

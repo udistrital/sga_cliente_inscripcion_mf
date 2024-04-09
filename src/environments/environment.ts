@@ -53,10 +53,6 @@ export const environment = {
   OIKOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/oikos_crud_api/v2/',
   PROYECTO_ACADEMICO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/proyecto_academico_crud/v1/',
   //PROYECTO_ACADEMICO_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8116/v1/',
-  //SGA_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sga_mid/v1/',
-  //SGA_MID_SERVICE: 'http://localhost:8119/v1/',
-  SGA_MID_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
-
   CLIENTE_HABILITAR_PERIODO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/core_crud/v1/',
   OFERTA_ACADEMICA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sesiones_crud/v2/',
   //INSCRIPCION_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/inscripcion_crud/v2/',
@@ -66,7 +62,7 @@ export const environment = {
   DOCUMENTO_PROGRAMA_SERVICE: 'https://autenticacion.udistrital.edu.co/apioas/documento_programa_crud/v1/',
   // DOCUMENTO_PROGRAMA_SERVICE: 'http://api.planestic.udistrital.edu.co:9014/v1/',
   EXPERIENCIA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/experiencia_laboral_crud/v1/',
-  // EXPERIENCIA_SERVICE: 'http://api.planestic.udistrital.edu.co:8099/v1/',
+  //EXPERIENCIA_SERVICE: 'http://api.planestic.udistrital.edu.co:8099/v1/',
   FORMACION_ACADEMICA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/formacion_academica_crud/v1/',
   // FORMACION_ACADEMICA_SERVICE: 'http://api.planestic.udistrital.edu.co:8098/v1/',
   IDIOMA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/idiomas_crud/v2/',
@@ -89,5 +85,16 @@ export const environment = {
   PLAN_ESTUDIOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/planes_estudios_crud/v1/',
   //PLAN_ESTUDIOS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8537/v1/',
   //PLAN_ESTUDIOS_SERVICE: 'http://localhost:8925/v1/',
-  SGA_MID_TERCERO: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8539/v1/',
+  SGA_MID_TERCERO: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
+
+  //SGA_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sga_mid/v1/',
+  //SGA_MID_SERVICE: 'http://localhost:8119/v1/',
+  SGA_MID_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
+
+  SGA_INSCRIPCION_MID_SERVICE: 'http://localhost:8095/v1/',
+  //SGA_INSCRIPCION_MID_SERVICE: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8543/v1/',
+  SGA_TERCERO_MID_SERVICE: 'http://localhost:8096/v1/',
+  //SGA_TERCERO_MID_SERVICE: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8539/v1/',
+  //SGA_CALENDARIO_MID_SERVICE: 'http://localhost:8097/v1/',
+  SGA_CALENDARIO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8545/v1/',
 };

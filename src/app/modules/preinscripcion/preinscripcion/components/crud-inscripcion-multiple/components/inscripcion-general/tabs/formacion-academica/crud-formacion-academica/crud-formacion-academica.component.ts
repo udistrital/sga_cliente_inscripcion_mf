@@ -22,6 +22,9 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_FORMACION_ACADEMICA, NUEVO_TERCERO } from './form-formacion_academica';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
   selector: 'ngx-crud-formacion-academica',
@@ -96,10 +99,9 @@ export class CrudFormacionAcademicaComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private tercerosService: TercerosService,
     private autenticationService: ImplicitAutenticationService,
-    private documentoService: DocumentoService,
     private users: UserService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -255,16 +257,16 @@ export class CrudFormacionAcademicaComponent implements OnInit {
       const iPais = this.getIndexForm('Pais');
       this.formInfoFormacionAcademica.campos[init].valor = nit;
       
-      this.sgaMidService.get('formacion_academica/info_universidad?Id=' + nit)
+      this.inscripcionMidService.get('academico/formacion/informacion-universidad/nit/?Id=' + nit)
         .subscribe((res: any) => {
-          this.universidadConsultada = res;
-          this.formInfoFormacionAcademica.campos[init].valor = res.NumeroIdentificacion;
+          this.universidadConsultada = res.data;
+          this.formInfoFormacionAcademica.campos[init].valor = this.universidadConsultada.NumeroIdentificacion;
           this.formInfoFormacionAcademica.campos[inombre].valor =
-            (res.NombreCompleto && res.NombreCompleto.Id) ? res.NombreCompleto : { Id: 0, Nombre: 'No registrado' };
-          this.formInfoFormacionAcademica.campos[idir].valor = (res.Direccion) ? res.Direccion : 'No registrado';
-          this.formInfoFormacionAcademica.campos[itel].valor = (res.Telefono) ? res.Telefono : 'No registrado';
-          this.formInfoFormacionAcademica.campos[icorreo].valor = (res.Correo) ? res.Correo : 'No registrado';
-          this.formInfoFormacionAcademica.campos[iPais].valor = (res.Ubicacion && res.Ubicacion.Id) ? res.Ubicacion : { Id: 0, Nombre: 'No registrado' };
+            (this.universidadConsultada.NombreCompleto && this.universidadConsultada.NombreCompleto.Id) ? this.universidadConsultada.NombreCompleto : { Id: 0, Nombre: 'No registrado' };
+          this.formInfoFormacionAcademica.campos[idir].valor = (this.universidadConsultada.Direccion) ? this.universidadConsultada.Direccion : 'No registrado';
+          this.formInfoFormacionAcademica.campos[itel].valor = (this.universidadConsultada.Telefono) ? this.universidadConsultada.Telefono : 'No registrado';
+          this.formInfoFormacionAcademica.campos[icorreo].valor = (this.universidadConsultada.Correo) ? this.universidadConsultada.Correo : 'No registrado';
+          this.formInfoFormacionAcademica.campos[iPais].valor = (this.universidadConsultada.Ubicacion && this.universidadConsultada.Ubicacion.Id) ? this.universidadConsultada.Ubicacion : { Id: 0, Nombre: 'No registrado' };
           [this.formInfoFormacionAcademica.campos[init],
           this.formInfoFormacionAcademica.campos[inombre],
           this.formInfoFormacionAcademica.campos[idir],
@@ -425,7 +427,7 @@ export class CrudFormacionAcademicaComponent implements OnInit {
       nombre = nombre.trim();
       let consultaUniversidades: Array<any> = [];
       const universidad: Array<any> = [];
-      this.sgaMidService.get('formacion_academica/info_universidad_nombre?nombre=' + nombre)
+      this.inscripcionMidService.get('academico/formacion/informacion-universidad/nombre?nombre=' + nombre)
         .subscribe(res => {
           if (res !== null) {
             consultaUniversidades = <Array<InfoPersona>>res;
@@ -458,11 +460,11 @@ export class CrudFormacionAcademicaComponent implements OnInit {
       && this.edit_status === true) {
       this.temp_info_academica = {};
       this.SoporteDocumento = [];
-      this.sgaMidService.get('formacion_academica/info_complementaria?Id=' + this.info_id_formacion)
+      this.inscripcionMidService.get('academico/formacion/informacion-complementaria?Id=' + this.info_id_formacion)
         .subscribe((response: any) => {
-          this.temp_info_academica = <any>response;
+          this.temp_info_academica = <any>response.data;
           if (response !== null && response !== undefined) {
-            this.temp_info_academica = <any>response.Response.Body[1];
+            this.temp_info_academica = <any>response.data;
             const files = []
             if (this.temp_info_academica.Documento + '' !== '0') {
               files.push({ Id: this.temp_info_academica.Documento });
@@ -556,7 +558,7 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                 if (Object.keys(responseNux).length === files.length) {
                   const documentos_actualizados = <any>responseNux;
                   this.info_formacion_academica.DocumentoId = documentos_actualizados[0].res.Id
-                  this.sgaMidService.put('formacion_academica?Id=' + this.info_id_formacion, this.info_formacion_academica)
+                  this.inscripcionMidService.put('academico/formacion/?Id=' + this.info_id_formacion, this.info_formacion_academica)
                     .subscribe(res => {
                       if (documentos_actualizados[0] !== undefined) {
                         this.info_formacion_academica.DocumentoId = documentos_actualizados[0].res.Enlace;
@@ -605,11 +607,8 @@ export class CrudFormacionAcademicaComponent implements OnInit {
           } else {
             this.loading = true;
             this.info_formacion_academica.DocumentoId = this.SoporteDocumento;
-            this.sgaMidService.put('formacion_academica?Id=' + this.info_id_formacion, this.info_formacion_academica)
+            this.inscripcionMidService.put('academico/formacion/?Id=' + this.info_id_formacion, this.info_formacion_academica)
               .subscribe(res => {
-                /* this.showToast('info', this.translate.instant('GLOBAL.actualizar'),
-                  this.translate.instant('GLOBAL.formacion_academica') + ' ' +
-                  this.translate.instant('GLOBAL.confirmarActualizar')); */
                 this.canEmit = true;
                 this.setPercentage(1);
                 this.popUpManager.showSuccessAlert(this.translate.instant('informacion_academica.informacion_academica_registrada'));
@@ -665,10 +664,10 @@ export class CrudFormacionAcademicaComponent implements OnInit {
 
                   this.info_formacion_academica.DocumentoId = responseNux[0].res.Id;
                 
-                this.sgaMidService.post('formacion_academica/', this.info_formacion_academica)
+                this.inscripcionMidService.post('academico/formacion/', this.info_formacion_academica)
                   .subscribe(res => {
                     const r = <any>res;
-                    if (r !== null && r.Type !== 'error') {
+                    if (r !== null && r.message != 'error') {
                       const inombre = this.getIndexForm('NombreUniversidad');
                       this.eventChange.emit(true);
                       this.popUpManager.showSuccessAlert(this.translate.instant('informacion_academica.informacion_academica_registrada'));
@@ -766,7 +765,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
       (list) => {
         this.formInfoFormacionAcademica.campos[this.getIndexForm('Pais')].opciones = list.listPais[0];
         this.formInfoNuevoTercero.campos[this.getIndexForm('Pais')].opciones = list.listPais[0];
-        //this.formInfoFormacionAcademica.campos[this.getIndexForm('ProgramaAcademico')].opciones = list.listProgramaAcademico[0];
       },
     );
   }
