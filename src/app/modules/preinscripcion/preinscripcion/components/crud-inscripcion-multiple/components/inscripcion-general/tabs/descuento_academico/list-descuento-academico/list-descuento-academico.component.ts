@@ -12,6 +12,7 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
+import { decrypt } from 'src/app/utils/util-encrypt';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -124,8 +125,9 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   }
 
   loadData(): void {
+    const id = decrypt(window.localStorage.getItem('persona_id'));
     this.sgaMidService.get('descuento_academico/descuentopersonaperiododependencia?' +
-      'PersonaId=' + Number(window.localStorage.getItem('persona_id')) + '&DependenciaId=' +
+      'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
       .subscribe((result: any) => {
         const r = <any>result.Data.Body[1];
@@ -174,8 +176,23 @@ export class ListDescuentoAcademicoComponent implements OnInit {
 
   ngOnInit() {
     this.uid = 0;
+    this.selected = 0
     this.irAIndexTab(0)
   }
+  
+  
+  onAction(event: any): void {
+    switch (event.action) {
+      case 'open':
+        this.onOpen(event);
+        break;
+      case 'edit':
+        this.onEdit(event);
+        break;
+      case 'delete':
+        this.onDelete(event);
+        break;
+    }
 
   onOpen(event: any) {
     const filesToGet = [
@@ -267,6 +284,14 @@ export class ListDescuentoAcademicoComponent implements OnInit {
               });
           }
         });
+    }
+  }
+
+  activetab(): void {
+    if (this.selected == 0) {
+      this.selected = 1
+    } else {
+      this.selected = 0
     }
   }
 

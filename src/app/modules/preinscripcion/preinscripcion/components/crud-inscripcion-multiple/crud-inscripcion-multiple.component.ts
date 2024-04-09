@@ -23,6 +23,7 @@ import Swal from 'sweetalert2';
 import { LinkDownloadComponent } from './components/link-download/link-download.component';
 import { ButtonPaymentComponent } from './components/button-payment/button-payment.component';
 import { MatTableDataSource } from '@angular/material/table';
+import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
   selector: 'ngx-crud-inscripcion-multiple',
@@ -765,10 +766,11 @@ export class CrudInscripcionMultipleComponent implements OnInit{
 
   preinscripcion() {
     this.proyectos_preinscripcion = [];
+    const id = decrypt(localStorage.getItem('persona_id'));
     this.arr_proyecto.forEach((proyecto:any) => {
       Number(localStorage.getItem('IdNivel'))
       this.proyectos_preinscripcion.push({
-        PersonaId: Number(localStorage.getItem('persona_id')),
+        PersonaId: Number(id),
         ProgramaAcademicoId: proyecto['Id'],
         PeriodoId: Number(localStorage.getItem('IdPeriodo')),
         EstadoInscripcionId: { Id: 1 },
