@@ -84,7 +84,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   formAutor = new FormGroup({
     autorSeleccionadoV2: new FormControl(''),
   });
-  loading: boolean = false;
   canEmit: boolean = false;
 
   displayedColumns = ['nombre', 'estado', 'acciones'];
@@ -376,7 +375,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
           });
         });
         if (filesToGet.length !== 0) {
-          this.loading = true;
           newNuxeoService.get(filesToGet).subscribe(
             (response:any) => {
               const filesResponse = <any>response;
@@ -391,10 +389,8 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                   }
                 });
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -430,12 +426,10 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
           this.sgaMidService.put('produccion_academica', this.info_produccion_academica)
             .subscribe((res: any) => {
               if (res !== null) {
-                this.loading = false;
                 this.info_produccion_academica = <ProduccionAcademicaPost>res;
                 // this.showToast('info', this.translate.instant('GLOBAL.actualizar'), this.translate.instant('produccion_academica.produccion_actualizada'));
                 this.popUpManager.showSuccessAlert(this.translate.instant('produccion_academica.produccion_actualizada'));
@@ -450,7 +444,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                 this.loadUserData();
                 this.Metadatos = [];
               } else {
-                this.loading = false;
                 this.popUpManager.showErrorAlert(this.translate.instant('produccion_academica.produccion_no_actualizada'));
               }
             });
@@ -470,12 +463,10 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willCreate) => {
         if (willCreate.value) {
-          this.loading = true;
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
           this.sgaMidService.post('produccion_academica', this.info_produccion_academica)
             .subscribe((res: any) => {
               if (res !== null) {
-                this.loading = false;
                 this.info_produccion_academica = <ProduccionAcademicaPost>res;
                 //this.showToast('info', this.translate.instant('GLOBAL.crear'), this.translate.instant('produccion_academica.produccion_creada'));
                 this.popUpManager.showSuccessAlert(this.translate.instant('produccion_academica.produccion_creada'));
@@ -490,12 +481,10 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                 this.loadUserData();
                 this.Metadatos = [];
               } else {
-                this.loading = false;
                 this.popUpManager.showErrorAlert(this.translate.instant('produccion_academica.produccion_no_creada'));
               }
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -575,7 +564,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   }
 
   uploadFilesToMetadaData(files:any, metadatos:any) {
-    this.loading = true;
     return new Promise((resolve, reject) => {
       files.forEach((file:any) => {
         file.Id = file.nombre,
@@ -593,11 +581,9 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                 Valor: f.res.Id,
               });
             });
-            this.loading = false;
             resolve(true);
           }
         }, error => {
-          this.loading = false;
           reject(error);
         });
     });

@@ -52,7 +52,6 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean;
   percentage!: number;
 
   constructor(private translate: TranslateService,
@@ -68,7 +67,6 @@ export class ListDescuentoAcademicoComponent implements OnInit {
       this.cargarCampos();
     });
     this.loadData();
-    this.loading = false;
   }
 
   cargarCampos() {
@@ -151,10 +149,8 @@ export class ListDescuentoAcademicoComponent implements OnInit {
           this.getPercentage(1);
           this.dataSource = new MatTableDataSource(this.data)
         }
-        //this.loading = false;
       },
         (error: HttpErrorResponse) => {
-          //this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -263,7 +259,6 @@ export class ListDescuentoAcademicoComponent implements OnInit {
       };
       Swal.fire(opt)
         .then((willDelete) => {
-          this.loading = true;
           if (willDelete.value) {
             event.Activo = false;
             this.descuentoAcademicoService.put('solicitud_descuento', event).subscribe(res => {
@@ -276,10 +271,8 @@ export class ListDescuentoAcademicoComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -290,7 +283,6 @@ export class ListDescuentoAcademicoComponent implements OnInit {
                 });
               });
           }
-          this.loading = false;
         });
     }
   }
