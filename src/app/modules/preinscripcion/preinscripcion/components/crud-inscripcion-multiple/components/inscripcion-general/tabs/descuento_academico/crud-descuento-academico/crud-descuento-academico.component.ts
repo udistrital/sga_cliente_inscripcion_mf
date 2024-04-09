@@ -15,6 +15,7 @@ import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_DESCUENTO } from './form-descuento_academico';
+import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
   selector: 'ngx-crud-descuento-academico',
@@ -197,7 +198,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     if (this.descuento_academico_id !== undefined &&
       this.descuento_academico_id !== 0 &&
       this.descuento_academico_id.toString() !== '') {
-        this.sgaMidService.get('descuento_academico?PersonaId=' + window.localStorage.getItem('persona_id') + '&SolicitudId=' + this.descuento_academico_id)
+        const id = decrypt(window.localStorage.getItem('persona_id'));
+        this.sgaMidService.get('descuento_academico?PersonaId=' + id + '&SolicitudId=' + this.descuento_academico_id)
           .subscribe(solicitud => {
             if (solicitud !== null) {
               this.temp = <SolicitudDescuento>solicitud;
@@ -359,7 +361,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
           this.loading = true;
           const files = [];
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;
-          this.info_descuento_academico.PersonaId = Number(window.localStorage.getItem('persona_id'));
+          const id = decrypt(window.localStorage.getItem('persona_id'));
+          this.info_descuento_academico.PersonaId = Number(id);
           // this.info_descuento_academico.PeriodoId = this.periodo;
           this.info_descuento_academico.PeriodoId = Number(window.sessionStorage.getItem('IdPeriodo'));
           this.info_descuento_academico.DescuentoDependencia.Dependencia = Number(window.sessionStorage.getItem('ProgramaAcademicoId'));
