@@ -17,6 +17,7 @@ import { VideoModalComponent } from 'src/app/modules/components/video-modal.comp
 import { validateLang } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { encrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
   selector: 'ngx-crud-info-persona',
@@ -27,7 +28,6 @@ export class CrudInfoPersonaComponent implements OnInit {
   filesUp: any;
   info_persona_id!: number;
   inscripcion_id!: number;
-  loading: boolean = false;
   faltandatos: boolean = false;
   existePersona: boolean = false;
   datosEncontrados: any;
@@ -80,7 +80,6 @@ export class CrudInfoPersonaComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loading = true;
     Promise.all([
       this.listService.findGenero(),
       this.listService.findTipoIdentificacion()]).then(() => {
@@ -143,10 +142,8 @@ export class CrudInfoPersonaComponent implements OnInit {
               this.popUpManager.showAlert(this.translate.instant('GLOBAL.info_persona'), this.translate.instant('inscripcion.sin_telefono'))
             }
           }
-          this.loading = false;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'info',
               title: this.translate.instant('GLOBAL.info_persona'),
@@ -159,7 +156,6 @@ export class CrudInfoPersonaComponent implements OnInit {
     } else {
       this.info_info_persona = undefined
       this.clean = !this.clean;
-      this.loading = false;
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
     this.formInfoPersona.campos[this.getIndexForm('CorreoElectronico')].valor = this.autenticationService.getPayload().email;
@@ -169,11 +165,9 @@ export class CrudInfoPersonaComponent implements OnInit {
     let doc = this.formInfoPersona.campos[this.getIndexForm('NumeroIdentificacion')].valor;
     let verif = this.formInfoPersona.campos[this.getIndexForm('VerificarNumeroIdentificacion')].valor
     if ((doc && verif) && (doc == verif) && !this.aceptaTerminos) {
-      this.loading = true;
       this.terceroMidService.get('personas/existencia/' + doc).subscribe(
         (res) => {
           res = res.data
-          this.loading = false;
           this.info_info_persona = res[0];
           this.datosEncontrados = { ...res[0] };
           if (res[0].FechaNacimiento != null) {
@@ -215,14 +209,12 @@ export class CrudInfoPersonaComponent implements OnInit {
         },
         error => {
           console.log(error);
-          this.loading = false;
         }
       );
     }
   }
 
   updateInfoPersona(infoPersona: any) {
-    this.loading = true;
     let prepareUpdate: any = {
       Tercero: { hasId: null, data: {} },
       Identificacion: { hasId: null, data: {} },
@@ -281,22 +273,21 @@ export class CrudInfoPersonaComponent implements OnInit {
         campo.deshabilitar = true;
       });
       window.localStorage.setItem('ente', response.tercero.Id);
-      window.localStorage.setItem('persona_id', response.tercero.Id);
+      const tercero_id = encrypt(response.tercero.Id.toString());
+      window.localStorage.setItem('persona_id', tercero_id);
+      //window.localStorage.setItem('persona_id', response.tercero.Id);
       this.info_persona_id = response.tercero.Id;
       sessionStorage.setItem('IdTercero', String(this.info_persona_id));
       this.setPercentage(1);
-      this.loading = false;
       this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.persona_actualizado'));
       this.success.emit();
     },
       (error: HttpErrorResponse) => {
-        this.loading = false;
         this.popUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_actualizar_persona'));
       });
   }
 
   createInfoPersona(infoPersona: any): void {
-    this.loading = true;
     const files = []
     infoPersona.FechaNacimiento = momentTimezone.tz(infoPersona.FechaNacimiento, 'America/Bogota').format('YYYY-MM-DD HH:mm:ss');
     infoPersona.FechaNacimiento = infoPersona.FechaNacimiento + ' +0000 +0000';
@@ -309,7 +300,9 @@ export class CrudInfoPersonaComponent implements OnInit {
       const r = <any>res
       if (r !== null && r.Type !== 'error') {
         window.localStorage.setItem('ente', r.Id);
-        window.localStorage.setItem('persona_id', r.Id);
+        const r_id = encrypt(r.Id.toString());
+        window.localStorage.setItem('persona_id', r_id);
+        //window.localStorage.setItem('persona_id', r.Id);
         this.info_persona_id = r.Id;
         sessionStorage.setItem('IdTercero', String(this.info_persona_id));
         this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
@@ -323,10 +316,8 @@ export class CrudInfoPersonaComponent implements OnInit {
       } else {
         this.popUpManager.showErrorToast(this.translate.instant('GLOBAL.error'))
       }
-      this.loading = false;
     },
       (error: HttpErrorResponse) => {
-        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: error.status + '',

@@ -36,7 +36,6 @@ export class ListIdiomasComponent implements OnInit {
   @Output('result') result: EventEmitter<any> = new EventEmitter();
   @Output() bridge_create_inscripcion: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean;
   percentage!: number;
   persona_id!: number;
 
@@ -50,7 +49,6 @@ export class ListIdiomasComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
 
     });
-    this.loading = false;
   }
 
   crear_inscripcion(data:any) {
@@ -62,7 +60,6 @@ export class ListIdiomasComponent implements OnInit {
   }
 
   loadData(): void {
-    this.loading = true;
     this.persona_id = this.userService.getPersonaId() || 1;
     // no tiene campo Activo ??? Activo:true,
     this.idiomaService.get('conocimiento_idioma?query=Activo:true,TercerosId:' + this.persona_id +
@@ -77,10 +74,8 @@ export class ListIdiomasComponent implements OnInit {
           this.dataSource = new MatTableDataSource();
           this.popUpManager.showAlert('', this.translate.instant('idiomas.no_data'));
         }
-        this.loading = false;
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status));
         });
   }
@@ -103,7 +98,6 @@ export class ListIdiomasComponent implements OnInit {
   onDelete(event:any): void {
     this.popUpManager.showConfirmAlert(this.translate.instant('idiomas.eliminar'))
       .then((willDelete) => {
-        this.loading = true;
         if (willDelete.value) {
           event.Activo = false;
           this.idiomaService.put('conocimiento_idioma', event).subscribe(res => {
@@ -114,14 +108,11 @@ export class ListIdiomasComponent implements OnInit {
                 this.translate.instant('GLOBAL.idioma') + ' ' + this.translate.instant('GLOBAL.confirmarEliminar'), 5000
               );
             }
-            this.loading = false;
           },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status))
             });
         }
-        this.loading = false;
       });
   }
 

@@ -20,7 +20,6 @@ export class PerfilComponent implements OnInit {
   info_persona_id!: number;
   info_inscripcion_id!: number;
   estado_inscripcion!: string;
-  loading: boolean;
   timer!: Subscription;
   @Input('info_persona_id')
   set name(info_persona_id: any) {
@@ -89,7 +88,6 @@ export class PerfilComponent implements OnInit {
     private inscripcionService: InscripcionService,) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-    this.loading = false;
   }
 
   useLanguage(language: string) {
@@ -182,18 +180,14 @@ export class PerfilComponent implements OnInit {
   }
 
   descargar_compilado_zip() {
-    this.loading = true;
     let nombre: any = sessionStorage.getItem('nameFolder');
     nombre = nombre.toUpperCase();
     this.zipManagerService.generarZip(nombre).then((zip: any) => {
-      this.loading = false;
       this.guardar_archivo(zip, nombre, ".zip");
     })
   }
 
   descargar_comprobante_inscription() {
-    this.loading = true;
-
     let documentacion = this.zipManagerService.listarArchivos();
     let documentacionOrganizada: any = {};
     documentacion.forEach(doc => {
@@ -209,14 +203,12 @@ export class PerfilComponent implements OnInit {
 
     this.inscripcionMidService.post('recibos/comprobante-inscripcion', this.data).subscribe(
       (response: any) => {
-        this.loading = false;
         const dataComprobante = new Uint8Array(atob(response['data']).split('').map((char: any) => char.charCodeAt(0)));
         let comprobante_generado = window.URL.createObjectURL(new Blob([dataComprobante], { type: 'application/pdf' }));
         let nombre: any = sessionStorage.getItem('nameFolder');
         this.guardar_archivo(comprobante_generado, nombre, ".pdf");
       },
       error => {
-        this.loading = false;
         this.popUpManager.showErrorToast(this.translate.instant('inscripcion.fallo_carga_mensaje'));
       },
     );
@@ -232,21 +224,16 @@ export class PerfilComponent implements OnInit {
         idsForQuery += String(f.documentoId);
         if (i < limitQuery - 1) idsForQuery += '|';
       });
-      this.loading = true;
       this.gestorDocumentalService.getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
         .subscribe(r => {
           if (r.downloadProgress) {
-            this.loading = true;
             const progressBar = document.getElementById("progressbar");
             if (progressBar) {
               progressBar.scrollIntoView({ behavior: 'smooth' });
             }
             this.progressDownloadDocs = r.downloadProgress;
-          } else {
-            this.loading = false;
           }
         }, e => {
-          this.loading = false;
           this.progressDownloadDocs = 0;
         });
     }
@@ -296,10 +283,8 @@ export class PerfilComponent implements OnInit {
   manageLoading(infoCarga: any, actualTag: string) {
     if (infoCarga.status == "start") {
       this.checkComplete = false;
-      this.loading = true;
     }
     if (infoCarga.status == "completed") {
-      this.loading = false;
       if (actualTag == "inscripcion") {
         this.data.INSCRIPCION = infoCarga.outInfo;
       }
@@ -314,7 +299,6 @@ export class PerfilComponent implements OnInit {
     }
 
     if (infoCarga.status == "failed") {
-      this.loading = false;
       if (this.showErrors || this.en_revision) {
         if (actualTag != "inscripcion") {
           if (this.SuiteTags[actualTag].required) {
@@ -329,8 +313,6 @@ export class PerfilComponent implements OnInit {
         this.siguienteTagDesde(actualTag);
       }
     }
-
-    //this.loading ? this.reduceWhenloading = 0.9 : this.reduceWhenloading = 1;
 
     if (infoCarga.status == "completed" && !this.checkComplete) {
       this.checkComplete = true;

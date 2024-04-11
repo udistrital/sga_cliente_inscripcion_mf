@@ -43,7 +43,6 @@ export class CrudInformacionContactoComponent implements OnInit {
   paisSeleccionado: any;
   departamentoSeleccionado: any;
   denied_acces: boolean = false;
-  loading: boolean;
   info_persona_id!: number;
 
   constructor(
@@ -61,7 +60,6 @@ export class CrudInformacionContactoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loading = true;
     this.listService.findPais();
     this.listService.findInfoSocioEconomica();
     this.listService.findInfoContacto();
@@ -95,7 +93,6 @@ export class CrudInformacionContactoComponent implements OnInit {
   }
 
   loadOptionsDepartamentoResidencia(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const departamentoResidencia: Array<any> = [];
     if (this.paisSeleccionado) {
@@ -109,11 +106,9 @@ export class CrudInformacionContactoComponent implements OnInit {
                 departamentoResidencia.push(consultaHijos[i].LugarHijoId);
               }
             }
-            this.loading = false;
             this.formInformacionContacto.campos[this.getIndexForm('DepartamentoResidencia')].opciones = departamentoResidencia;
           },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -124,13 +119,10 @@ export class CrudInformacionContactoComponent implements OnInit {
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
           });
-    } else {
-      this.loading = false;
     }
   }
 
   loadOptionsCiudadResidencia(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const ciudadResidencia: Array<any> = [];
     if (this.departamentoSeleccionado) {
@@ -143,12 +135,10 @@ export class CrudInformacionContactoComponent implements OnInit {
               ciudadResidencia.push(consultaHijos[i].LugarHijoId);
             }
           }
-          this.loading = false;
 
           this.formInformacionContacto.campos[this.getIndexForm('CiudadResidencia')].opciones = ciudadResidencia;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -159,8 +149,6 @@ export class CrudInformacionContactoComponent implements OnInit {
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
           });
-    } else {
-      this.loading = false;
     }
   }
 
@@ -175,7 +163,6 @@ export class CrudInformacionContactoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
   }
 
   loadInformacionContacto() {
@@ -192,15 +179,12 @@ export class CrudInformacionContactoComponent implements OnInit {
             }
           } else {
             this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
-            this.loading = false;
           }
         },
           (error: HttpErrorResponse) => {
             this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
             this.info_informacion_contacto = undefined;
-            this.loading = false;
           });
-      this.loading = false;
     }
   }
 
@@ -304,7 +288,6 @@ export class CrudInformacionContactoComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_informacion_contacto = <InformacionContacto>info_contacto;
           this.info_informacion_contacto.Ente = this.info_persona_id;
           this.inscripcionMidService.put('inscripciones/informacion-complementaria/tercero', this.info_informacion_contacto).subscribe(
@@ -320,10 +303,8 @@ export class CrudInformacionContactoComponent implements OnInit {
                   this.loadInformacionContacto();
                 });
               }
-              this.loading = false;
             },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               Swal.fire({
                 icon: 'error',
                 title: error.status + '',
@@ -335,7 +316,6 @@ export class CrudInformacionContactoComponent implements OnInit {
             },
           );
         }
-        // this.loading = false;
       });
   }
 
@@ -352,7 +332,6 @@ export class CrudInformacionContactoComponent implements OnInit {
     };
     Swal.fire(opt)
       .then((willDelete) => {
-        this.loading = true;
         this.info_informacion_contacto = true;
         if (willDelete.value) {
           this.info_informacion_contacto = <any>info_contacto;
@@ -360,7 +339,6 @@ export class CrudInformacionContactoComponent implements OnInit {
             .subscribe((res:any) => {
               const r = <any>res;
               if (r !== null && r.message !== 'error') {
-                this.loading = false;
                 this.popUpManager.showSuccessAlert(this.translate.instant('informacion_contacto_posgrado.informacion_contacto_registrada')).then(() => {
                   this.loadInformacionContacto();
                 });
@@ -368,12 +346,10 @@ export class CrudInformacionContactoComponent implements OnInit {
                   this.translate.instant('informacion_contacto_posgrado.informacion_contacto_registrada'), '', { duration: 3000, panelClass: ['info-snackbar'] });
 
               } else {
-                this.loading = false;
                 this.snackBar.open(this.translate.instant('informacion_contacto_posgrado.informacion_contacto_no_registrada'), '', { duration: 3000, panelClass: ['error-snackbar'] });
               }
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',

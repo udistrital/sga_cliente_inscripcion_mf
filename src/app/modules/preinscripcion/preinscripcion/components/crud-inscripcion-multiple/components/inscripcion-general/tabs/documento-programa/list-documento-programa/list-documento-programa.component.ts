@@ -57,7 +57,6 @@ export class ListDocumentoProgramaComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean;
   percentage: number;
 
   constructor(
@@ -70,12 +69,10 @@ export class ListDocumentoProgramaComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-    this.loading = false;
     this.percentage = 0;
   }
 
   async loadData() {
-    this.loading = true;
     this.soporteDocumento = [];
     this.percentage = 0;
     this.inscripcionService.get('soporte_documento_programa?query=InscripcionId.Id:' +
@@ -111,10 +108,8 @@ export class ListDocumentoProgramaComponent implements OnInit {
             this.getPercentage(0);
             this.popUpManager.showAlert('', this.translate.instant('documento_programa.no_documentos'));
           }
-          this.loading = false;
         },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status));
         },
       );
@@ -230,7 +225,6 @@ export class ListDocumentoProgramaComponent implements OnInit {
       };
       Swal.fire(opt)
         .then((willDelete) => {
-          this.loading = true;
           if (willDelete.value) {
             event.DocumentoProgramaId.Activo = false;
             this.inscripcionService.put('documento_programa/', event.DocumentoProgramaId).subscribe(res => {
@@ -243,9 +237,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               }
-              this.loading = false;
             }, (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -256,7 +248,6 @@ export class ListDocumentoProgramaComponent implements OnInit {
                 });
               });
           }
-          this.loading = false;
         });
     }
   }

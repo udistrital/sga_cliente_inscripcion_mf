@@ -42,7 +42,6 @@ export class CrudIcfesComponent implements OnInit {
   formIcfes: any;
   temp: any;
   clean!: boolean;
-  loading!: boolean;
   paisSeleccionado: any;
   percentage!: number;
   ciudadSeleccionada: any;
@@ -196,7 +195,6 @@ export class CrudIcfesComponent implements OnInit {
   }
 
   loadOptionscolegiooficial(): void {
-    this.loading = true;
     let consultaColegio: Array<any> = [];
     const colegiosoficiales: Array<any> = [];
     this.terceroService.get('tercero_tipo_tercero/?query=TipoTerceroId.Id:7' + ',TerceroId.Activo:true&limit=0')
@@ -207,11 +205,9 @@ export class CrudIcfesComponent implements OnInit {
             colegiosoficiales.push(consultaColegio[i].TerceroId);
           }
         }
-        this.loading = false;
         this.formIcfes.campos[this.getIndexForm('Colegio')].opciones = colegiosoficiales;
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -225,7 +221,6 @@ export class CrudIcfesComponent implements OnInit {
   }
 
   loadOptionscolegioprivado(): void {
-    this.loading = true;
     let consultaColegio: Array<any> = [];
     const colegiosprivado: Array<any> = [];
     this.terceroService.get('tercero_tipo_tercero/?query=TipoTerceroId.Id:12' + ',TerceroId.Activo:true&limit=0')
@@ -236,11 +231,9 @@ export class CrudIcfesComponent implements OnInit {
             colegiosprivado.push(consultaColegio[i].TerceroId);
           }
         }
-        this.loading = false;
         this.formIcfes.campos[this.getIndexForm('Colegio')].opciones = colegiosprivado;
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -254,7 +247,6 @@ export class CrudIcfesComponent implements OnInit {
   }
 
   loadOptionsDepartamentoResidencia(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const departamentoResidencia: Array<any> = [];
     if (this.paisSeleccionado) {
@@ -266,11 +258,9 @@ export class CrudIcfesComponent implements OnInit {
               departamentoResidencia.push(consultaHijos[i].LugarHijoId);
             }
           }
-          this.loading = false;
           this.formIcfes.campos[this.getIndexForm('DepartamentoResidencia')].opciones = departamentoResidencia;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -285,7 +275,6 @@ export class CrudIcfesComponent implements OnInit {
   }
 
   loadOptionsCiudadResidencia(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const ciudadResidencia: Array<any> = [];
     if (this.departamentoSeleccionado) {
@@ -297,11 +286,9 @@ export class CrudIcfesComponent implements OnInit {
               ciudadResidencia.push(consultaHijos[i].LugarHijoId);
             }
           }
-          this.loading = false;
           this.formIcfes.campos[this.getIndexForm('CiudadResidencia')].opciones = ciudadResidencia;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -316,7 +303,6 @@ export class CrudIcfesComponent implements OnInit {
   }
 
   loadOptionsLocalidadResidencia(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const localidadResidencia: Array<any> = [];
     if (this.departamentoSeleccionado) {
@@ -328,11 +314,9 @@ export class CrudIcfesComponent implements OnInit {
               localidadResidencia.push(consultaHijos[i].LugarHijo);
             }
           }
-          this.loading = false;
           this.formIcfes.campos[this.getIndexForm('LocalidadResidencia')].opciones = localidadResidencia;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -347,7 +331,6 @@ export class CrudIcfesComponent implements OnInit {
   }
 
   public loadInfoFormacionAcademica(): void {
-    this.loading = true;
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
       this.denied_acces = false;
@@ -402,13 +385,9 @@ export class CrudIcfesComponent implements OnInit {
               this.formIcfes.campos[this.getIndexForm('Colegio')].ocultar = true;
               this.formIcfes.campos[this.getIndexForm('Colegio')].valor = 0;
             }
-
-            this.loading = false;
           }
-          this.loading = false;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -421,7 +400,6 @@ export class CrudIcfesComponent implements OnInit {
     } else {
       this.clean = !this.clean;
       this.denied_acces = false; // no muestra el formulario a menos que se le pase un id del ente info_caracteristica_id
-      this.loading = false;
     }
   }
 
@@ -438,24 +416,20 @@ export class CrudIcfesComponent implements OnInit {
     };
     Swal.fire(opt)
       .then((willDelete) => {
-        this.loading = true;
         if (willDelete.value) {
           this.info_icfes = <any>infoIcfes;
           this.inscripcionMidService.post('inscripciones/pruebas-de-estado/informacion/saber-once', this.info_icfes)
             .subscribe(res => {
               const r = <any>res;
               if (r !== null && r.message != 'error') {
-                this.loading = false;
                 this.eventChange.emit(true);
                 this.snackBar.open(this.translate.instant('icfes_colegio.icfes_colegio_registrado'), '', { duration: 3000, panelClass: ['success-snackbar'] }) 
                 this.clean = !this.clean;
               } else {
                 this.snackBar.open(this.translate.instant('icfes_colegio.icfes_colegio_no_registrado'), '', { duration: 3000, panelClass: ['error-snackbar'] })
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 this.snackBar.open(this.translate.instant('icfes_colegio.icfes_colegio_no_registrado'), '', { duration: 3000, panelClass: ['error-snackbar'] })
               });
         }
@@ -476,7 +450,6 @@ export class CrudIcfesComponent implements OnInit {
     };
     Swal.fire(opt)
       .then((willDelete) => {
-        this.loading = true;
         if (willDelete.value) {
           this.id_inscripcion = Number(sessionStorage.getItem('IdInscripcion'));
           const inscripcion = {
@@ -547,7 +520,6 @@ export class CrudIcfesComponent implements OnInit {
             .subscribe(res => {
               const r = <any>res;
               if (r !== null && r.message != 'error') {
-                this.loading = false;
                 this.eventChange.emit(true);
                   this.snackBar.open(this.translate.instant('icfes_colegio.icfes_colegio_registrado'), '', { duration: 3000, panelClass: ['info-snackbar'] })
 

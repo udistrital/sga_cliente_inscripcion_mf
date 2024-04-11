@@ -21,7 +21,6 @@ export class ListProduccionAcademicaComponent implements OnInit {
   settings: any;
   persona_id: number;
   percentage!: number;
-  loading: boolean = true;
   selected = 0;
 
   displayedColumns = ['titulo', 'tipo', 'resumen', 'estado', 'fecha', 'acciones'];
@@ -67,9 +66,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
         }
-        this.loading = false;
       }, (error: HttpErrorResponse) => {
-        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: error.status + '',
@@ -190,9 +187,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
                     this.loadData();
                     this.snackBar.open(this.translate.instant('produccion_academica.estado_autor_actualizado'), '', { duration: 3000, panelClass: ['success-snackbar'] }) 
                   }
-                  this.loading = false;
                 }, (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon: 'error',
                     title: error.status + '',

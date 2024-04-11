@@ -60,7 +60,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   mensaje_poblacion_discapcidades: boolean = false;
   clean!: boolean;
   denied_acces: boolean = false;
-  loading!: boolean;
 
   constructor(
     private popUpManager: PopUpManager,
@@ -84,7 +83,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     this.listService.findTipoDiscapacidad();
     this.listService.findEPS();
     this.loadLists();
-    // this.loading = false;
   }
 
   construirForm() {
@@ -145,7 +143,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   }
 
   loadOptionsDepartamentoNacimiento(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const departamentoNacimiento: Array<any> = [];
     if (this.paisSeleccionado) {
@@ -157,11 +154,9 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
               departamentoNacimiento.push(consultaHijos[i].LugarHijoId);
             }
           }
-          this.loading = false;
           this.formInfoCaracteristica.campos[this.getIndexForm('DepartamentoNacimiento')].opciones = departamentoNacimiento;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -172,13 +167,10 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
           });
-    } else {
-      this.loading = false;
     }
   }
 
   loadOptionsCiudadNacimiento(): void {
-    this.loading = true;
     let consultaHijos: Array<any> = [];
     const ciudadNacimiento: Array<any> = [];
     if (this.departamentoSeleccionado) {
@@ -191,11 +183,9 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
               ciudadNacimiento.push(consultaHijos[i].LugarHijoId);
             }
           }
-          this.loading = false;
           this.formInfoCaracteristica.campos[this.getIndexForm('Lugar')].opciones = ciudadNacimiento;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -206,8 +196,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
           });
-    } else {
-      this.loading = false;
     }
   }
 
@@ -223,13 +211,11 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
 
   cargarDocs(files:any) {
     return new Promise((resolve, reject) => {
-      this.loading = true;
       files.forEach((file:any) => {
         const filesll = []
         filesll.push(file)
         this.newNuxeoService.get(filesll).subscribe(
           response => {
-            this.loading = true;
             const filesResponse = <Array<any>>response;
             if (Object.keys(filesResponse).length === filesll.length) {
               filesResponse.forEach(fileR => {
@@ -243,7 +229,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
                   this.formInfoCaracteristica.campos[this.getIndexForm('ComprobanteDiscapacidad')].ocultar = false;
                 }
               })
-              this.loading = false;
             }
           },
             (error: HttpErrorResponse) => {
@@ -264,7 +249,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   }
 
   public loadInfoCaracteristica(): void {
-    this.loading = true;
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
       this.denied_acces = false;
@@ -318,10 +302,8 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
           } else {
             this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
           }
-          this.loading = false;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -334,12 +316,10 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     } else {
       this.clean = !this.clean;
       this.denied_acces = false; // no muestra el formulario a menos que se le pase un id del ente info_caracteristica_id
-      this.loading = false;
     }
   }
 
   updateInfoCaracteristica(infoCaracteristica: any): void {
-    this.loading = false;
     const opt: any = {
       title: this.translate.instant('GLOBAL.actualizar'),
       text: this.translate.instant('inscripcion.update'),
@@ -353,7 +333,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
           this.info_info_caracteristica.Ente = this.info_persona_id;
           this.terceroMidService.put('personas/complementarios', this.info_info_caracteristica)
@@ -363,7 +342,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
               this.popUpManager.showToast('info', this.translate.instant('inscripcion.cambiar_tab'));
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -373,14 +351,11 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               });
-        } else {
-          this.loading = false;
         }
       });
   }
 
   createInfoCaracteristica(infoCaracteristica: any): void {
-    this.loading = false;
     const opt: any = {
       title: this.translate.instant('GLOBAL.crear'),
       text: this.translate.instant('inscripcion.crear'),
@@ -394,7 +369,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           const info_info_caracteristica_post = <any>infoCaracteristica;
           info_info_caracteristica_post.TipoRelacionUbicacionEnte = 1;
           info_info_caracteristica_post.Tercero = this.info_persona_id;
@@ -403,11 +377,9 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
               if (res !== null) {
                 this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
                 this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.guardar'));
-                this.loading = false;
               }
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -417,8 +389,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               });
-        } else {
-          this.loading = false;
         }
       });
   }
@@ -430,7 +400,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   validarForm(event:any) {
     if (event.valid) {
       if (typeof event.data.InfoCaracteristica.ComprobantePoblacion.file !== 'undefined' && event.data.InfoCaracteristica.ComprobantePoblacion.file !== null) {
-        this.loading = true;
         const file = [{
           file: event.data.InfoCaracteristica.ComprobantePoblacion.file,
           IdDocumento: 64,

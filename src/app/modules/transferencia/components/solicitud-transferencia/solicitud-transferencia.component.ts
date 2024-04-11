@@ -37,7 +37,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
   solicitudId: any;
   inscriptionSettings: any;
   process!: string;
-  loading!: boolean;
   file: any;
   idFileDocumento: any;
   proyectosCurriculares!: any[];
@@ -80,7 +79,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
       this.process = atob(process);
       this.id = id
 
-      this.loading = true;
       this.loadSolicitud();
 
       if (this.process === 'all') {
@@ -117,7 +115,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
   }
 
   loadInfoPersona(): void {
-    this.loading = true;
     this.uid = this.userService.getPersonaId();
 
     this.autenticationService.getRole().then((rol: any) => {
@@ -129,13 +126,11 @@ export class SolicitudTransferenciaComponent implements OnInit {
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
       this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
-        this.loading = true;
         if (res !== null) {
           this.nombreCordinador = res.NombreCompleto;
         }
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -146,19 +141,15 @@ export class SolicitudTransferenciaComponent implements OnInit {
           });
         });
     } else {
-      this.loading = false;
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
   }
 
   loadSolicitud() {
-    this.loading = true;
     this.inscripcionMidService.get('transferencia/inscripcion/' + this.id).subscribe(inscripcion => {
       console.log(inscripcion)
       if (inscripcion !== null) {
         if (inscripcion.success) {
-          this.loading = true;
-
           this.periodo = inscripcion['data']['Periodo']['Nombre'];
           this.nivelNombre = inscripcion['data']['Nivel']['Nombre'];
           this.nivel = inscripcion['data']['Nivel']['Id'];
@@ -334,7 +325,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
             this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = false;
           }
 
-          this.loading = false;
           this.inscriptionSettings = this.nivelNombre === 'Pregrado' ? {
             basic_info_button: true,
             hide_header_labels: true,
@@ -356,22 +346,17 @@ export class SolicitudTransferenciaComponent implements OnInit {
             produccion_academica: true,
             es_transferencia: true,
           }
-          this.loading = false;
         }
       }
     });
   }
 
   loadEstados() {
-    this.loading = true;
     this.inscripcionMidService.get('transferencia/estados').subscribe(estados => {
       if (estados !== null) {
         if (estados.success) {
           const respuesta = this.getIndexFormRes('Respuesta');
-
           this.formRespuesta.campos[respuesta].opciones = estados['data'].filter((estado:any) => estado.Nombre != 'Radicada' && estado.Nombre != 'Solicitado');
-
-          this.loading = false;
         }
       }
     });
@@ -394,7 +379,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
   }
 
   send() {
-    this.loading = true;
 
     const hoy = new Date();
     const inscripcionPut = {
@@ -405,16 +389,13 @@ export class SolicitudTransferenciaComponent implements OnInit {
     }
 
     this.inscripcionMidService.put('transferencia/actualizar-estado/' + this.solicitudId, inscripcionPut).subscribe((response: any) => {
-      this.loading = false;
       const r_ins = <any>response;
       if (response !== null && r_ins.Type !== 'error') {
-        this.loading = false;
         this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar'));
         this.router.navigate([`pages/inscripcion/transferencia/${btoa(this.process)}`])
       }
     },
       (error: any) => {
-        this.loading = false;
         if (error.System.Message.includes('duplicate')) {
           Swal.fire({
             icon: 'info',
@@ -423,7 +404,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
           });
         } else {
-          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -453,7 +433,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
       let files: any;
       const element = event.data.dataTransferencia.SoporteDocumento;
       if (typeof element.file !== 'undefined' && element.file !== null) {
-        this.loading = true;
         const file = {
           file: await this.nuxeo.fileToBase64(element.file),
           IdTipoDocumento: element.IdDocumento,
@@ -496,17 +475,13 @@ export class SolicitudTransferenciaComponent implements OnInit {
           (res:any) => {
             const r = <any>res
             if (r.success == true) {
-              this.loading = false;
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
                 this.ngOnInit();
                 this.goback();
               });
             } else {
               this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_solicitud'));
-              this.loading = false;
             }
-          }, error => {
-            this.loading = false;
           }
         );
       } else {
@@ -514,16 +489,12 @@ export class SolicitudTransferenciaComponent implements OnInit {
           (res:any) => {
             const r = <any>res
             if (r.success == true) {
-              this.loading = false;
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
                 this.ngOnInit();
               });
             } else {
               this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_solicitud'));
-              this.loading = false;
             }
-          }, error => {
-            this.loading = false;
           }
         );
       }
@@ -537,7 +508,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
       const element = event.data.Respuesta.SoporteRespuesta;
       if (typeof element.file !== 'undefined' && element.file !== null) {
-        this.loading = true;
         const file = {
           file: await this.nuxeo.fileToBase64(element.file),
           IdTipoDocumento: element.IdDocumento,
@@ -575,13 +545,10 @@ export class SolicitudTransferenciaComponent implements OnInit {
           if (res.status == '200') {
             this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.info_estado') + ' ' +
               this.translate.instant('GLOBAL.operacion_exitosa'));
-            this.loading = false;
           } else {
-            this.loading = false;
             this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_res_solicitud'));
           }
         }, error => {
-          this.loading = false;
           this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
         },
       );

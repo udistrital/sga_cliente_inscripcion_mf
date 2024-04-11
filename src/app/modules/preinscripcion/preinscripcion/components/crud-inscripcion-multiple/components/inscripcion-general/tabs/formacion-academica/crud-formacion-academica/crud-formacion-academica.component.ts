@@ -41,7 +41,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
   nuevoTercero: boolean = false;
   SoporteDocumento: any;
   filesUp: any;
-  loading: boolean = false;
   listaPaises!: Lugar[];
   nit: any;
   nuevoPrograma: boolean = false;
@@ -119,7 +118,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
     this.listService.findPais();
     //this.listService.findProgramaAcademico();
     this.listService.findTipoTercero();
-    this.loading = true;
   }
 
   construirForm() {
@@ -210,21 +208,17 @@ export class CrudFormacionAcademicaComponent implements OnInit {
       this.popUpManager.showConfirmAlert(this.translate.instant('GLOBAL.crear_programa_academico')).then(
         (Accion) => {
           if (Accion.value) {
-            this.loading = true;
             this.parametrosService.post('parametro',ProgramaPost).subscribe(
               (response:any) => {
                 if (response.Status == "201") {
-                  this.loading = false;
                   this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.programa_creado_ok'));
                   this.nuevoPrograma = false;
                   this.formInfoFormacionAcademica.campos[this.getIndexForm("ProgramaAcademico")].valor = response.Data;
                 } else {
-                  this.loading = false;
                   this.popUpManager.showErrorAlert(this.translate.instant('GLOBAL.programa_creado_fail'))
                 }
               }, 
               (error) => {
-                this.loading = false;
                 this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
               }
             );
@@ -246,7 +240,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
 
   searchNit(nit: string | null) {
     if (nit != null){
-      this.loading = true;
       nit = nit.trim();
       this.nit = nit.trim();
       const init = this.getIndexForm('Nit');
@@ -276,10 +269,8 @@ export class CrudFormacionAcademicaComponent implements OnInit {
             .forEach(element => {
               element.deshabilitar = element.valor ? true : false
             });
-          this.loading = false;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             if (error.status === 404) {
               [this.formInfoFormacionAcademica.campos[inombre],
               this.formInfoFormacionAcademica.campos[idir],
@@ -310,7 +301,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
               });
           });
     } else {
-      this.loading = false;
       const opt: any = {
         title: this.translate.instant('informacion_academica.crear_entidad'),
         icon: 'warning',
@@ -365,7 +355,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
   searchDoc(data:any) {
     if(data.button == "BusquedaBoton"){
       if(data.data.Nit){
-        this.loading = true;
         const init = this.getIndexForm('Nit');
         const inombre = this.getIndexForm('NombreUniversidad');
         const idir = this.getIndexForm('Direccion');
@@ -382,7 +371,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
           this.info_formacion_academica = undefined;
           this.info_formacion_academica_id = 0;
           this.edit_status = false;
-          //this.loading = false;
         } else {
           if (this.formInfoFormacionAcademica.campos[inombre].valor ? 
             this.formInfoFormacionAcademica.campos[inombre].valor.Id ? true : false : false) {
@@ -394,14 +382,9 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                 this.info_formacion_academica = undefined;
                 this.info_formacion_academica_id = 0;
                 this.edit_status = false;
-                this.loading = false;
-              },
-              (error: HttpErrorResponse) => {
-                this.loading = false;
-              },
+              }
             )
           } else {
-            this.loading = false;
             /* [this.formInfoFormacionAcademica.campos[idir],
             this.formInfoFormacionAcademica.campos[icorreo],
             this.formInfoFormacionAcademica.campos[iPais],
@@ -423,7 +406,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
 
   loadListUniversidades(nombre: string): void {
     if (nombre) {
-      this.loading = true;
       nombre = nombre.trim();
       let consultaUniversidades: Array<any> = [];
       const universidad: Array<any> = [];
@@ -435,11 +417,9 @@ export class CrudFormacionAcademicaComponent implements OnInit {
               universidad.push(consultaUniversidades[i]);
             }
           }
-          this.loading = false;
           this.formInfoFormacionAcademica.campos[this.getIndexForm('NombreUniversidad')].opciones = universidad;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -454,7 +434,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
   }
 
   public loadInfoFormacionAcademica(): void {
-    this.loading = true;
     if ((this.info_formacion_academica_id !== 0 && this.info_proyecto_id !== 0 && this.persona_id !== 0 && this.info_id_formacion !== 0)
       && (this.info_formacion_academica_id !== undefined && this.info_proyecto_id !== undefined && this.persona_id !== undefined && this.info_id_formacion !== undefined)
       && this.edit_status === true) {
@@ -500,19 +479,14 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                     let estadoDoc = this.utilidades.getEvaluacionDocumento(filesResponse[0].Metadatos);
                     this.formInfoFormacionAcademica.campos[this.getIndexForm('Documento')].estadoDoc = estadoDoc;
                   }
-                  this.loading = false;
                 },
                   (error: HttpErrorResponse) => {
-                    this.loading = false;
                     this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
                   });
             }
-          } else {
-            this.loading = false;
           }
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -523,8 +497,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
           });
-    } else {
-      this.loading = false;
     }
   }
 
@@ -542,7 +514,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_formacion_academica = <any>infoFormacionAcademica;
           const files = [];
           if (this.info_formacion_academica.DocumentoId.file !== undefined) {
@@ -574,11 +545,9 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                       this.info_formacion_academica_id = 0;
                       this.edit_status = false;
                       this.updateFormacion.emit();
-                      this.loading = false;
                       //this.popUpManager.showToast('info', this.translate.instant('inscripcion.cambiar_tab2'));
                     },
                       (error: HttpErrorResponse) => {
-                        this.loading = false;
                         Swal.fire({
                           icon: 'error',
                           title: error.status + '',
@@ -588,12 +557,9 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                           confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                         });
                       });
-                } else {
-                  this.loading = false;
                 }
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon: 'error',
                     title: error.status + '',
@@ -605,7 +571,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                   });
                 });
           } else {
-            this.loading = true;
             this.info_formacion_academica.DocumentoId = this.SoporteDocumento;
             this.inscripcionMidService.put('academico/formacion/?Id=' + this.info_id_formacion, this.info_formacion_academica)
               .subscribe(res => {
@@ -616,10 +581,8 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                 this.info_formacion_academica = undefined;
                 this.info_formacion_academica_id = 0;
                 this.updateFormacion.emit();
-                this.loading = false;
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon: 'error',
                     title: error.status + '',
@@ -648,7 +611,6 @@ export class CrudFormacionAcademicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           const files = [];
           this.info_formacion_academica = <any>infoFormacionAcademica;
           if (this.info_formacion_academica.DocumentoId.file !== undefined) {
@@ -684,10 +646,8 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                     } else {
                       this.popUpManager.showToast('error', this.translate.instant('informacion_academica.informacion_academica_no_registrada'));
                     }
-                    this.loading = false;
                   },
                     (error: HttpErrorResponse) => {
-                      this.loading = false;
                       Swal.fire({
                         icon: 'error',
                         title: error.status + '',
@@ -697,10 +657,8 @@ export class CrudFormacionAcademicaComponent implements OnInit {
                       });
                     });
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',

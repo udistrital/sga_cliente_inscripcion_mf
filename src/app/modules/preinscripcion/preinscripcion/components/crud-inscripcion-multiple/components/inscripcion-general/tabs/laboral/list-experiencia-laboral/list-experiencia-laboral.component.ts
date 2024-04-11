@@ -45,7 +45,6 @@ export class ListExperienciaLaboralComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean;
   percentage!: number;
   persona_id: number;
 
@@ -65,7 +64,6 @@ export class ListExperienciaLaboralComponent implements OnInit {
     }
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-    this.loading = false;
     this.persona_id = this.userService.getPersonaId();
     if (this.persona_id !== undefined && this.persona_id !== null && this.persona_id.toString() !== '') {
       this.loadData();
@@ -77,12 +75,10 @@ export class ListExperienciaLaboralComponent implements OnInit {
   }
 
   loadData(): void {
-    this.loading = true;
     this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.persona_id).subscribe(
       (response: any) => {
         if (response !== null && response.status == '200') {
           this.data = <Array<any>>response.data;
-          this.loading = false;
           this.getPercentage(1);
           this.data.forEach(async (expLab) => {
             let estadoDoc = await <any>this.cargarEstadoDocumento(expLab.Soporte);
@@ -100,10 +96,8 @@ export class ListExperienciaLaboralComponent implements OnInit {
             this.getPercentage(0);
             this.dataSource = new MatTableDataSource();
           }
-        this.loading = false;
       },
       (error: HttpErrorResponse) => {
-        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: error.status + '',
@@ -182,7 +176,6 @@ export class ListExperienciaLaboralComponent implements OnInit {
     };
     Swal.fire(opt)
       .then((willDelete) => {
-        this.loading = true;
         if (willDelete.value) {
           //todo: falta parametro
           this.inscripcionMidService.delete('experiencia-laboral/', event).subscribe(res => {
@@ -190,10 +183,8 @@ export class ListExperienciaLaboralComponent implements OnInit {
               this.loadData();
               this.snackBar.open(this.translate.instant('GLOBAL.experiencia_laboral'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
             }
-            this.loading = false;
           },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               Swal.fire({
                 icon: 'error',
                 title: error.status + '',
@@ -204,7 +195,6 @@ export class ListExperienciaLaboralComponent implements OnInit {
               });
             });
         }
-        this.loading = false;
       });
   }
 
