@@ -8,7 +8,9 @@ import { CampusMidService } from 'src/app/services/campus_mid.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
 import Swal from 'sweetalert2';
@@ -66,12 +68,10 @@ export class ViewDescuentoAcademicoComponent implements OnInit {
   @Output('docs_editados') docs_editados: EventEmitter<any> = new EventEmitter(true);
 
   constructor(private translate: TranslateService,
-    private mid: CampusMidService,
+    private inscripcionMidService: InscripcionMidService,
     private documentoService: DocumentoService,
     private sanitization: DomSanitizer,
-    private inscripcionService: InscripcionService,
     private newNuxeoService: NewNuxeoService,
-    private sgaMidService: SgaMidService,
     private utilidades: UtilidadesService,
     private zipManagerService: ZipManagerService,
     private popUpManager: PopUpManager,) {
@@ -93,12 +93,12 @@ export class ViewDescuentoAcademicoComponent implements OnInit {
   }
 
   loadData(): void {
-    this.sgaMidService.get('descuento_academico/descuentopersonaperiododependencia?' +
+    this.inscripcionMidService.get('academico/descuento/detalle?' +
       'PersonaId=' + sessionStorage.getItem('TerceroId') + '&DependenciaId=' +
       sessionStorage.getItem('ProgramaAcademicoId') + '&PeriodoId=' + sessionStorage.getItem('IdPeriodo'))
       .subscribe((result: any) => {
-        const r = <any>result.Data.Body[1];
-        if (result !== null && result.Data.Code == '200') {
+        const r = <any>result.data;
+        if (result !== null && result.status == '200') {
           const data = <Array<SolicitudDescuento>>r;
           const soportes = [];
           let soportes1 = "";

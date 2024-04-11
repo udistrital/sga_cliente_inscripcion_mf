@@ -76,10 +76,8 @@ export class CrudDocumentoProgramaComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private documentoService: DocumentoService,
     private inscripcionService: InscripcionService,
     private popUpManager: PopUpManager,
-    private userService: UserService,
     private newNuxeoService: NewNuxeoService,
   ) {
     this.formDocumentoPrograma = FORM_DOCUMENTO_PROGRAMA;

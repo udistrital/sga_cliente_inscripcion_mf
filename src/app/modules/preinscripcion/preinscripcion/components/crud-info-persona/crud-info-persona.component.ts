@@ -5,7 +5,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import { FORM_INFO_PERSONA } from './form-info_persona';
@@ -13,12 +12,11 @@ import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { HttpErrorResponse } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import * as moment from 'moment-timezone';
-import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import * as momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
-import { verifyHostBindings } from '@angular/compiler';
 import { validateLang } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { encrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
@@ -71,8 +69,7 @@ export class CrudInfoPersonaComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private popUpManager: PopUpManager,
-    private sgamidService: SgaMidService,
-    private tercerosMidService: TercerosMidService,
+    private terceroMidService: TerceroMidService,
     private autenticationService: ImplicitAutenticationService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -115,8 +112,9 @@ export class CrudInfoPersonaComponent implements OnInit {
   public async loadInfoPersona() {
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '' && this.info_persona_id.toString() !== '0') {
-      await this.sgamidService.get('persona/consultar_persona/' + this.info_persona_id)
+      await this.terceroMidService.get('personas/' + this.info_persona_id)
         .subscribe(res => {
+          res = res.data
           if (res !== null && res.Id !== undefined) {
             const temp = <InfoPersona>res;
             this.aceptaTerminos = true;
@@ -167,8 +165,9 @@ export class CrudInfoPersonaComponent implements OnInit {
     let doc = this.formInfoPersona.campos[this.getIndexForm('NumeroIdentificacion')].valor;
     let verif = this.formInfoPersona.campos[this.getIndexForm('VerificarNumeroIdentificacion')].valor
     if ((doc && verif) && (doc == verif) && !this.aceptaTerminos) {
-      this.sgamidService.get('persona/existe_persona/' + doc).subscribe(
+      this.terceroMidService.get('personas/existencia/' + doc).subscribe(
         (res) => {
+          res = res.data
           this.info_info_persona = res[0];
           this.datosEncontrados = { ...res[0] };
           if (res[0].FechaNacimiento != null) {
@@ -265,7 +264,8 @@ export class CrudInfoPersonaComponent implements OnInit {
     let dataTel = { principal: infoPersona.Telefono, alterno: this.datosEncontrados.TelefonoAlterno ? this.datosEncontrados.TelefonoAlterno : null }
     prepareUpdate.Complementarios.Telefono.data = JSON.stringify(dataTel);
 
-    this.tercerosMidService.put('persona/actualizar_persona', prepareUpdate).subscribe((response: any) => {
+    this.terceroMidService.put('personas', prepareUpdate).subscribe((response: any) => {
+      response = response.data
       this.faltandatos = false;
       this.existePersona = false;
       this.formInfoPersona.btn = '';
@@ -295,7 +295,8 @@ export class CrudInfoPersonaComponent implements OnInit {
     infoPersona.FechaExpedicion = infoPersona.FechaExpedicion + ' +0000 +0000';
     infoPersona.NumeroIdentificacion = (infoPersona.NumeroIdentificacion).toString();
     infoPersona.Usuario = this.autenticationService.getPayload().email;
-    this.tercerosMidService.post('persona/guardar_persona', infoPersona).subscribe(res => {
+    this.terceroMidService.post('personas/', infoPersona).subscribe((res:any) => {
+      res = res.data
       const r = <any>res
       if (r !== null && r.Type !== 'error') {
         window.localStorage.setItem('ente', r.Id);

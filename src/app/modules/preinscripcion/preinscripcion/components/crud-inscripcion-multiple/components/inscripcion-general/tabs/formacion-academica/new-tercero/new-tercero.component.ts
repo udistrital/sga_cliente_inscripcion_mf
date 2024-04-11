@@ -7,6 +7,7 @@ import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { NUEVO_TERCERO } from './form_new_tercero';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
   selector: 'ngx-new-tercero',
@@ -43,7 +44,7 @@ export class NewTerceroComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>) {
     this.formInfoNuevoTercero = NUEVO_TERCERO;
     this.construirForm();
@@ -97,7 +98,7 @@ export class NewTerceroComponent implements OnInit {
             infoTercero.Verificacion = nitAux[1];
           }
 
-          this.sgaMidService.post('formacion_academica/post_tercero', infoTercero)
+          this.inscripcionMidService.post('academico/formacion/tercero', infoTercero)
             .subscribe((data) => {
               this.result.emit({
                 infoPost: infoTercero,

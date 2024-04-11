@@ -10,7 +10,10 @@ import { CampusMidService } from 'src/app/services/campus_mid.service';
 import { DescuentoAcademicoService } from 'src/app/services/descuento_academico.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 import Swal from 'sweetalert2';
@@ -56,69 +59,18 @@ export class ListDescuentoAcademicoComponent implements OnInit {
 
   constructor(private translate: TranslateService,
     private mid: CampusMidService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private popUpManager: PopUpManager,
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
     private newNuxeoService: NewNuxeoService,
     private descuentoAcademicoService: DescuentoAcademicoService) {
-    this.cargarCampos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.cargarCampos();
     });
     this.loadData();
   }
 
-  cargarCampos() {
-    this.settings = {
-      columns: {
-        DescuentosDependenciaId: {
-          title: this.translate.instant('GLOBAL.tipo_descuento_matricula'),
-          width: '30%',
-          valuePrepareFunction: (value: any) => {
-            return value.TipoDescuentoId.Nombre;
-          },
-        },
-        EstadoObservacion: {
-          title: this.translate.instant('admision.estado'),
-          width: '20%',
-          editable: false,
-        },
-        Observacion: {
-          title: this.translate.instant('admision.observacion'),
-          width: '40%',
-          editable: false,
-        },
-      },
-      mode: 'external',
-      actions: {
-        position: 'right',
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
-        add: true,
-        edit: false,
-        delete: false,
-        custom: [
-          {
-            name: 'open',
-            title: '<i class="nb-compose" title="' + this.translate.instant('GLOBAL.tooltip_ver_registro') + '"></i>',
-          },
-          {
-            name: 'edit',
-            title: '<i class="nb-edit" title="' + this.translate.instant('GLOBAL.tooltip_editar_registro') + '"></i>',
-          },
-          {
-            name: 'delete',
-            title: '<i class="nb-trash" title="' + this.translate.instant('GLOBAL.eliminar') + '"></i>',
-          },
-        ],
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="' + this.translate.instant('descuento_academico.tooltip_crear') + '"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-    };
-  }
+
 
   useLanguage(language: string) {
     this.translate.use(language);
@@ -126,12 +78,12 @@ export class ListDescuentoAcademicoComponent implements OnInit {
 
   loadData(): void {
     const id = decrypt(window.localStorage.getItem('persona_id'));
-    this.sgaMidService.get('descuento_academico/descuentopersonaperiododependencia?' +
+    this.inscripcionMidService.get('academico/descuento/detalle?' +
       'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
       .subscribe((result: any) => {
-        const r = <any>result.Data.Body[1];
-        if (result !== null && (result.Data.Code == '400' || result.Data.Code == '404')) {
+        const r = <any>result.data;
+        if (result !== null && (result.status == '400' || result.status== '404')) {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource()

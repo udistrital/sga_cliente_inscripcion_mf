@@ -15,6 +15,9 @@ import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_DESCUENTO } from './form-descuento_academico';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
@@ -82,13 +85,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private autenticationService: ImplicitAutenticationService,
-    private documentoService: DocumentoService,
-    private descuentoService: DescuentoAcademicoService,
-    private inscripcionService: InscripcionService,
-    private coreService: CoreService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>,
-    private listService: ListService,
     private popUpManager: PopUpManager,
     private newNuxeoService: NewNuxeoService,) {
     this.formDescuentoAcademico = FORM_DESCUENTO;
@@ -104,11 +102,12 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
 
   findDescuentoAcademico(programa: any) {
     // this.descuentoAcademicoService.get('tipo_descuento/?limit=0&query=Activo:true')
-    this.sgaMidService.get('descuento_academico/descuentoAcademicoByID/' + programa)
+    console.log(programa)
+    this.inscripcionMidService.get('academico/descuento/' + programa)
     .subscribe(
       (result: any) => {
-        const r = <any>result.Data.Body[1];
-        if (result !== null && result.Data.Code == '404') {
+        const r = <any>result.data;
+        if (result !== null && result.status == '404') {
           this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].opciones = []
         } else {
           this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].opciones = r.map((result: any) => {
@@ -190,13 +189,13 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     if (this.descuento_academico_id !== undefined &&
       this.descuento_academico_id !== 0 &&
       this.descuento_academico_id.toString() !== '') {
-        const id = decrypt(window.localStorage.getItem('persona_id'));
-        this.sgaMidService.get('descuento_academico?PersonaId=' + id + '&SolicitudId=' + this.descuento_academico_id)
+      const id = decrypt(window.localStorage.getItem('persona_id'));
+        this.inscripcionMidService.get('academico/descuento/?PersonaId=' + id + '&SolicitudId=' + this.descuento_academico_id)
           .subscribe(solicitud => {
             if (solicitud !== null) {
-              this.temp = <SolicitudDescuento>solicitud;
-              this.info_descuento_academico = this.temp;
-                    this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].valor = (this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId && this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id) ?
+              this.temp = <SolicitudDescuento>solicitud.data;
+              this.info_descuento_academico = this.temp[0];
+                    this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].valor = (this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id && this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id) ?
                     { Id: this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id,
                       Nombre: this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id + '. ' + this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Nombre} :
                       { Id: 0, Nombre: 'No registrado' };
@@ -258,8 +257,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                   this.info_descuento_academico.DescuentoDependencia.Periodo = Number(window.sessionStorage.getItem('IdPeriodo'));
           
                   this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
-                  
-                  this.sgaMidService.put('descuento_academico', this.info_descuento_academico)
+                  console.log(this.info_descuento_academico)
+                  this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)
                     .subscribe(res => {
                       /* if (documentos_actualizados['SoporteDescuento'] !== undefined) {
                         this.info_descuento_academico.Documento = documentos_actualizados['SoporteDescuento'].url + '';
@@ -301,7 +300,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             this.info_descuento_academico.PersonaId = (1 * this.persona);
             this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
 
-            this.sgaMidService.put('descuento_academico', this.info_descuento_academico)
+            this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)
               .subscribe(res => {
                 this.eventChange.emit(true);
                 this.popUpManager.showSuccessAlert(this.translate.instant('descuento_academico.descuento_actualizado'));
@@ -364,10 +363,10 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                   this.info_descuento_academico.DocumentoId = responseNux[0].res.Id;
                 
                 // this.info_descuento_academico.DocumentoId = 1234
-                this.sgaMidService.post('descuento_academico/', this.info_descuento_academico)
+                this.inscripcionMidService.post('academico/descuento/', this.info_descuento_academico)
                   .subscribe(res => {
                     const r = <any>res
-                    if (r !== null && r.Type !== 'error') {
+                    if (r.data !== null) {
                       this.eventChange.emit(true);
                       // this.showToast('info', this.translate.instant('GLOBAL.crear'),
                       // this.translate.instant('descuento_academico.descuento_academico_registrado'));
