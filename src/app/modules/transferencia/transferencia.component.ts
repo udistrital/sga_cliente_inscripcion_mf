@@ -314,8 +314,6 @@ export class TransferenciaComponent implements OnInit {
         this.loading = false;
         return false;
       }) as any;
-      console.log(parametros)
-
 
       if (parametros == false) {
         this.formTransferencia.campos.forEach((campo: any) => {
@@ -462,16 +460,21 @@ export class TransferenciaComponent implements OnInit {
       this.loading = true;
       let periodo = localStorage.getItem('IdPeriodo');
       //TODO: parametros
+      
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.dataTransferencia.TipoInscripcion!.NivelId + '&id-periodo=' + periodo).subscribe(
-        (response: any[]) => {
-          if (response !== null && response.length !== 0) {
-            this.inscripcionProjects = response;
+        (response: any) => {
+          if (response !== null && response.success == true) {
+            this.inscripcionProjects = response.data;
+            console.log(this.inscripcionProjects)
+            console.log(this.dataTransferencia)
+            
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
+                    console.log(response)
                     if (response.status == '200') {
                       this.listadoSolicitudes = true;
 
@@ -482,7 +485,7 @@ export class TransferenciaComponent implements OnInit {
 
                       resolve(response);
                       this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
-                    } else if (response.status == '204') {
+                    } else if (response.status == '205') {
                       this.loading = false;
                       reject([]);
                       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));

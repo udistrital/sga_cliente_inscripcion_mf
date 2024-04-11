@@ -45,34 +45,37 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
   @Input('inscriptionSettings')
   set nameInscription(inscriptionSettings: any) {
-    const {
-      basic_info_button,
-      hide_header_labels,
-      formacion_academica_button,
-      documentos_programa_button,
-      nivel,
-      select_tipo,
-      detalle_inscripcion,
-      experiencia_laboral,
-      produccion_academica,
-      es_transferencia,
-    } = inscriptionSettings;
-
-    this.nivel = nivel;
-    this.selectTipo = select_tipo;
-    this.hide_header_labels = !!hide_header_labels;
-    this.basic_info_button = basic_info_button;
-    this.formacion_academica_button = formacion_academica_button;
-    this.documentos_programa_button = documentos_programa_button;
-    this.detalle_inscripcion = detalle_inscripcion;
-    this.experiencia_laboral = experiencia_laboral;
-    this.produccion_academica = produccion_academica;
-    this.es_transferencia = es_transferencia;
+    if(inscriptionSettings){
+      const {
+        basic_info_button,
+        hide_header_labels,
+        formacion_academica_button,
+        documentos_programa_button,
+        nivel,
+        select_tipo,
+        detalle_inscripcion,
+        experiencia_laboral,
+        produccion_academica,
+        es_transferencia,
+      } = inscriptionSettings;
+  
+      this.nivel = nivel;
+      this.selectTipo = select_tipo;
+      this.hide_header_labels = !!hide_header_labels;
+      this.basic_info_button = basic_info_button;
+      this.formacion_academica_button = formacion_academica_button;
+      this.documentos_programa_button = documentos_programa_button;
+      this.detalle_inscripcion = detalle_inscripcion;
+      this.experiencia_laboral = experiencia_laboral;
+      this.produccion_academica = produccion_academica;
+      this.es_transferencia = es_transferencia;
+    }
   }
 
   @Input('inscripcion_id')
   set name(inscripcion_id: number) {
     this.inscripcion_id = inscripcion_id;
+    console.log(this.inscripcion_id)
     if (this.inscripcion_id === 0 || this.inscripcion_id.toString() === '0') {
       this.selectedValue = undefined;
       window.localStorage.setItem('programa', this.selectedValue);
@@ -202,7 +205,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   async loadData() {
-    this.estado_inscripcion_nombre = <string>sessionStorage.getItem('IdEstadoInscripcion')!.toUpperCase();
+    if(<string>sessionStorage.getItem('IdEstadoInscripcion') != null){
+      this.estado_inscripcion_nombre = <string>sessionStorage.getItem('IdEstadoInscripcion')!.toUpperCase();
+    }
     this.inscripcion = new Inscripcion();
     this.inscripcion.Id = parseInt(sessionStorage.getItem('IdInscripcion')!, 10);
     this.inscripcion.ProgramaAcademicoId = sessionStorage.getItem('ProgramaAcademico');
