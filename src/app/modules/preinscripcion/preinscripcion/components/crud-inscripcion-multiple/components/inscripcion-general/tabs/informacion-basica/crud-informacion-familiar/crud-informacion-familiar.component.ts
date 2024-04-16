@@ -10,7 +10,8 @@ import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { UserService } from 'src/app/services/users.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_INFORMACION_FAMILIAR } from './form-informacion_familiar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
@@ -298,7 +299,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           //FUNCION PUT
           this.terceroMidService.put('personas/info-familiar', info_familiar).subscribe(

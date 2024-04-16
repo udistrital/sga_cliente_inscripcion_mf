@@ -12,7 +12,8 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-formacion-academica',
@@ -158,7 +159,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
     };
     console.log(event)
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           //todo, raro el ednpoint
           this.inscripcionMidService.delete('academico/formacion', event).subscribe(res => {

@@ -16,7 +16,8 @@ import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-descuento-academico',
@@ -211,7 +212,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willDelete) => {
+        .then((willDelete: any) => {
           if (willDelete.value) {
             event.Activo = false;
             this.descuentoAcademicoService.put('solicitud_descuento', event).subscribe(res => {

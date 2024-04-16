@@ -16,7 +16,8 @@ import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { environment } from 'src/environments/environment';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
 import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';

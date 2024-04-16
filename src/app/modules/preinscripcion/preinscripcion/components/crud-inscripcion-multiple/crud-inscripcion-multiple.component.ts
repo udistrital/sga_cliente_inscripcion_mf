@@ -19,7 +19,8 @@ import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.se
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { LinkDownloadComponent } from './components/link-download/link-download.component';
 import { ButtonPaymentComponent } from './components/button-payment/button-payment.component';
 import { MatTableDataSource } from '@angular/material/table';
@@ -630,7 +631,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     }; Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         this.inscripcionMidService.post('inscripciones/preinscripcion', this.proyectos_preinscripcion_post)
           .subscribe((res:any) => {
             this.info_inscripcion = <Inscripcion><unknown>res.data;

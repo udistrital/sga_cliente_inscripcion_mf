@@ -13,7 +13,8 @@ import { IAppState } from 'src/app/utils/reducers/app.state';
 import { FORM_INFO_CARACTERISTICA_PREGRADO } from './form-info_caracteristica_pregrado';
 import { Lugar } from 'src/app/models/informacion/lugar';
 import { HttpErrorResponse } from '@angular/common/http';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as momentTimezone from 'moment-timezone';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
@@ -331,7 +332,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
           this.info_info_caracteristica.Ente = this.info_persona_id;
@@ -367,7 +368,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           const info_info_caracteristica_post = <any>infoCaracteristica;
           info_info_caracteristica_post.TipoRelacionUbicacionEnte = 1;

@@ -12,7 +12,8 @@ import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_PROPUESTA_GRADO } from './form-propuesta_grado';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -202,7 +203,7 @@ export class CrudPropuestaGradoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_propuesta_grado = <PropuestaGrado>propuestaGrado;
           const files = [];

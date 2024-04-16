@@ -22,7 +22,8 @@ import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import { environment } from 'src/environments/environment';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_produccion_academica } from './form-produccion_academica';
 import { NUEVO_AUTOR } from './form_new_autor';
 import { ProduccionAcademicaService } from 'src/app/services/produccion_academica.service';
@@ -426,7 +427,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       showCancelButton: true,
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
           console.log(this.info_produccion_academica)
@@ -464,7 +465,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       showCancelButton: true,
     };
     Swal.fire(opt)
-      .then((willCreate) => {
+      .then((willCreate: any) => {
         if (willCreate.value) {
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
           console.log(this.info_produccion_academica)
@@ -714,7 +715,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willMake) => {
+        .then((willMake: any) => {
           if (willMake.value) {
             infoTercero.Activo = false;
 

@@ -12,7 +12,8 @@ import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.se
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { TAGS_INSCRIPCION_PROGRAMA } from './def_tags_por_programa';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { ListService } from 'src/app/services/list.service';
