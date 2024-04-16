@@ -87,3 +87,11 @@
 .icono:hover {
     color: #03678f;
 }
+
+.table-container {
+    overflow: overlay;
+}
+
+mat-table {
+    display: table;
+}
