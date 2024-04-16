@@ -145,6 +145,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         this.onDelete(event);
         break;
     }
+  }
 
   onOpen(event: any) {
     const filesToGet = [

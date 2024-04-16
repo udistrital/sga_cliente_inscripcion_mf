@@ -114,7 +114,6 @@ export class TransferenciaComponent implements OnInit {
     this.sub = this._Activatedroute.paramMap.subscribe(async (params: any) => {
       const { process } = params.params;
       this.actions = (this.process === 'my');
-      this.createTable(this.process);
         await this.loadDataTercero(this.process).then(e => {
           Swal.fire({
             icon: 'warning',
@@ -143,7 +142,6 @@ export class TransferenciaComponent implements OnInit {
 
   async loadDataTercero(process: any) {
     await this.cargarPeriodo(); 
-    this.loading = true;
     this.inscripcionMidService.get('transferencia/estado-recibos/' + this.uid)
       .subscribe(response => {
         if (response !== null && response.status === '400') {
@@ -462,11 +460,9 @@ export class TransferenciaComponent implements OnInit {
                       resolve(response);
                       this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
                     } else if (response.status == '204') {
-                      this.loading = false;
                       reject([]);
                       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
                     } else if (response.status == '400') {
-                      this.loading = false;
                       reject([]);
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     }

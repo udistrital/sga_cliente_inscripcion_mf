@@ -137,8 +137,6 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     if (localStorage.getItem('IdPeriodo') === undefined) {
       this.loadInfoPersona();
     }
-    this.loading = false;
-    this.createTable();
   }
 
   return() {
@@ -246,7 +244,6 @@ export class CrudInscripcionMultipleComponent implements OnInit{
         (response: any) => {
           if (response !== null && response.status == '400') {
             this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
-            this.loading = false;
           } else if (response != null && response.status == '404') {
             this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
           } else {
@@ -486,7 +483,6 @@ export class CrudInscripcionMultipleComponent implements OnInit{
       let periodo = localStorage.getItem('IdPeriodo');
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
         (response: any) => {
-          this.loading = false;=
           if (response !== null && response.length !== 0) {
             this.inscripcionProjects = response.data;
             this.inscripcionProjects.forEach(proyecto => {
@@ -503,7 +499,6 @@ export class CrudInscripcionMultipleComponent implements OnInit{
                   this.recibo_pago.ValorDerecho = valor['Costo']
                   this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago).subscribe(
                     (response:any) => {
-                      this.loading = false;
                       const reciboData = new Uint8Array(atob(response['data']).split('').map(char => char.charCodeAt(0)));
                       this.recibo_generado = window.URL.createObjectURL(new Blob([reciboData], { type: 'application/pdf' }));
                       window.open(this.recibo_generado);
