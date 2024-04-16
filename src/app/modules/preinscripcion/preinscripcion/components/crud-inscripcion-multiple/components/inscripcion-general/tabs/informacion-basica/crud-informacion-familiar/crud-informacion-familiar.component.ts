@@ -328,7 +328,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
   }
 
   createInfoFamiliar(info_familiar: any){
-    this.inscripcionMidService.post('inscripciones/informacion-familiar', info_familiar)=
+    this.inscripcionMidService.post('inscripciones/informacion-familiar', info_familiar)
       .subscribe((res: any) => {
         if (res.message === 'error') {
           Swal.fire({

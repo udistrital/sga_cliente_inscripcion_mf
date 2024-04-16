@@ -48,7 +48,6 @@ export class ListProduccionAcademicaComponent implements OnInit {
   }
 
   loadData(): void {
-    this.loading = true;
     this.inscripcionMidService.get('academico/produccion/tercero/' + this.persona_id)
       .subscribe(res => {
         if (res !== null && res.status == '200') {
@@ -172,7 +171,6 @@ export class ListProduccionAcademicaComponent implements OnInit {
                 acepta: isAuthor.value ? true : false,
                 AutorProduccionAcademica: data.EstadoEnteAutorId,
               }
-              this.loading = true;
               this.inscripcionMidService.put('academico/produccion/autor/' + dataPut.AutorProduccionAcademica.Id, dataPut)
                 .subscribe((res: any) => {
                   if (res.data === null) {
