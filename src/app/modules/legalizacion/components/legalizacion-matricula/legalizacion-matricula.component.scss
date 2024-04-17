@@ -177,6 +177,21 @@ fieldset {
     margin: 0 auto;
 }
 
+.info-personal {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.info-personal li {
+    list-style-type: none;
+}
+
+.info-personal mat-card-header {
+    background-color: #006eaf;
+}
+
 @media (width > 650px) {
     .info-socioeconomica .residencia-colegio {
         grid-template-columns: 1fr 1fr;
