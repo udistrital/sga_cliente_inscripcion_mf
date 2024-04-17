@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SoporteParams } from 'src/app/models/forms/define-form-fields';
+import { UbicacionService } from 'src/app/services/ubicacion.service';
+import { ParametrosService } from 'src/app/services/parametros.service';
+import { TercerosService } from 'src/app/services/terceros.service';
 
 @Component({
   selector: 'app-legalizacion-matricula',
@@ -9,9 +12,15 @@ import { SoporteParams } from 'src/app/models/forms/define-form-fields';
 })
 export class LegalizacionMatriculaComponent implements OnInit {
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private ubicacionService: UbicacionService,
+    private parametrosService: ParametrosService,
+    private tercerosService: TercerosService 
+  ) {}
 
   isLinear = false;
+  loading!: boolean;
 
   formInfoPersonal!: FormGroup;
   formInfoSocioEconomicaPersonal!: FormGroup;
@@ -89,12 +98,17 @@ export class LegalizacionMatriculaComponent implements OnInit {
     }
   };
 
-  ngOnInit() {
-    this.formInfoPersonal = this.infoPersonal;
-    this.formInfoSocioEconomicaPersonal = this.infoSocioEconomicaPersonal;
-    this.formInfoSocioEconomicaCosteara = this.infoSocioEconomicaCosteara;
-    this.formDocsGenerales = this.docsGenerales;
+  localidades!: any[];
+  situacionesLaboral!: any[];
+  estratos!: any[];
+  tiposDocumento!: any[];
+
+  async ngOnInit() {
+    this.initFormularios();
+    this.cargarDatosFormularios();
   }
+
+  // MANJEO ARCHIVOS //
 
   onChangeSelectFiles(label: string, event: any): void {
     const files = <File[]>Object.values(event.target.files);
@@ -137,4 +151,118 @@ export class LegalizacionMatriculaComponent implements OnInit {
     });
     return {"errTipo": errTipo, "errTam": errTam}
   }
+
+  previewFile(url: string): void {
+    const h = screen.height * 0.65;
+    const w = h * 3/4;
+    const left = (screen.width * 3/4) - (w / 2);
+    const top = (screen.height / 2) - (h / 2);
+    window.open(url, '', 'toolbar=no,' +
+      'location=no, directories=no, status=no, menubar=no,' +
+      'scrollbars=no, resizable=no, copyhistory=no, ' +
+      'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+  }
+
+  deleteSelectedFile(label: string, fileName: string): void {
+    const idf = this.soportes[label].archivosLocal!.findIndex(f => f.file.name == fileName)
+    if (idf != -1) {
+      this.soportes[label].archivosLocal!.splice(idf, 1);
+      const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
+      const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
+      this.soportes[label].validaArchivos = errs;
+      // this.formGroup.patchValue({[label]: nameFiles});
+      // this.formGroup.get(label)!.markAsTouched({onlySelf: true});
+      // this.putErrorIfRequired(label, errs);
+    }
+  }
+
+  deleteSelectedFileLinea(label: string, idFile: number): void {
+    const idf = this.soportes[label].archivosLinea!.findIndex(f => f.Id == idFile);
+    if (idf != -1) {
+      this.soportes[label].archivosLinea!.splice(idf, 1);
+      this.soportes[label].archivosDelete!.push(idFile);
+      const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
+      const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
+      this.soportes[label].validaArchivos = errs;
+      // this.formGroup.patchValue({[label]: nameFiles});
+      // this.formGroup.get(label)!.markAsTouched({onlySelf: true});
+      // this.putErrorIfRequired(label, errs);
+    }
+  }
+
+  // MANJEO ARCHIVOS //
+
+  initFormularios() {
+    this.formInfoPersonal = this.infoPersonal;
+    this.formInfoSocioEconomicaPersonal = this.infoSocioEconomicaPersonal;
+    this.formInfoSocioEconomicaCosteara = this.infoSocioEconomicaCosteara;
+    this.formDocsGenerales = this.docsGenerales;
+  }
+
+  async cargarDatosFormularios() {
+    this.loading = true;
+    await this.cargarLocalidades();
+    await this.cargarSituacionesLaborales();
+    await this.cargarEstratos();
+    await this.cargarTipoDoc();
+    this.loading = false;
+  }
+
+  cargarTipoDoc() {
+    return new Promise((resolve, reject) => {
+      this.tercerosService.get('tipo_documento/?query=Activo:true&limit=0')
+        .subscribe((res:any) => {
+          this.tiposDocumento = res;
+          console.log(this.tiposDocumento)
+          resolve(res)
+        },
+        (error: any) => {
+          console.log(error);
+          reject([]);
+        });
+    });
+  }
+
+  cargarLocalidades() {
+    return new Promise((resolve, reject) => {
+      this.ubicacionService.get('lugar?limit=0&query=TipoLugarId__Id:3')
+        .subscribe((res:any) => {
+          this.localidades = res;
+          resolve(res)
+        },
+        (error: any) => {
+          console.log(error);
+          reject([]);
+        });
+    });
+  }
+
+  cargarSituacionesLaborales() {
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A89')
+        .subscribe((res:any) => {
+          this.situacionesLaboral = res.Data;
+          resolve(res)
+        },
+        (error: any) => {
+          console.log(error);
+          reject([]);
+        });
+    });
+  }
+
+  cargarEstratos() {
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A90')
+        .subscribe((res:any) => {
+          this.estratos = res.Data;
+          resolve(res)
+        },
+        (error: any) => {
+          console.log(error);
+          reject([]);
+        });
+    });
+  }
+
 }

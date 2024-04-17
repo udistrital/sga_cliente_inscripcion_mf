@@ -34,7 +34,8 @@
                             <mat-form-field>
                                 <mat-label>{{ 'legalizacion_admision.tipo_identificacion' | translate }}</mat-label>
                                 <mat-select formControlName="tipo_identificacion">
-                                    <mat-option>{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                        <mat-option *ngFor="let documento of tiposDocumento" value="{{ documento.Id }}">{{ documento.Nombre }}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field>
@@ -97,7 +98,8 @@
                             <mat-form-field>
                                 <mat-label>{{ 'GLOBAL.localidad_residencia' | translate }}</mat-label>
                                 <mat-select formControlName="localidad">
-                                    <mat-option>{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                    <mat-option *ngFor="let localidad of localidades" value="{{ localidad.Id }}">{{ localidad.Nombre }}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field class="span-2">
@@ -111,6 +113,12 @@
                                 <div class="row">
                                     <div class="col-12 d-flex flex-wrap">
                                         <button class="my-button" #selectFiles type="button" mat-raised-button (click)="documento.click()">{{'GLOBAL.seleccionar_archivo' | translate}}</button>
+                                        <span class="enlace-documento" *ngFor="let archivo of soportes['diplomaBachiller'].archivosLocal" (click)="previewFile(archivo.urlTemp)" title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}" [ngClass]="{'archivo_invalido': archivo.err}">
+                                            {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true" *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar' | translate}}" (click)="deleteSelectedFile('diplomaBachiller', archivo.file.name)">close</mat-icon>
+                                        </span>
+                                        <span class="enlace-documento" *ngFor="let archivoLinea of soportes['diplomaBachiller'].archivosLinea" (click)="previewFile(archivoLinea.url)" title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+                                            <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{ archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon class="icon-boton" aria-hidden="true" *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar_temporalmente' | translate}}" (click)="deleteSelectedFileLinea('diplomaBachiller', archivoLinea.Id)">close</mat-icon>
+                                        </span>
                                     </div>
                                 </div>
                             </mat-form-field>
@@ -159,7 +167,8 @@
                                 <mat-form-field>
                                     <mat-label>{{ 'legalizacion_admision.situacion_laboral' | translate }}</mat-label>
                                     <mat-select formControlName="situacion_laboral">
-                                        <mat-option>{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                        <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                        <mat-option *ngFor="let situacion of situacionesLaboral" value="{{ situacion.Id }}">{{ situacion.Nombre }}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-form-field floatLabel="always">
@@ -203,7 +212,8 @@
                             <mat-form-field>
                                 <mat-label>{{ 'GLOBAL.estrato_costea' | translate }}</mat-label>
                                 <mat-select formControlName="estrato">
-                                    <mat-option>{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                    <mat-option *ngFor="let estrato of estratos" value="{{ estrato.Id }}">{{ estrato.Nombre }}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field floatLabel="always">

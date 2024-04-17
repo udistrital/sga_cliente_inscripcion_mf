@@ -48,6 +48,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatIconModule } from '@angular/material/icon';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
 import { Overlay } from '@angular/cdk/overlay';
@@ -74,6 +75,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatDialogModule,
     MatListModule,
     MatStepperModule,
+    MatIconModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
