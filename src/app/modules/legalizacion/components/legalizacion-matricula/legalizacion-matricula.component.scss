@@ -188,8 +188,18 @@ fieldset {
     list-style-type: none;
 }
 
+.info-personal li span {
+    font-weight: bold;
+}
+
 .info-personal mat-card-header {
     background-color: #006eaf;
+    padding: 10px 0;
+}
+
+.info-personal mat-card-content {
+    margin: 0;
+    padding: 10px 0;
 }
 
 @media (width > 650px) {

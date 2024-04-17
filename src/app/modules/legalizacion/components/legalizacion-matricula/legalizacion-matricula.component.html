@@ -145,11 +145,11 @@
                         <div class="pension">
                             <mat-form-field>
                                 <mat-label>{{ 'legalizacion_admision.valor_pension' | translate }}</mat-label>
-                                <input matInput formControlName="pension_valor">
+                                <input type="number" matInput formControlName="pension_valor">
                             </mat-form-field>
                             <mat-form-field>
                                 <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
-                                <input matInput formControlName="pension_valor_smv">
+                                <input type="number" matInput formControlName="pension_valor_smv">
                             </mat-form-field>
                             <mat-form-field floatLabel="always">
                                 <input #documentoPension type="file" multiple (change)="onChangeSelectFiles('soportePension', $event)" style="display: none;"/>
@@ -173,8 +173,8 @@
                                 <mat-form-field>
                                     <mat-label>{{ 'legalizacion_admision.nucleo_familiar' | translate }}</mat-label>
                                     <mat-select formControlName="nucleo_familiar">
-                                        <mat-option>{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
-                                        <mat-option value="1">prueba</mat-option>
+                                        <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                        <mat-option *ngFor="let nucleo of nuceloFamiliar" value="{{ nucleo.Id }}">{{ nucleo.Nombre }}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-form-field floatLabel="always">
@@ -243,7 +243,7 @@
                 <form [formGroup]="formInfoSocioEconomicaCosteara" class="my-25">
                     <div class="info-costea">
                         <div class="estrato">
-                            <mat-form-field class="span-3">
+                            <mat-form-field class="span-2">
                                 <mat-label>{{ 'GLOBAL.direccion_residencia' | translate }}</mat-label>
                                 <input matInput formControlName="direccion_residencia_costeara">
                             </mat-form-field>
@@ -252,6 +252,13 @@
                                 <mat-select formControlName="estrato">
                                     <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
                                     <mat-option *ngFor="let estrato of estratos" value="{{ estrato.Id }}">{{ estrato.Nombre }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>{{ 'legalizacion_admision.ubicacion_residencia' | translate }}</mat-label>
+                                <mat-select formControlName="ubicacion_residencia">
+                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                                    <mat-option *ngFor="let ubicacion of ubicacionesResidencia" value="{{ ubicacion.Id }}">{{ ubicacion.Nombre }}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field floatLabel="always">
@@ -274,11 +281,11 @@
                         <div class="ingresos">
                             <mat-form-field class="span-2">
                                 <mat-label>{{ 'legalizacion_admision.ingresos_costea' | translate }}</mat-label>
-                                <input matInput formControlName="ingresos_ano_anterior">
+                                <input type="number" matInput formControlName="ingresos_ano_anterior">
                             </mat-form-field>
                             <mat-form-field class="span-2">
                                 <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
-                                <input matInput formControlName="ingresos_ano_anterior_sm">
+                                <input type="number" matInput formControlName="ingresos_ano_anterior_sm">
                             </mat-form-field>
                             <mat-form-field floatLabel="always">
                                 <input #documentoIngresos type="file" multiple (change)="onChangeSelectFiles('soporteIngresos', $event)" style="display: none;"/>

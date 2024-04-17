@@ -4,6 +4,9 @@ import { SoporteParams } from 'src/app/models/forms/define-form-fields';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { TercerosService } from 'src/app/services/terceros.service';
+import { PopUpManager } from 'src/app/managers/popUpManager';
+import { TranslateService } from '@ngx-translate/core';
+import { MODALS } from 'src/app/models/informacion/diccionario';
 
 @Component({
   selector: 'app-legalizacion-matricula',
@@ -16,55 +19,58 @@ export class LegalizacionMatriculaComponent implements OnInit {
     private fb: FormBuilder,
     private ubicacionService: UbicacionService,
     private parametrosService: ParametrosService,
-    private tercerosService: TercerosService 
-  ) {}
+    private tercerosService: TercerosService,
+    private popUpManager: PopUpManager,
+    private translate: TranslateService,
+  ) { }
 
   isLinear = false;
   loading!: boolean;
 
-  formInfoPersonal!: FormGroup;
+  //formInfoPersonal!: FormGroup;
   formInfoSocioEconomicaPersonal!: FormGroup;
   formInfoSocioEconomicaCosteara!: FormGroup;
   formDocsGenerales!: FormGroup;
 
-  infoPersonal = this.fb.group({
-    'tipo_identificacion': ['', Validators.required],
-    'numero_identificacion': ['', Validators.required],
-    'primer_nombre': ['', Validators.required],
-    'segundo_nombre': ['', Validators.required],
-    'primer_apellido': ['', Validators.required],
-    'segundo_apellido': ['', Validators.required],
-    'fecha_nacimiento': ['', Validators.required],
-    'celular': ['', Validators.required],
-    'correo': ['', Validators.required],
-    'genero': ['', Validators.required],
-  })
+  // infoPersonal = this.fb.group({
+  //   'tipo_identificacion': ['', Validators.required],
+  //   'numero_identificacion': ['', Validators.required],
+  //   'primer_nombre': ['', Validators.required],
+  //   'segundo_nombre': ['', Validators.required],
+  //   'primer_apellido': ['', Validators.required],
+  //   'segundo_apellido': ['', Validators.required],
+  //   'fecha_nacimiento': ['', Validators.required],
+  //   'celular': ['', Validators.required],
+  //   'correo': ['', Validators.required],
+  //   'genero': ['', Validators.required],
+  // })
 
   infoSocioEconomicaPersonal = this.fb.group({
     'direccion_residencia': ['', Validators.required],
     'localidad': ['', Validators.required],
     'colegio': ['', Validators.required],
-    'diploma_bachiller': ['', Validators.required],
+    'diploma_bachiller': [''],
     'pension_valor': ['', Validators.required],
     'pension_valor_smv': ['', Validators.required],
-    'soporte_pension_valor': ['', Validators.required],
+    'soporte_pension_valor': [''],
     'nucleo_familiar': ['', Validators.required],
-    'soporte_nucleo_familiar': ['', Validators.required],
+    'soporte_nucleo_familiar': [''],
     'situacion_laboral': ['', Validators.required],
-    'soporte_situacion_laboral': ['', Validators.required],
+    'soporte_situacion_laboral': [''],
   })
 
   infoSocioEconomicaCosteara = this.fb.group({
     'direccion_residencia_costeara': ['', Validators.required],
     'estrato': ['', Validators.required],
-    'soporte_estrato': ['', Validators.required],
+    'ubicacion_residencia': ['', Validators.required],
+    'soporte_estrato': [''],
     'ingresos_ano_anterior': ['', Validators.required],
     'ingresos_ano_anterior_sm': ['', Validators.required],
-    'soporte_ingresos_ano_anterior': ['', Validators.required],
+    'soporte_ingresos_ano_anterior': [''],
   })
 
   docsGenerales = this.fb.group({
-    'documentos': ['', Validators.required]
+    'documentos': ['']
   })
 
   soportes: SoporteParams = {
@@ -101,7 +107,8 @@ export class LegalizacionMatriculaComponent implements OnInit {
   localidades!: any[];
   situacionesLaboral!: any[];
   estratos!: any[];
-  tiposDocumento!: any[];
+  nuceloFamiliar!: any[];
+  ubicacionesResidencia!: any[];
 
   async ngOnInit() {
     this.initFormularios();
@@ -113,7 +120,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
   onChangeSelectFiles(label: string, event: any): void {
     const files = <File[]>Object.values(event.target.files);
     const newFiles = files.map(f => {
-      return {file: f, urlTemp: URL.createObjectURL(f), err: false}
+      return { file: f, urlTemp: URL.createObjectURL(f), err: false }
     });
     this.soportes[label].archivosLocal = this.soportes[label].archivosLocal!.concat(newFiles);
     const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
@@ -149,13 +156,13 @@ export class LegalizacionMatriculaComponent implements OnInit {
         f.err = false;
       }
     });
-    return {"errTipo": errTipo, "errTam": errTam}
+    return { "errTipo": errTipo, "errTam": errTam }
   }
 
   previewFile(url: string): void {
     const h = screen.height * 0.65;
-    const w = h * 3/4;
-    const left = (screen.width * 3/4) - (w / 2);
+    const w = h * 3 / 4;
+    const left = (screen.width * 3 / 4) - (w / 2);
     const top = (screen.height / 2) - (h / 2);
     window.open(url, '', 'toolbar=no,' +
       'location=no, directories=no, status=no, menubar=no,' +
@@ -193,7 +200,6 @@ export class LegalizacionMatriculaComponent implements OnInit {
   // MANJEO ARCHIVOS //
 
   initFormularios() {
-    this.formInfoPersonal = this.infoPersonal;
     this.formInfoSocioEconomicaPersonal = this.infoSocioEconomicaPersonal;
     this.formInfoSocioEconomicaCosteara = this.infoSocioEconomicaCosteara;
     this.formDocsGenerales = this.docsGenerales;
@@ -204,65 +210,134 @@ export class LegalizacionMatriculaComponent implements OnInit {
     await this.cargarLocalidades();
     await this.cargarSituacionesLaborales();
     await this.cargarEstratos();
-    await this.cargarTipoDoc();
+    await this.cargarNucleoFamiliar();
+    await this.cargarUbicacionesResidencia();
+    //await this.cargarTipoDoc();
     this.loading = false;
   }
 
-  cargarTipoDoc() {
-    return new Promise((resolve, reject) => {
-      this.tercerosService.get('tipo_documento/?query=Activo:true&limit=0')
-        .subscribe((res:any) => {
-          this.tiposDocumento = res;
-          console.log(this.tiposDocumento)
-          resolve(res)
-        },
-        (error: any) => {
-          console.log(error);
-          reject([]);
-        });
-    });
-  }
+  // cargarTipoDoc() {
+  //   return new Promise((resolve, reject) => {
+  //     this.tercerosService.get('tipo_documento/?query=Activo:true&limit=0')
+  //       .subscribe((res: any) => {
+  //         this.tiposDocumento = res;
+  //         console.log(this.tiposDocumento)
+  //         resolve(res)
+  //       },
+  //         (error: any) => {
+  //           console.log(error);
+  //           reject([]);
+  //         });
+  //   });
+  // }
 
   cargarLocalidades() {
     return new Promise((resolve, reject) => {
       this.ubicacionService.get('lugar?limit=0&query=TipoLugarId__Id:3')
-        .subscribe((res:any) => {
+        .subscribe((res: any) => {
           this.localidades = res;
           resolve(res)
         },
-        (error: any) => {
-          console.log(error);
-          reject([]);
-        });
+          (error: any) => {
+            console.log(error);
+            reject([]);
+          });
     });
   }
 
   cargarSituacionesLaborales() {
     return new Promise((resolve, reject) => {
       this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A89')
-        .subscribe((res:any) => {
+        .subscribe((res: any) => {
           this.situacionesLaboral = res.Data;
           resolve(res)
         },
-        (error: any) => {
-          console.log(error);
-          reject([]);
-        });
+          (error: any) => {
+            console.log(error);
+            reject([]);
+          });
     });
   }
 
   cargarEstratos() {
     return new Promise((resolve, reject) => {
       this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A90')
-        .subscribe((res:any) => {
+        .subscribe((res: any) => {
           this.estratos = res.Data;
           resolve(res)
         },
-        (error: any) => {
-          console.log(error);
-          reject([]);
-        });
+          (error: any) => {
+            console.log(error);
+            reject([]);
+          });
     });
+  }
+
+  cargarNucleoFamiliar() {
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A91')
+        .subscribe((res: any) => {
+          this.nuceloFamiliar = res.Data;
+          resolve(res)
+        },
+          (error: any) => {
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  cargarUbicacionesResidencia() {
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A92')
+        .subscribe((res: any) => {
+          this.ubicacionesResidencia = res.Data;
+          resolve(res)
+        },
+          (error: any) => {
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  guardar() {
+    if (this.validarFormulario()) {
+      this.popUpManager.showPopUpGeneric(
+        this.translate.instant('legalizacion_admision.titulo'),
+        this.translate.instant('legalizacion_admision.crear_legalizacion'),
+        MODALS.INFO,
+        true).then(
+          (action) => {
+            if (action.value) {
+              this.prepararCreacion();
+            }
+          });
+    }
+  }
+
+  validarArchivos() {
+    console.log(this.soportes);
+  }
+
+  validarFormulario() {
+    this.marcarFormularios();
+    this.validarArchivos();
+    if (this.formInfoSocioEconomicaPersonal.valid && this.formInfoSocioEconomicaCosteara.valid && this.formDocsGenerales.valid) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  marcarFormularios() {
+    this.formInfoSocioEconomicaPersonal.markAllAsTouched();
+    this.formInfoSocioEconomicaCosteara.markAllAsTouched();
+    this.formDocsGenerales.markAllAsTouched();
+  }
+
+  prepararCreacion() {
+
   }
 
 }

@@ -1515,6 +1515,8 @@
         "copia_examen": "Copia del Examen de Estado",
         "copia_registro_civil": "Copia del Registro Civil de nacimiento",
         "certificado_medico": "Certificado médico original, en que conste que el admitido no padece alguna enfermedad que le impida vivir en comunidad (El cual puede ser expedido por la EPS que este afiliado el aspirante o por un médico particular) Los admitidos a Ingeniería Catastral y Geodesia, deben adjuntar el examen de visión estereoscópica",
-        "soporte_documento": "Soporte documento general"
+        "soporte_documento": "Soporte documento general",
+        "crear_legalizacion": "¿Guardar la legalización de matricula?",
+        "ubicacion_residencia": "Ubicación residencia"
     }
 }
