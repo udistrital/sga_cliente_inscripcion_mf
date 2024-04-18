@@ -145,11 +145,11 @@
                         <div class="pension">
                             <mat-form-field>
                                 <mat-label>{{ 'legalizacion_admision.valor_pension' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="pension_valor">
+                                <input type="number" matInput formControlName="pension_valor" [(ngModel)]="valorPension" (ngModelChange)="onPensionValorChange()">
                             </mat-form-field>
                             <mat-form-field>
                                 <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="pension_valor_smv">
+                                <input type="number" matInput formControlName="pension_valor_smv" [(ngModel)]="valorPensionSML" [readonly]="true">
                             </mat-form-field>
                             <mat-form-field floatLabel="always">
                                 <input #documentoPension type="file" multiple (change)="onChangeSelectFiles('soportePension', $event)" style="display: none;"/>
@@ -281,11 +281,11 @@
                         <div class="ingresos">
                             <mat-form-field class="span-2">
                                 <mat-label>{{ 'legalizacion_admision.ingresos_costea' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="ingresos_ano_anterior">
+                                <input type="number" matInput formControlName="ingresos_ano_anterior" [(ngModel)]="valorIngresos" (ngModelChange)="onIngresosValorChange()">
                             </mat-form-field>
                             <mat-form-field class="span-2">
                                 <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="ingresos_ano_anterior_sm">
+                                <input type="number" matInput formControlName="ingresos_ano_anterior_sm" [(ngModel)]="valorIngresosSML" [readonly]="true">
                             </mat-form-field>
                             <mat-form-field floatLabel="always">
                                 <input #documentoIngresos type="file" multiple (change)="onChangeSelectFiles('soporteIngresos', $event)" style="display: none;"/>

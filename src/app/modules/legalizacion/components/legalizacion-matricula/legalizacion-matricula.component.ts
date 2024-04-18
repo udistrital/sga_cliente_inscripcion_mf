@@ -26,6 +26,11 @@ export class LegalizacionMatriculaComponent implements OnInit {
 
   isLinear = false;
   loading!: boolean;
+  valorSML = 1300000;
+  valorPension = 0;
+  valorPensionSML = 0;
+  valorIngresos = 0;
+  valorIngresosSML = 0;
 
   //formInfoPersonal!: FormGroup;
   formInfoSocioEconomicaPersonal!: FormGroup;
@@ -317,7 +322,23 @@ export class LegalizacionMatriculaComponent implements OnInit {
   }
 
   validarArchivos() {
-    console.log(this.soportes);
+    let completos = true;
+    const situacion = this.situacionesLaboral.find((situacion: any) => situacion.Id == this.infoSocioEconomicaPersonal.get('situacion_laboral')!.value)
+
+    for (const soporte in this.soportes) {
+      const item = this.soportes[soporte];
+      
+      if (item.archivosLocal && !(item.archivosLocal.length > 0)) {
+        if (soporte == 'soporteSituacionLaboral' && situacion.Nombre == 'Desempleado') {
+          continue;
+        }
+        completos = false;
+        break;
+      }
+    }
+
+    console.log(completos, this.soportes, situacion);
+    return completos;
   }
 
   validarFormulario() {
@@ -337,7 +358,14 @@ export class LegalizacionMatriculaComponent implements OnInit {
   }
 
   prepararCreacion() {
-
+    
   }
 
+  onPensionValorChange() {
+    this.valorPensionSML = this.valorPension / this.valorSML;
+  }
+
+  onIngresosValorChange() {
+    this.valorIngresosSML = this.valorIngresos / this.valorSML;
+  }
 }
