@@ -6,7 +6,7 @@
 
 export const environment = {
   production: false,
-  apiUrl:"http://localhost:4209/",
+  apiUrl: "http://localhost:4209/",
   NUXEO: {
     PATH: 'https://documental.portaloas.udistrital.edu.co/nuxeo/',
     CREDENTIALS: {
@@ -89,5 +89,10 @@ export const environment = {
   PLAN_ESTUDIOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/planes_estudios_crud/v1/',
   //PLAN_ESTUDIOS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8537/v1/',
   //PLAN_ESTUDIOS_SERVICE: 'http://localhost:8925/v1/',
-  SGA_MID_TERCERO: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8539/v1/',
+  //SGA_INSCRIPCION_MID_SERVICE: 'http://localhost:8095/v1/',
+  SGA_INSCRIPCION_MID_SERVICE: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8543/v1/',
+  //SGA_TERCERO_MID_SERVICE: 'http://localhost:8096/v1/',
+  SGA_TERCERO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8123/v1/',
+  //SGA_CALENDARIO_MID_SERVICE: 'http://localhost:8097/v1/',
+  SGA_CALENDARIO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8545/v1/',
 };
