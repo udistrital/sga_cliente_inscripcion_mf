@@ -50,6 +50,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
 import { TerceroMidService } from './services/sga_tercero_mid.service';
+import { MatButtonModule } from '@angular/material/button';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -69,6 +70,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatDialogModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    MatButtonModule,
     StoreModule.forRoot(rootReducer),
     TranslateModule.forRoot({
       loader: {

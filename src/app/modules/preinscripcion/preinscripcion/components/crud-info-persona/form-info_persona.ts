@@ -7,7 +7,7 @@ export let FORM_INFO_PERSONA = {
     campos: [
         {
             etiqueta: 'input',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'PrimerNombre',
             label_i18n: 'primer_nombre',
             placeholder_i18n: 'primer_nombre',
@@ -16,7 +16,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'input',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'SegundoNombre',
             label_i18n: 'segundo_nombre',
             placeholder_i18n: 'segundo_nombre',
@@ -25,7 +25,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'input',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'PrimerApellido',
             label_i18n: 'primer_apellido',
             placeholder_i18n: 'primer_apellido',
@@ -34,7 +34,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'input',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'SegundoApellido',
             label_i18n: 'segundo_apellido',
             placeholder_i18n: 'segundo_apellido',
@@ -43,7 +43,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'TipoIdentificacion',
             label_i18n: 'tipo_documento',
             placeholder_i18n: 'tipo_documento',
@@ -54,7 +54,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'inputConfirmacion',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'NumeroIdentificacion',
             label_i18n: 'numero_documento',
             placeholder_i18n: 'numero_documento',
@@ -66,7 +66,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'inputConfirmacion',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'VerificarNumeroIdentificacion',
             label_i18n: 'verificar_numero_documento',
             placeholder_i18n: 'verificar_numero_documento',
@@ -78,7 +78,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'mat-date',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'FechaExpedicion',
             label_i18n: 'fecha_expedicion',
             placeholder_i18n: 'fecha_expedicion',
@@ -87,7 +87,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'mat-date',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'FechaNacimiento',
             label_i18n: 'fecha_nacimiento',
             placeholder_i18n: 'fecha_nacimiento',
@@ -96,7 +96,7 @@ export let FORM_INFO_PERSONA = {
         },     
         {
             etiqueta: 'select',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'Genero',
             label_i18n: 'genero',
             placeholder_i18n: 'genero',
@@ -107,7 +107,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
             etiqueta: 'input',
-            claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+            claseGrid: 'form-col1',
             nombre: 'CorreoElectronico',
             label_i18n: 'correo_principal',
             placeholder_i18n: 'correo_principal',
@@ -117,7 +117,7 @@ export let FORM_INFO_PERSONA = {
         },
         {
           etiqueta: 'input',
-          claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+          claseGrid: 'form-col1',
           nombre: 'Telefono',
           label_i18n: 'telefono',
           placeholder_i18n: 'telefono',
