@@ -217,24 +217,8 @@ export class LegalizacionMatriculaComponent implements OnInit {
     await this.cargarEstratos();
     await this.cargarNucleoFamiliar();
     await this.cargarUbicacionesResidencia();
-    //await this.cargarTipoDoc();
     this.loading = false;
   }
-
-  // cargarTipoDoc() {
-  //   return new Promise((resolve, reject) => {
-  //     this.tercerosService.get('tipo_documento/?query=Activo:true&limit=0')
-  //       .subscribe((res: any) => {
-  //         this.tiposDocumento = res;
-  //         console.log(this.tiposDocumento)
-  //         resolve(res)
-  //       },
-  //         (error: any) => {
-  //           console.log(error);
-  //           reject([]);
-  //         });
-  //   });
-  // }
 
   cargarLocalidades() {
     return new Promise((resolve, reject) => {
@@ -244,6 +228,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
           resolve(res)
         },
           (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
             console.log(error);
             reject([]);
           });
@@ -258,6 +243,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
           resolve(res)
         },
           (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
             console.log(error);
             reject([]);
           });
@@ -272,6 +258,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
           resolve(res)
         },
           (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.estratos_error'));
             console.log(error);
             reject([]);
           });
@@ -286,6 +273,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
           resolve(res)
         },
           (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.nucleo_familiar_error'));
             console.log(error);
             reject([]);
           });
@@ -300,6 +288,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
           resolve(res)
         },
           (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.ubicaciones_error'));
             console.log(error);
             reject([]);
           });
@@ -318,6 +307,8 @@ export class LegalizacionMatriculaComponent implements OnInit {
               this.prepararCreacion();
             }
           });
+    } else {
+      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.formulario_error'));
     }
   }
 
@@ -343,8 +334,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
 
   validarFormulario() {
     this.marcarFormularios();
-    this.validarArchivos();
-    if (this.formInfoSocioEconomicaPersonal.valid && this.formInfoSocioEconomicaCosteara.valid && this.formDocsGenerales.valid) {
+    if (this.formInfoSocioEconomicaPersonal.valid && this.formInfoSocioEconomicaCosteara.valid && this.formDocsGenerales.valid && this.validarArchivos()) {
       return true;
     } else {
       return false;
