@@ -28,6 +28,8 @@ import { NUEVO_AUTOR } from './form_new_autor';
 import { ProduccionAcademicaService } from 'src/app/services/produccion_academica.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
   selector: 'ngx-crud-produccion-academica',
@@ -84,7 +86,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   formAutor = new FormGroup({
     autorSeleccionadoV2: new FormControl(''),
   });
-  loading: boolean = false;
   canEmit: boolean = false;
 
   displayedColumns = ['nombre', 'estado', 'acciones'];
@@ -95,13 +96,13 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     private produccionAcademicaService: ProduccionAcademicaService,
     private popUpManager: PopUpManager,
     private user: UserService,
-    private documentoService: DocumentoService,
     private tercerosService: TercerosService,
     private listService: ListService,
     private store: Store<IAppState>,
     private http: HttpClient,
     private newNuxeoService: NewNuxeoService,
-    private sgaMidService: SgaMidService,
+    private terceroMidService: TerceroMidService,
+    private inscripcionMidService: InscripcionMidService,
     private utilidades: UtilidadesService,
     private snackBar: MatSnackBar) {
     this.formProduccionAcademica = JSON.parse(JSON.stringify(FORM_produccion_academica));
@@ -376,7 +377,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
           });
         });
         if (filesToGet.length !== 0) {
-          this.loading = true;
           newNuxeoService.get(filesToGet).subscribe(
             (response:any) => {
               const filesResponse = <any>response;
@@ -391,10 +391,8 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                   }
                 });
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -430,13 +428,12 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
-          this.sgaMidService.put('produccion_academica', this.info_produccion_academica)
+          console.log(this.info_produccion_academica)
+          this.inscripcionMidService.put('academico/produccion', this.info_produccion_academica)
             .subscribe((res: any) => {
               if (res !== null) {
-                this.loading = false;
-                this.info_produccion_academica = <ProduccionAcademicaPost>res;
+                this.info_produccion_academica = <ProduccionAcademicaPost>res.data;
                 // this.showToast('info', this.translate.instant('GLOBAL.actualizar'), this.translate.instant('produccion_academica.produccion_actualizada'));
                 this.popUpManager.showSuccessAlert(this.translate.instant('produccion_academica.produccion_actualizada'));
                 this.canEmit = true;
@@ -450,7 +447,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                 this.loadUserData();
                 this.Metadatos = [];
               } else {
-                this.loading = false;
                 this.popUpManager.showErrorAlert(this.translate.instant('produccion_academica.produccion_no_actualizada'));
               }
             });
@@ -470,13 +466,12 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     Swal.fire(opt)
       .then((willCreate) => {
         if (willCreate.value) {
-          this.loading = true;
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
-          this.sgaMidService.post('produccion_academica', this.info_produccion_academica)
+          console.log(this.info_produccion_academica)
+          this.inscripcionMidService.post('academico/produccion/', this.info_produccion_academica)
             .subscribe((res: any) => {
               if (res !== null) {
-                this.loading = false;
-                this.info_produccion_academica = <ProduccionAcademicaPost>res;
+                this.info_produccion_academica = <ProduccionAcademicaPost>res.data;
                 //this.showToast('info', this.translate.instant('GLOBAL.crear'), this.translate.instant('produccion_academica.produccion_creada'));
                 this.popUpManager.showSuccessAlert(this.translate.instant('produccion_academica.produccion_creada'));
                 this.canEmit = true;
@@ -490,12 +485,10 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                 this.loadUserData();
                 this.Metadatos = [];
               } else {
-                this.loading = false;
                 this.popUpManager.showErrorAlert(this.translate.instant('produccion_academica.produccion_no_creada'));
               }
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -575,7 +568,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   }
 
   uploadFilesToMetadaData(files:any, metadatos:any) {
-    this.loading = true;
     return new Promise((resolve, reject) => {
       files.forEach((file:any) => {
         file.Id = file.nombre,
@@ -593,11 +585,9 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                 Valor: f.res.Id,
               });
             });
-            this.loading = false;
             resolve(true);
           }
         }, error => {
-          this.loading = false;
           reject(error);
         });
     });
@@ -728,8 +718,8 @@ export class CrudProduccionAcademicaComponent implements OnInit {
           if (willMake.value) {
             infoTercero.Activo = false;
 
-            this.sgaMidService.post("persona/guardar_autor", infoTercero).subscribe((res:any) => {
-              if (res.Type !== 'error') {
+            this.terceroMidService.post("personas/autores", infoTercero).subscribe((res:any) => {
+              if (res.data !== null) {
                 this.snackBar.open(this.translate.instant('produccion_academia.autor_creado'), '', { duration: 3000, panelClass: ['success-snackbar'] }) 
                 resolve(res);
               } else {

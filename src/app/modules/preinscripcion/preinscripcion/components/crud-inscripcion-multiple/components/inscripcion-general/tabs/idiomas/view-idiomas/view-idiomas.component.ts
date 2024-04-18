@@ -48,8 +48,6 @@ export class ViewIdiomasComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private users: UserService,
-    private inscripcionService: InscripcionService,
     private idiomaService: IdiomaService) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });

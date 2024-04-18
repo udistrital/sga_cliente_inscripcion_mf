@@ -5,7 +5,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import { FORM_INFO_PERSONA } from './form-info_persona';
@@ -13,12 +12,12 @@ import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { HttpErrorResponse } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import * as moment from 'moment-timezone';
-import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import * as momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
-import { verifyHostBindings } from '@angular/compiler';
 import { validateLang } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { encrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
   selector: 'ngx-crud-info-persona',
@@ -29,7 +28,6 @@ export class CrudInfoPersonaComponent implements OnInit {
   filesUp: any;
   info_persona_id!: number;
   inscripcion_id!: number;
-  loading: boolean = false;
   faltandatos: boolean = false;
   existePersona: boolean = false;
   datosEncontrados: any;
@@ -71,8 +69,7 @@ export class CrudInfoPersonaComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private popUpManager: PopUpManager,
-    private sgamidService: SgaMidService,
-    private tercerosMidService: TercerosMidService,
+    private terceroMidService: TerceroMidService,
     private autenticationService: ImplicitAutenticationService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -83,7 +80,6 @@ export class CrudInfoPersonaComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loading = true;
     Promise.all([
       this.listService.findGenero(),
       this.listService.findTipoIdentificacion()]).then(() => {
@@ -116,8 +112,9 @@ export class CrudInfoPersonaComponent implements OnInit {
   public async loadInfoPersona() {
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '' && this.info_persona_id.toString() !== '0') {
-      await this.sgamidService.get('persona/consultar_persona/' + this.info_persona_id)
+      await this.terceroMidService.get('personas/' + this.info_persona_id)
         .subscribe(res => {
+          res = res.data
           if (res !== null && res.Id !== undefined) {
             const temp = <InfoPersona>res;
             this.aceptaTerminos = true;
@@ -145,10 +142,8 @@ export class CrudInfoPersonaComponent implements OnInit {
               this.popUpManager.showAlert(this.translate.instant('GLOBAL.info_persona'), this.translate.instant('inscripcion.sin_telefono'))
             }
           }
-          this.loading = false;
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'info',
               title: this.translate.instant('GLOBAL.info_persona'),
@@ -161,7 +156,6 @@ export class CrudInfoPersonaComponent implements OnInit {
     } else {
       this.info_info_persona = undefined
       this.clean = !this.clean;
-      this.loading = false;
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
     this.formInfoPersona.campos[this.getIndexForm('CorreoElectronico')].valor = this.autenticationService.getPayload().email;
@@ -171,10 +165,9 @@ export class CrudInfoPersonaComponent implements OnInit {
     let doc = this.formInfoPersona.campos[this.getIndexForm('NumeroIdentificacion')].valor;
     let verif = this.formInfoPersona.campos[this.getIndexForm('VerificarNumeroIdentificacion')].valor
     if ((doc && verif) && (doc == verif) && !this.aceptaTerminos) {
-      this.loading = true;
-      this.sgamidService.get('persona/existe_persona/' + doc).subscribe(
+      this.terceroMidService.get('personas/existencia/' + doc).subscribe(
         (res) => {
-          this.loading = false;
+          res = res.data
           this.info_info_persona = res[0];
           this.datosEncontrados = { ...res[0] };
           if (res[0].FechaNacimiento != null) {
@@ -216,14 +209,12 @@ export class CrudInfoPersonaComponent implements OnInit {
         },
         error => {
           console.log(error);
-          this.loading = false;
         }
       );
     }
   }
 
   updateInfoPersona(infoPersona: any) {
-    this.loading = true;
     let prepareUpdate: any = {
       Tercero: { hasId: null, data: {} },
       Identificacion: { hasId: null, data: {} },
@@ -273,7 +264,8 @@ export class CrudInfoPersonaComponent implements OnInit {
     let dataTel = { principal: infoPersona.Telefono, alterno: this.datosEncontrados.TelefonoAlterno ? this.datosEncontrados.TelefonoAlterno : null }
     prepareUpdate.Complementarios.Telefono.data = JSON.stringify(dataTel);
 
-    this.tercerosMidService.put('persona/actualizar_persona', prepareUpdate).subscribe((response: any) => {
+    this.terceroMidService.put('personas', prepareUpdate).subscribe((response: any) => {
+      response = response.data
       this.faltandatos = false;
       this.existePersona = false;
       this.formInfoPersona.btn = '';
@@ -281,22 +273,21 @@ export class CrudInfoPersonaComponent implements OnInit {
         campo.deshabilitar = true;
       });
       window.localStorage.setItem('ente', response.tercero.Id);
-      window.localStorage.setItem('persona_id', response.tercero.Id);
+      const tercero_id = encrypt(response.tercero.Id.toString());
+      window.localStorage.setItem('persona_id', tercero_id);
+      //window.localStorage.setItem('persona_id', response.tercero.Id);
       this.info_persona_id = response.tercero.Id;
       sessionStorage.setItem('IdTercero', String(this.info_persona_id));
       this.setPercentage(1);
-      this.loading = false;
       this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.persona_actualizado'));
       this.success.emit();
     },
       (error: HttpErrorResponse) => {
-        this.loading = false;
         this.popUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_actualizar_persona'));
       });
   }
 
   createInfoPersona(infoPersona: any): void {
-    this.loading = true;
     const files = []
     infoPersona.FechaNacimiento = momentTimezone.tz(infoPersona.FechaNacimiento, 'America/Bogota').format('YYYY-MM-DD HH:mm:ss');
     infoPersona.FechaNacimiento = infoPersona.FechaNacimiento + ' +0000 +0000';
@@ -304,11 +295,14 @@ export class CrudInfoPersonaComponent implements OnInit {
     infoPersona.FechaExpedicion = infoPersona.FechaExpedicion + ' +0000 +0000';
     infoPersona.NumeroIdentificacion = (infoPersona.NumeroIdentificacion).toString();
     infoPersona.Usuario = this.autenticationService.getPayload().email;
-    this.tercerosMidService.post('persona/guardar_persona', infoPersona).subscribe(res => {
+    this.terceroMidService.post('personas/', infoPersona).subscribe((res:any) => {
+      res = res.data
       const r = <any>res
       if (r !== null && r.Type !== 'error') {
         window.localStorage.setItem('ente', r.Id);
-        window.localStorage.setItem('persona_id', r.Id);
+        const r_id = encrypt(r.Id.toString());
+        window.localStorage.setItem('persona_id', r_id);
+        //window.localStorage.setItem('persona_id', r.Id);
         this.info_persona_id = r.Id;
         sessionStorage.setItem('IdTercero', String(this.info_persona_id));
         this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
@@ -322,10 +316,8 @@ export class CrudInfoPersonaComponent implements OnInit {
       } else {
         this.popUpManager.showErrorToast(this.translate.instant('GLOBAL.error'))
       }
-      this.loading = false;
     },
       (error: HttpErrorResponse) => {
-        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: error.status + '',

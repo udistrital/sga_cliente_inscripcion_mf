@@ -15,6 +15,10 @@ import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_DESCUENTO } from './form-descuento_academico';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
   selector: 'ngx-crud-descuento-academico',
@@ -76,19 +80,13 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   temp: any;
   info_temp: any;
   clean!: boolean;
-  loading!: boolean;
   percentage!: number;
 
   constructor(
     private translate: TranslateService,
     private autenticationService: ImplicitAutenticationService,
-    private documentoService: DocumentoService,
-    private descuentoService: DescuentoAcademicoService,
-    private inscripcionService: InscripcionService,
-    private coreService: CoreService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>,
-    private listService: ListService,
     private popUpManager: PopUpManager,
     private newNuxeoService: NewNuxeoService,) {
     this.formDescuentoAcademico = FORM_DESCUENTO;
@@ -103,13 +101,13 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   }
 
   findDescuentoAcademico(programa: any) {
-    this.loading = true;
     // this.descuentoAcademicoService.get('tipo_descuento/?limit=0&query=Activo:true')
-    this.sgaMidService.get('descuento_academico/descuentoAcademicoByID/' + programa)
+    console.log(programa)
+    this.inscripcionMidService.get('academico/descuento/' + programa)
     .subscribe(
       (result: any) => {
-        const r = <any>result.Data.Body[1];
-        if (result !== null && result.Data.Code == '404') {
+        const r = <any>result.data;
+        if (result !== null && result.status == '404') {
           this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].opciones = []
         } else {
           this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].opciones = r.map((result: any) => {
@@ -119,10 +117,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             }
           });
         }
-        this.loading = false;
       },
       error => {
-        this.loading = false;
         this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].opciones = []
       },
     );
@@ -130,7 +126,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
 
   /* cargarPeriodo() {
     return new Promise((resolve, reject) => {
-      this.loading = true;
       this.coreService.get('periodo?query=Activo:true&sortby=Id&order=desc&limit=1')
       .subscribe(res => {
         const r = <any>res;
@@ -138,10 +133,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
           this.periodo = <any>res[0].Id;
           resolve(this.periodo);
         }
-        this.loading = false;
       },
       (error: HttpErrorResponse) => {
-        this.loading = false;
         reject(error);
       });
     });
@@ -189,7 +182,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   }
 
   public loadDescuentoAcademico(): void {
-    this.loading = true;
     this.temp = {};
     this.SoporteDescuento = [];
     this.info_descuento_academico = {};
@@ -197,24 +189,20 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     if (this.descuento_academico_id !== undefined &&
       this.descuento_academico_id !== 0 &&
       this.descuento_academico_id.toString() !== '') {
-        this.sgaMidService.get('descuento_academico?PersonaId=' + window.localStorage.getItem('persona_id') + '&SolicitudId=' + this.descuento_academico_id)
+      const id = decrypt(window.localStorage.getItem('persona_id'));
+        this.inscripcionMidService.get('academico/descuento/?PersonaId=' + id + '&SolicitudId=' + this.descuento_academico_id)
           .subscribe(solicitud => {
             if (solicitud !== null) {
-              this.temp = <SolicitudDescuento>solicitud;
-              this.info_descuento_academico = this.temp;
-              this.loading = false;
-                    this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].valor = (this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId && this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id) ?
+              this.temp = <SolicitudDescuento>solicitud.data;
+              this.info_descuento_academico = this.temp[0];
+                    this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].valor = (this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id && this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id) ?
                     { Id: this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id,
                       Nombre: this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id + '. ' + this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Nombre} :
                       { Id: 0, Nombre: 'No registrado' };
                     this.info_descuento_academico.Periodo = Number(window.sessionStorage.getItem('IdPeriodo'));
-                    
-            } else {
-              this.loading = false;
             }
           },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: error.status + '',
@@ -230,7 +218,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
       this.filesUp = <any>{};
       this.info_descuento_academico = undefined;
       this.clean = !this.clean;
-      this.loading = false;
     }
   }
 
@@ -248,7 +235,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;
           const files = [];
           if (this.info_descuento_academico.Documento.file !== undefined) {
@@ -271,13 +257,12 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                   this.info_descuento_academico.DescuentoDependencia.Periodo = Number(window.sessionStorage.getItem('IdPeriodo'));
           
                   this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
-                  
-                  this.sgaMidService.put('descuento_academico', this.info_descuento_academico)
+                  console.log(this.info_descuento_academico)
+                  this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)
                     .subscribe(res => {
                       /* if (documentos_actualizados['SoporteDescuento'] !== undefined) {
                         this.info_descuento_academico.Documento = documentos_actualizados['SoporteDescuento'].url + '';
                       } */
-                      this.loading = false;
                       this.eventChange.emit(true);
                       this.popUpManager.showSuccessAlert(this.translate.instant('descuento_academico.descuento_actualizado'));
                       this.clean = !this.clean;
@@ -298,7 +283,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                 }
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon:'error',
                     title: error.status + '',
@@ -316,9 +300,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             this.info_descuento_academico.PersonaId = (1 * this.persona);
             this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
 
-            this.sgaMidService.put('descuento_academico', this.info_descuento_academico)
+            this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)
               .subscribe(res => {
-                this.loading = false;
                 this.eventChange.emit(true);
                 this.popUpManager.showSuccessAlert(this.translate.instant('descuento_academico.descuento_actualizado'));
                 this.clean = !this.clean;
@@ -327,7 +310,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                 this.loadDescuentoAcademico();
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon:'error',
                     title: error.status + '',
@@ -356,10 +338,10 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     Swal.fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.loading = true;
           const files = [];
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;
-          this.info_descuento_academico.PersonaId = Number(window.localStorage.getItem('persona_id'));
+          const id = decrypt(window.localStorage.getItem('persona_id'));
+          this.info_descuento_academico.PersonaId = Number(id);
           // this.info_descuento_academico.PeriodoId = this.periodo;
           this.info_descuento_academico.PeriodoId = Number(window.sessionStorage.getItem('IdPeriodo'));
           this.info_descuento_academico.DescuentoDependencia.Dependencia = Number(window.sessionStorage.getItem('ProgramaAcademicoId'));
@@ -381,10 +363,10 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                   this.info_descuento_academico.DocumentoId = responseNux[0].res.Id;
                 
                 // this.info_descuento_academico.DocumentoId = 1234
-                this.sgaMidService.post('descuento_academico/', this.info_descuento_academico)
+                this.inscripcionMidService.post('academico/descuento/', this.info_descuento_academico)
                   .subscribe(res => {
                     const r = <any>res
-                    if (r !== null && r.Type !== 'error') {
+                    if (r.data !== null) {
                       this.eventChange.emit(true);
                       // this.showToast('info', this.translate.instant('GLOBAL.crear'),
                       // this.translate.instant('descuento_academico.descuento_academico_registrado'));
@@ -398,10 +380,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                       // this.showToast('error', this.translate.instant('GLOBAL.error'),
                       //   this.translate.instant('descuento_academico.descuento_academico_no_registrado'));
                     }
-                    this.loading = false;
                   },
                   (error: HttpErrorResponse) => {
-                    this.loading = false;
                     Swal.fire({
                       icon: 'error',
                       title: error.status + '',
@@ -411,10 +391,8 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                     });
                   });
               }
-              this.loading = false;
             },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               Swal.fire({
                 icon: 'error',
                 title: error.status + '',

@@ -45,7 +45,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
   @Input('inscripcion_id')
   set info2(inscripcion_id: number) {
     if (inscripcion_id !== undefined && inscripcion_id !== 0 && inscripcion_id.toString() !== '') {
-      this.loading = true;
       this.inscripcion_id = inscripcion_id;
       // this.loadPropuestaGrado();
       if (this.formData) {
@@ -65,7 +64,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
   formPropuestaGrado: any;
   regPropuestaGrado: any;
   clean!: boolean;
-  loading: boolean = false;
   existePropuesta!: boolean;
   percentage!: number;
   grupoSeleccionado: any;
@@ -75,7 +73,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private autenticationService: ImplicitAutenticationService,
-    private documentoService: DocumentoService,
     private inscripcionService: InscripcionService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -91,7 +88,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loading = true;
     this.cargarValores().then(aux => {
       this.loadLists();
     });
@@ -104,7 +100,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
       await this.listService.findLineaInvestigacion();
       await this.listService.findTipoProyecto();
     } catch (error) {
-      this.loading = false;
       this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
     }
   }
@@ -144,7 +139,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
   }
 
   public loadPropuestaGrado(): void {
-    this.loading = true;
     this.inscripcionService.get('propuesta?query=Activo:true,InscripcionId:' + Number(window.sessionStorage.getItem('IdInscripcion')))
       .subscribe(res => {
         if (res !== null && JSON.stringify(res[0]) !== '{}') {
@@ -167,12 +161,8 @@ export class CrudPropuestaGradoComponent implements OnInit {
                 let estadoDoc = this.utilidades.getEvaluacionDocumento(filesResponse_2[0].Metadatos);
                 this.formPropuestaGrado.campos[this.getIndexForm('FormatoProyecto')].estadoDoc = estadoDoc;
               }
-
-              this.loading = false;
-
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -184,12 +174,10 @@ export class CrudPropuestaGradoComponent implements OnInit {
                 });
               })
         } else {
-          this.loading = false;
           this.percentage = 0;
           this.result.emit(this.percentage);
         }
       }, (error: HttpErrorResponse) => {
-        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: error.status + '',
@@ -235,7 +223,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
   }
 
   uploadResolutionFile(file:any) {
-    this.loading = true;
     return new Promise((resolve, reject) => {
       this.newNuxeoService.uploadFiles(file).subscribe(
         (responseNux: any[]) => {
@@ -250,30 +237,25 @@ export class CrudPropuestaGradoComponent implements OnInit {
               this.info_propuesta_grado_post.GrupoInvestigacionId = this.info_propuesta_grado.GrupoInvestigacion.id;
               this.info_propuesta_grado_post.LineaInvestigacionId = this.info_propuesta_grado.LineaInvestigacion.id;
 
-              this.loading = true;
               this.inscripcionService.get('inscripcion/' + Number(window.sessionStorage.getItem('IdInscripcion')))
                 .subscribe(res => {
                   const r = <any>res;
                   if (r !== null && r.Type !== 'error') {
                     this.info_propuesta_grado_post.InscripcionId = r;
-                    this.loading = true;
                     this.inscripcionService.post('propuesta/', this.info_propuesta_grado_post)
                       .subscribe(res => {
                         const r = <any>res;
                         if (r !== null && r.Type !== 'error') {
                           this.info_propuesta_grado = <PropuestaGrado><unknown>res;
-                          this.loading = false;
                           this.canEmit = true;
                           this.setPercentage(1);
                           this.eventChange.emit(true);
                           this.popUpManager.showSuccessAlert(this.translate.instant('propuesta_grado.propuesta_grado_registrada'));
                         } else {
-                          this.loading = false;
                           this.popUpManager.showErrorToast(this.translate.instant('propuesta_grado.propuesta_grado_no_registrada'));
                         }
                       },
                         (error: HttpErrorResponse) => {
-                          this.loading = false;
                           Swal.fire({
                             icon: 'error',
                             title: error.status + '',
@@ -288,7 +270,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
                   }
                 },
                   (error: HttpErrorResponse) => {
-                    this.loading = false;
                     Swal.fire({
                       icon: 'error',
                       title: error.status + '',
@@ -298,9 +279,7 @@ export class CrudPropuestaGradoComponent implements OnInit {
                     });
                   });
             }
-          this.loading = false;
         }, error => {
-          this.loading = false;
           reject(error);
         });
     });
@@ -326,7 +305,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
   }
 
   actualizar(documentoID: number) {
-    this.loading = true;
     this.info_propuesta_grado_post = new PropuestaPost;
     this.info_propuesta_grado_post.Id = this.info_propuesta_grado.Id;
     this.info_propuesta_grado_post.Activo = true;
@@ -342,25 +320,20 @@ export class CrudPropuestaGradoComponent implements OnInit {
         const r = <any>res;
         if (r !== null && r.Type !== 'error') {
           this.info_propuesta_grado_post.InscripcionId = r;
-          this.loading = true;
           this.inscripcionService.put('propuesta/', this.info_propuesta_grado_post)
             .subscribe(res => {
               const r = <any>res;
               if (r !== null && r.Type !== 'error') {
                 this.info_propuesta_grado = <PropuestaGrado><unknown>res;
-                this.loading = false;
                 this.canEmit = true;
                 this.setPercentage(1);
                 this.eventChange.emit(true);
                 this.popUpManager.showSuccessAlert(this.translate.instant('propuesta_grado.propuesta_grado_actualizada'));
               } else {
-                this.loading = false;
                 this.popUpManager.showErrorAlert(this.translate.instant('propuesta_grado.propuesta_grado_no_registrada'));
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -373,10 +346,8 @@ export class CrudPropuestaGradoComponent implements OnInit {
         } else {
           this.snackBar.open(this.translate.instant('GLOBAL.error'), '', { duration: 3000, panelClass: ['error-snackbar'] }) 
         }
-        this.loading = false;
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',

@@ -10,6 +10,7 @@ import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_PREGUNTAS } from './form-preguntas';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
   selector: 'ngx-crud-preguntas',
@@ -35,12 +36,10 @@ export class CrudPreguntasComponent implements OnInit {
   temp: any;
   clean!: boolean;
   percentage!: number;
-  loading: boolean = false;
 
   constructor(
     private translate: TranslateService,
-    private documentoService: DocumentoService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private users: UserService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -116,13 +115,12 @@ export class CrudPreguntasComponent implements OnInit {
     };
     Swal.fire(opt)
       .then((willDelete) => {
-        this.loading = true;
         if (willDelete.value) {
           this.info_universidad = <any>infoUniversidad;
-          this.sgaMidService.post('inscripciones/info_complementaria_universidad', this.info_universidad)
+          this.inscripcionMidService.post('inscripciones/informacion-complementaria/universidad', this.info_universidad)
             .subscribe((res:any) => {
               const r = <any>res;
-              if (r !== null && r.Type !== 'error') {
+              if (r !== null && r.message != 'error') {
                 this.eventChange.emit(true);
                 this.snackBar.open(this.translate.instant('universidad_form.universidad_form_registrado'), '', { duration: 3000, panelClass: ['info-snackbar'] })
 
@@ -130,10 +128,8 @@ export class CrudPreguntasComponent implements OnInit {
               } else {
                 this.snackBar.open(this.translate.instant('universidad_form.universidad_form_no_registrado'), '', { duration: 3000, panelClass: ['error-snackbar'] })
               }
-              this.loading = false;
             },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               this.snackBar.open(this.translate.instant('universidad_form.universidad_form_no_registrado'), '', { duration: 3000, panelClass: ['error-snackbar'] })
             });
           }

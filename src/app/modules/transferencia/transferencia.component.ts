@@ -21,6 +21,9 @@ import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
 import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { MatTableDataSource } from '@angular/material/table';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
   selector: 'app-transferencia',
@@ -37,7 +40,6 @@ export class TransferenciaComponent implements OnInit {
   uid: any;
   sub: any;
   process: string = '';
-  loading!: boolean;
   info_info_persona!: InfoPersona;
   inscripcionProjects!: any[];
   proyectosCurriculares!: any[];
@@ -64,7 +66,9 @@ export class TransferenciaComponent implements OnInit {
     private projectService: ProyectoAcademicoService,
     private nuxeo: NewNuxeoService,
     private dialog: MatDialog,
-    private sgaMidService: SgaMidService,
+    private terceroMidService: TerceroMidService,
+    private inscripcionMidService: InscripcionMidService,
+    private calendarioMidService: CalendarioMidService,
     private popUpManager: PopUpManager,
     private userService: UserService,
     private router: Router,
@@ -110,9 +114,6 @@ export class TransferenciaComponent implements OnInit {
     this.sub = this._Activatedroute.paramMap.subscribe(async (params: any) => {
       const { process } = params.params;
       this.actions = (this.process === 'my');
-
-      this.createTable(this.process);
-        this.loading = true;
         await this.loadDataTercero(this.process).then(e => {
           Swal.fire({
             icon: 'warning',
@@ -127,191 +128,29 @@ export class TransferenciaComponent implements OnInit {
     this.uid = this.userService.getPersonaId();
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
-      this.sgaMidService.get('persona/consultar_persona/' + this.uid).subscribe((res: any) => {
+      this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
         if (res !== null) {
-          const temp = <InfoPersona>res;
+          const temp = <InfoPersona>res.data;
           this.info_info_persona = temp;
           const files = [];
         }
       });
     } else {
-      this.loading = false;
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
   }
 
-  createTable(process: any) {
-    this.settings = {
-      actions: false,
-      columns: {
-        Recibo: {
-          title: this.translate.instant('inscripcion.recibo'),
-          editable: false,
-          width: '5%',
-          filter: false,
-        },
-        Concepto: {
-          title: this.translate.instant('inscripcion.concepto'),
-          editable: false,
-          width: '10%',
-          filter: false,
-        },
-        Programa: {
-          title: this.translate.instant('inscripcion.programa'),
-          width: '30%',
-          editable: false,
-          filter: false,
-        },
-        FechaGeneracion: {
-          title: this.translate.instant('inscripcion.fecha_generacion'),
-          editable: false,
-          width: '10%',
-          filter: false,
-        },
-        Estado: {
-          title: this.translate.instant('inscripcion.estado'),
-          width: '15%',
-          editable: false,
-          filter: false,
-        },
-        ...process === 'my' ? {
-          Descargar: {
-            title: this.translate.instant('derechos_pecuniarios.ver_respuesta'),
-            width: '5%',
-            editable: false,
-            filter: false,
-            renderComponent: CustomizeButtonComponent,
-            type: 'custom',
-            onComponentInitFunction: (instance: any) => {
-              instance.save.subscribe((data: any) => {
-                this.nuxeo.get([{ 'Id': data.VerRespuesta.DocRespuesta }]).subscribe(
-                  (documentos) => {
-                    const assignConfig = new MatDialogConfig();
-                    assignConfig.width = '1300px';
-                    assignConfig.height = '800px';
-                    let aux = { ...documentos[0], observacion: data.VerRespuesta.Observacion, fecha: data.VerRespuesta.FechaEvaluacion, terceroResponsable: data.VerRespuesta.TerceroResponsable }
-                    assignConfig.data = { documento: aux, observando: true }
-                    const dialogo = this.dialog.open(DialogoDocumentosTransferenciasComponent, assignConfig);
-                  }
-                );
-              })
-            }
-          }
-        } : {},
-        Opcion: {
-          title: this.translate.instant('derechos_pecuniarios.solicitar'),
-          width: '5%',
-          editable: false,
-          filter: false,
-          renderComponent: CustomizeButtonComponent,
-          type: 'custom',
-          onComponentInitFunction: (instance: any) => {
-            instance.save.subscribe((data: any) => {
-              if (data.Estado == 'Pendiente pago') {
-                this.abrirPago(data)
-              } else {
-                const idInscripcion = data['Id'];
-
-                sessionStorage.setItem('IdInscripcion', data.Id)
-                sessionStorage.setItem('ProgramaAcademico', data.Programa)
-                sessionStorage.setItem('IdPeriodo', data.Periodo)
-                sessionStorage.setItem('IdTipoInscripcion', data.IdTipoInscripcion)
-                sessionStorage.setItem('ProgramaAcademicoId', data.IdPrograma)
-                sessionStorage.setItem('NivelId', data.Nivel)
-
-                this.router.navigate([`pages/inscripcion/solicitud-transferencia/${idInscripcion}/${btoa(process)}`])
-              }
-            })
-          },
-        },
-      },
-      mode: 'external',
-    }
-  }
-
-  async loadDataAll(process: any) {
-    await this.cargarPeriodo();
-    this.loading = true;
-
-    this.sgaMidService.get('transferencia/solicitudes')
-      .subscribe(response => {
-        if (response !== null && response.Response.Code === '400') {
-          this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
-        } else if (response != null && response.Response.Code === '404') {
-          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
-        } else {
-          let inscripciones = <Array<any>>response.Response.Body;
-          inscripciones = inscripciones.filter(inscripcion => inscripcion.Estado != "Radicada");
-          const dataInfo = <Array<any>>[];
-          inscripciones.forEach(element => {
-            this.projectService.get('proyecto_academico_institucion/' + element.Programa).subscribe(
-              res => {
-                const auxRecibo = element.Recibo;
-                const NumRecibo = auxRecibo.split('/', 1);
-                element.Recibo = NumRecibo[0];
-                element.FechaGeneracion = momentTimezone.tz(element.FechaGeneracion, 'America/Bogota').format('DD-MM-YYYY hh:mm:ss');
-                element.IdPrograma = element.Programa;
-                element.Programa = res.Nombre;
-                element.Periodo = this.periodo.Id;
-
-                element.Descargar = {
-                  icon: 'fa fa-download fa-2x',
-                  label: 'Descargar',
-                  class: 'btn btn-primary',
-                  documento: element.Respuesta
-                }
-
-                element.Descargar.disabled = true;
-
-                element.Opcion = {
-                  icon: 'fa fa-search fa-2x',
-                  label: 'Detalle',
-                  class: "btn btn-primary"
-                }
-
-                this.loading = true;
-
-                dataInfo.push(element);
-
-                console.log(dataInfo)
-
-                this.dataSource = new MatTableDataSource(dataInfo)
-
-                // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
-
-                this.loading = false;
-              },
-              error => {
-                this.loading = false;
-                this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-              },
-            );
-          });
-        }
-        this.loading = false;
-      },
-        (error: HttpErrorResponse) => {
-          this.loading = false;
-          this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
-        });
-  }
-
   async loadDataTercero(process: any) {
-    await this.cargarPeriodo();
-    this.loading = true;
-
-    this.sgaMidService.get('transferencia/estado_recibos/' + this.uid)
+    await this.cargarPeriodo(); 
+    this.inscripcionMidService.get('transferencia/estado-recibos/' + this.uid)
       .subscribe(response => {
-        if (response !== null && response.Response.Code === '400') {
+        if (response !== null && response.status === '400') {
           this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
-          this.loading = false;
-        } else if ((response != null && response.Response.Code === '404') || response.Response.Body.length == 0) {
+        } else if ((response != null && response.status == '404') || response.data.length == 0) {
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
-          this.loading = false;
         } else {
-          const inscripciones = <Array<any>>response.Response.Body;
+          const inscripciones = <Array<any>>response.data;
           const dataInfo = <Array<any>>[];
-          this.loading = true;
           inscripciones.forEach(element => {
             this.projectService.get('proyecto_academico_institucion/' + element.Programa).subscribe(
               res => {
@@ -363,14 +202,10 @@ export class TransferenciaComponent implements OnInit {
                 }
 
                 dataInfo.push(element);
-                console.log(dataInfo)
                 this.dataSource = new MatTableDataSource(dataInfo)
                 // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
-
-                this.loading = false;
               },
               error => {
-                this.loading = false;
                 this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
               },
             );
@@ -378,7 +213,6 @@ export class TransferenciaComponent implements OnInit {
         }
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
         });
   }
@@ -389,17 +223,16 @@ export class TransferenciaComponent implements OnInit {
 
   async nuevaSolicitud() {
     this.listadoSolicitudes = false;
-    await this.loadPeriodo().catch(e => this.loading = false);
+    await this.loadPeriodo();
     this.construirForm();
   }
 
   cargarPeriodo() {
-    this.loading = true;
     return new Promise((resolve, reject) => {
       this.parametrosService.get('periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=1')
         .subscribe(res => {
           const r = <any>res;
-          if (res !== null && r.Status === '200') {
+          if (res !== null && r.Status == '200') {
             this.periodo = <any>res['Data'][0];
             window.localStorage.setItem('IdPeriodo', String(this.periodo['Id']));
             const periodos = <any[]>res['Data'];
@@ -410,7 +243,6 @@ export class TransferenciaComponent implements OnInit {
           }
         },
           (error: HttpErrorResponse) => {
-            this.loading = false;
             reject([]);
           });
     });
@@ -418,20 +250,17 @@ export class TransferenciaComponent implements OnInit {
 
   loadPeriodo() {
     return new Promise((resolve, reject) => {
-      this.loading = true;
-      this.sgaMidService.get('transferencia/consultar_periodo').subscribe(
+      this.inscripcionMidService.get('transferencia/consultar-periodo').subscribe(
         (response: any) => {
-          if (response.Success) {
-
+          if (response.success) {
             this.formTransferencia.campos.forEach((campo: any) => {
               if (campo.etiqueta === 'select') {
-                campo.opciones = response.Data[campo.nombre];
+                campo.opciones = response.data[campo.nombre];
                 if (campo.nombre === 'Periodo') {
                   campo.valor = campo.opciones[0];
                 }
               }
             });
-            this.loading = false;
             resolve(response.Data)
           } else {
 
@@ -466,10 +295,8 @@ export class TransferenciaComponent implements OnInit {
     if (event.nombre === 'CalendarioAcademico' && !this.recibo && event.valor != null) {
 
       let parametros = await this.loadParams(this.dataTransferencia.CalendarioAcademico!.Id).catch(e => {
-        this.loading = false;
         return false;
       }) as any;
-
 
       if (parametros == false) {
         this.formTransferencia.campos.forEach((campo: any) => {
@@ -480,13 +307,13 @@ export class TransferenciaComponent implements OnInit {
 
         });
       } else {
-        this.codigosEstudiante = parametros["Data"]["CodigoEstudiante"];
-        this.proyectosCurriculares = parametros["Data"]["ProyectoCurricular"];
+        this.codigosEstudiante = parametros["data"]["CodigoEstudiante"];
+        this.proyectosCurriculares = parametros["data"]["ProyectoCurricular"];
 
         this.formTransferencia.campos.forEach((campo: any) => {
 
           if (campo.nombre === 'ProyectoCurricular' || campo.nombre === 'TipoInscripcion') {
-            campo.opciones = parametros["Data"][campo.nombre];
+            campo.opciones = parametros["data"][campo.nombre];
             campo.ocultar = false;
           }
         });
@@ -524,17 +351,13 @@ export class TransferenciaComponent implements OnInit {
         }
       });
     }
-
-    this.loading = false
   }
 
   loadParams(calendarioId: any) {
     return new Promise((resolve, reject) => {
-      this.loading = true;
-      this.sgaMidService.get('transferencia/consultar_parametros/' + calendarioId + '/' + this.uid).subscribe(
+      this.inscripcionMidService.get('transferencia/consultar-parametros/?id-calendario='+calendarioId+'&persona-id='+ this.uid).subscribe(
         (response: any) => {
-          this.loading = false;
-          if (response.Success) {
+          if (response.success) {
             resolve(response);
           } else {
             if (response.Message == 'No se encuentran proyectos') {
@@ -547,7 +370,6 @@ export class TransferenciaComponent implements OnInit {
         },
         error => {
           this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
-          this.loading = false;
           reject(error);
         },
       );
@@ -566,9 +388,8 @@ export class TransferenciaComponent implements OnInit {
     this.popUpManager.showConfirmAlert(this.translate.instant('inscripcion.seguro_inscribirse')).then(
       async ok => {
         if (ok.value) {
-          this.loading = true;
           if (this.info_info_persona === undefined) {
-            this.sgaMidService.get('persona/consultar_persona/' + this.uid)
+            this.terceroMidService.get('personas/' + this.uid)
               .subscribe(async res => {
                 if (res !== null) {
                   const temp = <InfoPersona>res;
@@ -578,7 +399,6 @@ export class TransferenciaComponent implements OnInit {
                 }
               },
                 (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon: 'error',
                     title: error.status + '',
@@ -590,7 +410,6 @@ export class TransferenciaComponent implements OnInit {
                 });
           } else {
             await this.generar_inscripcion();
-            this.loading = false;
           }
         }
       },
@@ -614,52 +433,50 @@ export class TransferenciaComponent implements OnInit {
         FechaPago: '',
       };
 
-      this.loading = true;
       let periodo = localStorage.getItem('IdPeriodo');
-      this.sgaMidService.get('consulta_calendario_proyecto/nivel/' + this.dataTransferencia.TipoInscripcion!.NivelId + '/periodo/' + periodo).subscribe(
-        (response: any[]) => {
-          if (response !== null && response.length !== 0) {
-            this.inscripcionProjects = response;
+      //TODO: parametros
+      
+      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.dataTransferencia.TipoInscripcion!.NivelId + '&id-periodo=' + periodo).subscribe(
+        (response: any) => {
+          if (response !== null && response.success == true) {
+            this.inscripcionProjects = response.data;
+            console.log(this.inscripcionProjects)
+            console.log(this.dataTransferencia)
+            
             this.inscripcionProjects.forEach(proyecto => {
-              console.log(proyecto)
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
-                this.sgaMidService.post('inscripciones/generar_inscripcion', inscripcion).subscribe(
+                this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
-                    if (response.Code === '200') {
+                    console.log(response)
+                    if (response.status == '200') {
                       this.listadoSolicitudes = true;
 
                       this.clean();
 
                       this.loadDataTercero(this.process);
-                      this.loading = false;
 
                       resolve(response);
                       this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
-                    } else if (response.Code === '204') {
-                      this.loading = false;
+                    } else if (response.status == '204') {
                       reject([]);
                       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
-                    } else if (response.Code === '400') {
-                      this.loading = false;
+                    } else if (response.status == '400') {
                       reject([]);
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     }
                   },
                   (error: HttpErrorResponse) => {
-                    this.loading = false;
                     this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
                     reject([]);
                   },
                 );
               }
             });
-            this.loading = false;
           }
         },
         error => {
-          this.loading = false;
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
           reject([]);
         },
