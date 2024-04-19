@@ -7,6 +7,8 @@ import { TercerosService } from 'src/app/services/terceros.service';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { MODALS } from 'src/app/models/informacion/diccionario';
+import { LegalizacionMatricula } from 'src/app/models/legalizacion/legalizacion_matricula';
+import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 
 @Component({
   selector: 'app-legalizacion-matricula',
@@ -22,6 +24,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
     private tercerosService: TercerosService,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
+    private gestorDocumentalService: NewNuxeoService,
   ) { }
 
   isLinear = false;
@@ -347,8 +350,107 @@ export class LegalizacionMatriculaComponent implements OnInit {
     this.formDocsGenerales.markAllAsTouched();
   }
 
-  prepararCreacion() {
+  async prepararCreacion() {
+    this.loading = true;
+    let newLegalizacionMatricula = new LegalizacionMatricula();
+    newLegalizacionMatricula.DireccionResidencia = this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
+    newLegalizacionMatricula.Localidad = this.formInfoSocioEconomicaPersonal.get('localidad')?.value;
+    newLegalizacionMatricula.ColegioGraduado = this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
+    newLegalizacionMatricula.PensionMensual11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor')?.value);
+    newLegalizacionMatricula.PensionMensualSM11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor_smv')?.value);
+    newLegalizacionMatricula.NucleoFamiliar = this.formInfoSocioEconomicaPersonal.get('nucleo_familiar')?.value;
+    newLegalizacionMatricula.SituacionLaboral = this.formInfoSocioEconomicaPersonal.get('situacion_laboral')?.value;
+    newLegalizacionMatricula.DireccionResidenciaCostea = this.formInfoSocioEconomicaCosteara.get('direccion_residencia_costeara')?.value;
+    newLegalizacionMatricula.EstratoCostea = this.formInfoSocioEconomicaCosteara.get('estrato')?.value;
+    newLegalizacionMatricula.UbicacionResidenciaCostea = this.formInfoSocioEconomicaCosteara.get('ubicacion_residencia')?.value;
+    newLegalizacionMatricula.IngresosCostea = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior')?.value;
+    newLegalizacionMatricula.IngresosCosteaSM = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior_sm')?.value;
+    //newLegalizacionMatricula.SoporteSituacionLaboral = this.formInfoSocioEconomicaPersonal.get('soporte_situacion_laboral')?.value;
+
+    const archivos: { [key: string]: any } = this.prepararArchivos();
+    console.log(archivos);
+    let idsArchivos: any = {};
+    const propiedades = Object.keys(archivos);
+
+
+    for (const propiedad of propiedades) {
+      console.log(propiedades, propiedad)
+      const carpetaArchivos = archivos[propiedad];
+      console.log(`Propiedad: ${propiedad}`, carpetaArchivos);
+      let ids = await this.cargarArchivos(carpetaArchivos);
+      idsArchivos[propiedad] = ids
+      console.log(idsArchivos)
+    }
+
+    newLegalizacionMatricula.SoporteDiploma = this.prepareIds2Stringify(idsArchivos['diplomaBachiller'], 'diplomaBachiller');
+    newLegalizacionMatricula.SoportePension = this.prepareIds2Stringify(idsArchivos['soportePension'], 'soportePension');
+    newLegalizacionMatricula.SoporteNucleo = this.prepareIds2Stringify(idsArchivos['soporteNucleo'], 'soporteNucleo');
+    newLegalizacionMatricula.SoporteEstratoCostea = this.prepareIds2Stringify(idsArchivos['soporteEstrato'], 'soporteEstrato');
+    newLegalizacionMatricula.SoporteIngresosCostea = this.prepareIds2Stringify(idsArchivos['soporteIngresos'], 'soporteIngresos');
+    newLegalizacionMatricula.SoporteDocumental = this.prepareIds2Stringify(idsArchivos['documentosGeneral'], 'documentosGeneral');
+    if (idsArchivos['soporteSituacionLaboral']) {
+      newLegalizacionMatricula.SoporteSituacionLaboral = this.prepareIds2Stringify(idsArchivos['soporteSituacionLaboral'], 'soporteSituacionLaboral');
+    }
+
+    console.log(newLegalizacionMatricula);
+  }
+
+  prepararArchivos(): any[] {
+    const idTipoDocument = 72; // carpeta Nuxeo
+    let archivos: any = {}
+    for (const soporte in this.soportes) {
+      const archivosLoc = this.soportes[soporte].archivosLocal!;
+      let newArchivosLoc: any = [];
     
+      for (const archivo of archivosLoc) {
+        const newArchivo = {
+          IdDocumento: idTipoDocument,
+          nombre: (archivo.file.name).split('.')[0],
+          descripcion: "Soporte Legalización de matricula",
+          file: archivo.file
+        }
+        newArchivosLoc.push(newArchivo);
+        archivos[soporte] = newArchivosLoc;
+      }
+    }
+    return archivos
+  }
+
+  // existenArchivos(archivos: any) {
+  //   let existen = false;
+  //   for (const soporte of archivos) {
+  //     const carpeta = archivos[soporte]
+  //     console.log(carpeta, soporte)
+  //     if (carpeta && carpeta.length > 0) {
+  //       existen = true;
+  //       console.log('n')
+  //       break;
+  //     }
+  //   }
+
+  //   return existen;
+  // }
+
+  cargarArchivos(archivos: any): Promise<number[]> {
+    return new Promise<number[]>((resolve) => {
+      this.gestorDocumentalService.uploadFiles(archivos).subscribe(
+        (respuesta: any[]) => {
+          const listaIds = respuesta.map(f => {
+            return f.res.Id;
+          });
+          resolve(listaIds);
+        }
+      );
+    });
+  }
+
+  prepareIds2Stringify(idsArchivos: number[], nameField: string): string {
+    let result: any = {}
+    result[nameField] = []
+    if (idsArchivos) {
+      result[nameField] = idsArchivos;
+    }
+    return JSON.stringify(result);
   }
 
   onPensionValorChange() {
