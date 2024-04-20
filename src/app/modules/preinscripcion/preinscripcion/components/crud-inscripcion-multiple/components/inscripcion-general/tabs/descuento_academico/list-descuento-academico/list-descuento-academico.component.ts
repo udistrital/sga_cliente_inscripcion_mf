@@ -12,7 +12,6 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { decrypt } from 'src/app/utils/util-encrypt';

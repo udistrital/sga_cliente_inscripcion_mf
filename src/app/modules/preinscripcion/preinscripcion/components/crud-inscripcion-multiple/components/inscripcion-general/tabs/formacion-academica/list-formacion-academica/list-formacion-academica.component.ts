@@ -9,7 +9,6 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Documento } from 'src/app/models/documento/documento';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import Swal from 'sweetalert2';

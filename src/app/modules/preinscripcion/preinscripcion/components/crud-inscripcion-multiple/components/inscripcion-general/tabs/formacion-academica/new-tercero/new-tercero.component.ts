@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Lugar } from 'src/app/models/informacion/lugar';
 import { TipoTercero } from 'src/app/models/terceros/tipo_tercero';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { NUEVO_TERCERO } from './form_new_tercero';

@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Lugar } from 'src/app/models/informacion/lugar';
 import { ListService } from 'src/app/services/list.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';

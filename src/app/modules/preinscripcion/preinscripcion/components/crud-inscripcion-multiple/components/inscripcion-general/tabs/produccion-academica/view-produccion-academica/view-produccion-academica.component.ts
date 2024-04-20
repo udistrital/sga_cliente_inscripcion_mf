@@ -7,7 +7,6 @@ import { ProduccionAcademicaPost } from 'src/app/models/produccion_academica/pro
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';

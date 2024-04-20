@@ -11,7 +11,6 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { ExperienciaService } from 'src/app/services/experiencia.service';
 import { OrganizacionService } from 'src/app/services/organizacion.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import Swal from 'sweetalert2';

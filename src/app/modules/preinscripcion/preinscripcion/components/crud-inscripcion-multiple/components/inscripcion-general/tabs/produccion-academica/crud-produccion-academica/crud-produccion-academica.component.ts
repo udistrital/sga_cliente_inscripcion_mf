@@ -16,7 +16,6 @@ import { TipoContribuyente } from 'src/app/models/terceros/tipo_contribuyente';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
@@ -619,11 +618,11 @@ export class CrudProduccionAcademicaComponent implements OnInit {
         this.info_produccion_academica.Resumen.replace(caracteresEspeciales2,' '); // tabs y enter se reemplazan por espacio
         this.info_produccion_academica.Resumen.replace(multiespacio, ' ');
         const promises = [];
-        if (event.ProduccionAcademica) {
+        if (event.data.ProduccionAcademica) {
           // Subir archivos y verificar los
           // console.log(event.data.ProduccionAcademica);
           // const tempMetadatos = JSON.parse(JSON.stringify(event.data.ProduccionAcademica));
-          const tempMetadatos = event.ProduccionAcademica;
+          const tempMetadatos = event.data.ProduccionAcademica;
           const keys = Object.keys(tempMetadatos);
           const metadatos = [];
           const filesToUpload = [];

@@ -15,7 +15,6 @@ import { ImplicitAutenticationService } from 'src/app/services/implicit_autentic
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';

@@ -7,7 +7,6 @@ import { InformacionContacto } from 'src/app/models/informacion/informacion_cont
 import { Lugar } from 'src/app/models/informacion/lugar';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { UserService } from 'src/app/services/users.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';

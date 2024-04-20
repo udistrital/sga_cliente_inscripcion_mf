@@ -6,7 +6,6 @@ import { InfoCaracteristica } from 'src/app/models/informacion/info_caracteristi
 import { InfoCaracteristicaGet } from 'src/app/models/informacion/info_caracteristica_get';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { UserService } from 'src/app/services/users.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';

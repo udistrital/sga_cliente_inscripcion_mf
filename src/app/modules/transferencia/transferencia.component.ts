@@ -12,7 +12,7 @@ import { Periodo } from 'src/app/models/periodo/periodo';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { environment } from 'src/environments/environment';
