@@ -1,4 +1,5 @@
 export class LegalizacionMatricula {
+    TerceroId!: number;
     DireccionResidencia!: string;
     Localidad!: string;
     ColegioGraduado!: string;

@@ -1515,6 +1515,16 @@
         "copia_examen": "Copy of the State Exam",
         "copia_registro_civil": "Copy of the Civil Registry of birth",
         "certificado_medico": "Original medical certificate, stating that the person admitted does not suffer from any illness that prevents him from living in the community (Which can be issued by the EPS that the applicant is affiliated with or by a private doctor). Those admitted to Cadastral Engineering and Geodesy must attach stereoscopic vision examination",
-        "soporte_documento": "General document support"
+        "soporte_documento": "General document support",
+        "crear_legalizacion": "Save the legalization of registration?",
+        "ubicacion_residencia": "Residence location",
+        "localidad_error": "Error loading locations",
+        "ubicaciones_error": "Error loading residence locations",
+        "situaciones_laborales_error": "Error loading work situations",
+        "estratos_error": "Error loading socioeconomic strata",
+        "nucleo_familiar_error": "Error loading possible family units",
+        "formulario_error": "The form is not complete, please complete the fields before continuing",
+        "legalizacion_creacion_ok": "Legalization data was created successfully",
+        "legalizacion_creacion_error": "An error occurred while creating the legalization data"
     }
 }

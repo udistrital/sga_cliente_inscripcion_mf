@@ -1523,6 +1523,8 @@
         "situaciones_laborales_error": "Error cargando las situaciones laborales",
         "estratos_error": "Error cargando los estratos socioeconómicos",
         "nucleo_familiar_error": "Error cargando los posibles nucleos familiares",
-        "formulario_error": "El formulario no esta completo, por favor complete los campos antes de seguir"
+        "formulario_error": "El formulario no esta completo, por favor complete los campos antes de seguir",
+        "legalizacion_creacion_ok": "Los datos de legalización se crearon correctamente",
+        "legalizacion_creacion_error": "Ocurrio un error al crear los datos de legalización"
     }
 }

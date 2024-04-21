@@ -164,17 +164,21 @@ fieldset {
 }
 
 .my-button {
-    /* Estilos generales para el botón */
-    background-color: #8f8f8f; /* Color de fondo verde */
-    color: white; /* Color de texto blanco */
-    padding: 5px 32px; /* Espacio interno */
-    text-align: center; /* Alinear texto al centro */
-    text-decoration: none; /* Eliminar subrayado */
-    display: inline-block; /* Hacer que el botón se comporte como un bloque en línea */
-    border: none; /* Eliminar borde predeterminado */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cambiar el cursor a mano al pasar el cursor sobre el botón */
+    background-color: white;
+    color: black;
+    padding: 5px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     margin: 0 auto;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.my-button:hover {
+    background-color: #dddddd;
 }
 
 .info-personal {

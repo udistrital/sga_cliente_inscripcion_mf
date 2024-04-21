@@ -9,6 +9,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { MODALS } from 'src/app/models/informacion/diccionario';
 import { LegalizacionMatricula } from 'src/app/models/legalizacion/legalizacion_matricula';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
+import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-legalizacion-matricula',
@@ -25,6 +27,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
     private popUpManager: PopUpManager,
     private translate: TranslateService,
     private gestorDocumentalService: NewNuxeoService,
+    private inscripcionMidService: InscripcionMidService,
   ) { }
 
   isLinear = false;
@@ -353,19 +356,19 @@ export class LegalizacionMatriculaComponent implements OnInit {
   async prepararCreacion() {
     this.loading = true;
     let newLegalizacionMatricula = new LegalizacionMatricula();
+    newLegalizacionMatricula.TerceroId = 59844;
     newLegalizacionMatricula.DireccionResidencia = this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
-    newLegalizacionMatricula.Localidad = this.formInfoSocioEconomicaPersonal.get('localidad')?.value;
+    newLegalizacionMatricula.Localidad = this.localidades.find((localidad: any) => localidad.Id == this.formInfoSocioEconomicaPersonal.get('localidad')?.value).Nombre
     newLegalizacionMatricula.ColegioGraduado = this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
     newLegalizacionMatricula.PensionMensual11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor')?.value);
     newLegalizacionMatricula.PensionMensualSM11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor_smv')?.value);
-    newLegalizacionMatricula.NucleoFamiliar = this.formInfoSocioEconomicaPersonal.get('nucleo_familiar')?.value;
-    newLegalizacionMatricula.SituacionLaboral = this.formInfoSocioEconomicaPersonal.get('situacion_laboral')?.value;
+    newLegalizacionMatricula.NucleoFamiliar = this.nuceloFamiliar.find((nucleo: any) => nucleo.Id == this.formInfoSocioEconomicaPersonal.get('nucleo_familiar')?.value).Nombre
+    newLegalizacionMatricula.SituacionLaboral = this.situacionesLaboral.find((situacion: any) => situacion.Id == this.formInfoSocioEconomicaPersonal.get('situacion_laboral')?.value).Nombre
     newLegalizacionMatricula.DireccionResidenciaCostea = this.formInfoSocioEconomicaCosteara.get('direccion_residencia_costeara')?.value;
-    newLegalizacionMatricula.EstratoCostea = this.formInfoSocioEconomicaCosteara.get('estrato')?.value;
-    newLegalizacionMatricula.UbicacionResidenciaCostea = this.formInfoSocioEconomicaCosteara.get('ubicacion_residencia')?.value;
+    newLegalizacionMatricula.EstratoCostea = this.estratos.find((estrato: any) => estrato.Id == this.formInfoSocioEconomicaCosteara.get('estrato')?.value).Nombre
+    newLegalizacionMatricula.UbicacionResidenciaCostea = this.ubicacionesResidencia.find((ubicacion: any) => ubicacion.Id == this.formInfoSocioEconomicaCosteara.get('ubicacion_residencia')?.value).Nombre
     newLegalizacionMatricula.IngresosCostea = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior')?.value;
     newLegalizacionMatricula.IngresosCosteaSM = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior_sm')?.value;
-    //newLegalizacionMatricula.SoporteSituacionLaboral = this.formInfoSocioEconomicaPersonal.get('soporte_situacion_laboral')?.value;
 
     const archivos: { [key: string]: any } = this.prepararArchivos();
     console.log(archivos);
@@ -393,6 +396,27 @@ export class LegalizacionMatriculaComponent implements OnInit {
     }
 
     console.log(newLegalizacionMatricula);
+
+    let res = await this.crearLegalizacionMatricula(newLegalizacionMatricula)
+    console.log(res)
+  }
+
+  async crearLegalizacionMatricula(legalizacionBody: LegalizacionMatricula) {
+    return new Promise((resolve, reject) => {
+      this.loading = true;
+      this.inscripcionMidService.post('legalizacion/base', legalizacionBody)
+        .subscribe((res: any) => {
+          this.loading = false;
+          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.legalizacion_creacion_ok'));
+          resolve(res.Data);
+        },
+          (error: HttpErrorResponse) => {
+            this.loading = false;
+            this.popUpManager.showErrorAlert(
+              this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
+            );
+          });
+    });
   }
 
   prepararArchivos(): any[] {
@@ -455,9 +479,11 @@ export class LegalizacionMatriculaComponent implements OnInit {
 
   onPensionValorChange() {
     this.valorPensionSML = this.valorPension / this.valorSML;
+    this.valorPensionSML = Number(this.valorPensionSML.toFixed(2));
   }
 
   onIngresosValorChange() {
     this.valorIngresosSML = this.valorIngresos / this.valorSML;
+    this.valorIngresosSML = Number(this.valorIngresosSML.toFixed(2));
   }
 }
