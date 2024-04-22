@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { ListService } from 'src/app/services/list.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';

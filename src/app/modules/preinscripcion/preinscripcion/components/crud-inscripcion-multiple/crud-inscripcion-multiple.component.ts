@@ -16,7 +16,6 @@ import { EventoService } from 'src/app/services/evento.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';

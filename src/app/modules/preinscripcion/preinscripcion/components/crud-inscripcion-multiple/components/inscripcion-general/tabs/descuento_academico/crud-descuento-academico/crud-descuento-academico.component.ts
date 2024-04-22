@@ -11,7 +11,6 @@ import { ImplicitAutenticationService } from 'src/app/services/implicit_autentic
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2';
 import { FORM_DESCUENTO } from './form-descuento_academico';

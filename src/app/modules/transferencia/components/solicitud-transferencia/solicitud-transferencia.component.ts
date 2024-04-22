@@ -7,7 +7,6 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TransferenciaInternaReintegro } from 'src/app/models/inscripcion/transferencia_reintegro';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import Swal from 'sweetalert2';

@@ -6,7 +6,6 @@ import { Tercero } from 'src/app/models/terceros/tercero';
 import { TrPostInformacionFamiliar } from 'src/app/models/terceros/tercero_familiar';
 import { TipoParentesco } from 'src/app/models/terceros/tipo_parentesco';
 import { CampusMidService } from 'src/app/services/campus_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { UserService } from 'src/app/services/users.service';

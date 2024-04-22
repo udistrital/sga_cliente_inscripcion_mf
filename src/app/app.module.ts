@@ -29,7 +29,6 @@ import { ListService } from './services/list.service';
 import { NewNuxeoService } from './services/new_nuxeo.service';
 import { ParametrosService } from './services/parametros.service';
 import { ProyectoAcademicoService } from './services/proyecto_academico.service';
-import { SgaMidService } from './services/sga_mid.service';
 import { TercerosMidService } from './services/terceros_mid.service';
 import { TimeService } from './services/time.service';
 import { UbicacionService } from './services/ubicacion.service';
@@ -102,7 +101,6 @@ export function createTranslateLoader(http: HttpClient) {
     NewNuxeoService,
     ParametrosService,
     ProyectoAcademicoService,
-    SgaMidService,
     TercerosMidService,
     TimeService,
     UbicacionService,
