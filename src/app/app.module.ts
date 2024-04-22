@@ -40,7 +40,6 @@ import { ProduccionAcademicaService } from './services/produccion_academica.serv
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
@@ -49,6 +48,24 @@ import { Overlay } from '@angular/cdk/overlay';
 import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
 import { TerceroMidService } from './services/sga_tercero_mid.service';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { LegalizacionMatriculaComponent } from './modules/legalizacion-matricula/legalizacion-matricula.component';
+import { ModalComponent } from './modules/legalizacion-matricula/components/modal/modal.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -57,6 +74,8 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
+    LegalizacionMatriculaComponent,
+    ModalComponent,
   ],
   imports: [
     NgxExtendedPdfViewerModule,
@@ -68,6 +87,21 @@ export function createTranslateLoader(http: HttpClient) {
     MatDialogModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    MatStepperModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatTableModule,
+    MatPaginatorModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatTabsModule,
+    MatExpansionModule,
+    MatAutocompleteModule,
+    MatInputModule,
+    NgxDocViewerModule,
+    MatProgressSpinnerModule,
     StoreModule.forRoot(rootReducer),
     TranslateModule.forRoot({
       loader: {
@@ -77,7 +111,7 @@ export function createTranslateLoader(http: HttpClient) {
       }
     }),
     HttpClientModule,
-    SpinnerUtilModule
+    SpinnerUtilModule,
   ],
   providers: [
     TranslateService,
