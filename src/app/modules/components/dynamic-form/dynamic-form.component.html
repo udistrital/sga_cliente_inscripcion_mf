@@ -1040,6 +1040,7 @@
         <ng-content></ng-content>
         <div
           class="buttons-container"
+          style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap"
           *ngIf="normalform.btnLimpiar || normalform.btn"
         >
           <button
@@ -1064,11 +1065,13 @@
     <!-- Botones de form con acción de botones -->
   </form>
   <form class="form-horizontal" *ngSwitchCase="'bySteps'">
-    <fieldset [ngClass]="{ fieldseter: !normalform.hidefield }">
-      <legend align="{{ normalform.alineacion_titulo }}">
-        <small>{{ normalform.titulo }}</small>
-      </legend>
-      <div class="row">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          {{ normalform.titulo }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
         <mat-vertical-stepper #stepper>
           <mat-step
             *ngFor="
@@ -1078,10 +1081,7 @@
             "
             [label]="('GLOBAL.paso' | translate) + ' ' + step"
           >
-            <fieldset
-              [ngClass]="{ fieldseter: !normalform.hidefield }"
-              style="margin: 1rem"
-            >
+            
               <div class="row">
                 <div
                   *ngFor="let c of getFieldsInStep(step)"
@@ -1555,7 +1555,9 @@
                       >
                         <div
                           class="col-12"
-                          [ngClass]="{ text: c.estadoDoc.aprobado == false }"
+                          [ngClass]="{
+                            text: c.estadoDoc.aprobado == false
+                          }"
                         >
                           {{ "GLOBAL.estado" | translate }}:
                           {{ c.estadoDoc.estadoObservacion }}
@@ -1597,8 +1599,7 @@
                   >
                 </div>
               </div>
-            </fieldset>
-            <div class="button-stepper">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap">
               <button
                 mat-flat-button
                 color="primary"
@@ -1618,29 +1619,30 @@
             </div>
           </mat-step>
         </mat-vertical-stepper>
-      </div>
-      <ng-content></ng-content>
-      <div
-        class="buttons-container"
-        *ngIf="normalform.btnLimpiar || normalform.btn"
-      >
-        <button
-          mat-flat-button
-          color="accent"
-          (click)="clearForm()"
-          [hidden]="!normalform.btnLimpiar"
+
+        <ng-content></ng-content>
+        <div
+          style="display: flex; gap: 1rem; flex-wrap: wrap"
+          *ngIf="normalform.btnLimpiar || normalform.btn"
         >
-          {{ normalform.btnLimpiar }}
-        </button>
-        <button
-          mat-flat-button
-          color="accent"
-          (click)="validForm()"
-          [hidden]="!normalform.btn"
-        >
-          {{ normalform.btn }}
-        </button>
-      </div>
-    </fieldset>
+          <button
+            mat-flat-button
+            color="warn"
+            (click)="clearForm()"
+            [hidden]="!normalform.btnLimpiar"
+          >
+            {{ normalform.btnLimpiar }}
+          </button>
+          <button
+            mat-flat-button
+            color="accent"
+            (click)="validForm()"
+            [hidden]="!normalform.btn"
+          >
+            {{ normalform.btn }}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </form>
 </div>

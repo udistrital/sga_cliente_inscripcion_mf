@@ -16,6 +16,7 @@
 >
   <mat-card>
     <mat-card-content>
+      <!-- HEADER REPORTE Y FIELDS -->
       <div *ngIf="!hide_header_labels">
         <div class="info" *ngIf="!estaInscrito">
           <mat-icon>info</mat-icon> &nbsp;
@@ -47,7 +48,9 @@
         <div class="form-grid2">
           <div class="form-col1">
             <mat-form-field class="form-field">
-              <mat-label>{{ 'inscripcion.aviso_programa' | translate }}</mat-label>
+              <mat-label>{{
+                "inscripcion.aviso_programa" | translate
+              }}</mat-label>
               <mat-select
                 [formControl]="Campo1Control"
                 [(ngModel)]="selectedValue"
@@ -66,7 +69,7 @@
           </div>
           <div class="form-col1">
             <mat-form-field class="form-field" *ngIf="tieneEnfasis">
-              <mat-label>{{ 'enfasis.select_enfasis' | translate }}</mat-label>
+              <mat-label>{{ "enfasis.select_enfasis" | translate }}</mat-label>
               <mat-select
                 [formControl]="enfasisControl"
                 [(ngModel)]="enfasisSelected"
@@ -83,8 +86,8 @@
         </div>
       </div>
 
-      <br />
 
+      <!-- CAJAS PARA PEDIR INFORMACION -->
       <div>
         <div class="container">
           <div
@@ -154,7 +157,9 @@
                 ><b>{{ "inscripcion.idiomas" | translate }}</b></mat-card-header
               >
               <mat-card-content class="exp-card-content">
-                <mat-icon class="exp-card-content-icon">record_voice_over</mat-icon>
+                <mat-icon class="exp-card-content-icon"
+                  >record_voice_over</mat-icon
+                >
                 <p class="percentage">{{ percentage_idio }} %</p>
               </mat-card-content>
               <mat-card-footer class="exp-card-content-footer">
@@ -247,7 +252,9 @@
                 }}</b></mat-card-header
               >
               <mat-card-content class="exp-card-content">
-                <mat-icon class="exp-card-content-icon">picture_as_pdf</mat-icon>
+                <mat-icon class="exp-card-content-icon"
+                  >picture_as_pdf</mat-icon
+                >
                 <p class="percentage">{{ percentage_docu }} %</p>
               </mat-card-content>
               <mat-card-footer class="exp-card-content-footer">
@@ -309,7 +316,9 @@
                 }}</b></mat-card-header
               >
               <mat-card-content class="exp-card-content">
-                <mat-icon class="exp-card-content-icon">workspace_premium</mat-icon>
+                <mat-icon class="exp-card-content-icon"
+                  >workspace_premium</mat-icon
+                >
                 <p class="percentage">{{ percentage_proy }} %</p>
               </mat-card-content>
               <mat-card-footer class="exp-card-content-footer">
@@ -339,7 +348,8 @@
           </div>
         </div>
 
-        <div class="container"
+        <div
+          class="container"
           *ngIf="!hide_header_labels && false"
           style="margin-top: 1rem"
         >
@@ -356,11 +366,13 @@
             "
           >
             <mat-card class="exp-card" (click)="perfil_editar('info_persona')">
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.info_basica" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-address-card-o fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.info_basica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">info</mat-icon>
                 <p class="percentage">{{ percentage_info }} %</p>
               </mat-card-content>
             </mat-card>
@@ -379,11 +391,13 @@
               class="exp-card"
               (click)="perfil_editar('formacion_academica')"
             >
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.formacion_academica" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-graduation-cap fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.formacion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">school</mat-icon>
                 <p class="percentage">{{ percentage_acad }} %</p>
               </mat-card-content>
             </mat-card>
@@ -399,11 +413,13 @@
               class="exp-card"
               (click)="perfil_editar('experiencia_laboral')"
             >
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.experiencia_laboral" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-briefcase fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.experiencia_laboral" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">work_history</mat-icon>
                 <p class="percentage">{{ percentage_expe }} %</p>
               </mat-card-content>
             </mat-card>
@@ -419,11 +435,13 @@
               class="exp-card"
               (click)="perfil_editar('produccion_academica')"
             >
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.produccion_academica" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-book fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.produccion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">article</mat-icon>
                 <p class="percentage">{{ percentage_prod }} %</p>
               </mat-card-content>
             </mat-card>
@@ -439,11 +457,15 @@
               class="exp-card"
               (click)="perfil_editar('documento_programa')"
             >
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.documento_programa" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-list-alt fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.documento_programa" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >picture_as_pdf</mat-icon
+                >
                 <p class="percentage">{{ percentage_docu }} %</p>
               </mat-card-content>
             </mat-card>
@@ -459,11 +481,13 @@
               class="exp-card"
               (click)="perfil_editar('descuento_matricula')"
             >
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.descuento_matricula" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-dollar fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.descuento_matricula" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">history_edu</mat-icon>
                 <p class="percentage">{{ percentage_desc }} %</p>
               </mat-card-content>
             </mat-card>
@@ -479,11 +503,15 @@
               class="exp-card"
               (click)="perfil_editar('propuesta_grado')"
             >
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.propuesta_grado" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-file-text-o fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.propuesta_grado" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >workspace_premium</mat-icon
+                >
                 <p class="percentage">{{ percentage_proy }} %</p>
               </mat-card-content>
             </mat-card>
@@ -497,27 +525,30 @@
             "
           >
             <mat-card class="exp-card" (click)="perfil_editar('perfil')">
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.perfil" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-user fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{ "inscripcion.perfil" | translate }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">person_check</mat-icon>
               </mat-card-content>
             </mat-card>
           </div>
         </div>
 
-        <div class="container"
+        <div
+          class="container"
           *ngIf="hide_header_labels && false"
           style="margin-top: 1rem"
         >
           <div id="info_basica" *ngIf="puedeInscribirse && basic_info_button">
             <mat-card class="exp-card" (click)="perfil_editar('info_persona')">
-              <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                "inscripcion.info_basica" | translate
-              }}</mat-card-header>
-              <mat-card-content class="icon-form">
-                <i class="fa fa-address-card-o fa-5x"></i>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.info_basica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">info</mat-icon>
                 <p class="percentage">{{ percentage_info }} %</p>
               </mat-card-content>
             </mat-card>
@@ -531,11 +562,13 @@
               class="exp-card"
               (click)="perfil_editar('formacion_academica')"
             >
-              <mat-card-header class="exp-card-header">{{
-                "inscripcion.formacion_academica" | translate
-              }}</mat-card-header>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.formacion_academica" | translate
+                }}</b></mat-card-header
+              >
               <mat-card-content class="exp-card-content">
-                <i class="fa fa-graduation-cap fa-5x"></i>
+                <mat-icon class="exp-card-content-icon">school</mat-icon>
                 <p class="percentage">{{ percentage_acad }} %</p>
               </mat-card-content>
             </mat-card>
@@ -549,11 +582,13 @@
               class="exp-card"
               (click)="perfil_editar('experiencia_laboral')"
             >
-              <mat-card-header class="exp-card-header">{{
-                "inscripcion.experiencia_laboral" | translate
-              }}</mat-card-header>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.experiencia_laboral" | translate
+                }}</b></mat-card-header
+              >
               <mat-card-content class="exp-card-content">
-                <i class="fa fa-briefcase fa-5x"></i>
+                <mat-icon class="exp-card-content-icon">work_history</mat-icon>
                 <p class="percentage">{{ percentage_expe }} %</p>
               </mat-card-content>
             </mat-card>
@@ -567,11 +602,13 @@
               class="exp-card"
               (click)="perfil_editar('produccion_academica')"
             >
-              <mat-card-header class="exp-card-header">{{
-                "inscripcion.produccion_academica" | translate
-              }}</mat-card-header>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.produccion_academica" | translate
+                }}</b></mat-card-header
+              >
               <mat-card-content class="exp-card-content">
-                <i class="fa fa-book fa-5x"></i>
+                <mat-icon class="exp-card-content-icon">article</mat-icon>
                 <p class="percentage">{{ percentage_prod }} %</p>
               </mat-card-content>
             </mat-card>
@@ -585,11 +622,15 @@
               class="exp-card"
               (click)="perfil_editar('documento_programa')"
             >
-              <mat-card-header class="exp-card-header">{{
-                "inscripcion.documento_programa" | translate
-              }}</mat-card-header>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.documento_programa" | translate
+                }}</b></mat-card-header
+              >
               <mat-card-content class="exp-card-content">
-                <i class="fa fa-list-alt fa-5x"></i>
+                <mat-icon class="exp-card-content-icon"
+                  >picture_as_pdf</mat-icon
+                >
                 <p class="percentage">{{ percentage_docu }} %</p>
               </mat-card-content>
             </mat-card>
@@ -600,11 +641,13 @@
               class="exp-card"
               (click)="perfil_editar('descuento_matricula')"
             >
-              <mat-card-header class="exp-card-header">{{
-                "inscripcion.descuento_matricula" | translate
-              }}</mat-card-header>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.descuento_matricula" | translate
+                }}</b></mat-card-header
+              >
               <mat-card-content class="exp-card-content">
-                <i class="fa fa-dollar fa-5x"></i>
+                <mat-icon class="exp-card-content-icon">history_edu</mat-icon>
                 <p class="percentage">{{ percentage_desc }} %</p>
               </mat-card-content>
             </mat-card>
@@ -615,11 +658,15 @@
               class="exp-card"
               (click)="perfil_editar('propuesta_grado')"
             >
-              <mat-card-header class="exp-card-header">{{
-                "inscripcion.propuesta_grado" | translate
-              }}</mat-card-header>
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.propuesta_grado" | translate
+                }}</b></mat-card-header
+              >
               <mat-card-content class="exp-card-content">
-                <i class="fa fa-file-text-o fa-5x"></i>
+                <mat-icon class="exp-card-content-icon"
+                  >workspace_premium</mat-icon
+                >
                 <p class="percentage">{{ percentage_proy }} %</p>
               </mat-card-content>
             </mat-card>
@@ -629,19 +676,18 @@
             *ngIf="(soloPuedeVer || puedeInscribirse) && detalle_inscripcion"
           >
             <mat-card class="exp-card" (click)="perfil_editar('perfil')">
-              <mat-card-header class="exp-card-header">{{
-                "inscripcion.perfil" | translate
-              }}</mat-card-header>
+              <mat-card-header class="exp-card-header"
+                ><b>{{ "inscripcion.perfil" | translate }}</b></mat-card-header
+              >
               <mat-card-content class="exp-card-content">
-                <i class="fa fa-user fa-5x"></i>
+                <mat-icon class="exp-card-content-icon">person_check</mat-icon>
               </mat-card-content>
             </mat-card>
           </div>
         </div>
       </div>
 
-      <br />
-
+      <!-- BOTON DE AYUDA -->
       <div style="display: flex; justify-content: end; padding: 1rem">
         <button
           mat-fab
@@ -657,7 +703,7 @@
       </div>
     </mat-card-content>
   </mat-card>
-
+  <!-- BARRA DE PROGRESO  -->
   <mat-card *ngIf="!estaInscrito" style="margin-top: 1rem">
     <mat-card-content>
       <div class="">
@@ -675,7 +721,7 @@
       </div>
     </mat-card-content>
   </mat-card>
-
+  <!-- BOTON PARA INSCRIBIRSE -->
   <button
     style="margin-top: 1rem; width: 100%"
     *ngIf="!es_transferencia"
@@ -990,10 +1036,11 @@
       </mat-tab>
     </mat-tab-group>
 
-    <div class="text-center">
+    <div style="display: flex; justify-content: center;">
       <button
         (click)="openVideoModal('video7')"
-        class="round-button btn boton-help float-right"
+        mat-fab
+        color="primary"
       >
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
@@ -1053,10 +1100,11 @@
       </mat-tab>
     </mat-tab-group>
 
-    <div class="text-center">
+    <div style="display: flex; justify-content: center;">
       <button
+        mat-fab
+        color="primary"
         (click)="openVideoModal('video7')"
-        class="round-button btn boton-help float-right"
       >
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
@@ -1114,10 +1162,11 @@
       </mat-tab>
     </mat-tab-group>
 
-    <div class="text-center">
+    <div style="display: flex; justify-content: center;">
       <button
+        mat-fab
+        color="primary"
         (click)="openVideoModal('video7')"
-        class="round-button btn boton-help float-right"
       >
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
@@ -1174,10 +1223,11 @@
       </mat-tab>
     </mat-tab-group>
 
-    <div class="text-center">
+    <div style="display: flex; justify-content: center;">
       <button
+        mat-fab
+        color="primary"
         (click)="openVideoModal('video7')"
-        class="round-button btn boton-help float-right"
       >
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
@@ -1236,10 +1286,11 @@
       </mat-tab>
     </mat-tab-group>
 
-    <div class="text-center">
+    <div style="display: flex; justify-content: center;">
       <button
+        mat-fab
+        color="primary"
         (click)="openVideoModal('video7')"
-        class="round-button btn boton-help float-right"
       >
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
@@ -1298,10 +1349,10 @@
       </mat-tab>
     </mat-tab-group>
 
-    <div class="text-center">
+    <div style="display: flex; justify-content: center;">
       <button
+        mat-fab
         (click)="openVideoModal('video7')"
-        class="round-button btn boton-help float-right"
       >
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
@@ -1328,7 +1379,8 @@
       </div>
       <div class="col-md-1" align="right">
         <button
-          mat-icon-button color="primary"
+          mat-icon-button
+          color="primary"
           (click)="
             show_profile = false;
             show_info = false;
@@ -1379,12 +1431,8 @@
   </ngx-perfil>
 </div>
 
-<div *ngIf="showRegreso && !hide_header_labels" style="margin-top: 1rem;">
-  <button
-    (click)="activateTab()"
-    mat-flat-button
-    color="primary"
-  >
+<div *ngIf="showRegreso && !hide_header_labels" style="margin-top: 1rem">
+  <button (click)="activateTab()" mat-flat-button color="primary">
     <mat-icon>arrow_back_ios</mat-icon>
     <p class="mt-1 ml-1">{{ "GLOBAL.regresar" | translate }}</p>
   </button>
