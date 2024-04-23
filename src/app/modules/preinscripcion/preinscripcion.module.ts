@@ -68,7 +68,6 @@ import { PerfilComponent } from './preinscripcion/components/crud-inscripcion-mu
 import {MatExpansionModule} from '@angular/material/expansion';
 import { ViewInscripcionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/perfil/view-inscripcion/view-inscripcion.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { SpinnerComponent } from '../components/spinner/spinner.component';
 import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
 import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { TransferenciaComponent } from '../transferencia/transferencia.component';
@@ -76,6 +75,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { DownloadFileNuxeoComponent } from '../transferencia/components/solicitud-transferencia/components/download-file-nuxeo/download-file-nuxeo.component';
 import { SolicitudTransferenciaComponent } from '../transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { MatButtonModule } from '@angular/material/button';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -128,7 +128,6 @@ export function createTranslateLoader(http: HttpClient) {
     ViewPropuestaGradoComponent,
     PerfilComponent,
     ViewInscripcionComponent,
-    SpinnerComponent,
     DownloadFileNuxeoComponent,
   ],
   imports: [
@@ -157,6 +156,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatCardModule,
     MatSnackBarModule,
     MatSelectModule,
+    MatButtonModule,
     CommonModule,
     NgbModule,
     PreinscripcionRoutingModule,

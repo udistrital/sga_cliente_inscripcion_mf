@@ -13,7 +13,6 @@ export class DialogoDocumentosTransferenciasComponent implements OnInit {
 
   revisionForm!: FormGroup;
   documento: any;
-  loading!: boolean;
   pruebaEspecifica!: boolean;
   fecha!: string;
 
@@ -29,7 +28,6 @@ export class DialogoDocumentosTransferenciasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
     this.documento = "blob:http://localhost:4200/3674d5ca-88a7-4264-bcd9-09351476eba4"
     this.documento = this.sanitizer.bypassSecurityTrustResourceUrl(this.documento);
     console.log(this.documento)
@@ -56,7 +54,6 @@ export class DialogoDocumentosTransferenciasComponent implements OnInit {
   }
 
   docCargado() {
-    this.loading = false;
   }
 
 }

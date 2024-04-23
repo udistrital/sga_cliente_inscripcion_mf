@@ -29,7 +29,6 @@ import { ListService } from './services/list.service';
 import { NewNuxeoService } from './services/new_nuxeo.service';
 import { ParametrosService } from './services/parametros.service';
 import { ProyectoAcademicoService } from './services/proyecto_academico.service';
-import { SgaMidService } from './services/sga_mid.service';
 import { TercerosMidService } from './services/terceros_mid.service';
 import { TimeService } from './services/time.service';
 import { UbicacionService } from './services/ubicacion.service';
@@ -39,7 +38,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentoService } from './services/documento.service';
 import { ProduccionAcademicaService } from './services/produccion_academica.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SpinnerInterceptor } from './interceptors/snipper.interceptor';
+import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -52,6 +51,10 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
 import { Overlay } from '@angular/cdk/overlay';
 import { LegalizacionMatriculaComponent } from './modules/legalizacion/components/legalizacion-matricula/legalizacion-matricula.component';
+import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
+import { CalendarioMidService } from './services/sga_calendario_mid.service';
+import { TerceroMidService } from './services/sga_tercero_mid.service';
+import { MatButtonModule } from '@angular/material/button';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -78,6 +81,7 @@ export function createTranslateLoader(http: HttpClient) {
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    MatButtonModule,
     StoreModule.forRoot(rootReducer),
     TranslateModule.forRoot({
       loader: {
@@ -86,8 +90,8 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    HttpClientModule
-    
+    HttpClientModule,
+    SpinnerUtilModule
   ],
   providers: [
     TranslateService,
@@ -111,14 +115,16 @@ export function createTranslateLoader(http: HttpClient) {
     NewNuxeoService,
     ParametrosService,
     ProyectoAcademicoService,
-    SgaMidService,
     TercerosMidService,
     TimeService,
     UbicacionService,
     UserService,
     UtilidadesService,
     ProduccionAcademicaService,
-    {provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi:true},
+    InscripcionMidService,
+    CalendarioMidService,
+    TerceroMidService,
+    {provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi:true},
     { provide: MatDialogRef, useValue: {} },
     { 
       provide: MAT_TOOLTIP_SCROLL_STRATEGY,

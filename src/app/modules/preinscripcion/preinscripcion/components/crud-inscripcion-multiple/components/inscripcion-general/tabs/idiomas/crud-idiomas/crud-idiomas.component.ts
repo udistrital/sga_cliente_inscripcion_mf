@@ -7,10 +7,10 @@ import { InfoIdioma } from 'src/app/models/idioma/info_idioma';
 import { IdiomaService } from 'src/app/services/idioma.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ListService } from 'src/app/services/list.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_IDIOMAS } from './form-idiomas';
 import { DynamicFormComponent } from 'src/app/modules/components/dynamic-form/dynamic-form.component';
 
@@ -64,7 +64,6 @@ export class CrudIdiomasComponent implements OnInit {
     private inscripcionService: InscripcionService,
     private store: Store<IAppState>,
     private listService: ListService,
-    private sgaMidService: SgaMidService,
     private popUpManager: PopUpManager) {
     this.formInfoIdioma = FORM_IDIOMAS;
     this.construirForm();
@@ -115,7 +114,8 @@ export class CrudIdiomasComponent implements OnInit {
     if (this.inscripcion_id !== undefined && this.inscripcion_id !== 0 && this.inscripcion_id.toString() !== '') {
       this.inscripcionService.get('inscripcion_posgrado/?query=InscripcionId:' + this.inscripcion_id)
         .subscribe(res => {
-          const r = <any>res[0];
+          const r = <any>res;
+          console.log(res)
           if (res !== null && r.Type !== 'error' && JSON.stringify(res[0]).toString() !== '{}') {
             this.idioma_examen = r.Idioma;
           }

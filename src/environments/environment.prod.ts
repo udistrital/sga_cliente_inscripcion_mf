@@ -6,7 +6,7 @@
 
 export const environment = {
   production: false,
-  apiUrl:"",
+  apiUrl: "",
   NUXEO: {
     PATH: 'https://documental.portaloas.udistrital.edu.co/nuxeo/',
     CREDENTIALS: {
@@ -15,7 +15,7 @@ export const environment = {
 
     },
   },
-  NUXEO_SERVICE:'https://autenticacion.portaloas.udistrital.edu.co/apioas/gestor_documental_mid/v1',
+  NUXEO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/gestor_documental_mid/v1',
   CONFIGURACION_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/configuracion_crud_api/v1/',
   NOTIFICACION_SERVICE: 'wss://pruebasapi.portaloas.udistrital.edu.co:8116/ws',
   CONF_MENU_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/configuracion_crud_api/v1/menu_opcion_padre/ArbolMenus/',
@@ -46,9 +46,7 @@ export const environment = {
   CORE_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/core_crud/v1/',
   EVENTO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sesiones_crud/v2/',
   OIKOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/oikos_crud_api/v1/',
-  PROYECTO_ACADEMICO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/proyecto_academico_crud/v1/',
-  SGA_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sga_mid/v1/',
-  CLIENTE_HABILITAR_PERIODO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/core_crud/v1/',
+  PROYECTO_ACADEMICO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/proyecto_academico_crud/v1/',  CLIENTE_HABILITAR_PERIODO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/core_crud/v1/',
   OFERTA_ACADEMICA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sesiones_crud/v1/',
   INSCRIPCION_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/inscripcion_crud/v2/',
   UBICACION_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/ubicaciones_crud/v2/',
@@ -65,5 +63,7 @@ export const environment = {
   ESPACIOS_ACADEMICOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/espacios_academicos_crud/v1/',
   PLAN_TRABAJO_DOCENTE_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/plan_trabajo_docente_crud/v1/',
   PLAN_ESTUDIOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/planes_estudios_crud/v1/',
-  SGA_MID_TERCERO: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8539/v1/',
+  SGA_INSCRIPCION_MID_SERVICE: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8543/v1/',
+  SGA_TERCERO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8123/v1/',
+  SGA_CALENDARIO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8545/v1/',
 };
