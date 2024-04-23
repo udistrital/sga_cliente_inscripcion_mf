@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PreinscripcionModule } from './modules/preinscripcion/preinscripcion.module';
@@ -41,11 +41,16 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { MatStepperModule } from '@angular/material/stepper';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
 import { Overlay } from '@angular/cdk/overlay';
+import { LegalizacionMatriculaComponent } from './modules/legalizacion/components/legalizacion-matricula/legalizacion-matricula.component';
 import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
 import { TerceroMidService } from './services/sga_tercero_mid.service';
@@ -58,17 +63,24 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
+    LegalizacionMatriculaComponent,
   ],
   imports: [
     NgxExtendedPdfViewerModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatInputModule,
     MatSnackBarModule,
+    MatCardModule,
     BrowserModule,
     MatDialogModule,
+    MatListModule,
+    MatStepperModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
     StoreModule.forRoot(rootReducer),
     TranslateModule.forRoot({
