@@ -10,7 +10,8 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_EXPERIENCIA_LABORAL } from './form-experiencia_laboral';
 import { Organizacion } from 'src/app/models/ente/organizacion';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
@@ -398,7 +399,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
               cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
             };
             Swal.fire(opt)
-              .then((action) => {
+              .then((action: any) => {
                 if (action.value) {
                   this.nuevoTercero = true;
                 }
@@ -415,7 +416,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
               cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
             };
             Swal.fire(opt)
-              .then((action) => {
+              .then((action: any) => {
                 if (action.value) {
                   this.nuevoTercero = true;
                 }
@@ -439,7 +440,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willDelete) => {
+        .then((willDelete: any) => {
           if (willDelete.value) {
             this.info_experiencia_laboral = <any>infoExperienciaLaboral;
             const files = [];
@@ -468,7 +469,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_experiencia_laboral = <any>infoExperienciaLaboral;
           const files = [];

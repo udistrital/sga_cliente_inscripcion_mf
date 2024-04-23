@@ -28,6 +28,7 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "@ngxs/store": "^3.8.2",
     "@popperjs/core": "^2.11.6",
+    "@sweetalert2/themes": "^5.0.16",
     "bootstrap": "^5.2.3",
     "crypto-js": "^4.2.0",
     "jszip": "^3.10.1",

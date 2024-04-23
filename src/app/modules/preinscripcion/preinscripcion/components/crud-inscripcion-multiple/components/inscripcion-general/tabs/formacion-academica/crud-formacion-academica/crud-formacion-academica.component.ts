@@ -19,7 +19,8 @@ import { TercerosService } from 'src/app/services/terceros.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_FORMACION_ACADEMICA, NUEVO_TERCERO } from './form-formacion_academica';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
@@ -293,7 +294,7 @@ export class CrudFormacionAcademicaComponent implements OnInit {
               cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
             };
             Swal.fire(opt)
-              .then((action) => {
+              .then((action:any) => {
                 if (action.value) {
                   this.nuevoTercero = true;
                 }
@@ -310,7 +311,7 @@ export class CrudFormacionAcademicaComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((action) => {
+        .then((action:any) => {
           if (action.value) {
             this.nuevoTercero = true;
           }
@@ -511,7 +512,7 @@ export class CrudFormacionAcademicaComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_formacion_academica = <any>infoFormacionAcademica;
           const files = [];
@@ -608,7 +609,7 @@ export class CrudFormacionAcademicaComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           const files = [];
           this.info_formacion_academica = <any>infoFormacionAcademica;

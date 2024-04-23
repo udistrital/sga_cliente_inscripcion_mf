@@ -10,7 +10,8 @@ import { IAppState } from 'src/app/utils/reducers/app.state';
 import { FORM_INFO_PERSONA } from './form-info_persona';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { HttpErrorResponse } from '@angular/common/http';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import * as moment from 'moment-timezone';
 import * as momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
@@ -357,7 +358,7 @@ export class CrudInfoPersonaComponent implements OnInit {
       inputPlaceholder: this.translate.instant('GLOBAL.acepto_terminos'),
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
     })
-      .then((result) => {
+      .then((result: any) => {
         if (result.value) {
           this.aceptaTerminos = true;
           if (this.existePersona || this.faltandatos) {

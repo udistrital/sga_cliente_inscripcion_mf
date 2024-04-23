@@ -8,7 +8,8 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ProduccionAcademicaPost } from 'src/app/models/produccion_academica/produccion_academica';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { UserService } from 'src/app/services/users.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-produccion-academica',
@@ -106,7 +107,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
         showCancelButton: true,
       };
       Swal.fire(opt)
-        .then((willDelete) => {
+        .then((willDelete: any) => {
           if (willDelete.value) {
             //todo: falta parametro
             this.inscripcionMidService.delete('academico/produccion/', event).subscribe((res: any) => {
@@ -152,7 +153,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
       showCancelButton: true,
     };
     Swal.fire(opt)
-      .then((willConfirm) => {
+      .then((willConfirm: any) => {
         if (willConfirm.value) {
           const optConfirmar: any = {
             title: this.translate.instant('GLOBAL.confirmar'),
@@ -165,7 +166,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
             cancelButtonText: this.translate.instant('GLOBAL.no'),
           };
           Swal.fire(optConfirmar)
-            .then((isAuthor) => {
+            .then((isAuthor: any) => {
               const dataPut = {
                 acepta: isAuthor.value ? true : false,
                 AutorProduccionAcademica: data.EstadoEnteAutorId,

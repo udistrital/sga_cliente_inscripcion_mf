@@ -1,14 +1,20 @@
 <!-- Your content goes here -->
 <div>
-  <ngx-dinamicform [normalform]="formInfoPersona" [modeloData]="info_info_persona" (result)="validarForm($event)"
-    [clean]="clean" (percentage)="setPercentage($event)" (interlaced)="checkExistePersona($event)">
+  <ngx-dinamicform
+    [normalform]="formInfoPersona"
+    [modeloData]="info_info_persona"
+    (result)="validarForm($event)"
+    [clean]="clean"
+    (percentage)="setPercentage($event)"
+    (interlaced)="checkExistePersona($event)"
+  >
   </ngx-dinamicform>
 
-  <div class="text-center mt-3">
-    <button (click)="openVideoModal('video7')" class="round-button btn boton-help">
-      <div class="button-content">
-        <mat-icon class="icon-help">live_help</mat-icon>
-        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
+  <div style="display: flex; justify-content: center; margin: 2em">
+    <button mat-fab color="primary" (click)="openVideoModal('video7')">
+      <div >
+        <mat-icon>live_help</mat-icon>
+        {{ "GLOBAL.ayuda" | translate }}
       </div>
     </button>
   </div>

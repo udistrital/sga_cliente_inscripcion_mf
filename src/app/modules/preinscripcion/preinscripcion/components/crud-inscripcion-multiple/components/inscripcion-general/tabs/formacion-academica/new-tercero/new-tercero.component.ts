@@ -4,7 +4,8 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Lugar } from 'src/app/models/informacion/lugar';
 import { TipoTercero } from 'src/app/models/terceros/tipo_tercero';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { NUEVO_TERCERO } from './form_new_tercero';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
@@ -89,7 +90,7 @@ export class NewTerceroComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willMake) => {
+      .then((willMake: any) => {
         if (willMake.value) {
           if (infoTercero.Nit.includes('-')) {
             let nitAux = infoTercero.Nit.split('-');
@@ -116,7 +117,7 @@ export class NewTerceroComponent implements OnInit {
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
     };
     Swal.fire(opt2)
-      .then((action2) => {
+      .then((action2: any) => {
       });
   }
 

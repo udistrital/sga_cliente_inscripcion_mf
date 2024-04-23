@@ -75,6 +75,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { DownloadFileNuxeoComponent } from '../transferencia/components/solicitud-transferencia/components/download-file-nuxeo/download-file-nuxeo.component';
 import { SolicitudTransferenciaComponent } from '../transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { MatButtonModule } from '@angular/material/button';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -155,6 +156,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatCardModule,
     MatSnackBarModule,
     MatSelectModule,
+    MatButtonModule,
     CommonModule,
     NgbModule,
     PreinscripcionRoutingModule,

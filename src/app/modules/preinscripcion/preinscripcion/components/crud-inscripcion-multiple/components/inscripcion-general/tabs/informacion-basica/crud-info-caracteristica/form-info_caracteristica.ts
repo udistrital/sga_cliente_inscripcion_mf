@@ -8,7 +8,7 @@ export let FORM_INFO_CARACTERISTICA = {
     {
       etiqueta: 'select',
       relacion: false,
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'GrupoSanguineo',
       label_i18n: 'grupo_sanguineo',
       placeholder_i18n: 'grupo_sanguineo',
@@ -19,7 +19,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'Rh',
       relacion: false,
       label_i18n: 'rh',
@@ -31,7 +31,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'PaisNacimiento',
       label_i18n: 'pais_nacimiento',
       placeholder_i18n: 'pais_nacimiento',
@@ -43,7 +43,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'DepartamentoNacimiento',
       label_i18n: 'departamento_nacimiento',
       placeholder_i18n: 'departamento_nacimiento',
@@ -55,7 +55,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'Lugar',
       label_i18n: 'ciudad_nacimiento',
       placeholder_i18n: 'ciudad_nacimiento',
@@ -66,7 +66,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'selectmultiple',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'TipoPoblacion',
       label_i18n: 'tipo_poclacion',
       placeholder_i18n: 'tipo_poclacion',
@@ -78,7 +78,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'selectmultiple',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-6 col-xs-6',
+      claseGrid: 'form-col1',
       nombre: 'TipoDiscapacidad',
       label_i18n: 'tipo_discapacidad',
       placeholder_i18n: 'tipo_discapacidad',
@@ -90,7 +90,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'fileRev',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-6 col-xs-6',
+      claseGrid: 'form-col1',
       clase: 'form-control',
       nombre: 'ComprobantePoblacion',
       label_i18n: 'comprobante_poblacion',
@@ -105,7 +105,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'fileRev',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-6 col-xs-6',
+      claseGrid: 'form-col1',
       clase: 'form-control',
       nombre: 'ComprobanteDiscapacidad',
       label_i18n: 'comprobante_discapacidad',
@@ -120,7 +120,7 @@ export let FORM_INFO_CARACTERISTICA = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-4 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'EstadoCivil',
       label_i18n: 'estado_civil',
       placeholder_i18n: 'estado_civil',
@@ -131,7 +131,7 @@ export let FORM_INFO_CARACTERISTICA = {
   },
   {
       etiqueta: 'select',
-      claseGrid: 'col-lg-4 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'OrientacionSexual',
       label_i18n: 'orientacion_sexual',
       placeholder_i18n: 'orientacion_sexual',
@@ -142,7 +142,7 @@ export let FORM_INFO_CARACTERISTICA = {
   },
   {
       etiqueta: 'select',
-      claseGrid: 'col-lg-4 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: 'form-col1',
       nombre: 'IdentidadGenero',
       label_i18n: 'identidad_genero',
       placeholder_i18n: 'identidad_genero',
