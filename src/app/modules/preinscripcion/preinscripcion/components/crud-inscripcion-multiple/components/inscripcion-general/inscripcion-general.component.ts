@@ -664,7 +664,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('academico/descuento/detalle?' + 'PersonaId=' +
-        Number(window.localStorage.getItem('persona_id')) + '&DependenciaId=' +
+        id + '&DependenciaId=' +
         Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
         .subscribe((res: any) => {
           if (res.status == '200') {

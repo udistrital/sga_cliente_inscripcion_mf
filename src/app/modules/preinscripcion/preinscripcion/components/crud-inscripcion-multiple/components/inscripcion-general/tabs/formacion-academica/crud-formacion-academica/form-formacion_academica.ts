@@ -272,7 +272,7 @@ export let FORM_FORM_ACADEMICA = {
       label_i18n: 'buscador_entidad',
       placeholder_i18n: 'buscador_entidad',
       path: environment.SGA_TERCERO_MID_SERVICE,
-      query: "persona/consultar_terceros_con_nit?query=ROLE_TEXT_HERE",
+      query: "personas/nit?query=ROLE_TEXT_HERE",
       keyToFilter: 'ROLE_TEXT_HERE',
       requerido: true,
       tipo: 'text',
