@@ -98,8 +98,8 @@ export class PreinscripcionComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.loadData();
     validateLang(this.translate);
+    this.loadData()
   }
   
   async loadData() {

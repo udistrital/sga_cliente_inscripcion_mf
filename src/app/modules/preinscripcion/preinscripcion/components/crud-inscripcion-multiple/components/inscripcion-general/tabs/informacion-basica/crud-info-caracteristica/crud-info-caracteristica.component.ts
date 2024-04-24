@@ -259,6 +259,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
           if (res !== null && res.status != '404') {
             this.datosGet = <InfoCaracteristicaGet>res.data;
             this.info_info_caracteristica = <InfoCaracteristica>res.data;
+            console.log(this.info_info_caracteristica)
             this.info_info_caracteristica.Ente = (1 * this.info_caracteristica_id);
             this.info_info_caracteristica.TipoRelacionUbicacionEnte = 1;
             this.info_info_caracteristica.IdLugarEnte = this.datosGet.Lugar.Id;

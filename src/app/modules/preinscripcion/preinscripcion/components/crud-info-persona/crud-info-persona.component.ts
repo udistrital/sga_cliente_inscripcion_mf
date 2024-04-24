@@ -37,7 +37,7 @@ export class CrudInfoPersonaComponent implements OnInit {
   @Input('info_persona_id')
   set persona(info_persona_id: number) {
     this.info_persona_id = info_persona_id;
-    this.loadInfoPersona();
+    this.loadInfoPersona()
   }
 
   @Input('inscripcion_id')
@@ -78,9 +78,6 @@ export class CrudInfoPersonaComponent implements OnInit {
   ) {
     this.formInfoPersona = UtilidadesService.hardCopy(FORM_INFO_PERSONA);
     this.construirForm();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
-    });
     Promise.all([
       this.listService.findGenero(),
       this.listService.findTipoIdentificacion()]).then(() => {
@@ -92,12 +89,12 @@ export class CrudInfoPersonaComponent implements OnInit {
     // this.formInfoPersona.titulo = this.translate.instant('GLOBAL.info_persona');
     validateLang(this.translate)
     setTimeout(() => {
-      this.formInfoPersona.btn = this.translate.instant('GLOBAL.guardar');
       for (let i = 0; i < this.formInfoPersona.campos.length; i++) {
         this.formInfoPersona.campos[i].label = this.translate.instant('GLOBAL.' + this.formInfoPersona.campos[i].label_i18n);
         this.formInfoPersona.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formInfoPersona.campos[i].label_i18n);
       }
     }, 1000);
+    this.formInfoPersona.btn = this.translate.instant('GLOBAL.guardar');
   }
 
   getIndexForm(nombre: String): number {

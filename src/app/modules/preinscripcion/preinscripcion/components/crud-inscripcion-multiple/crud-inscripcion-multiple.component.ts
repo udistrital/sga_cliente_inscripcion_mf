@@ -466,7 +466,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     if (this.selectedLevel === undefined) {
       this.selectedLevel = parseInt(data.NivelPP, 10);
     }
-    if (this.info_info_persona != null) {
+    if (this.info_info_persona != null && data.Estado != "Vencido") {
       this.selectedProject = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
       this.recibo_pago = new ReciboPago();
       this.recibo_pago.NombreDelAspirante = this.info_info_persona.PrimerNombre + ' ' +

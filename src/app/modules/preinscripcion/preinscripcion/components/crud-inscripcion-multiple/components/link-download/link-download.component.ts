@@ -36,7 +36,6 @@ export class LinkDownloadComponent implements OnInit{
   }
   
   showExpired(){
-
   }
 }
 
