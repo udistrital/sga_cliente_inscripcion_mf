@@ -5,7 +5,13 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { validateLang } from 'src/app/app.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from './components/modal/modal.component';
-import multiMonthPlugin from '@fullcalendar/multimonth'
+//import multiMonthPlugin from '@fullcalendar/multimonth'
+import { OikosService } from 'src/app/services/oikos.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
+import { PopUpManager } from 'src/app/managers/popUpManager';
+import { ParametrosService } from 'src/app/services/parametros.service';
+import { InscripcionService } from 'src/app/services/inscripcion.service';
 
 
 interface Food {
@@ -94,7 +100,19 @@ export class LegalizacionMatriculaComponent {
     {value: 'tacos-2', viewValue: 'Tacos'},
   ];
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translate: TranslateService) {
+  proyectosCurriculares!: any[]
+  anios!: any[]
+  periodos!: any[]
+
+  constructor(
+    private _formBuilder: FormBuilder, 
+    private dialog: MatDialog, 
+    private translate: TranslateService,
+    private oikosService: OikosService,
+    private parametrosService: ParametrosService,
+    private inscripcionService: InscripcionService,
+    private popUpManager: PopUpManager
+  ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
 
@@ -147,8 +165,11 @@ export class LegalizacionMatriculaComponent {
 
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     validateLang(this.translate);
+    await this.cargarproyectos();
+    await this.cargarAnios();
+    await this.cargarPeriodos();
   }
 
   get proyecto() {
@@ -156,6 +177,71 @@ export class LegalizacionMatriculaComponent {
     return proyecto;
   }
 
+  cargarproyectos() {
+    return new Promise((resolve, reject) => {
+      this.oikosService.get('dependencia/?query=DependenciaTipoDependencia.TipoDependenciaId.Id:14,Activo:true&limit=0')
+        .subscribe((res: any) => {
+          console.log(res);
+          this.proyectosCurriculares = res;
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  cargarAnios() {
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A93')
+        .subscribe((res: any) => {
+          this.anios = res.Data;
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  cargarPeriodos() {
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
+        .subscribe((res: any) => {
+          this.periodos = res.Data;
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  GenerarBusqueda() {
+    const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
+    const anio = this.firstFormGroup.get('validatorAño')?.value;
+    const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
+    console.log(proyecto, anio, periodo);
+
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get('inscripcion?query=Activo:true,ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + '&order=desc&limit=0')
+        .subscribe((res: any) => {
+          console.log(res);
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
 
   openModal(data: any) {
     const dialogRef = this.dialog.open(ModalComponent, {
