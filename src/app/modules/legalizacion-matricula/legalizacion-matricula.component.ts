@@ -103,6 +103,7 @@ export class LegalizacionMatriculaComponent {
   proyectosCurriculares!: any[]
   anios!: any[]
   periodos!: any[]
+  facultades!: any[]
 
   constructor(
     private _formBuilder: FormBuilder, 
@@ -167,9 +168,10 @@ export class LegalizacionMatriculaComponent {
 
   async ngOnInit() {
     validateLang(this.translate);
-    await this.cargarproyectos();
+    //await this.cargarProyectos();
     await this.cargarAnios();
     await this.cargarPeriodos();
+    await this.cargarFacultades();
   }
 
   get proyecto() {
@@ -177,12 +179,12 @@ export class LegalizacionMatriculaComponent {
     return proyecto;
   }
 
-  cargarproyectos() {
+  cargarFacultades() {
     return new Promise((resolve, reject) => {
-      this.oikosService.get('dependencia/?query=DependenciaTipoDependencia.TipoDependenciaId.Id:14,Activo:true&limit=0')
+      this.oikosService.get('dependencia_padre/FacultadesConProyectos?Activo:true&limit=0')
         .subscribe((res: any) => {
           console.log(res);
-          this.proyectosCurriculares = res;
+          this.facultades = res;
           resolve(res)
         },
           (error: any) => {
@@ -213,6 +215,7 @@ export class LegalizacionMatriculaComponent {
       this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
         .subscribe((res: any) => {
           this.periodos = res.Data;
+          console.log(this.periodos);
           resolve(res)
         },
           (error: any) => {
@@ -223,14 +226,20 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
+  onFacultadChange(event: any) {
+    const facultad = this.facultades.find((facultad: any) => facultad.Id === event.value);
+    this.proyectosCurriculares = facultad.Opciones;
+  }
+
   GenerarBusqueda() {
     const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
-    const anio = this.firstFormGroup.get('validatorAño')?.value;
     const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
+    const anio = this.firstFormGroup.get('validatorAño')?.value;
     console.log(proyecto, anio, periodo);
 
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion?query=Activo:true,ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + '&order=desc&limit=0')
+      // this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + '&sortby=Id&order=asc')
+      this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + '&sortby=Id&order=asc')
         .subscribe((res: any) => {
           console.log(res);
           resolve(res)
