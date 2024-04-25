@@ -22,27 +22,10 @@ interface InfoSocioEconomica {
   Estado: string;
 }
 
-interface InfoPersonal1 {
-  TipoIdentificacion: string;
-  NumeroIdentificacion: string;
-  PrimerNombre: string;
-  SegundoNombre: string;
-  PrimerApellido: string;
-  SegundoApellido: string;
-}
-
-interface InfoPersonal2 {
-  FechaNacimiento: string;
-  Numero: string;
-  Correo: string;
-  Genero: string;
-}
-
 interface Proyecto {
   opcion: number;
   nombre: string;
 }
-
 
 @Component({
   selector: 'ngx-legalizacion-matricula',
@@ -55,14 +38,8 @@ export class LegalizacionMatriculaComponent {
   dataSource2 = new MatTableDataSource<any>();
   dataSource3 = new MatTableDataSource<any>();
   dataSource4 = new MatTableDataSource<any>();
-  dataSource5 = new MatTableDataSource<any>();
-  dataSource6 = new MatTableDataSource<any>();
 
   columns2: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
-
-  infoPersonal1: string [] = ['TipoIdentificacion', 'NumeroIdentificacion', 'PrimerNombre', 'SegundoNombre', 'PrimerApellido', 'SegundoApellido'];
-  infoPersonal2: string [] = ['FechaNacimiento', 'Numero', 'Correo', 'Genero'];
-
 
   firstFormGroup = this._formBuilder.group({
     validatorProyecto: ['', Validators.required],
@@ -77,7 +54,12 @@ export class LegalizacionMatriculaComponent {
 
   //************************************************************//
   personaDataSource!: MatTableDataSource<any>;
+  infoAspiranteDataSource!: MatTableDataSource<any>;
   personaColums: string [] = ['Orden', 'Credencial', 'Nombres', 'Apellidos', 'TipoDocumento', 'Documento', 'EstadoAdmision', 'EstadoRevision', 'Acciones'];
+  infoPersonal1: string [] = ['TipoIdentificacion', 'NumeroIdentificacion', 'PrimerNombre', 'SegundoNombre', 'PrimerApellido', 'SegundoApellido'];
+  infoPersonal2: string [] = ['FechaNacimiento', 'Numero', 'Correo', 'Genero'];
+
+  aspirante: any
 
   proyectosCurriculares!: any[]
   anios!: any[]
@@ -96,18 +78,6 @@ export class LegalizacionMatriculaComponent {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-
-    const infoPersonal1: InfoPersonal1[] = [
-      {TipoIdentificacion: 'Cedula', NumeroIdentificacion: '1234567890', PrimerNombre: 'Juan', SegundoNombre: 'Carlos', PrimerApellido: 'Perez', SegundoApellido: 'Rodriguez'},
-    ];
-
-    this.dataSource5.data = infoPersonal1.map(info => ({infoPersonal1: info}));
-
-    const infoPersonal2: InfoPersonal2[] = [
-      {FechaNacimiento: '01/01/1990', Numero: '1234567890', Correo: 'asd@correo.com', Genero: 'Masculino'},
-    ];
-
-    this.dataSource6.data = infoPersonal2.map(info => ({infoPersonal2: info}));
 
     const infoSocioEconomica: InfoSocioEconomica[] = [
       {Orden: 1, Concepto: 'Dirección', Informacion: 'Fila 1', Estado: 'No revisado'},
@@ -215,24 +185,28 @@ export class LegalizacionMatriculaComponent {
 
     for (const inscripcion of inscripciones) {
       ordenCount += 1;
-      // const dataExistente = inscritosData.find((item: any) => item.personaId === inscripcion.PersonaId)
-
-      // if (dataExistente) {
-      //   console.log('Existe: ', dataExistente)
-      // } else {
-      //   console.log('No existe: ', dataExistente)
-      // }
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
+      const proyecto = this.proyectosCurriculares.find((item: any) => item.Id === inscripcion.ProgramaAcademicoId)
+      console.log(persona, inscripcion)
       const personaData = {
         "personaId": persona.Id,
         "orden": ordenCount,
         "credencial": 123,
+        "primer_nombre": persona.PrimerNombre,
+        "segundo_nombre": persona.SegundoNombre,
+        "primer_apellido": persona.PrimerApellido,
+        "segundo_apellido": persona.SegundoApellido,
         "nombres": persona.PrimerNombre + " " + persona.SegundoNombre,
         "apellidos": persona.PrimerApellido + " " + persona.SegundoApellido,
         "tipo_documento": persona.TipoIdentificacion.Nombre,
         "documento": persona.NumeroIdentificacion,
         "estado_admision": inscripcion.EstadoInscripcionId.Nombre,
-        "estado_revision": "No"
+        "estado_revision": "No",
+        "proyecto_admitido": proyecto.Nombre,
+        "fecha_nacimiento": persona.FechaNacimiento,
+        "numero_celular": persona.Telefono,
+        "correo": persona.UsuarioWSO2,
+        "genero": persona.Genero.Nombre
       }
       inscritosData.push(personaData);
     }
@@ -281,6 +255,8 @@ export class LegalizacionMatriculaComponent {
   editar = (data: any) => {
     console.log('Editando...');
     console.log(data);
+    this.aspirante = data;
+    this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
     this.formulario = true;
   }
 

@@ -181,7 +181,7 @@
                 <mat-card class="card-nombre">
                   <div class="flex-container">
                     <p>{{ 'legalizacion_matricula.nombre' | translate }}</p>
-                    <p>{{proyecto.nombre}}</p>
+                    <p>{{aspirante.proyecto_admitido}}</p>
                   </div>
                 </mat-card>
               </div>
@@ -189,35 +189,35 @@
           </mat-card>
           <br><br>
           <mat-card>
-            <table mat-table [dataSource]="dataSource5">
+            <table mat-table [dataSource]="infoAspiranteDataSource">
               <ng-container matColumnDef="TipoIdentificacion">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.tipo_id' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal1.TipoIdentificacion}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.tipo_documento}} </td>
               </ng-container>
 
               <ng-container matColumnDef="NumeroIdentificacion">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.numero_id' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal1.NumeroIdentificacion}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.documento}} </td>
               </ng-container>
 
               <ng-container matColumnDef="PrimerNombre">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.primer_nombre' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal1.PrimerNombre}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.primer_nombre}} </td>
               </ng-container>
 
               <ng-container matColumnDef="SegundoNombre">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.segundo_nombre' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal1.SegundoNombre}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.segundo_nombre}} </td>
               </ng-container>
 
               <ng-container matColumnDef="PrimerApellido">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.primer_apellido' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal1.PrimerApellido}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.primer_apellido}} </td>
               </ng-container>
 
               <ng-container matColumnDef="SegundoApellido">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.segundo_apellido' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal1.SegundoApellido}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.segundo_apellido}} </td>
               </ng-container>
             
               <!-- Filas -->
@@ -227,26 +227,26 @@
           </mat-card>
           <br><br>
           <mat-card>
-            <table mat-table [dataSource]="dataSource6">
+            <table mat-table [dataSource]="infoAspiranteDataSource">
 
               <ng-container matColumnDef="FechaNacimiento">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.fecha_nacimiento' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal2.FechaNacimiento}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.fecha_nacimiento}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Numero">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.numero_cel' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal2.Numero}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.numero_celular}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Correo">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.correo' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal2.Correo}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.correo}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Genero">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.genero' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.infoPersonal2.Genero}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.genero}} </td>
               </ng-container>
 
               <!-- Filas -->
