@@ -12,24 +12,8 @@ import Swal from 'sweetalert2';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
-
-
-interface Food {
-  value: string;
-  viewValue: string;
-}
-
-
-interface colums {
-  Orden: number;
-  Credencial: string;
-  Nombres: string;
-  Apellidos: string;
-  TipoDocumento: string;
-  Documento: string;
-  EstadoAdmision: string;
-  EstadoRevision: string;
-}
+import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { MatStepper } from '@angular/material/stepper';
 
 interface InfoSocioEconomica {
   Orden: number;
@@ -68,14 +52,12 @@ interface Proyecto {
 export class LegalizacionMatriculaComponent {
 
   formulario: boolean = false;
-  dataSource = new MatTableDataSource<any>();
   dataSource2 = new MatTableDataSource<any>();
   dataSource3 = new MatTableDataSource<any>();
   dataSource4 = new MatTableDataSource<any>();
   dataSource5 = new MatTableDataSource<any>();
   dataSource6 = new MatTableDataSource<any>();
 
-  colums: string [] = ['Orden', 'Credencial', 'Nombres', 'Apellidos', 'TipoDocumento', 'Documento', 'EstadoAdmision', 'EstadoRevision', 'Acciones'];
   columns2: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
 
   infoPersonal1: string [] = ['TipoIdentificacion', 'NumeroIdentificacion', 'PrimerNombre', 'SegundoNombre', 'PrimerApellido', 'SegundoApellido'];
@@ -86,19 +68,16 @@ export class LegalizacionMatriculaComponent {
     validatorProyecto: ['', Validators.required],
     validatorPeriodo: ['', Validators.required],
     validatorAño: ['', Validators.required],
-    validatorNivel: ['', Validators.required],
     validatorFacultad: ['', Validators.required],
   });
   secondFormGroup = this._formBuilder.group({
     secondCtrl: ['', Validators.required],
   });
-  isLinear = true; //////////////////////////////////////////////////////
+  isLinear = true;
 
-  foods: Food[] = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-  ];
+  //************************************************************//
+  personaDataSource!: MatTableDataSource<any>;
+  personaColums: string [] = ['Orden', 'Credencial', 'Nombres', 'Apellidos', 'TipoDocumento', 'Documento', 'EstadoAdmision', 'EstadoRevision', 'Acciones'];
 
   proyectosCurriculares!: any[]
   anios!: any[]
@@ -112,22 +91,11 @@ export class LegalizacionMatriculaComponent {
     private oikosService: OikosService,
     private parametrosService: ParametrosService,
     private inscripcionService: InscripcionService,
+    private sgamidService: SgaMidService,
     private popUpManager: PopUpManager
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-
-    const colums: colums[] = [
-      {Orden: 1, Credencial: '123', Nombres: 'Juan', Apellidos: 'Perez', TipoDocumento: 'Cedula', Documento: '1234567890', EstadoAdmision: 'Admitido', EstadoRevision: 'Revisado'},
-      {Orden: 2, Credencial: '456', Nombres: 'Maria', Apellidos: 'Rodriguez', TipoDocumento: 'Cedula', Documento: '0987654321', EstadoAdmision: 'Admitido', EstadoRevision: 'Revisado'},
-      {Orden: 3, Credencial: '789', Nombres: 'Pedro', Apellidos: 'Gomez', TipoDocumento: 'Cedula', Documento: '1357924680', EstadoAdmision: 'Admitido', EstadoRevision: 'Revisado'},
-    ];
-
-    const combinedData = colums.map((detalles, index) => ({
-      colums: colums[index]
-    }));
-
-    this.dataSource.data = combinedData;
 
     const infoPersonal1: InfoPersonal1[] = [
       {TipoIdentificacion: 'Cedula', NumeroIdentificacion: '1234567890', PrimerNombre: 'Juan', SegundoNombre: 'Carlos', PrimerApellido: 'Perez', SegundoApellido: 'Rodriguez'},
@@ -168,10 +136,7 @@ export class LegalizacionMatriculaComponent {
 
   async ngOnInit() {
     validateLang(this.translate);
-    //await this.cargarProyectos();
-    await this.cargarAnios();
-    await this.cargarPeriodos();
-    await this.cargarFacultades();
+    await this.cargarSelects();
   }
 
   get proyecto() {
@@ -179,12 +144,18 @@ export class LegalizacionMatriculaComponent {
     return proyecto;
   }
 
+  async cargarSelects() {
+    await this.cargarAnios();
+    await this.cargarPeriodos();
+    await this.cargarFacultades();
+  }
+
   cargarFacultades() {
     return new Promise((resolve, reject) => {
       this.oikosService.get('dependencia_padre/FacultadesConProyectos?Activo:true&limit=0')
         .subscribe((res: any) => {
-          console.log(res);
           this.facultades = res;
+          console.log(this.facultades);
           resolve(res)
         },
           (error: any) => {
@@ -231,17 +202,62 @@ export class LegalizacionMatriculaComponent {
     this.proyectosCurriculares = facultad.Opciones;
   }
 
-  GenerarBusqueda() {
+  async generarBusqueda(stepper: MatStepper) {
     const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
     const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
     const anio = this.firstFormGroup.get('validatorAño')?.value;
     console.log(proyecto, anio, periodo);
 
+    let inscritosData: any[] = [];
+    let ordenCount = 0 
+
+    const inscripciones: any = await this.buscarInscripciones(stepper, proyecto, periodo)
+
+    for (const inscripcion of inscripciones) {
+      ordenCount += 1;
+      // const dataExistente = inscritosData.find((item: any) => item.personaId === inscripcion.PersonaId)
+
+      // if (dataExistente) {
+      //   console.log('Existe: ', dataExistente)
+      // } else {
+      //   console.log('No existe: ', dataExistente)
+      // }
+      const persona: any = await this.consultarTercero(inscripcion.PersonaId);
+      const personaData = {
+        "personaId": persona.Id,
+        "orden": ordenCount,
+        "credencial": 123,
+        "nombres": persona.PrimerNombre + " " + persona.SegundoNombre,
+        "apellidos": persona.PrimerApellido + " " + persona.SegundoApellido,
+        "tipo_documento": persona.TipoIdentificacion.Nombre,
+        "documento": persona.NumeroIdentificacion,
+        "estado_admision": inscripcion.EstadoInscripcionId.Nombre,
+        "estado_revision": "No"
+      }
+      inscritosData.push(personaData);
+    }
+    this.personaDataSource = new MatTableDataSource<any>(inscritosData);
+  }
+
+  buscarInscripciones(stepper: MatStepper, proyecto: any, periodo: any) {
     return new Promise((resolve, reject) => {
-      // this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + '&sortby=Id&order=asc')
-      this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + '&sortby=Id&order=asc')
+      this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:2&sortby=Id&order=asc')
         .subscribe((res: any) => {
-          console.log(res);
+          stepper.next();
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  consultarTercero(personaId: any) {
+    return new Promise((resolve, reject) => {
+      this.sgamidService.get('persona/consultar_persona/' + personaId)
+        .subscribe((res: any) => {
           resolve(res)
         },
           (error: any) => {
@@ -261,7 +277,6 @@ export class LegalizacionMatriculaComponent {
       console.log('Modal cerrado');
     });
   }
-
 
   editar = (data: any) => {
     console.log('Editando...');
