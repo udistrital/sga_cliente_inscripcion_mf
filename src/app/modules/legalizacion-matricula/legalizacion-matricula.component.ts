@@ -14,13 +14,14 @@ import { ParametrosService } from 'src/app/services/parametros.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { MatStepper } from '@angular/material/stepper';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
-interface InfoSocioEconomica {
-  Orden: number;
-  Concepto: string;
-  Informacion: string;
-  Estado: string;
-}
+// interface InfoSocioEconomica {
+//   Orden: number;
+//   Concepto: string;
+//   Informacion: string;
+//   Estado: string;
+// }
 
 interface Proyecto {
   opcion: number;
@@ -35,11 +36,11 @@ interface Proyecto {
 export class LegalizacionMatriculaComponent {
 
   formulario: boolean = false;
-  dataSource2 = new MatTableDataSource<any>();
-  dataSource3 = new MatTableDataSource<any>();
-  dataSource4 = new MatTableDataSource<any>();
+  //dataSource2 = new MatTableDataSource<any>();
+  //dataSource3 = new MatTableDataSource<any>();
+  //dataSource4 = new MatTableDataSource<any>();
 
-  columns2: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
+  //columns2: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
 
   firstFormGroup = this._formBuilder.group({
     validatorProyecto: ['', Validators.required],
@@ -55,9 +56,15 @@ export class LegalizacionMatriculaComponent {
   //************************************************************//
   personaDataSource!: MatTableDataSource<any>;
   infoAspiranteDataSource!: MatTableDataSource<any>;
+  infoSocioEcopersonalDataSource!: MatTableDataSource<any>;
+  infoSocioEcoCosteaDataSource!: MatTableDataSource<any>;
+  resumenGeneralDataSource!: MatTableDataSource<any>;
+  
+
   personaColums: string [] = ['Orden', 'Credencial', 'Nombres', 'Apellidos', 'TipoDocumento', 'Documento', 'EstadoAdmision', 'EstadoRevision', 'Acciones'];
   infoPersonal1: string [] = ['TipoIdentificacion', 'NumeroIdentificacion', 'PrimerNombre', 'SegundoNombre', 'PrimerApellido', 'SegundoApellido'];
   infoPersonal2: string [] = ['FechaNacimiento', 'Numero', 'Correo', 'Genero'];
+  infoSocioEconomicacolumns: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
 
   aspirante: any
 
@@ -74,33 +81,34 @@ export class LegalizacionMatriculaComponent {
     private parametrosService: ParametrosService,
     private inscripcionService: InscripcionService,
     private sgamidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private popUpManager: PopUpManager
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
 
-    const infoSocioEconomica: InfoSocioEconomica[] = [
-      {Orden: 1, Concepto: 'Dirección', Informacion: 'Fila 1', Estado: 'No revisado'},
-      {Orden: 2, Concepto: 'Nombre colegio', Informacion: 'Fila 2', Estado: 'No revisado'},
-      {Orden: 3, Concepto: 'Valor de la pension mensual pagada grado once', Informacion: 'Fila 3', Estado: 'No revisado'},
-      {Orden: 4, Concepto: 'Nucleo familiar', Informacion: 'Fila 4', Estado: 'No revisado'},
-      {Orden: 5, Concepto: 'Situacion laboral', Informacion: 'Fila 5', Estado: 'No revisado'},
-    ];
+    // const infoSocioEconomica: InfoSocioEconomica[] = [
+    //   {Orden: 1, Concepto: 'Dirección', Informacion: 'Fila 1', Estado: 'No revisado'},
+    //   {Orden: 2, Concepto: 'Nombre colegio', Informacion: 'Fila 2', Estado: 'No revisado'},
+    //   {Orden: 3, Concepto: 'Valor de la pension mensual pagada grado once', Informacion: 'Fila 3', Estado: 'No revisado'},
+    //   {Orden: 4, Concepto: 'Nucleo familiar', Informacion: 'Fila 4', Estado: 'No revisado'},
+    //   {Orden: 5, Concepto: 'Situacion laboral', Informacion: 'Fila 5', Estado: 'No revisado'},
+    // ];
 
-    this.dataSource2.data = infoSocioEconomica.map(info => ({columns2: info}));
+    // this.dataSource2.data = infoSocioEconomica.map(info => ({columns2: info}));
 
-    const infoSocioEconomicaCosteo: InfoSocioEconomica[] = [
-      {Orden: 1, Concepto: 'Direccion de residencia', Informacion: 'Fila 1', Estado: 'No revisado'},
-      {Orden: 2, Concepto: 'Valor de los ingresos', Informacion: 'Fila 2', Estado: 'No revisado'},
-    ];
+    // const infoSocioEconomicaCosteo: InfoSocioEconomica[] = [
+    //   {Orden: 1, Concepto: 'Direccion de residencia', Informacion: 'Fila 1', Estado: 'No revisado'},
+    //   {Orden: 2, Concepto: 'Valor de los ingresos', Informacion: 'Fila 2', Estado: 'No revisado'},
+    // ];
 
-    this.dataSource3.data = infoSocioEconomicaCosteo.map(info => ({columns2: info}));
+    // this.dataSource3.data = infoSocioEconomicaCosteo.map(info => ({columns2: info}));
 
-    const resumenGeneral: InfoSocioEconomica[] = [
-      {Orden: 1, Concepto: 'Soporte genera', Informacion: 'Fila 1', Estado: 'No revisado'},
-    ];
+    // const resumenGeneral: InfoSocioEconomica[] = [
+    //   {Orden: 1, Concepto: 'Soporte genera', Informacion: 'Fila 1', Estado: 'No revisado'},
+    // ];
 
-    this.dataSource4.data = resumenGeneral.map(info => ({columns2: info}));
+    // this.dataSource4.data = resumenGeneral.map(info => ({columns2: info}));
 
   }
 
@@ -252,12 +260,56 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
-  editar = (data: any) => {
+  editar = async (data: any) => {
     console.log('Editando...');
     console.log(data);
     this.aspirante = data;
     this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
+    const infoLegalizacion = await this.getLegalizacionMatricula(this.aspirante.personaId)
+    console.log(infoLegalizacion);
+    this.cargarInfoTablasSocioeconomicas(infoLegalizacion);
+    //this.infoSocioEconomicaDataSource = new MatTableDataSource<any>([infoLegalizacion]);
     this.formulario = true;
+  }
+
+  async getLegalizacionMatricula(personaId: any) {
+    console.log(personaId);
+    return new Promise((resolve, reject) => {
+      //this.loading = true;
+      this.inscripcionMidService.get('legalizacion/informacion-legalizacion/' + personaId)
+        .subscribe((res: any) => {
+          console.log(res, res.data)
+          resolve(res.data);
+        },
+          (error: HttpErrorResponse) => {
+            //this.loading = false;
+            this.popUpManager.showErrorAlert(
+              this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
+            );
+          });
+    });
+  }
+
+  cargarInfoTablasSocioeconomicas(infoLegalizacion: any) {
+    const infoSocioEcoPersonal: any[] = [
+      {Orden: 1, Concepto: 'Dirección de residencia', Informacion: infoLegalizacion.direccionResidencia, Estado: '', Soporte: false},
+      {Orden: 2, Concepto: 'Colegio donde se gradúo', Informacion: infoLegalizacion.colegioGraduado, Estado: 'No revisado', Soporte: true},
+      {Orden: 3, Concepto: 'Valor de la pension mensual pagada grado once', Informacion: infoLegalizacion.pensionGrado11, Estado: 'No revisado', Soporte: true},
+      {Orden: 4, Concepto: 'Nucleo familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: 'No revisado', Soporte: true},
+      {Orden: 5, Concepto: 'Situacion laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: 'No revisado', Soporte: true},
+    ];
+    this.infoSocioEcopersonalDataSource = new MatTableDataSource<any>(infoSocioEcoPersonal);
+
+    const infoSocioEcoCosteo: any[] = [
+      {Orden: 1, Concepto: 'Direccion de residencia', Informacion: infoLegalizacion.direccionCostea, Estado: 'No revisado', Soporte: true},
+      {Orden: 2, Concepto: 'Ingresos del año anterior', Informacion: infoLegalizacion.ingresosCostea, Estado: 'No revisado', Soporte: true},
+    ];
+    this.infoSocioEcoCosteaDataSource = new MatTableDataSource<any>(infoSocioEcoCosteo);
+
+    const resumenGeneral: any[] = [
+      {Orden: 1, Concepto: 'Soporte genera', Informacion: 'Sin información', Estado: 'No revisado', Soporte: true},
+    ];
+    this.resumenGeneralDataSource = new MatTableDataSource<any>(resumenGeneral);
   }
 
   cerrar = () => {

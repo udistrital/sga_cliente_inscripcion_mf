@@ -264,21 +264,21 @@
           </mat-card-header>
           <br><br>
           <mat-card-content>
-            <table mat-table [dataSource]="dataSource2">
+            <table mat-table [dataSource]="infoSocioEcopersonalDataSource">
 
               <ng-container matColumnDef="Orden">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.orden' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Orden}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Orden}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Concepto">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Concepto}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Concepto}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.informacion' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Informacion}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Informacion}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Soporte">
@@ -294,12 +294,12 @@
 
               <ng-container matColumnDef="Estado">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Estado}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Estado}} </td>
               </ng-container>
             
               <!-- Filas -->
-              <tr mat-header-row *matHeaderRowDef="columns2"></tr>
-              <tr mat-row *matRowDef="let row; columns: columns2;"></tr>
+              <tr mat-header-row *matHeaderRowDef="infoSocioEconomicacolumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: infoSocioEconomicacolumns;"></tr>
             </table>
           </mat-card-content>
           
@@ -312,21 +312,21 @@
           </mat-card-header>
           <br><br>
           <mat-card-content>
-            <table mat-table [dataSource]="dataSource3">
+            <table mat-table [dataSource]="infoSocioEcoCosteaDataSource">
 
               <ng-container matColumnDef="Orden">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.orden' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Orden}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Orden}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Concepto">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Concepto}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Concepto}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.informacion' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Informacion}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Informacion}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Soporte">
@@ -342,12 +342,12 @@
 
               <ng-container matColumnDef="Estado">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Estado}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Estado}} </td>
               </ng-container>
             
               <!-- Filas -->
-              <tr mat-header-row *matHeaderRowDef="columns2"></tr>
-              <tr mat-row *matRowDef="let row; columns: columns2;"></tr>
+              <tr mat-header-row *matHeaderRowDef="infoSocioEconomicacolumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: infoSocioEconomicacolumns;"></tr>
             </table>
           </mat-card-content>
             
@@ -360,21 +360,21 @@
           </mat-card-header>
           <br><br>
           <mat-card-content>
-            <table mat-table [dataSource]="dataSource4">
+            <table mat-table [dataSource]="resumenGeneralDataSource">
 
               <ng-container matColumnDef="Orden">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.orden' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Orden}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Orden}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Concepto">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Concepto}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Concepto}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.informacion' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Informacion}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Informacion}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Soporte">
@@ -390,12 +390,12 @@
 
               <ng-container matColumnDef="Estado">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.columns2.Estado}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Estado}} </td>
               </ng-container>
             
               <!-- Filas -->
-              <tr mat-header-row *matHeaderRowDef="columns2"></tr>
-              <tr mat-row *matRowDef="let row; columns: columns2;"></tr>
+              <tr mat-header-row *matHeaderRowDef="infoSocioEconomicacolumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: infoSocioEconomicacolumns;"></tr>
             </table>
           </mat-card-content>
         </mat-card>
