@@ -38,23 +38,9 @@ export class LegalizacionMatriculaComponent implements OnInit {
   valorIngresos = 0;
   valorIngresosSML = 0;
 
-  //formInfoPersonal!: FormGroup;
   formInfoSocioEconomicaPersonal!: FormGroup;
   formInfoSocioEconomicaCosteara!: FormGroup;
   formDocsGenerales!: FormGroup;
-
-  // infoPersonal = this.fb.group({
-  //   'tipo_identificacion': ['', Validators.required],
-  //   'numero_identificacion': ['', Validators.required],
-  //   'primer_nombre': ['', Validators.required],
-  //   'segundo_nombre': ['', Validators.required],
-  //   'primer_apellido': ['', Validators.required],
-  //   'segundo_apellido': ['', Validators.required],
-  //   'fecha_nacimiento': ['', Validators.required],
-  //   'celular': ['', Validators.required],
-  //   'correo': ['', Validators.required],
-  //   'genero': ['', Validators.required],
-  // })
 
   infoSocioEconomicaPersonal = this.fb.group({
     'direccion_residencia': ['', Validators.required],
@@ -137,9 +123,6 @@ export class LegalizacionMatriculaComponent implements OnInit {
     const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
     const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
     this.soportes[label].validaArchivos = errs;
-    // this.formGroup.patchValue({[label]: nameFiles});
-    // this.formGroup.get(label)!.markAsTouched({onlySelf: true});
-    //this.putErrorIfRequired(label, errs);
   }
 
   passFilesToFormControl(archivosLocal: any[], archivosLinea: any[]): string {
@@ -188,9 +171,6 @@ export class LegalizacionMatriculaComponent implements OnInit {
       const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
       const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
       this.soportes[label].validaArchivos = errs;
-      // this.formGroup.patchValue({[label]: nameFiles});
-      // this.formGroup.get(label)!.markAsTouched({onlySelf: true});
-      // this.putErrorIfRequired(label, errs);
     }
   }
 
@@ -202,9 +182,6 @@ export class LegalizacionMatriculaComponent implements OnInit {
       const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
       const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
       this.soportes[label].validaArchivos = errs;
-      // this.formGroup.patchValue({[label]: nameFiles});
-      // this.formGroup.get(label)!.markAsTouched({onlySelf: true});
-      // this.putErrorIfRequired(label, errs);
     }
   }
 
@@ -356,7 +333,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
   async prepararCreacion() {
     this.loading = true;
     let newLegalizacionMatricula = new LegalizacionMatricula();
-    newLegalizacionMatricula.TerceroId = 59844;
+    newLegalizacionMatricula.TerceroId = 9871;
     newLegalizacionMatricula.DireccionResidencia = this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
     newLegalizacionMatricula.Localidad = this.localidades.find((localidad: any) => localidad.Id == this.formInfoSocioEconomicaPersonal.get('localidad')?.value).Nombre
     newLegalizacionMatricula.ColegioGraduado = this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
@@ -408,7 +385,7 @@ export class LegalizacionMatriculaComponent implements OnInit {
         .subscribe((res: any) => {
           this.loading = false;
           this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.legalizacion_creacion_ok'));
-          resolve(res.Data);
+          resolve(res.data);
         },
           (error: HttpErrorResponse) => {
             this.loading = false;
@@ -439,21 +416,6 @@ export class LegalizacionMatriculaComponent implements OnInit {
     }
     return archivos
   }
-
-  // existenArchivos(archivos: any) {
-  //   let existen = false;
-  //   for (const soporte of archivos) {
-  //     const carpeta = archivos[soporte]
-  //     console.log(carpeta, soporte)
-  //     if (carpeta && carpeta.length > 0) {
-  //       existen = true;
-  //       console.log('n')
-  //       break;
-  //     }
-  //   }
-
-  //   return existen;
-  // }
 
   cargarArchivos(archivos: any): Promise<number[]> {
     return new Promise<number[]>((resolve) => {
