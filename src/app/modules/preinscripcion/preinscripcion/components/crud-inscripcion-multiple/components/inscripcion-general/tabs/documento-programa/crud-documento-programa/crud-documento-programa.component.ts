@@ -70,17 +70,14 @@ export class CrudDocumentoProgramaComponent implements OnInit {
   programaDocumento: any;
   tipoProgramaDocumento: any;
   clean!: boolean;
-  loading!: boolean;
   valido!: boolean;
   percentage!: number;
   sin_docs: boolean = false;
 
   constructor(
     private translate: TranslateService,
-    private documentoService: DocumentoService,
     private inscripcionService: InscripcionService,
     private popUpManager: PopUpManager,
-    private userService: UserService,
     private newNuxeoService: NewNuxeoService,
   ) {
     this.formDocumentoPrograma = FORM_DOCUMENTO_PROGRAMA;
@@ -195,7 +192,6 @@ export class CrudDocumentoProgramaComponent implements OnInit {
       this.translate.instant('GLOBAL.crear'),
     ).then((ok:any) => {
       if (ok.value) {
-        this.loading = true;
         this.info_documento_programa = <SoporteDocumentoPrograma>documentoPrograma;
         this.info_documento_programa.PersonaId = Number(this.persona) || 1;
         this.info_documento_programa.DocumentoProgramaId = this.info_documento_programa.DocumentoProgramaId;
@@ -216,7 +212,6 @@ export class CrudDocumentoProgramaComponent implements OnInit {
             soporteDocumentoPrograma.InscripcionId = { Id: Number(this.inscripcion) };
             this.inscripcionService.post('soporte_documento_programa', soporteDocumentoPrograma).subscribe(
               (response:any) => {
-                this.loading = false;
                 this.popUpManager.showSuccessAlert(this.translate.instant('documento_programa.documento_programa_registrado'));
                 this.documento_programa_id = 0;
                 this.info_documento_programa = undefined;
@@ -225,14 +220,12 @@ export class CrudDocumentoProgramaComponent implements OnInit {
               },
               (error:any) => {
                 this.popUpManager.showErrorToast(this.translate.instant('documento_programa.documento_programa_no_registrado'));
-                this.loading = false;
               },
             )
           },
         ).catch(
           error => {
             this.popUpManager.showErrorToast(this.translate.instant('ERROR.error_subir_documento'));
-            this.loading = false;
           },
         );
       }
@@ -245,7 +238,6 @@ export class CrudDocumentoProgramaComponent implements OnInit {
       this.translate.instant('GLOBAL.actualizar'),
     ).then((ok:any) => {
       if (ok.value) {
-        this.loading = true;
         this.inscripcionService.get('soporte_documento_programa/' + this.soporteId).subscribe(
           (response:any) => {
             const soporte = <SoporteDocumentoPrograma>response;
@@ -261,7 +253,6 @@ export class CrudDocumentoProgramaComponent implements OnInit {
                 soporte.DocumentoId = fileId;
                 this.inscripcionService.put('soporte_documento_programa', soporte).subscribe(
                   (response: any) => {
-                    this.loading = false;
                     this.popUpManager.showSuccessAlert(this.translate.instant('documento_programa.documento_programa_registrado'));
                     this.documento_programa_id = 0;
                     this.info_documento_programa = undefined;
@@ -270,20 +261,17 @@ export class CrudDocumentoProgramaComponent implements OnInit {
                   },
                   (error:any) => {
                     this.popUpManager.showErrorToast(this.translate.instant('documento_programa.documento_programa_no_registrado'));
-                    this.loading = false;
                   },
                 )
               },
             ).catch(
               error => {
                 this.popUpManager.showErrorToast(this.translate.instant('ERROR.error_subir_documento'));
-                this.loading = false;
               },
             );
           },
           (error:any) => {
             this.popUpManager.showErrorToast(this.translate.instant('ERROR.error_subir_documento'));
-            this.loading = false;
           },
         );
       }

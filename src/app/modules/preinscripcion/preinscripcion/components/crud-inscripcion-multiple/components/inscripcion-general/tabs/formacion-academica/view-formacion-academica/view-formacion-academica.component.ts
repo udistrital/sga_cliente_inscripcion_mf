@@ -5,10 +5,11 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-view-formacion-academica',
@@ -53,8 +54,7 @@ export class ViewFormacionAcademicaComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private sgaMidService: SgaMidService,
-
+    private inscripcionMidService: InscripcionMidService,
     private documentoService: DocumentoService,
     private newNuxeoService: NewNuxeoService,
     private sanitization: DomSanitizer,
@@ -80,10 +80,10 @@ export class ViewFormacionAcademicaComponent implements OnInit {
   }
 
   loadData(): void {
-    this.sgaMidService.get('formacion_academica?Id=' + this.persona_id)
+    this.inscripcionMidService.get('academico/formacion?Id=' + this.persona_id)
       .subscribe((response:any) => {
-        if (response !== null && response.Response.Code === '200' && (Object.keys(response.Response.Body[0]).length > 0)) {
-          const data = <Array<any>>response.Response.Body[0];
+        if (response !== null && response.status == '200' && (Object.keys(response.data).length > 0)) {
+          const data = <Array<any>>response.data
           this.infoCarga.nCargas = data.length;
           const dataInfo = <Array<any>>[];
           data.forEach(element => {

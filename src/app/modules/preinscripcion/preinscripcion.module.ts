@@ -68,7 +68,6 @@ import { PerfilComponent } from './preinscripcion/components/crud-inscripcion-mu
 import {MatExpansionModule} from '@angular/material/expansion';
 import { ViewInscripcionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/perfil/view-inscripcion/view-inscripcion.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { SpinnerComponent } from '../components/spinner/spinner.component';
 import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
 import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { TransferenciaComponent } from '../transferencia/transferencia.component';
@@ -81,6 +80,7 @@ import { ListInformacionComponent } from './preinscripcion/components/crud-inscr
 import { ListInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/informacion_academica/list-informacion-academica/list-informacion-academica.component';
 import { CrudInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/informacion_academica/crud-informacion-academica/crud-informacion-academica.component';
 import { ViewExamenEstadoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/examen_estado/view-examen-estado/view-examen-estado.component';
+import { MatButtonModule } from '@angular/material/button';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -133,7 +133,6 @@ export function createTranslateLoader(http: HttpClient) {
     ViewPropuestaGradoComponent,
     PerfilComponent,
     ViewInscripcionComponent,
-    SpinnerComponent,
     DownloadFileNuxeoComponent,
     CrudInformacionComponent,
     ListInformacionComponent,
@@ -167,6 +166,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatCardModule,
     MatSnackBarModule,
     MatSelectModule,
+    MatButtonModule,
     CommonModule,
     NgbModule,
     PreinscripcionRoutingModule,

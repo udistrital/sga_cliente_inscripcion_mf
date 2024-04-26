@@ -20,7 +20,6 @@ export class DownloadFileNuxeoComponent implements  OnInit {
   @Output() event: EventEmitter<any> = new EventEmitter();
   documentoData: any;
   documentoFile: any;
-  loading: boolean = false;
   constructor(
     private documentoService: DocumentoService,
     private newNuxeoService: NewNuxeoService,
@@ -31,7 +30,6 @@ export class DownloadFileNuxeoComponent implements  OnInit {
 
 
   openFile(){
-    this.loading = true; 
     if(!this.documentoFile){
       if(this.documentoData) {
         this.newNuxeoService.get(this.documentoData)
@@ -46,7 +44,6 @@ export class DownloadFileNuxeoComponent implements  OnInit {
   }
 
   open(){
-      this.loading = false; 
       const w = 500;
       const h = 500;
       const left = (screen.width / 2) - (w / 2);

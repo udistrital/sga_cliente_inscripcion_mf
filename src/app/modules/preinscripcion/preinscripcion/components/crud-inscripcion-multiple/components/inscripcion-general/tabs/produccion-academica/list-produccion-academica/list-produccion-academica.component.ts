@@ -6,9 +6,10 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ProduccionAcademicaPost } from 'src/app/models/produccion_academica/produccion_academica';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { UserService } from 'src/app/services/users.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-produccion-academica',
@@ -20,7 +21,6 @@ export class ListProduccionAcademicaComponent implements OnInit {
   settings: any;
   persona_id: number;
   percentage!: number;
-  loading: boolean = true;
   selected = 0;
 
   displayedColumns = ['titulo', 'tipo', 'resumen', 'estado', 'fecha', 'acciones'];
@@ -29,7 +29,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
   constructor(private translate: TranslateService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private user: UserService,
     private popUpManager: PopUpManager,
     private snackBar: MatSnackBar) {
@@ -48,14 +48,13 @@ export class ListProduccionAcademicaComponent implements OnInit {
   }
 
   loadData(): void {
-    this.loading = true;
-    this.sgaMidService.get('produccion_academica/pr_academica/' + this.persona_id)
+    this.inscripcionMidService.get('academico/produccion/tercero/' + this.persona_id)
       .subscribe(res => {
-        if (res !== null && res.Response.Code === '200') {
-          const data = <Array<ProduccionAcademicaPost>>res.Response.Body[0];
+        if (res !== null && res.status == '200') {
+          const data = <Array<ProduccionAcademicaPost>>res.data;
           this.dataSource = new MatTableDataSource(data)
           this.result.emit(1);
-        } else if (res !== null && res.Response.Code === '404') {
+        } else if (res !== null && res.status == '404') {
           this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
           this.dataSource = new MatTableDataSource();
           this.result.emit(0);
@@ -66,9 +65,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
         }
-        this.loading = false;
       }, (error: HttpErrorResponse) => {
-        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: error.status + '',
@@ -110,9 +107,10 @@ export class ListProduccionAcademicaComponent implements OnInit {
         showCancelButton: true,
       };
       Swal.fire(opt)
-        .then((willDelete) => {
+        .then((willDelete: any) => {
           if (willDelete.value) {
-            this.sgaMidService.delete('produccion_academica', event).subscribe((res: any) => {
+            //todo: falta parametro
+            this.inscripcionMidService.delete('academico/produccion/', event).subscribe((res: any) => {
               if (res !== null ) {
                 this.dataSource = new MatTableDataSource();
                   this.loadData();
@@ -155,7 +153,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
       showCancelButton: true,
     };
     Swal.fire(opt)
-      .then((willConfirm) => {
+      .then((willConfirm: any) => {
         if (willConfirm.value) {
           const optConfirmar: any = {
             title: this.translate.instant('GLOBAL.confirmar'),
@@ -168,15 +166,14 @@ export class ListProduccionAcademicaComponent implements OnInit {
             cancelButtonText: this.translate.instant('GLOBAL.no'),
           };
           Swal.fire(optConfirmar)
-            .then((isAuthor) => {
+            .then((isAuthor: any) => {
               const dataPut = {
                 acepta: isAuthor.value ? true : false,
                 AutorProduccionAcademica: data.EstadoEnteAutorId,
               }
-              this.loading = true;
-              this.sgaMidService.put('produccion_academica/estado_autor_produccion/' + dataPut.AutorProduccionAcademica.Id, dataPut)
+              this.inscripcionMidService.put('academico/produccion/autor/' + dataPut.AutorProduccionAcademica.Id, dataPut)
                 .subscribe((res: any) => {
-                  if (res.Type === 'error') {
+                  if (res.data === null) {
                     Swal.fire({
                       icon: 'error',
                       title: res.Code,
@@ -188,9 +185,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
                     this.loadData();
                     this.snackBar.open(this.translate.instant('produccion_academica.estado_autor_actualizado'), '', { duration: 3000, panelClass: ['success-snackbar'] }) 
                   }
-                  this.loading = false;
                 }, (error: HttpErrorResponse) => {
-                  this.loading = false;
                   Swal.fire({
                     icon: 'error',
                     title: error.status + '',

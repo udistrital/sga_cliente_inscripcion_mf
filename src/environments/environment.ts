@@ -8,7 +8,7 @@ import { Inscripcion } from "src/app/models/inscripcion/inscripcion";
 
 export const environment = {
   production: false,
-  apiUrl:"http://localhost:4209/",
+  apiUrl: "http://localhost:4209/",
   NUXEO: {
     PATH: 'https://documental.portaloas.udistrital.edu.co/nuxeo/',
     CREDENTIALS: {
@@ -56,8 +56,8 @@ export const environment = {
   PROYECTO_ACADEMICO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/proyecto_academico_crud/v1/',
   //PROYECTO_ACADEMICO_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8116/v1/',
   //SGA_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sga_mid/v1/',
-  SGA_MID_SERVICE: 'http://localhost:8080/v1/',
-  // SGA_MID_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
+  // SGA_MID_SERVICE: 'http://localhost:8080/v1/',
+  SGA_MID_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
 
   CLIENTE_HABILITAR_PERIODO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/core_crud/v1/',
   OFERTA_ACADEMICA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sesiones_crud/v2/',
@@ -94,4 +94,10 @@ export const environment = {
   //PLAN_ESTUDIOS_SERVICE: 'http://localhost:8925/v1/',
   SGA_MID_TERCERO: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8539/v1/',
   // SGA_MID_TERCERO: 'http://localhost:8181/v1/',
+  //SGA_INSCRIPCION_MID_SERVICE: 'http://localhost:8095/v1/',
+  SGA_INSCRIPCION_MID_SERVICE: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8543/v1/',
+  //SGA_TERCERO_MID_SERVICE: 'http://localhost:8096/v1/',
+  SGA_TERCERO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8123/v1/',
+  //SGA_CALENDARIO_MID_SERVICE: 'http://localhost:8097/v1/',
+  SGA_CALENDARIO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8545/v1/',
 };

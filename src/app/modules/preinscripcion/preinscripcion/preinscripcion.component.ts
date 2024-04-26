@@ -84,7 +84,6 @@ export class PreinscripcionComponent implements OnInit{
   periodo: any;
   selectednivel: any;
   habilitar_inscripcion: boolean = true;
-  loading: boolean = false;
 
   constructor(
     private translate: TranslateService,
