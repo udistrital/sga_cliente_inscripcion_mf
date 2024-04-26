@@ -6,14 +6,15 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
-import { FORM_DOCUMENTO_PROGRAMA } from './form-documento_programa';
+import { FORM_EXAMEN_ESTADO } from './examen-estado';
 
 @Component({
-  selector: 'ngx-crud-documento-programa',
-  templateUrl: './crud-documento-programa.component.html',
-  styleUrls: ['./crud-documento-programa.component.scss']
+  selector: 'ngx-view-examen-estado',
+  templateUrl: './view-examen-estado.component.html',
+  styleUrls: ['./view-examen-estado.component.scss']
 })
-export class CrudDocumentoProgramaComponent implements OnInit {
+export class ViewExamenEstadoComponent {
+
   documento_programa_id!: number;
   filesUp: any;
   Documento: any;
@@ -83,16 +84,16 @@ export class CrudDocumentoProgramaComponent implements OnInit {
     private userService: UserService,
     private newNuxeoService: NewNuxeoService,
   ) {
-    this.formDocumentoPrograma = FORM_DOCUMENTO_PROGRAMA;
+    this.formDocumentoPrograma = FORM_EXAMEN_ESTADO;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
   }
 
   ngOnInit() {
-    this.programa = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 25) // this.userService.getPrograma();
-    this.periodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 9) // this.userService.getPeriodo();
-    this.tipoInscripcion = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 0);
+    this.programa = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10) // this.userService.getPrograma();
+    this.periodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10) // this.userService.getPeriodo();
+    this.tipoInscripcion = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10);
     this.sin_docs = false;
     this.loadLists();
   }
@@ -204,8 +205,12 @@ export class CrudDocumentoProgramaComponent implements OnInit {
           nombre: "soporte_documento_programa",
           file: this.info_documento_programa.Documento.file,
         }
+
+        console.log(this.info_documento_programa);
+        console.log(file);
         this.uploadFile(file).then(
           fileId => {
+            console.log("Entraaaaaaaaaaaaaaaaaaaaaaaaaaaa",fileId);
             const soporteDocumentoPrograma = new SoporteDocumentoPrograma();
             soporteDocumentoPrograma.DocumentoId = fileId;
             soporteDocumentoPrograma.DocumentoProgramaId = {
@@ -214,6 +219,7 @@ export class CrudDocumentoProgramaComponent implements OnInit {
               )[0].Id,
             };
             soporteDocumentoPrograma.InscripcionId = { Id: Number(this.inscripcion) };
+            console.log(soporteDocumentoPrograma);
             this.inscripcionService.post('soporte_documento_programa', soporteDocumentoPrograma).subscribe(
               (response:any) => {
                 this.loading = false;

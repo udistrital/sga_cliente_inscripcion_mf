@@ -4,6 +4,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { Inscripcion } from "src/app/models/inscripcion/inscripcion";
+
 export const environment = {
   production: false,
   apiUrl:"http://localhost:4209/",
@@ -54,13 +56,14 @@ export const environment = {
   PROYECTO_ACADEMICO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/proyecto_academico_crud/v1/',
   //PROYECTO_ACADEMICO_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8116/v1/',
   //SGA_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sga_mid/v1/',
-  //SGA_MID_SERVICE: 'http://localhost:8119/v1/',
-  SGA_MID_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
+  SGA_MID_SERVICE: 'http://localhost:8080/v1/',
+  // SGA_MID_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
 
   CLIENTE_HABILITAR_PERIODO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/core_crud/v1/',
   OFERTA_ACADEMICA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/sesiones_crud/v2/',
   //INSCRIPCION_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/inscripcion_crud/v2/',
   INSCRIPCION_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8208/v1/',
+  INSCRIPCION_MID_SERVICE: 'http://localhost:8095/v1/',
   //UBICACION_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/ubicaciones_crud/v2/',
   UBICACION_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8085/v1/',
   DOCUMENTO_PROGRAMA_SERVICE: 'https://autenticacion.udistrital.edu.co/apioas/documento_programa_crud/v1/',
@@ -90,4 +93,5 @@ export const environment = {
   //PLAN_ESTUDIOS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8537/v1/',
   //PLAN_ESTUDIOS_SERVICE: 'http://localhost:8925/v1/',
   SGA_MID_TERCERO: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8539/v1/',
+  // SGA_MID_TERCERO: 'http://localhost:8181/v1/',
 };

@@ -5,7 +5,8 @@
         show_expe || show_proy ||
         show_prod || show_desc ||
         show_docu ||show_info ||
-        show_acad || show_info_externa || show_idiomas)">
+        show_acad || show_info_externa || show_idiomas 
+        || show_acudiente || show_examen)">
         <mat-card-content>
             <div *ngIf="!hide_header_labels">
                 <div class="info mb-3" *ngIf="!estaInscrito">
@@ -38,6 +39,29 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+
+                <mat-form-field style="width: 100%;">
+                    <mat-select [formControl]="Campo2Control" [(ngModel)]="selectedValue2"
+                        placeholder="Opcion 2"
+                        (ngModelChange)="tipo_inscripcion('programa')">
+                        <mat-option>--Seleccionar--</mat-option>
+                        <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                            {{ item.NombreProyecto }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field style="width: 100%;">
+                    <mat-select [formControl]="Campo3Control" [(ngModel)]="selectedValue3"
+                        placeholder="Opcion 3"
+                        (ngModelChange)="tipo_inscripcion('programa')">
+                        <mat-option>--Seleccionar--</mat-option>
+                        <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                            {{ item.NombreProyecto }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
 
                 <mat-form-field style="width: 100%;" *ngIf="tieneEnfasis">
                     <mat-select [formControl]="enfasisControl" [(ngModel)]="enfasisSelected"
@@ -78,6 +102,23 @@
                     </div>
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                        *ngIf="tagsObject.examen_estado.selected && (puedeInscribirse && !soloPuedeVer)">
+                        <mat-card class="exp-card" align="center" (click)="perfil_editar('examen_estado')">
+                            <mat-card-header class="mb-4 d-flex justify-content-center">Examen estado</mat-card-header>
+                            <mat-card-content class="icon-form">
+                                <i class="fa fa-files-o fa-4x"></i>
+                                <p class="percentage">{{percentage_acad}} %</p>
+                            </mat-card-content>
+                            <mat-card-footer>
+                                <div *ngIf="tagsObject.examen_estado.required"><b>{{ 'GLOBAL.obligatorio' |
+                                        translate }}</b></div>
+                                <div *ngIf="!tagsObject.examen_estado.required"><b>{{ 'GLOBAL.opcional' |
+                                        translate }}</b></div>
+                            </mat-card-footer>
+                        </mat-card>
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.formacion_academica.selected && (puedeInscribirse && !soloPuedeVer)">
                         <mat-card class="exp-card" align="center" (click)="perfil_editar('formacion_academica')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -97,6 +138,23 @@
                     </div>
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                        *ngIf="tagsObject.datos_familiares.selected && (puedeInscribirse && !soloPuedeVer)">
+                        <mat-card class="exp-card" align="center" (click)="perfil_editar('datos_familiares')">
+                            <mat-card-header class="mb-4 d-flex justify-content-center">Informacion acudiente/familiar</mat-card-header>
+                            <mat-card-content class="icon-form">
+                                <i class="fa fa-users fa-4x"></i>
+                                <p class="percentage">{{percentage_familiar}} %</p>
+                            </mat-card-content>
+                            <mat-card-footer>
+                                <div *ngIf="tagsObject.datos_familiares.required"><b>{{ 'GLOBAL.obligatorio' |
+                                        translate }}</b></div>
+                                <div *ngIf="!tagsObject.datos_familiares.required"><b>{{ 'GLOBAL.opcional' |
+                                        translate }}</b></div>
+                            </mat-card-footer>
+                        </mat-card>
+                    </div>
+
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.idiomas.selected && (puedeInscribirse && !soloPuedeVer)">
                         <mat-card class="exp-card" align="center" (click)="perfil_editar('idiomas')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{ 'inscripcion.idiomas' |
@@ -113,9 +171,9 @@
                                 </div>
                             </mat-card-footer>
                         </mat-card>
-                    </div>
+                    </div> -->
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.experiencia_laboral.selected && (puedeInscribirse && !soloPuedeVer)">
                         <mat-card class="exp-card" align="center" (click)="perfil_editar('experiencia_laboral')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -132,9 +190,9 @@
                                         translate }}</b></div>
                             </mat-card-footer>
                         </mat-card>
-                    </div>
+                    </div> -->
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.produccion_academica.selected && (puedeInscribirse && !soloPuedeVer)">
                         <mat-card class="exp-card" align="center" (click)="perfil_editar('produccion_academica')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -151,7 +209,7 @@
                                         translate }}</b></div>
                             </mat-card-footer>
                         </mat-card>
-                    </div>
+                    </div> -->
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.documento_programa.selected && (puedeInscribirse && !soloPuedeVer)">
@@ -173,7 +231,7 @@
                         </mat-card>
                     </div>
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.descuento_matricula.selected && (puedeInscribirse && !soloPuedeVer)">
                         <mat-card class="exp-card" align="center" (click)="perfil_editar('descuento_matricula')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -190,9 +248,9 @@
                                         translate }}</b></div>
                             </mat-card-footer>
                         </mat-card>
-                    </div>
+                    </div> -->
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.propuesta_grado.selected && (puedeInscribirse && !soloPuedeVer)">
                         <mat-card class="exp-card" align="center" (click)="perfil_editar('propuesta_grado')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -211,7 +269,7 @@
                                         }}</b></div>
                             </mat-card-footer>
                         </mat-card>
-                    </div>
+                    </div> -->
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="tagsObject.perfil.selected && (soloPuedeVer || puedeInscribirse)">
@@ -255,7 +313,7 @@
                         </mat-card>
                     </div>
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="experiencia_laboral"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="experiencia_laboral"
                         *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)">
                         <mat-card class="exp-card" (click)="perfil_editar('experiencia_laboral')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -266,9 +324,9 @@
                                 <p class="percentage">{{percentage_expe}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="produccion_academica">
                         <mat-card class="exp-card" (click)="perfil_editar('produccion_academica')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -279,7 +337,7 @@
                                 <p class="percentage">{{percentage_prod}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="documento_programa">
@@ -294,7 +352,7 @@
                         </mat-card>
                     </div>
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="descuento_matricula">
                         <mat-card class="exp-card" (click)="perfil_editar('descuento_matricula')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -305,9 +363,9 @@
                                 <p class="percentage">{{percentage_desc}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="propuesta_grado">
                         <mat-card class="exp-card" (click)="perfil_editar('propuesta_grado')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -318,7 +376,7 @@
                                 <p class="percentage">{{percentage_proy}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="(soloPuedeVer || puedeInscribirse) && (selectTipo=='Posgrado' && selectedValue)">
@@ -359,7 +417,7 @@
                         </mat-card>
                     </div>
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="experiencia_laboral"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="experiencia_laboral"
                         *ngIf="puedeInscribirse && (puedeInscribirse && (experiencia_laboral))">
                         <mat-card class="exp-card" (click)="perfil_editar('experiencia_laboral')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -370,9 +428,9 @@
                                 <p class="percentage">{{percentage_expe}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="puedeInscribirse && (produccion_academica)" id="produccion_academica">
                         <mat-card class="exp-card" (click)="perfil_editar('produccion_academica')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -383,7 +441,7 @@
                                 <p class="percentage">{{percentage_prod}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
                         *ngIf="puedeInscribirse && (documentos_programa_button)" id="documento_programa">
@@ -398,7 +456,7 @@
                         </mat-card>
                     </div>
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" *ngIf="puedeInscribirse"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" *ngIf="puedeInscribirse"
                         id="descuento_matricula">
                         <mat-card class="exp-card" (click)="perfil_editar('descuento_matricula')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -409,9 +467,9 @@
                                 <p class="percentage">{{percentage_desc}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" *ngIf="puedeInscribirse"
+                    <!-- <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" *ngIf="puedeInscribirse"
                         id="propuesta_grado">
                         <mat-card class="exp-card" (click)="perfil_editar('propuesta_grado')">
                             <mat-card-header class="mb-4 d-flex justify-content-center">{{
@@ -422,7 +480,7 @@
                                 <p class="percentage">{{percentage_proy}} %</p>
                             </mat-card-content>
                         </mat-card>
-                    </div>
+                    </div> -->
 
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4 mb-4" align="center"
                         *ngIf="(soloPuedeVer || puedeInscribirse) && (detalle_inscripcion)">
@@ -560,7 +618,7 @@
             </div>
             <mat-tab-group>
                 <mat-tab label="{{ 'inscripcion.info_caracteristica' | translate }}">
-                    <ngx-crud-info-caracteristica [info_caracteristica_id]="info_ente_id"
+                    <ngx-crud-info-caracteristica [info_caracteristica_id]="info_persona_id"
                         [porcentaje]="percentage_tab_info[1]" (eventChange)="perfil_editar('info_contacto')"
                         (result)="setPercentage_info($event,1)">
                     </ngx-crud-info-caracteristica>
@@ -607,7 +665,11 @@
         </mat-card-content>
     </div>
 
-    <!-- <mat-card [hidden]="!show_acad"> -->
+
+
+
+
+    <!-- <mat-card [hidden]="!show_acad"> Formacion academica-->
     <div *ngIf="show_acad">
         <mat-card-content>
             <div class="row">
@@ -628,8 +690,87 @@
             <mat-tab-group fullWidth (changeTab)="selectTab($event)">
 
                 <mat-tab label="{{ 'inscripcion.formacion_academica' | translate }}" active=true>
-                    <ngx-list-formacion-academica (result)="setPercentage_acad($event,0)">
-                    </ngx-list-formacion-academica>
+                    <!-- <ngx-list-formacion-academica (result)="setPercentage_acad($event,0)">
+                    </ngx-list-formacion-academica> -->
+                    <ngx-list-informacion-academica (result)="setPercentage_acad($event,0)">
+                    </ngx-list-informacion-academica>
+                </mat-tab>
+
+            </mat-tab-group>
+
+            <div class="text-center">
+                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
+                    <div class="button-content">
+                        <mat-icon class="icon-help">live_help</mat-icon>
+                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
+                    </div>
+                </button>
+            </div>
+
+        </mat-card-content>
+    </div>
+
+    <div *ngIf="show_acudiente">
+        <mat-card-content>
+            <div class="row">
+                <div class="col-md-11">
+                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_familiar" [animated]="true"
+                        [height]="'15px'">
+                    </ngb-progressbar>
+                </div>
+                <div class="col-md-1" align="right">
+                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
+                        (click)="show_profile=false; show_info=false; show_acad=false;
+                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
+                                show_desc=false; show_acudiente=false;show_examen=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations(); ">X
+                    </button>
+                </div>
+            </div>
+
+            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+
+                <mat-tab label="{{ 'inscripcion.formacion_academica' | translate }}" active=true>
+                    <ngx-list-informacion-acudiente (result)="setPercentage_acad($event,0)">
+                    </ngx-list-informacion-acudiente>
+                </mat-tab>
+
+            </mat-tab-group>
+
+            <div class="text-center">
+                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
+                    <div class="button-content">
+                        <mat-icon class="icon-help">live_help</mat-icon>
+                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
+                    </div>
+                </button>
+            </div>
+
+        </mat-card-content>
+    </div>
+
+
+    <div *ngIf="show_examen">
+        <mat-card-content>
+            <div class="row">
+                <div class="col-md-11">
+                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_familiar" [animated]="true"
+                        [height]="'15px'">
+                    </ngb-progressbar>
+                </div>
+                <div class="col-md-1" align="right">
+                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
+                        (click)="show_profile=false; show_info=false; show_acad=false;
+                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
+                                show_desc=false; show_acudiente=false;show_examen=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations(); ">X
+                    </button>
+                </div>
+            </div>
+
+            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+
+                <mat-tab label="{{ 'inscripcion.formacion_academica' | translate }}" active=true>
+                    <ngx-view-examen-estado (result)="setPercentage_acad($event,0)">
+                    </ngx-view-examen-estado>
                 </mat-tab>
 
             </mat-tab-group>
@@ -647,7 +788,7 @@
     </div>
 
     <!-- idiomas -->
-    <div *ngIf="show_idiomas">
+    <!-- <div *ngIf="show_idiomas">
         <mat-card-content>
             <div class="row">
                 <div class="col-md-11">
@@ -681,11 +822,11 @@
                 </button>
             </div>
         </mat-card-content>
-    </div>
+    </div> -->
 
 
     <!-- <mat-card [hidden]="!show_expe"> -->
-    <div *ngIf="show_expe">
+    <!-- <div *ngIf="show_expe">
         <mat-card-content>
             <div class="row">
                 <div class="col-md-11">
@@ -717,10 +858,10 @@
                 </button>
             </div>
         </mat-card-content>
-    </div>
+    </div> -->
 
     <!-- <mat-card [hidden]="!show_prod"> -->
-    <div *ngIf="show_prod">
+    <!-- <div *ngIf="show_prod">
         <mat-card-content>
             <div class="row">
                 <div class="col-md-11">
@@ -752,7 +893,7 @@
                 </button>
             </div>
         </mat-card-content>
-    </div>
+    </div> -->
 
     <!-- <mat-card [hidden]="!show_docu"> -->
     <div *ngIf="show_docu">
@@ -791,7 +932,7 @@
     </div>
 
     <!-- <mat-card [hidden]="!show_desc"> -->
-    <div *ngIf="show_desc">
+    <!-- <div *ngIf="show_desc">
         <mat-card-content>
             <div class="row">
                 <div class="col-md-11">
@@ -824,10 +965,10 @@
                 </button>
             </div>
         </mat-card-content>
-    </div>
+    </div> -->
 
     <!-- <mat-card [hidden]="!show_proy"> -->
-    <div *ngIf="show_proy">
+    <!-- <div *ngIf="show_proy">
         <mat-card-content>
             <div class="row">
                 <div class="col-md-11">
@@ -851,7 +992,7 @@
                 </mat-tab>
             </mat-tab-group>
         </mat-card-content>
-    </div>
+    </div> -->
 
     <!--Vista de perfil------------------------------------------------------------->
 
