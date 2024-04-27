@@ -106,9 +106,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
             });
           } else {
             this.dataSource = new MatTableDataSource()
-            this.getPercentage(0);
-            this.popUpManager.showAlert('', this.translate.instant('documento_programa.no_documentos'));
-          }
+            this.getPercentage(0);          }
         },
         (error: HttpErrorResponse) => {
           this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status));

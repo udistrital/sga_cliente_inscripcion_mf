@@ -37,7 +37,6 @@ export class CrudInfoPersonaComponent implements OnInit {
   @Input('info_persona_id')
   set persona(info_persona_id: number) {
     this.info_persona_id = info_persona_id;
-    this.loadInfoPersona()
   }
 
   @Input('inscripcion_id')
@@ -68,15 +67,18 @@ export class CrudInfoPersonaComponent implements OnInit {
   periodo: any;
 
   constructor(
-    private translate: TranslateService,
-    private popUpManager: PopUpManager,
-    private terceroMidService: TerceroMidService,
     private autenticationService: ImplicitAutenticationService,
-    private store: Store<IAppState>,
-    private listService: ListService,
     private dialog: MatDialog,
-  ) {
+    private listService: ListService,
+    private popUpManager: PopUpManager,
+    private store: Store<IAppState>,
+    private terceroMidService: TerceroMidService,
+    private translate: TranslateService,
+  ) { }
+
+  ngOnInit() {
     this.formInfoPersona = UtilidadesService.hardCopy(FORM_INFO_PERSONA);
+    this.loadInfoPersona()
     this.construirForm();
     Promise.all([
       this.listService.findGenero(),
@@ -156,6 +158,7 @@ export class CrudInfoPersonaComponent implements OnInit {
       this.clean = !this.clean;
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
+    console.log(this.autenticationService.getPayload().email)
     this.formInfoPersona.campos[this.getIndexForm('CorreoElectronico')].valor = this.autenticationService.getPayload().email;
   }
 
@@ -293,7 +296,7 @@ export class CrudInfoPersonaComponent implements OnInit {
     infoPersona.FechaExpedicion = infoPersona.FechaExpedicion + ' +0000 +0000';
     infoPersona.NumeroIdentificacion = (infoPersona.NumeroIdentificacion).toString();
     infoPersona.Usuario = this.autenticationService.getPayload().email;
-    this.terceroMidService.post('personas/', infoPersona).subscribe((res:any) => {
+    this.terceroMidService.post('personas/', infoPersona).subscribe((res: any) => {
       res = res.data
       const r = <any>res
       if (r !== null && r.Type !== 'error') {
@@ -327,9 +330,6 @@ export class CrudInfoPersonaComponent implements OnInit {
       });
   }
 
-  ngOnInit() {
-  }
-
   validarForm(event: any) {
     if (event.valid) {
       if (this.info_inscripcion === undefined) {
@@ -350,7 +350,7 @@ export class CrudInfoPersonaComponent implements OnInit {
       width: 800,
       allowOutsideClick: false,
       allowEscapeKey: true,
-      html: '<embed src='+environment.apiUrl+'assets/pdf/politicasUD.pdf'+' type="application/pdf" style="width:100%; height:375px;" frameborder="0"></embed>',
+      html: '<embed src=' + environment.apiUrl + 'assets/pdf/politicasUD.pdf' + ' type="application/pdf" style="width:100%; height:375px;" frameborder="0"></embed>',
       input: 'checkbox',
       inputPlaceholder: this.translate.instant('GLOBAL.acepto_terminos'),
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),

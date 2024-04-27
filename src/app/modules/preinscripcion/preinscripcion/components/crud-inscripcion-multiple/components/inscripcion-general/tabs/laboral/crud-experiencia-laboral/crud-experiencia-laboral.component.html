@@ -8,10 +8,10 @@
   [normalform]="formInfoExperienciaLaboral"
   [modeloData]="info_experiencia_laboral"
   (result)="validarForm($event)"
-  (resultAux)="updateFinishDate($event)"
+  (resultAux)="searchNit($event); updateFinishDate($event)"
   (dateChange)="onChangeDate()"
   [clean]="clean"
-  (interlaced)="searchNit($event)"
+  (interlaced)="getSeleccion($event)"
   (percentage)="setPercentage($event)"
 >
 </ngx-dinamicform>

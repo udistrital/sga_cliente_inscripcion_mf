@@ -122,6 +122,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
       }
     } else if (event.nombre === 'TipoPoblacion') {
       let NoAplicaPob = !((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0);
+      console.log(NoAplicaPob)
       this.formInfoCaracteristica.campos[this.getIndexForm('ComprobantePoblacion')].ocultar = NoAplicaPob;
       this.formInfoCaracteristica.campos[this.getIndexForm('ComprobantePoblacion')].requerido = !NoAplicaPob;
 
