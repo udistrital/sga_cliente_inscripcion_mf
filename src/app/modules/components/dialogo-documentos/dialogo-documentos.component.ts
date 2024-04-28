@@ -34,6 +34,7 @@ export class DialogoDocumentosComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("DATA EN DIALOG", this.data)
     this.isPDF = true;
     this.tabName = this.data.documento.tabName || "";
     if(this.data.documento.hasOwnProperty('nombreDocumento')){

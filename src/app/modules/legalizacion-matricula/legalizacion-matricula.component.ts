@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { validateLang } from 'src/app/app.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalComponent } from './components/modal/modal.component';
 //import multiMonthPlugin from '@fullcalendar/multimonth'
 import { OikosService } from 'src/app/services/oikos.service';
@@ -15,6 +15,10 @@ import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { MatStepper } from '@angular/material/stepper';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
+import { DocumentoService } from 'src/app/services/documento.service';
+import { DialogoDocumentosComponent } from '../components/dialogo-documentos/dialogo-documentos.component';
+import { UtilidadesService } from 'src/app/services/utilidades.service';
 
 // interface InfoSocioEconomica {
 //   Orden: number;
@@ -34,13 +38,7 @@ interface Proyecto {
   styleUrls: ['./legalizacion-matricula.component.scss']
 })
 export class LegalizacionMatriculaComponent {
-
   formulario: boolean = false;
-  //dataSource2 = new MatTableDataSource<any>();
-  //dataSource3 = new MatTableDataSource<any>();
-  //dataSource4 = new MatTableDataSource<any>();
-
-  //columns2: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
 
   firstFormGroup = this._formBuilder.group({
     validatorProyecto: ['', Validators.required],
@@ -53,14 +51,12 @@ export class LegalizacionMatriculaComponent {
   });
   isLinear = true;
 
-  //************************************************************//
   personaDataSource!: MatTableDataSource<any>;
   infoAspiranteDataSource!: MatTableDataSource<any>;
   infoSocioEcopersonalDataSource!: MatTableDataSource<any>;
   infoSocioEcoCosteaDataSource!: MatTableDataSource<any>;
   resumenGeneralDataSource!: MatTableDataSource<any>;
   
-
   personaColums: string [] = ['Orden', 'Credencial', 'Nombres', 'Apellidos', 'TipoDocumento', 'Documento', 'EstadoAdmision', 'EstadoRevision', 'Acciones'];
   infoPersonal1: string [] = ['TipoIdentificacion', 'NumeroIdentificacion', 'PrimerNombre', 'SegundoNombre', 'PrimerApellido', 'SegundoApellido'];
   infoPersonal2: string [] = ['FechaNacimiento', 'Numero', 'Correo', 'Genero'];
@@ -73,6 +69,8 @@ export class LegalizacionMatriculaComponent {
   periodos!: any[]
   facultades!: any[]
 
+  infoLegalizacionAspirantes: any = {}
+
   constructor(
     private _formBuilder: FormBuilder, 
     private dialog: MatDialog, 
@@ -82,34 +80,13 @@ export class LegalizacionMatriculaComponent {
     private inscripcionService: InscripcionService,
     private sgamidService: SgaMidService,
     private inscripcionMidService: InscripcionMidService,
+    private newNuxeoService: NewNuxeoService,
+    private utilidades: UtilidadesService,
+    private documentoService: DocumentoService,
     private popUpManager: PopUpManager
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-
-    // const infoSocioEconomica: InfoSocioEconomica[] = [
-    //   {Orden: 1, Concepto: 'Dirección', Informacion: 'Fila 1', Estado: 'No revisado'},
-    //   {Orden: 2, Concepto: 'Nombre colegio', Informacion: 'Fila 2', Estado: 'No revisado'},
-    //   {Orden: 3, Concepto: 'Valor de la pension mensual pagada grado once', Informacion: 'Fila 3', Estado: 'No revisado'},
-    //   {Orden: 4, Concepto: 'Nucleo familiar', Informacion: 'Fila 4', Estado: 'No revisado'},
-    //   {Orden: 5, Concepto: 'Situacion laboral', Informacion: 'Fila 5', Estado: 'No revisado'},
-    // ];
-
-    // this.dataSource2.data = infoSocioEconomica.map(info => ({columns2: info}));
-
-    // const infoSocioEconomicaCosteo: InfoSocioEconomica[] = [
-    //   {Orden: 1, Concepto: 'Direccion de residencia', Informacion: 'Fila 1', Estado: 'No revisado'},
-    //   {Orden: 2, Concepto: 'Valor de los ingresos', Informacion: 'Fila 2', Estado: 'No revisado'},
-    // ];
-
-    // this.dataSource3.data = infoSocioEconomicaCosteo.map(info => ({columns2: info}));
-
-    // const resumenGeneral: InfoSocioEconomica[] = [
-    //   {Orden: 1, Concepto: 'Soporte genera', Informacion: 'Fila 1', Estado: 'No revisado'},
-    // ];
-
-    // this.dataSource4.data = resumenGeneral.map(info => ({columns2: info}));
-
   }
 
   async ngOnInit() {
@@ -195,7 +172,12 @@ export class LegalizacionMatriculaComponent {
       ordenCount += 1;
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
       const proyecto = this.proyectosCurriculares.find((item: any) => item.Id === inscripcion.ProgramaAcademicoId)
-      console.log(persona, inscripcion)
+      const infoLegalizacion = await this.getLegalizacionMatricula(persona.Id)
+      this.infoLegalizacionAspirantes[persona.Id] = infoLegalizacion
+      const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
+      const estadoRevision = this.revisarEstadosRevision(estados)
+      console.log("Genracion busqueda: ", persona, inscripcion, infoLegalizacion, estados, this.infoLegalizacionAspirantes)
+
       const personaData = {
         "personaId": persona.Id,
         "orden": ordenCount,
@@ -209,7 +191,7 @@ export class LegalizacionMatriculaComponent {
         "tipo_documento": persona.TipoIdentificacion.Nombre,
         "documento": persona.NumeroIdentificacion,
         "estado_admision": inscripcion.EstadoInscripcionId.Nombre,
-        "estado_revision": "No",
+        "estado_revision": estadoRevision,
         "proyecto_admitido": proyecto.Nombre,
         "fecha_nacimiento": persona.FechaNacimiento,
         "numero_celular": persona.Telefono,
@@ -218,7 +200,42 @@ export class LegalizacionMatriculaComponent {
       }
       inscritosData.push(personaData);
     }
+    console.log("Data inscritos: ", inscritosData)
+
     this.personaDataSource = new MatTableDataSource<any>(inscritosData);
+  }
+
+  revisarEstadosRevision(estados: any) {
+    let estado = "Sin revisar"
+    for (const key in estados) {
+      if (estados[key] != 'Sin revisar') {
+        estado = "Otro estado"
+      }
+    }
+    return estado;
+  }
+
+  async retornasEstadosDocumentos(infoLegalizacion: any) {
+    const keys = Object.keys(infoLegalizacion)
+    //console.log("Llaves", keys);
+    const filteredList = keys.filter(item => item.startsWith('soporte'));
+    //console.log("Llaves soporte", filteredList);
+    let estados: any = {}
+
+    for (const key in infoLegalizacion) {
+      if (filteredList.includes(key)) {
+        const value = JSON.parse(infoLegalizacion[key]);
+        //console.log("llave info: ", infoLegalizacion[key], typeof(infoLegalizacion[key]), value, typeof(value));
+        for (const key in value) {
+          const documentoId = value[key][0];
+          const documento: any = await this.cargarDocumento(documentoId);
+          const estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
+          estados[key] = estadoDoc.estadoObservacion === "Por definir" ? "Sin revisar" : estadoDoc.estadoObservacion;
+          //console.log("llave value info: ", value[key], documentoId, documento, estadoDoc.estadoObservacion, estados);
+        }
+      }
+    }
+    return estados;
   }
 
   buscarInscripciones(stepper: MatStepper, proyecto: any, periodo: any) {
@@ -250,14 +267,76 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
-  openModal(data: any) {
-    const dialogRef = this.dialog.open(ModalComponent, {
-      data: { title: 'Modal', content: data }
-    });
+  async openModal(data: any) {
+    const idDoc = this.recuperarIdDocumento(data.DocumentoSoporte);
+    const documento: any = await this.cargarDocumento(idDoc);
+    let estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
+    const documentoDialog = {
+      "tabName": documento.Descripcion,
+      "nombreDocumento": data.Concepto,
+      "DocumentoId": documento.Id,
+      "aprobado": estadoDoc.aprobado,
+      "estadoObservacion": estadoDoc.estadoObservacion,
+      "observacion": estadoDoc.observacion,
+      "carpeta": documento.Descripcion,
+    } 
+    //await this.abrirDocumento(idDoc);
+    console.log(data, idDoc, documento); 
+    const assignConfig = new MatDialogConfig();
+    assignConfig.width = '1600px';
+    assignConfig.height = '750px';
+    assignConfig.data = { documento: documentoDialog }
+    const dialogo = this.dialog.open(DialogoDocumentosComponent, assignConfig);
+    // const dialogRef = this.dialog.open(ModalComponent, {
+    //   data: { 
+    //     title: 'Custom Title', 
+    //     // content: documento
+    //     content: data
+    //   }
+    // });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('Modal cerrado');
+    // dialogRef.afterClosed().subscribe(result => {
+    //   console.log('Modal cerrado');
+    // });
+  }
+
+  cargarDocumento(documentoId:any) {
+    return new Promise((resolve, reject) => {
+      this.documentoService.get('documento/' + documentoId)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
+            reject([]);
+          });
     });
+    // this.newNuxeoService.getByIdLocal(documentoId)
+    //   .subscribe(file => {
+    //     console.log(file);
+    //   }, error => {
+    //     this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+    //   })
+  }
+
+  // abrirDocumento(documentoId: any) {
+  //   console.log(documentoId);
+  //   this.newNuxeoService.getByIdLocal(documentoId)
+  //     .subscribe((file: any) => {
+  //       console.log(file);
+  //     }, (error: any) => {
+  //       console.log(error);
+  //       this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+  //     })
+  // }
+
+  recuperarIdDocumento(objeto: any) {
+    const dataString: string = objeto;
+    const data2 = JSON.parse(dataString);
+    const keys = Object.keys(data2)
+    const id = data2[keys[0]][0]
+    return id
   }
 
   editar = async (data: any) => {
@@ -265,7 +344,8 @@ export class LegalizacionMatriculaComponent {
     console.log(data);
     this.aspirante = data;
     this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
-    const infoLegalizacion = await this.getLegalizacionMatricula(this.aspirante.personaId)
+    //const infoLegalizacion = await this.getLegalizacionMatricula(data.personaId)
+    const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspirante.personaId]
     console.log(infoLegalizacion);
     this.cargarInfoTablasSocioeconomicas(infoLegalizacion);
     //this.infoSocioEconomicaDataSource = new MatTableDataSource<any>([infoLegalizacion]);
@@ -273,12 +353,10 @@ export class LegalizacionMatriculaComponent {
   }
 
   async getLegalizacionMatricula(personaId: any) {
-    console.log(personaId);
     return new Promise((resolve, reject) => {
       //this.loading = true;
       this.inscripcionMidService.get('legalizacion/informacion-legalizacion/' + personaId)
         .subscribe((res: any) => {
-          console.log(res, res.data)
           resolve(res.data);
         },
           (error: HttpErrorResponse) => {
@@ -290,24 +368,27 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
-  cargarInfoTablasSocioeconomicas(infoLegalizacion: any) {
+  async cargarInfoTablasSocioeconomicas(infoLegalizacion: any) {
+    // Los posibles estados son: 1=sin revisar, 2=rechazado, 3=aprobado 
+    const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
+    console.log("Estados: ", estados);
     const infoSocioEcoPersonal: any[] = [
       {Orden: 1, Concepto: 'Dirección de residencia', Informacion: infoLegalizacion.direccionResidencia, Estado: '', Soporte: false},
-      {Orden: 2, Concepto: 'Colegio donde se gradúo', Informacion: infoLegalizacion.colegioGraduado, Estado: 'No revisado', Soporte: true},
-      {Orden: 3, Concepto: 'Valor de la pension mensual pagada grado once', Informacion: infoLegalizacion.pensionGrado11, Estado: 'No revisado', Soporte: true},
-      {Orden: 4, Concepto: 'Nucleo familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: 'No revisado', Soporte: true},
-      {Orden: 5, Concepto: 'Situacion laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: 'No revisado', Soporte: true},
+      {Orden: 2, Concepto: 'Colegio donde se gradúo', Informacion: infoLegalizacion.colegioGraduado, Estado: estados["diplomaBachiller"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteColegio},
+      {Orden: 3, Concepto: 'Valor de la pension mensual pagada grado once', Informacion: infoLegalizacion.pensionGrado11, Estado: estados["soportePension"], Soporte: true, DocumentoSoporte: infoLegalizacion.soportePensionGrado11},
+      {Orden: 4, Concepto: 'Nucleo familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: estados["soporteNucleo"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteNucleoFamiliar},
+      {Orden: 5, Concepto: 'Situacion laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
     ];
     this.infoSocioEcopersonalDataSource = new MatTableDataSource<any>(infoSocioEcoPersonal);
 
     const infoSocioEcoCosteo: any[] = [
-      {Orden: 1, Concepto: 'Direccion de residencia', Informacion: infoLegalizacion.direccionCostea, Estado: 'No revisado', Soporte: true},
-      {Orden: 2, Concepto: 'Ingresos del año anterior', Informacion: infoLegalizacion.ingresosCostea, Estado: 'No revisado', Soporte: true},
+      {Orden: 1, Concepto: 'Direccion de residencia', Informacion: infoLegalizacion.direccionCostea, Estado: estados["soporteEstrato"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteEstratoCostea},
+      {Orden: 2, Concepto: 'Ingresos del año anterior', Informacion: infoLegalizacion.ingresosCostea, Estado: estados["soporteIngresos"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteIngresosCostea},
     ];
     this.infoSocioEcoCosteaDataSource = new MatTableDataSource<any>(infoSocioEcoCosteo);
 
     const resumenGeneral: any[] = [
-      {Orden: 1, Concepto: 'Soporte genera', Informacion: 'Sin información', Estado: 'No revisado', Soporte: true},
+      {Orden: 1, Concepto: 'Soporte general', Informacion: 'Sin información', Estado: estados["documentosGeneral"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteGeneral},
     ];
     this.resumenGeneralDataSource = new MatTableDataSource<any>(resumenGeneral);
   }
@@ -315,5 +396,7 @@ export class LegalizacionMatriculaComponent {
   cerrar = () => {
     this.formulario = false;
   }
+
+
 
 }
