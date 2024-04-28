@@ -96,8 +96,10 @@ export class DialogoDocumentosComponent implements OnInit {
           if (ok.value) {
             const data = {
               metadata: this.revisionForm.value,
-              folderOrTag: this.data.documento.carpeta || ""
+              folderOrTag: this.data.documento.carpeta || "",
+              nombreSoporte: this.data.documento.nombreSoporte,
             }
+            console.log(data)
             this.dialogRef.close(data)
           } else {
             this.revisionForm.patchValue({

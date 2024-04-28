@@ -70,6 +70,8 @@ export class LegalizacionMatriculaComponent {
   facultades!: any[]
 
   infoLegalizacionAspirantes: any = {}
+  estadoDocumentosAspirantes: any = {}
+  aspiranteActualId: any;
 
   constructor(
     private _formBuilder: FormBuilder, 
@@ -175,8 +177,9 @@ export class LegalizacionMatriculaComponent {
       const infoLegalizacion = await this.getLegalizacionMatricula(persona.Id)
       this.infoLegalizacionAspirantes[persona.Id] = infoLegalizacion
       const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
+      this.estadoDocumentosAspirantes[persona.Id] = estados;
       const estadoRevision = this.revisarEstadosRevision(estados)
-      console.log("Genracion busqueda: ", persona, inscripcion, infoLegalizacion, estados, this.infoLegalizacionAspirantes)
+      console.log("Genracion busqueda: ", persona, inscripcion, infoLegalizacion, estados, this.infoLegalizacionAspirantes, this.estadoDocumentosAspirantes)
 
       const personaData = {
         "personaId": persona.Id,
@@ -207,9 +210,26 @@ export class LegalizacionMatriculaComponent {
 
   revisarEstadosRevision(estados: any) {
     let estado = "Sin revisar"
+    // Boolean para saber si el aspirante puede tener todos los documentos aprobados, si un documento no esta aprobado se vuelve false
+    let puedeAprobar = true;
+    // Boolean para saber si ya se ha evaluado el estado de algún documento
+    let hayEstado = false;
     for (const key in estados) {
       if (estados[key] != 'Sin revisar') {
-        estado = "Otro estado"
+        if (estados[key] == 'Aprobado' && puedeAprobar) {
+          estado = "Aprobado"
+          hayEstado = true
+        } else if (estados[key] == 'No aprobado') {
+          estado = "Revisado con observaciones"
+          puedeAprobar = false
+          hayEstado = true
+          break;
+        }
+      } else if (puedeAprobar) {
+        puedeAprobar = false
+        if (hayEstado) {
+          estado = "Revisado con observaciones"
+        }
       }
     }
     return estado;
@@ -269,6 +289,7 @@ export class LegalizacionMatriculaComponent {
 
   async openModal(data: any) {
     const idDoc = this.recuperarIdDocumento(data.DocumentoSoporte);
+    const nombreSoporteDoc = this.recuperarNombreSoporteDoc(data.DocumentoSoporte)
     const documento: any = await this.cargarDocumento(idDoc);
     let estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
     const documentoDialog = {
@@ -279,25 +300,35 @@ export class LegalizacionMatriculaComponent {
       "estadoObservacion": estadoDoc.estadoObservacion,
       "observacion": estadoDoc.observacion,
       "carpeta": documento.Descripcion,
+      "nombreSoporte": nombreSoporteDoc,
     } 
-    //await this.abrirDocumento(idDoc);
-    console.log(data, idDoc, documento); 
+    console.log("Data modal: ", data, idDoc, documento, estadoDoc, nombreSoporteDoc); 
+    await this.abrirDocumento(idDoc);
     const assignConfig = new MatDialogConfig();
     assignConfig.width = '1600px';
     assignConfig.height = '750px';
     assignConfig.data = { documento: documentoDialog }
     const dialogo = this.dialog.open(DialogoDocumentosComponent, assignConfig);
-    // const dialogRef = this.dialog.open(ModalComponent, {
-    //   data: { 
-    //     title: 'Custom Title', 
-    //     // content: documento
-    //     content: data
-    //   }
-    // });
 
-    // dialogRef.afterClosed().subscribe(result => {
-    //   console.log('Modal cerrado');
-    // });
+    dialogo.afterClosed().subscribe(async(result) => {
+      let metadatosDocumento = JSON.parse(documento.Metadatos)
+      metadatosDocumento["aprobado"] = result["metadata"]["aprobado"];
+      metadatosDocumento["observacion"] = result["metadata"]["observacion"];
+      if (result["metadata"]["aprobado"]) {
+        metadatosDocumento["estadoObservacion"] = "Aprobado";
+      } else {
+        metadatosDocumento["estadoObservacion"] = "No aprobado";
+      }
+      documento.Metadatos = JSON.stringify(metadatosDocumento);
+      const res = await this.actualizarDocumento(documento);
+      //const estados = this.estadoDocumentosAspirantes[this.aspiranteActualId];
+      console.log("estados antes: ", this.estadoDocumentosAspirantes[this.aspiranteActualId]);
+      this.estadoDocumentosAspirantes[this.aspiranteActualId][result["nombreSoporte"]] = metadatosDocumento["estadoObservacion"]
+      //estados[result["nombreSoporte"]] = metadatosDocumento["estadoObservacion"];
+      this.cargarInfoTablasSocioeconomicas(this.infoLegalizacionAspirantes[this.aspiranteActualId]);
+      console.log('Modal cerrado, resultado: ', result, documento, metadatosDocumento, res, this.estadoDocumentosAspirantes[this.aspiranteActualId]);
+
+    });
   }
 
   cargarDocumento(documentoId:any) {
@@ -320,16 +351,30 @@ export class LegalizacionMatriculaComponent {
     //   })
   }
 
-  // abrirDocumento(documentoId: any) {
-  //   console.log(documentoId);
-  //   this.newNuxeoService.getByIdLocal(documentoId)
-  //     .subscribe((file: any) => {
-  //       console.log(file);
-  //     }, (error: any) => {
-  //       console.log(error);
-  //       this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
-  //     })
-  // }
+  actualizarDocumento(documento:any) {
+    return new Promise((resolve, reject) => {
+      this.documentoService.put('documento', documento)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  abrirDocumento(documentoId: any) {
+    console.log(documentoId);
+    this.newNuxeoService.getByIdLocal(documentoId)
+      .subscribe((file: any) => {
+        console.log(file);
+      }, (error: any) => {
+        console.log(error);
+        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+      })
+  }
 
   recuperarIdDocumento(objeto: any) {
     const dataString: string = objeto;
@@ -339,16 +384,23 @@ export class LegalizacionMatriculaComponent {
     return id
   }
 
+  recuperarNombreSoporteDoc(objeto: any) {
+    const dataString: string = objeto;
+    const data2 = JSON.parse(dataString);
+    const keys = Object.keys(data2)
+    //const id = data2[keys[0]][0]
+    return keys[0]
+  }
+
   editar = async (data: any) => {
     console.log('Editando...');
     console.log(data);
     this.aspirante = data;
+    this.aspiranteActualId = this.aspirante.personaId;
     this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
-    //const infoLegalizacion = await this.getLegalizacionMatricula(data.personaId)
-    const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspirante.personaId]
+    const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspiranteActualId]
     console.log(infoLegalizacion);
     this.cargarInfoTablasSocioeconomicas(infoLegalizacion);
-    //this.infoSocioEconomicaDataSource = new MatTableDataSource<any>([infoLegalizacion]);
     this.formulario = true;
   }
 
@@ -369,8 +421,8 @@ export class LegalizacionMatriculaComponent {
   }
 
   async cargarInfoTablasSocioeconomicas(infoLegalizacion: any) {
-    // Los posibles estados son: 1=sin revisar, 2=rechazado, 3=aprobado 
-    const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
+    // const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
+    const estados = this.estadoDocumentosAspirantes[this.aspiranteActualId];
     console.log("Estados: ", estados);
     const infoSocioEcoPersonal: any[] = [
       {Orden: 1, Concepto: 'Dirección de residencia', Informacion: infoLegalizacion.direccionResidencia, Estado: '', Soporte: false},
