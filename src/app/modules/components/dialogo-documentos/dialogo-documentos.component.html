@@ -39,14 +39,14 @@
             </mat-form-field>
           </div>
           <br><br><br>
-          <div class="row" *ngIf="!observando">
+          <div class="row contenedor-botones" *ngIf="!observando">
             <div class="col-6 d-flex justify-content-center">
-              <button mat-raised-button color="warn" (click)="guardarRevision('NoAprueba')">{{
+              <button mat-raised-button class="boton-accion boton-rechazar" (click)="guardarRevision('NoAprueba')">{{
                 'admision.btn_doc_No_aprobar' |
                 translate }}</button>
             </div>
             <div class="col-6 d-flex justify-content-center">
-              <button mat-raised-button color="primary" (click)="guardarRevision('Aprueba')">{{
+              <button mat-raised-button class="boton-accion boton-aprobar" (click)="guardarRevision('Aprueba')">{{
                 'admision.btn_doc_aprobar' |
                 translate }}</button>
             </div>

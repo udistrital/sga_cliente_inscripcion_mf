@@ -1672,6 +1672,14 @@
         "soporte": "Support",
         "estado": "Status",
         "informacion_socio_cost": "Socioeconomic Information of the Person Paying for Studies",
-        "resumen": "General Document Summary"
+        "resumen": "General Document Summary",
+        "facultades_error": "Error loading faculties",
+        "anio_error": "Error loading years",
+        "periodo_error": "Error loading periods",
+        "inscripciones_error": "Error searching for registered applicants",
+        "tercero_error": "Error consulting the person",
+        "documento_error": "Error consulting the document",
+        "actualizar_documento_error": "Error updating document",
+        "legalizacion_error": "Error obtaining the applicant's legalization data"
     }
 }

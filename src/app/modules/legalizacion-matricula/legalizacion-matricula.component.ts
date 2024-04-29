@@ -116,7 +116,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.facultades_error'));
             console.log(error);
             reject([]);
           });
@@ -131,7 +131,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.anio_error'));
             console.log(error);
             reject([]);
           });
@@ -147,7 +147,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.periodo_error'));
             console.log(error);
             reject([]);
           });
@@ -179,6 +179,7 @@ export class LegalizacionMatriculaComponent {
       const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
       this.estadoDocumentosAspirantes[persona.Id] = estados;
       const estadoRevision = this.revisarEstadosRevision(estados)
+
       console.log("Genracion busqueda: ", persona, inscripcion, infoLegalizacion, estados, this.infoLegalizacionAspirantes, this.estadoDocumentosAspirantes)
 
       const personaData = {
@@ -196,7 +197,8 @@ export class LegalizacionMatriculaComponent {
         "estado_admision": inscripcion.EstadoInscripcionId.Nombre,
         "estado_revision": estadoRevision,
         "proyecto_admitido": proyecto.Nombre,
-        "fecha_nacimiento": persona.FechaNacimiento,
+        // "fecha_nacimiento": persona.FechaNacimiento,
+        "fecha_nacimiento": this.formatearFecha(persona.FechaNacimiento),
         "numero_celular": persona.Telefono,
         "correo": persona.UsuarioWSO2,
         "genero": persona.Genero.Nombre
@@ -206,6 +208,15 @@ export class LegalizacionMatriculaComponent {
     console.log("Data inscritos: ", inscritosData)
 
     this.personaDataSource = new MatTableDataSource<any>(inscritosData);
+  }
+
+  formatearFecha(fechaString: any) {
+    const date = new Date(fechaString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const year = date.getFullYear().toString();
+    const formattedDate = `${day}/${month}/${year}`;
+    return formattedDate;
   }
 
   revisarEstadosRevision(estados: any) {
@@ -266,7 +277,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
             console.log(error);
             reject([]);
           });
@@ -280,7 +291,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
             console.log(error);
             reject([]);
           });
@@ -338,7 +349,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.documento_error'));
             console.log(error);
             reject([]);
           });
@@ -358,7 +369,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.actualizar_documento_error'));
             console.log(error);
             reject([]);
           });
@@ -414,7 +425,7 @@ export class LegalizacionMatriculaComponent {
           (error: HttpErrorResponse) => {
             //this.loading = false;
             this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
+              this.translate.instant('legalizacion_matricula.legalizacion_error')
             );
           });
     });
@@ -424,12 +435,14 @@ export class LegalizacionMatriculaComponent {
     // const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
     const estados = this.estadoDocumentosAspirantes[this.aspiranteActualId];
     console.log("Estados: ", estados);
+    //if (estados[key] = estadoDoc.estadoObservacion === "Por definir" ? "Sin revisar" : estadoDoc.estadoObservacion;)
     const infoSocioEcoPersonal: any[] = [
       {Orden: 1, Concepto: 'Dirección de residencia', Informacion: infoLegalizacion.direccionResidencia, Estado: '', Soporte: false},
       {Orden: 2, Concepto: 'Colegio donde se gradúo', Informacion: infoLegalizacion.colegioGraduado, Estado: estados["diplomaBachiller"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteColegio},
       {Orden: 3, Concepto: 'Valor de la pension mensual pagada grado once', Informacion: infoLegalizacion.pensionGrado11, Estado: estados["soportePension"], Soporte: true, DocumentoSoporte: infoLegalizacion.soportePensionGrado11},
       {Orden: 4, Concepto: 'Nucleo familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: estados["soporteNucleo"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteNucleoFamiliar},
-      {Orden: 5, Concepto: 'Situacion laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
+      // {Orden: 5, Concepto: 'Situacion laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
+      {Orden: 5, Concepto: 'Situacion laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"], Soporte: estados["soporteSituacionLaboral"] ? true : false, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
     ];
     this.infoSocioEcopersonalDataSource = new MatTableDataSource<any>(infoSocioEcoPersonal);
 

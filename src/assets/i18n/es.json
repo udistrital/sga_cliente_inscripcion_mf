@@ -1672,6 +1672,14 @@
         "soporte": "Soporte",
         "estado": "Estado",
         "informacion_socio_cost": "Información socioeconómica de quien costeará los estudios",
-        "resumen": "Resumen general de documentos"
+        "resumen": "Resumen general de documentos",
+        "facultades_error": "Error cargando las facultades",
+        "anio_error": "Error cargando los años",
+        "periodo_error": "Error cargando los periodos",
+        "inscripciones_error": "Error buscando los aspirantes inscritos",
+        "tercero_error": "Error consultando al tercero",
+        "documento_error": "Error consultando el documento",
+        "actualizar_documento_error": "Error actualizando el documento",
+        "legalizacion_error": "Error obteniendo los datos de legalización del aspirante"
     }
 }
