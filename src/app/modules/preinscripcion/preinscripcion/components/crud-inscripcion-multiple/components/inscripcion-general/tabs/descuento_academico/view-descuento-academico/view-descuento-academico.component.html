@@ -15,7 +15,7 @@
             <td> {{descuento.Soporte?descuento.Soporte.estadoObservacion:''}} </td>
             <td> {{descuento.Soporte?descuento.Soporte.observacion:''}} </td>
             <td *ngIf="descuento.Soporte !== undefined">
-                <button mat-button type="button" class="boton-primary" (click)="abrirDocumento(descuento.Soporte)">
+                <button mat-flat-button type="button" color="accent" (click)="abrirDocumento(descuento.Soporte)">
                     <mat-icon fontIcon="search"></mat-icon>
                 </button>
             </td>

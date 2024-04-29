@@ -13,7 +13,8 @@ import { OrganizacionService } from 'src/app/services/organizacion.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-experiencia-laboral',
@@ -174,7 +175,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           //todo: falta parametro
           this.inscripcionMidService.delete('experiencia-laboral/', event).subscribe(res => {

@@ -10,7 +10,8 @@ import { ListService } from 'src/app/services/list.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { UserService } from 'src/app/services/users.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_INFORMACION_CONTACTO } from './form-informacion_contacto';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
@@ -285,7 +286,7 @@ export class CrudInformacionContactoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_informacion_contacto = <InformacionContacto>info_contacto;
           this.info_informacion_contacto.Ente = this.info_persona_id;
@@ -330,7 +331,7 @@ export class CrudInformacionContactoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         this.info_informacion_contacto = true;
         if (willDelete.value) {
           this.info_informacion_contacto = <any>info_contacto;

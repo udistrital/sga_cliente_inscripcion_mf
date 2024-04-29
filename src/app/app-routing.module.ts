@@ -23,12 +23,16 @@ const routes: Routes = [
     component: SolicitudTransferenciaComponent,
   },
   { 
-    path: "legalizacion-matricula",
+    path: "legalizacion-matricula-aspirante",
     component: LegalizacionMatriculaComponent
   },
   { 
     path: "**",
     redirectTo: "preinscripcion"
+  },
+  {
+    path: 'legalizacion',
+    component: LegalizacionMatriculaComponent,
   }
 ];
 
