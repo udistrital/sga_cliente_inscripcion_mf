@@ -303,6 +303,7 @@ export class LegalizacionMatriculaComponent {
     const nombreSoporteDoc = this.recuperarNombreSoporteDoc(data.DocumentoSoporte)
     const documento: any = await this.cargarDocumento(idDoc);
     let estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
+    const dataDoc: any = await this.abrirDocumento(idDoc);
     const documentoDialog = {
       "tabName": documento.Descripcion,
       "nombreDocumento": data.Concepto,
@@ -312,9 +313,9 @@ export class LegalizacionMatriculaComponent {
       "observacion": estadoDoc.observacion,
       "carpeta": documento.Descripcion,
       "nombreSoporte": nombreSoporteDoc,
-    } 
-    console.log("Data modal: ", data, idDoc, documento, estadoDoc, nombreSoporteDoc); 
-    await this.abrirDocumento(idDoc);
+      "Documento": dataDoc ? dataDoc : {}
+    }
+    console.log("Data modal: ", data, idDoc, documento, estadoDoc, nombreSoporteDoc, dataDoc); 
     const assignConfig = new MatDialogConfig();
     assignConfig.width = '1600px';
     assignConfig.height = '750px';
@@ -377,14 +378,28 @@ export class LegalizacionMatriculaComponent {
   }
 
   abrirDocumento(documentoId: any) {
-    console.log(documentoId);
-    this.newNuxeoService.getByIdLocal(documentoId)
-      .subscribe((file: any) => {
-        console.log(file);
-      }, (error: any) => {
-        console.log(error);
-        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
-      })
+    return new Promise((resolve, reject) => {
+      this.newNuxeoService.getByIdLocal(documentoId)
+        .subscribe((res: any) => {
+          console.log(res);
+          resolve(res)
+        },
+          (error: any) => {
+            console.log(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+            reject([]);
+          });
+    });
+    // console.log(documentoId);
+    // this.newNuxeoService.getByIdLocal(documentoId)
+    //   .subscribe((file: any) => {
+    //     console.log(file);
+    //     return file;
+    //   }, (error: any) => {
+    //     console.log(error);
+    //     this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+    //     return null;
+    //   })
   }
 
   recuperarIdDocumento(objeto: any) {
@@ -412,7 +427,42 @@ export class LegalizacionMatriculaComponent {
     const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspiranteActualId]
     console.log(infoLegalizacion);
     this.cargarInfoTablasSocioeconomicas(infoLegalizacion);
+    this.descargarArchivos(infoLegalizacion);
     this.formulario = true;
+  }
+
+  descargarArchivos(infoLegalizacion: any) {
+    console.log("Data descargar archivos: ", infoLegalizacion);
+    let idList: any[] = [];
+    const keys = Object.keys(infoLegalizacion)
+    //console.log("Llaves", keys);
+    const filteredList = keys.filter(item => item.startsWith('soporte'));
+    //console.log("Llaves soporte", filteredList);
+    let estados: any = {}
+
+    for (const key in infoLegalizacion) {
+      if (filteredList.includes(key)) {
+        const docId = this.recuperarIdDocumento(infoLegalizacion[key]);
+        idList.push(docId);
+        console.log("Soporte a descargar: ", infoLegalizacion[key], docId, idList);
+      }
+    }
+
+    const limitQuery = idList.length;
+    let idsForQuery = "";
+    idList.forEach((f, i) => {
+      idsForQuery += f;
+      if (i < limitQuery - 1) idsForQuery += '|';
+    });
+    console.log("idsquery info: ", idList, idsForQuery, limitQuery)
+
+    this.newNuxeoService.getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
+      .subscribe((res: any) => {
+        console.log(res);
+      }, (error: any) => {
+        console.log(error);
+        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+      })
   }
 
   async getLegalizacionMatricula(personaId: any) {
