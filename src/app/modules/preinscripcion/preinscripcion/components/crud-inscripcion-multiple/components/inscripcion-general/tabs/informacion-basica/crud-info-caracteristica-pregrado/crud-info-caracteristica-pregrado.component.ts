@@ -62,15 +62,16 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   denied_acces: boolean = false;
 
   constructor(
-    private popUpManager: PopUpManager,
-    private translate: TranslateService,
-    private userService: UserService,
-    private ubicacionesService: UbicacionService,
-    private terceroMidService: TerceroMidService,
-    private store: Store<IAppState>,
     private listService: ListService,
     private newNuxeoService: NewNuxeoService,
-    private snackBar: MatSnackBar) {
+    private popUpManager: PopUpManager,
+    private snackBar: MatSnackBar,
+    private store: Store<IAppState>,
+    private terceroMidService: TerceroMidService,
+    private translate: TranslateService,
+    private ubicacionesService: UbicacionService,
+    private userService: UserService
+  ) {
     this.formInfoCaracteristica = FORM_INFO_CARACTERISTICA_PREGRADO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -98,7 +99,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     this.translate.use(language);
   }
 
-  getSeleccion(event:any) {
+  getSeleccion(event: any) {
     if (event.nombre === 'PaisNacimiento') {
       this.paisSeleccionado = event.valor;
       this.loadOptionsDepartamentoNacimiento();
@@ -107,9 +108,9 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       this.loadOptionsCiudadNacimiento();
     } else if (event.nombre === 'TipoDiscapacidad') {
       this.formInfoCaracteristica.campos[this.getIndexForm('ComprobanteDiscapacidad')].ocultar =
-        !((event.valor.filter((data:any) => data.Nombre !== 'NO APLICA')).length > 0);
+        !((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0);
 
-      if ((event.valor.filter((data:any) => data.Nombre !== 'NO APLICA')).length > 0) {
+      if ((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0) {
         this.mensaje_discapcidades = true;
       } else {
         this.mensaje_discapcidades = false;
@@ -118,15 +119,15 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       this.mensaje_poblacion_discapcidades = this.mensaje_discapcidades && this.mensaje_poblacion;
 
       if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.length === 0) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].opciones.filter((data:any) => data.Nombre === 'NO APLICA');
+        this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].opciones.filter((data: any) => data.Nombre === 'NO APLICA');
       } else if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.length > 1) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.filter((data:any) => data.Nombre !== 'NO APLICA');
+        this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.filter((data: any) => data.Nombre !== 'NO APLICA');
       }
     } else if (event.nombre === 'TipoPoblacion') {
       this.formInfoCaracteristica.campos[this.getIndexForm('ComprobantePoblacion')].ocultar =
-        !((event.valor.filter((data:any) => data.Nombre !== 'NO APLICA')).length > 0);
+        !((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0);
 
-      if ((event.valor.filter((data:any) => data.Nombre !== 'NO APLICA')).length > 0) {
+      if ((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0) {
         this.mensaje_poblacion = true;
       } else {
         this.mensaje_poblacion = false;
@@ -135,9 +136,9 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       this.mensaje_poblacion_discapcidades = this.mensaje_discapcidades && this.mensaje_poblacion;
 
       if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.length === 0) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].opciones.filter((data:any) => data.Nombre === 'NO APLICA');
+        this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].opciones.filter((data: any) => data.Nombre === 'NO APLICA');
       } else if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.length > 1) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.filter((data:any) => data.Nombre !== 'NO APLICA');
+        this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.filter((data: any) => data.Nombre !== 'NO APLICA');
       }
     }
   }
@@ -209,9 +210,9 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     return 0;
   }
 
-  cargarDocs(files:any) {
+  cargarDocs(files: any) {
     return new Promise((resolve, reject) => {
-      files.forEach((file:any) => {
+      files.forEach((file: any) => {
         const filesll = []
         filesll.push(file)
         this.newNuxeoService.get(filesll).subscribe(
@@ -231,18 +232,18 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
               })
             }
           },
-            (error: HttpErrorResponse) => {
-              reject(error);
-              Swal.fire({
-                icon: 'error',
-                title: error.status + '',
-                text: this.translate.instant('ERROR.' + error.status),
-                footer: this.translate.instant('GLOBAL.cargar') + '-' +
-                  this.translate.instant('GLOBAL.experiencia_laboral') + '|' +
-                  this.translate.instant('GLOBAL.soporte_documento'),
-                confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-              });
+          (error: HttpErrorResponse) => {
+            reject(error);
+            Swal.fire({
+              icon: 'error',
+              title: error.status + '',
+              text: this.translate.instant('ERROR.' + error.status),
+              footer: this.translate.instant('GLOBAL.cargar') + '-' +
+                this.translate.instant('GLOBAL.experiencia_laboral') + '|' +
+                this.translate.instant('GLOBAL.soporte_documento'),
+              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
+          });
       });
       resolve(true);
     });
@@ -252,7 +253,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
       this.info_persona_id.toString() !== '') {
       this.denied_acces = false;
-      this.terceroMidService.get('personas/'+ this.info_persona_id +'/complementarios')
+      this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(async res => {
           if (res.status != "404") {
             this.datosGet = <InfoCaracteristicaGet>res.data;
@@ -271,12 +272,12 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
             }
             if (this.info_info_caracteristica.TipoPoblacion.length == 0) {
               this.info_info_caracteristica.TipoPoblacion =
-                [this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].opciones.filter((data:any) => data.Nombre === 'NO APLICA')];
+                [this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].opciones.filter((data: any) => data.Nombre === 'NO APLICA')];
             }
 
             if (this.info_info_caracteristica.TipoDiscapacidad.length == 0) {
               this.info_info_caracteristica.TipoDiscapacidad =
-                [this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].opciones.filter((data:any) => data.Nombre === 'NO APLICA')];
+                [this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].opciones.filter((data: any) => data.Nombre === 'NO APLICA')];
             }
 
             this.formInfoCaracteristica.campos[this.getIndexForm('DepartamentoNacimiento')].valor = this.info_info_caracteristica.DepartamentoNacimiento;
@@ -397,7 +398,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     this.loadInfoCaracteristica();
   }
 
-  validarForm(event:any) {
+  validarForm(event: any) {
     if (event.valid) {
       if (typeof event.data.InfoCaracteristica.ComprobantePoblacion.file !== 'undefined' && event.data.InfoCaracteristica.ComprobantePoblacion.file !== null) {
         const file = [{
@@ -485,7 +486,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     }
   }
 
-  setPercentage(event:any) {
+  setPercentage(event: any) {
     if (event > 1 || this.porcentaje > 1) {
       setTimeout(() => {
         this.result.emit(1);
