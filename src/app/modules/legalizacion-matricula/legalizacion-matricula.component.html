@@ -101,12 +101,12 @@
 
                 <ng-container matColumnDef="EstadoAdmision">
                   <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado_admision' | translate }}</th>
-                  <td mat-cell *matCellDef="let row"> {{row.estado_admision}} </td>
+                  <td mat-cell *matCellDef="let row"> {{row.estado_admision | translate}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="EstadoRevision">
                   <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado_revision' | translate }}</th>
-                  <td mat-cell *matCellDef="let row"> {{row.estado_revision}} </td>
+                  <td mat-cell *matCellDef="let row"> {{row.estado_revision | translate}} </td>
                 </ng-container>
 
                 <!-- Acciones Column -->
@@ -273,7 +273,7 @@
 
               <ng-container matColumnDef="Concepto">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.Concepto}} </td>
+                <td mat-cell *matCellDef="let row"> {{ row.Concepto | translate }} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
@@ -321,7 +321,7 @@
 
               <ng-container matColumnDef="Concepto">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.Concepto}} </td>
+                <td mat-cell *matCellDef="let row"> {{ row.Concepto | translate }} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
@@ -369,12 +369,12 @@
 
               <ng-container matColumnDef="Concepto">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.Concepto}} </td>
+                <td mat-cell *matCellDef="let row"> {{ row.Concepto | translate }} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
                 <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.informacion' | translate }}</th>
-                <td mat-cell *matCellDef="let row"> {{row.Informacion}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.Informacion | translate}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Soporte">

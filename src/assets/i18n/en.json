@@ -893,6 +893,7 @@
         "total_aspirantes": "Total applicants",
         "estado_inscrip_solicitada": "Requested enrollment",
         "estado_admitido": "Admitted",
+        "estado_admitido_legalizado": "Admitted legalized",
         "estado_opcionado": "Optioned",
         "estado_no_admitido": "Unadmitted",
         "estado_inscrito": "Enrolled",
@@ -1680,6 +1681,15 @@
         "tercero_error": "Error consulting the person",
         "documento_error": "Error consulting the document",
         "actualizar_documento_error": "Error updating document",
-        "legalizacion_error": "Error obtaining the applicant's legalization data"
+        "legalizacion_error": "Error obtaining the applicant's legalization data",
+        "colegio_graduado": "School where he graduated",
+        "pension_mesual_11": "Value of the monthly pension paid grade eleven",
+        "nucleo_familiar": "Family nucleus",
+        "situacion_laboral": "Employment situation",
+        "ingresos_anio_anterior": "Previous year's income",
+        "soporte_general": "General support",
+        "sin_informacion": "No information",
+        "estado_sin_revisar": "Without checking",
+        "estado_revisado_observaciones": "Reviewed with observations"
     }
 }

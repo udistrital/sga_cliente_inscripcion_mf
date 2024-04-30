@@ -892,6 +892,7 @@
         "total_aspirantes": "Total aspirantes",
         "estado_inscrip_solicitada": "Inscripción solicitada",
         "estado_admitido": "Admitido",
+        "estado_admitido_legalizado": "Admitido legalizado",
         "estado_opcionado": "Opcionado",
         "estado_no_admitido": "No Admitido",
         "estado_inscrito": "Inscrito",
@@ -1680,6 +1681,15 @@
         "tercero_error": "Error consultando al tercero",
         "documento_error": "Error consultando el documento",
         "actualizar_documento_error": "Error actualizando el documento",
-        "legalizacion_error": "Error obteniendo los datos de legalización del aspirante"
+        "legalizacion_error": "Error obteniendo los datos de legalización del aspirante",
+        "colegio_graduado": "Colegio donde se gradúo",
+        "pension_mesual_11": "Valor de la pensión mensual pagada grado once",
+        "nucleo_familiar": "Nucleo familiar",
+        "situacion_laboral": "Situación laboral",
+        "ingresos_anio_anterior": "Ingresos del año anterior",
+        "soporte_general": "Soporte general",
+        "sin_informacion": "Sin información",
+        "estado_sin_revisar": "Sin revisar",
+        "estado_revisado_observaciones": "Revisado con observaciones"
     }
 }
