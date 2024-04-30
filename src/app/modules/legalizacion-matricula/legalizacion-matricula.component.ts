@@ -175,12 +175,13 @@ export class LegalizacionMatriculaComponent {
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
       const proyecto = this.proyectosCurriculares.find((item: any) => item.Id === inscripcion.ProgramaAcademicoId)
       const infoLegalizacion = await this.getLegalizacionMatricula(persona.Id)
-      if (infoLegalizacion == "No existe legalización") {
+      if (infoLegalizacion == "No existe legalizacion") {
         continue;
       }
       ordenCount += 1;
       this.infoLegalizacionAspirantes[persona.Id] = infoLegalizacion
       const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
+      // set aqui
       this.estadoDocumentosAspirantes[persona.Id] = estados;
       const estadoRevision = this.revisarEstadosRevision(estados)
 
@@ -232,11 +233,11 @@ export class LegalizacionMatriculaComponent {
     // Boolean para saber si ya se ha evaluado el estado de algún documento
     let hayEstado = false;
     for (const key in estados) {
-      if (estados[key] != 'Sin revisar' || estados[key] != 'To be defined') {
-        if ((estados[key] == 'Aprobado' || estados[key] == 'Approved') && puedeAprobar) {
+      if (estados[key] != 1) {
+        if (estados[key] == 2 && puedeAprobar) {
           estado = "GLOBAL.estado_aprobado"
           hayEstado = true
-        } else if (estados[key] == 'No aprobado' || estados[key] == 'Not approved') {
+        } else if (estados[key] == 3) {
           estado = "legalizacion_matricula.estado_revisado_observaciones"
           puedeAprobar = false
           hayEstado = true
@@ -267,12 +268,35 @@ export class LegalizacionMatriculaComponent {
           const documentoId = value[key][0];
           const documento: any = await this.cargarDocumento(documentoId);
           const estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
-          estados[key] = estadoDoc.estadoObservacion === "Por definir" ? "Sin revisar" : estadoDoc.estadoObservacion;
-          //console.log("llave value info: ", value[key], documentoId, documento, estadoDoc.estadoObservacion, estados);
+          // estados[key] = estadoDoc.estadoObservacion === "Por definir" ? "Sin revisar" : estadoDoc.estadoObservacion;
+          estados[key] = this.retornarEstadoObservacion(estadoDoc.estadoObservacion);
+          console.log("llave value info: ", value[key], documentoId, documento, estadoDoc.estadoObservacion, estados);
         }
       }
     }
     return estados;
+  }
+
+  retornarEstadoObservacion(estado: any) {
+    // Hay 3 estados = 1-> Sin revisar, 2-> Aprobado, 3-> No aprobado
+    console.log(estado);
+    if (estado === "Por definir" || estado === "To be defined") {
+      return 1
+    } else if (estado === "No aprobado" || estado === "Not approved") {
+      return 3
+    } else {
+      return 2
+    }
+  }
+
+  retornarEstadoPorId(id: any) {
+    if (id == 1) {
+      return 'legalizacion_matricula.estado_sin_revisar'
+    } else if (id == 2) {
+      return 'GLOBAL.estado_aprobado'
+    } else {
+      return 'GLOBAL.estado_no_aprobado'
+    }
   }
 
   async buscarInscripciones(stepper: MatStepper, proyecto: any, periodo: any) {
@@ -350,6 +374,7 @@ export class LegalizacionMatriculaComponent {
     const dialogo = this.dialog.open(DialogoDocumentosComponent, assignConfig);
 
     dialogo.afterClosed().subscribe(async(result) => {
+      // por aqui
       let metadatosDocumento = JSON.parse(documento.Metadatos)
       metadatosDocumento["aprobado"] = result["metadata"]["aprobado"];
       metadatosDocumento["observacion"] = result["metadata"]["observacion"];
@@ -362,8 +387,12 @@ export class LegalizacionMatriculaComponent {
       const res = await this.actualizarDocumento(documento);
       //const estados = this.estadoDocumentosAspirantes[this.aspiranteActualId];
       console.log("estados antes: ", this.estadoDocumentosAspirantes[this.aspiranteActualId]);
-      this.estadoDocumentosAspirantes[this.aspiranteActualId][result["nombreSoporte"]] = metadatosDocumento["estadoObservacion"]
-      //estados[result["nombreSoporte"]] = metadatosDocumento["estadoObservacion"];
+      // set aqui
+      
+      this.estadoDocumentosAspirantes[this.aspiranteActualId][result["nombreSoporte"]] = this.retornarEstadoObservacion(metadatosDocumento["estadoObservacion"])
+
+      
+
       this.cargarInfoTablasSocioeconomicas(this.infoLegalizacionAspirantes[this.aspiranteActualId]);
       console.log('Modal cerrado, resultado: ', result, documento, metadatosDocumento, res, this.estadoDocumentosAspirantes[this.aspiranteActualId]);
 
@@ -512,21 +541,21 @@ export class LegalizacionMatriculaComponent {
 
     const infoSocioEcoPersonal: any[] = [
       {Orden: 1, Concepto: 'GLOBAL.direccion_residencia', Informacion: infoLegalizacion.direccionResidencia, Estado: '', Soporte: false},
-      {Orden: 2, Concepto: 'legalizacion_matricula.colegio_graduado', Informacion: infoLegalizacion.colegioGraduado, Estado: estados["diplomaBachiller"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteColegio},
-      {Orden: 3, Concepto: 'legalizacion_matricula.pension_mesual_11', Informacion: infoLegalizacion.pensionGrado11, Estado: estados["soportePension"], Soporte: true, DocumentoSoporte: infoLegalizacion.soportePensionGrado11},
-      {Orden: 4, Concepto: 'legalizacion_matricula.nucleo_familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: estados["soporteNucleo"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteNucleoFamiliar},
-      {Orden: 5, Concepto: 'legalizacion_matricula.situacion_laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"], Soporte: estados["soporteSituacionLaboral"] ? true : false, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
+      {Orden: 2, Concepto: 'legalizacion_matricula.colegio_graduado', Informacion: infoLegalizacion.colegioGraduado, Estado: this.retornarEstadoPorId(estados["diplomaBachiller"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteColegio},
+      {Orden: 3, Concepto: 'legalizacion_matricula.pension_mesual_11', Informacion: infoLegalizacion.pensionGrado11, Estado: this.retornarEstadoPorId(estados["soportePension"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soportePensionGrado11},
+      {Orden: 4, Concepto: 'legalizacion_matricula.nucleo_familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: this.retornarEstadoPorId(estados["soporteNucleo"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteNucleoFamiliar},
+      {Orden: 5, Concepto: 'legalizacion_matricula.situacion_laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: this.retornarEstadoPorId(estados["soporteSituacionLaboral"]), Soporte: estados["soporteSituacionLaboral"] ? true : false, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
     ];
     this.infoSocioEcopersonalDataSource = new MatTableDataSource<any>(infoSocioEcoPersonal);
 
     const infoSocioEcoCosteo: any[] = [
-      {Orden: 1, Concepto: 'GLOBAL.direccion_residencia', Informacion: infoLegalizacion.direccionCostea, Estado: estados["soporteEstrato"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteEstratoCostea},
-      {Orden: 2, Concepto: 'legalizacion_matricula.ingresos_anio_anterior', Informacion: infoLegalizacion.ingresosCostea, Estado: estados["soporteIngresos"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteIngresosCostea},
+      {Orden: 1, Concepto: 'GLOBAL.direccion_residencia', Informacion: infoLegalizacion.direccionCostea, Estado: this.retornarEstadoPorId(estados["soporteEstrato"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteEstratoCostea},
+      {Orden: 2, Concepto: 'legalizacion_matricula.ingresos_anio_anterior', Informacion: infoLegalizacion.ingresosCostea, Estado: this.retornarEstadoPorId(estados["soporteIngresos"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteIngresosCostea},
     ];
     this.infoSocioEcoCosteaDataSource = new MatTableDataSource<any>(infoSocioEcoCosteo);
 
     const resumenGeneral: any[] = [
-      {Orden: 1, Concepto: 'legalizacion_matricula.soporte_general', Informacion: 'Sin legalizacion_matricula.Sin información', Estado: estados["documentosGeneral"], Soporte: true, DocumentoSoporte: infoLegalizacion.soporteGeneral},
+      {Orden: 1, Concepto: 'legalizacion_matricula.soporte_general', Informacion: 'Sin legalizacion_matricula.Sin información', Estado: this.retornarEstadoPorId(estados["documentosGeneral"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteGeneral},
     ];
     this.resumenGeneralDataSource = new MatTableDataSource<any>(resumenGeneral);
   }
