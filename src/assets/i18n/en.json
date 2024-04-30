@@ -1624,5 +1624,11 @@
         "error_solicitud_generada": "Request could not be generated.",
         "error_respuesta_solicitud": "It was not possible to respond to the request.",
         "id": "Id"
+    },
+    "recibo_pago": {
+        "generado": "The payment receipt has been generated correctly",
+        "no_generado": "The receipt could not be generated. Verify your personal information",
+        "recibo_duplicado": "You have already generated a receipt with the selected criteria",
+        "maximo_recibos": "I already generate the maximum receipts allowed"
     }
 }

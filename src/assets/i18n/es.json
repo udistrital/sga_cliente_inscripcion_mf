@@ -1624,5 +1624,11 @@
         "solicitud_generada": "La solicitud se ha generado con éxito.",
         "error_solicitud_generada": "La solicitud no pudo ser generada.",
         "error_respuesta_solicitud": "No fue posible dar respuesta a la solicitud."
+    },
+    "recibo_pago": {
+        "generado": "El recibo de pago ha sido generado correctamente",
+        "no_generado": "El recibo no ha podido ser generado. Verifique su información personal",
+        "recibo_duplicado": "Ya ha generado un recibo con los criterios seleccionados",
+        "maximo_recibos": "Ya genero el máximo de recibos permitidos"
     }
 }

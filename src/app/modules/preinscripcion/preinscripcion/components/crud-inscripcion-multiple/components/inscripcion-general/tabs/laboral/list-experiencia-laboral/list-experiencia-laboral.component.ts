@@ -77,7 +77,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
   loadData(): void {
     this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.persona_id).subscribe(
       (response: any) => {
-        if (response !== null && response.status == '200') {
+        if (response.data.length > 0 && response.status == '200') {
           this.data = <Array<any>>response.data;
           this.getPercentage(1);
           this.data.forEach(async (expLab) => {
@@ -86,7 +86,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
             expLab.Observacion = estadoDoc.observacion;
             this.dataSource = new MatTableDataSource(this.data)
           });
-        } else if (response !== null && response.status == '404') {
+        } else if (response.data.length == 0) {
           this.popUpManager.showAlert('', this.translate.instant('experiencia_laboral.no_data'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource();

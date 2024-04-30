@@ -82,13 +82,14 @@ export class ListDescuentoAcademicoComponent implements OnInit {
       'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
       .subscribe((result: any) => {
+        console.log(result)
         const r = <any>result.data;
-        if (result !== null && (result.status == '400' || result.status== '404')) {
+        if (result.data == null && result.status == '200') {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource()
 
-        } else {
+        } else if (result.data != null && result.status == '200') {
           this.data = <Array<SolicitudDescuento>>r;
           this.data.forEach(async (docDesc: any) => {
             let estadoDoc = await <any>this.cargarEstadoDocumento(docDesc["DocumentoId"]);

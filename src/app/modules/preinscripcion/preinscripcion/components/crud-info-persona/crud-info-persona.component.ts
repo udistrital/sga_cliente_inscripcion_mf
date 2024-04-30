@@ -158,7 +158,6 @@ export class CrudInfoPersonaComponent implements OnInit {
       this.clean = !this.clean;
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
-    console.log(this.autenticationService.getPayload().email)
     this.formInfoPersona.campos[this.getIndexForm('CorreoElectronico')].valor = this.autenticationService.getPayload().email;
   }
 

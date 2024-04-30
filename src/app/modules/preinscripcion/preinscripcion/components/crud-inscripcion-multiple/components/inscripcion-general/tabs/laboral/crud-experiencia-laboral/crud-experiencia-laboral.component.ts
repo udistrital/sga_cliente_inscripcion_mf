@@ -519,7 +519,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   }
 
   putExperianciaLaboral() {
-    this.inscripcionMidService.put('experiencia_laboral/', this.info_experiencia_laboral)
+    this.inscripcionMidService.put('experiencia-laboral/', this.info_experiencia_laboral)
       .subscribe(res => {
         const r = <any>res;
         if (r !== null && r.Type !== 'error') {
