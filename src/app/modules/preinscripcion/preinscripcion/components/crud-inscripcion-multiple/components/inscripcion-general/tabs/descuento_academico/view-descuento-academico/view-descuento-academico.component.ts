@@ -99,7 +99,7 @@ export class ViewDescuentoAcademicoComponent implements OnInit {
       sessionStorage.getItem('ProgramaAcademicoId') + '&PeriodoId=' + sessionStorage.getItem('IdPeriodo'))
       .subscribe((result: any) => {
         const r = <any>result.data;
-        if (result !== null && result.status == '200') {
+        if (result.data != null && result.status == '200' ) {
           const data = <Array<SolicitudDescuento>>r;
           const soportes = [];
           let soportes1 = "";

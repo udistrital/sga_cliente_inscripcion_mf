@@ -610,7 +610,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         id + '&DependenciaId=' +
         Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
         .subscribe((res: any) => {
-          if (res.status == '200') {
+          if (res.status == '200' && res.data != null) {
             this.percentage_desc = 100;
             this.percentage_tab_desc[0] = 100;
           } else {
