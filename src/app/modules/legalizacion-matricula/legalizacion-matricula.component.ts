@@ -65,6 +65,7 @@ export class LegalizacionMatriculaComponent {
   aspirante: any
 
   proyectosCurriculares!: any[]
+  periodosAnio!: any[]
   anios!: any[]
   periodos!: any[]
   facultades!: any[]
@@ -74,6 +75,7 @@ export class LegalizacionMatriculaComponent {
   aspiranteActualId: any;
   inscritosData: any[] = [];
   inscripciones: any[] = [];
+  docsDescargados: any[] = [];
 
   constructor(
     private _formBuilder: FormBuilder, 
@@ -159,6 +161,13 @@ export class LegalizacionMatriculaComponent {
   onFacultadChange(event: any) {
     const facultad = this.facultades.find((facultad: any) => facultad.Id === event.value);
     this.proyectosCurriculares = facultad.Opciones;
+  }
+
+  onAnioChange(event: any) {
+    const anio = this.anios.find((item: any) => item.Id === event.value);
+    const periodosAnio = this.periodos.filter((item: any) => item.Nombre.startsWith(anio.Nombre));
+    console.log(event, anio);
+    this.periodosAnio = periodosAnio;
   }
 
   async generarBusqueda(stepper: MatStepper) {
@@ -434,8 +443,7 @@ export class LegalizacionMatriculaComponent {
         if (inscrito.personaId == this.aspiranteActualId) {
           inscrito.estado_revision = estadoRev;
           if (estadoRev == 'GLOBAL.estado_aprobado') {
-            //HACER PUT DE INSCRIPCIÓN 
-            //RECUPERAR LA INSCRIPCION ASOCIADA AL ASPITANTE ID ACTUAL
+            inscrito.estado_admision = 'admision.estado_admitido_legalizado';
             const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
             inscripcion.EstadoInscripcionId.Id = 8;
             const res = await this.actualizarEstadoInscripcion(inscripcion);
@@ -471,15 +479,6 @@ export class LegalizacionMatriculaComponent {
     }
     return todosAprobados
   }
-
-  // buscarAspirante() {
-  //   for (const aspirante of this.inscritosData) {
-  //     console.log(aspirante, this.aspiranteActualId)
-  //     if (aspirante.personaId == this.aspiranteActualId) {
-  //       return aspirante
-  //     }
-  //   }
-  // }
 
   cargarDocumento(documentoId:any) {
     return new Promise((resolve, reject) => {
@@ -528,16 +527,6 @@ export class LegalizacionMatriculaComponent {
             reject([]);
           });
     });
-    // console.log(documentoId);
-    // this.newNuxeoService.getByIdLocal(documentoId)
-    //   .subscribe((file: any) => {
-    //     console.log(file);
-    //     return file;
-    //   }, (error: any) => {
-    //     console.log(error);
-    //     this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
-    //     return null;
-    //   })
   }
 
   recuperarIdDocumento(objeto: any) {
@@ -565,7 +554,10 @@ export class LegalizacionMatriculaComponent {
     const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspiranteActualId]
     console.log(infoLegalizacion);
     this.cargarInfoTablasSocioeconomicas(infoLegalizacion);
-    this.descargarArchivos(infoLegalizacion);
+    if (!this.docsDescargados.includes(this.aspiranteActualId)) {
+      this.docsDescargados.push(this.aspiranteActualId)
+      this.descargarArchivos(infoLegalizacion);
+    }
     this.formulario = true;
   }
 
@@ -626,7 +618,7 @@ export class LegalizacionMatriculaComponent {
       {Orden: 2, Concepto: 'legalizacion_matricula.colegio_graduado', Informacion: infoLegalizacion.colegioGraduado, Estado: this.retornarEstadoPorId(estados["diplomaBachiller"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteColegio},
       {Orden: 3, Concepto: 'legalizacion_matricula.pension_mesual_11', Informacion: infoLegalizacion.pensionGrado11, Estado: this.retornarEstadoPorId(estados["soportePension"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soportePensionGrado11},
       {Orden: 4, Concepto: 'legalizacion_matricula.nucleo_familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: this.retornarEstadoPorId(estados["soporteNucleo"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteNucleoFamiliar},
-      {Orden: 5, Concepto: 'legalizacion_matricula.situacion_laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: this.retornarEstadoPorId(estados["soporteSituacionLaboral"]), Soporte: estados["soporteSituacionLaboral"] ? true : false, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
+      {Orden: 5, Concepto: 'legalizacion_matricula.situacion_laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"] ? this.retornarEstadoPorId(estados["soporteSituacionLaboral"]) : "", Soporte: estados["soporteSituacionLaboral"] ? true : false, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
     ];
     this.infoSocioEcopersonalDataSource = new MatTableDataSource<any>(infoSocioEcoPersonal);
 
@@ -637,7 +629,7 @@ export class LegalizacionMatriculaComponent {
     this.infoSocioEcoCosteaDataSource = new MatTableDataSource<any>(infoSocioEcoCosteo);
 
     const resumenGeneral: any[] = [
-      {Orden: 1, Concepto: 'legalizacion_matricula.soporte_general', Informacion: 'Sin legalizacion_matricula.Sin información', Estado: this.retornarEstadoPorId(estados["documentosGeneral"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteGeneral},
+      {Orden: 1, Concepto: 'legalizacion_matricula.soporte_general', Informacion: 'legalizacion_matricula.sin_informacion', Estado: this.retornarEstadoPorId(estados["documentosGeneral"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteGeneral},
     ];
     this.resumenGeneralDataSource = new MatTableDataSource<any>(resumenGeneral);
   }
