@@ -72,6 +72,8 @@ export class LegalizacionMatriculaComponent {
   infoLegalizacionAspirantes: any = {}
   estadoDocumentosAspirantes: any = {}
   aspiranteActualId: any;
+  inscritosData: any[] = [];
+  inscripciones: any[] = [];
 
   constructor(
     private _formBuilder: FormBuilder, 
@@ -165,13 +167,14 @@ export class LegalizacionMatriculaComponent {
     const anio = this.firstFormGroup.get('validatorAño')?.value;
     console.log(proyecto, anio, periodo);
 
-    let inscritosData: any[] = [];
-    let ordenCount = 0 
+    this.inscritosData = [];
+    this.inscripciones = [];
+    let ordenCount = 0 ;
 
-    const inscripciones: any = await this.buscarInscripciones(stepper, proyecto, periodo)
-    console.log(inscripciones)
+    this.inscripciones = await this.buscarInscripciones(stepper, proyecto, periodo)
+    console.log(this.inscripciones)
 
-    for (const inscripcion of inscripciones) {
+    for (const inscripcion of this.inscripciones) {
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
       const proyecto = this.proyectosCurriculares.find((item: any) => item.Id === inscripcion.ProgramaAcademicoId)
       const infoLegalizacion = await this.getLegalizacionMatricula(persona.Id)
@@ -210,11 +213,11 @@ export class LegalizacionMatriculaComponent {
         "correo": persona.UsuarioWSO2,
         "genero": persona.Genero.Nombre
       }
-      inscritosData.push(personaData);
+      this.inscritosData.push(personaData);
     }
-    console.log("Data inscritos: ", inscritosData)
+    console.log("Data inscritos: ", this.inscritosData)
 
-    this.personaDataSource = new MatTableDataSource<any>(inscritosData);
+    this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
   }
 
   formatearFecha(fechaString: any) {
@@ -335,6 +338,20 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
+  actualizarEstadoInscripcion(inscripcionData: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.put('inscripcion', inscripcionData)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
   consultarTercero(personaId: any) {
     return new Promise((resolve, reject) => {
       this.sgamidService.get('persona/consultar_persona/' + personaId)
@@ -387,17 +404,82 @@ export class LegalizacionMatriculaComponent {
       const res = await this.actualizarDocumento(documento);
       //const estados = this.estadoDocumentosAspirantes[this.aspiranteActualId];
       console.log("estados antes: ", this.estadoDocumentosAspirantes[this.aspiranteActualId]);
-      // set aqui
       
       this.estadoDocumentosAspirantes[this.aspiranteActualId][result["nombreSoporte"]] = this.retornarEstadoObservacion(metadatosDocumento["estadoObservacion"])
-
-      
+      await this.cambioEstadoRevisionAspirante();
+      console.log("Data inscritos: ",this.inscritosData, this.aspiranteActualId)
 
       this.cargarInfoTablasSocioeconomicas(this.infoLegalizacionAspirantes[this.aspiranteActualId]);
       console.log('Modal cerrado, resultado: ', result, documento, metadatosDocumento, res, this.estadoDocumentosAspirantes[this.aspiranteActualId]);
 
     });
   }
+
+  async cambioEstadoRevisionAspirante() {
+    const aspirante = this.inscritosData.find((inscrito: any) => inscrito.personaId === this.aspiranteActualId);
+    let estadoRev
+    let cambioEstado = false;
+
+    if (aspirante.estado_revision == 'legalizacion_matricula.estado_sin_revisar' && !this.verificarEstadosSinRevisar()) {
+      cambioEstado = true;
+      estadoRev = 'legalizacion_matricula.estado_revisado_observaciones'
+    } else if (aspirante.estado_revision == 'legalizacion_matricula.estado_revisado_observaciones' && this.verificarEstadosAprobados()) {
+      cambioEstado = true;
+      estadoRev = 'GLOBAL.estado_aprobado'
+    }
+
+    if (cambioEstado) {
+      for (const inscrito of this.inscritosData) {
+        console.log(inscrito, this.aspiranteActualId)
+        if (inscrito.personaId == this.aspiranteActualId) {
+          inscrito.estado_revision = estadoRev;
+          if (estadoRev == 'GLOBAL.estado_aprobado') {
+            //HACER PUT DE INSCRIPCIÓN 
+            //RECUPERAR LA INSCRIPCION ASOCIADA AL ASPITANTE ID ACTUAL
+            const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
+            inscripcion.EstadoInscripcionId.Id = 8;
+            const res = await this.actualizarEstadoInscripcion(inscripcion);
+            console.log(inscripcion, res)
+          }
+        }
+      }
+      this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+    }
+    console.log("Aspirante: ", aspirante, this.inscritosData, this.personaDataSource);
+  }
+
+  verificarEstadosSinRevisar() {
+    console.log(this.estadoDocumentosAspirantes[this.aspiranteActualId])
+    let todosSinRevisar = true
+    for (const key in this.estadoDocumentosAspirantes[this.aspiranteActualId]) {
+      if (this.estadoDocumentosAspirantes[this.aspiranteActualId][key] != 1) {
+        todosSinRevisar = false;
+        break;
+      }
+    }
+    return todosSinRevisar
+  }
+
+  verificarEstadosAprobados() {
+    console.log(this.estadoDocumentosAspirantes[this.aspiranteActualId])
+    let todosAprobados = true
+    for (const key in this.estadoDocumentosAspirantes[this.aspiranteActualId]) {
+      if (this.estadoDocumentosAspirantes[this.aspiranteActualId][key] != 2) {
+        todosAprobados = false;
+        break;
+      }
+    }
+    return todosAprobados
+  }
+
+  // buscarAspirante() {
+  //   for (const aspirante of this.inscritosData) {
+  //     console.log(aspirante, this.aspiranteActualId)
+  //     if (aspirante.personaId == this.aspiranteActualId) {
+  //       return aspirante
+  //     }
+  //   }
+  // }
 
   cargarDocumento(documentoId:any) {
     return new Promise((resolve, reject) => {
