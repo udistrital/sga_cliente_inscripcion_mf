@@ -1,4 +1,4 @@
-<div *ngIf="!formulario">
+<div *ngIf="!formulario && estaAutorizado">
   <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
     <mat-step [stepControl]="firstFormGroup">
       <ng-template matStepLabel>{{ 'legalizacion_matricula.liquidacion_recibos' | translate }}</ng-template>
@@ -146,7 +146,7 @@
   </mat-stepper>
 </div>
 
-<div *ngIf="formulario">
+<div *ngIf="formulario && estaAutorizado">
   <mat-card>
     <mat-card-header class="flex">
       <mat-card-title>{{ 'legalizacion_matricula.legalizacion' | translate }}</mat-card-title>

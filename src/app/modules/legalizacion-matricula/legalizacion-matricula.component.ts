@@ -19,6 +19,8 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { DialogoDocumentosComponent } from '../components/dialogo-documentos/dialogo-documentos.component';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
+import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
+import { ROLES } from 'src/app/models/diccionario/diccionario';
 
 // interface InfoSocioEconomica {
 //   Orden: number;
@@ -63,6 +65,7 @@ export class LegalizacionMatriculaComponent {
   infoSocioEconomicacolumns: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
 
   aspirante: any
+  estaAutorizado: boolean = false;
 
   proyectosCurriculares!: any[]
   periodosAnio!: any[]
@@ -89,6 +92,7 @@ export class LegalizacionMatriculaComponent {
     private newNuxeoService: NewNuxeoService,
     private utilidades: UtilidadesService,
     private documentoService: DocumentoService,
+    private autenticationService: ImplicitAutenticationService,
     private popUpManager: PopUpManager
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -96,6 +100,17 @@ export class LegalizacionMatriculaComponent {
   }
 
   async ngOnInit() {
+    this.autenticationService.getRole().then(
+      (rol: any) => {
+        console.log("ROL: ", rol);
+        const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
+        const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
+        if (r1 || r2) {
+          this.estaAutorizado = true;
+          console.log(r1)
+        }
+      }
+    );
     validateLang(this.translate);
     await this.cargarSelects();
   }
