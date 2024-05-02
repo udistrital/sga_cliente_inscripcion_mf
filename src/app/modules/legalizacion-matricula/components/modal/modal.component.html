@@ -1,0 +1,47 @@
+<div class="modal-card-container">
+  <!-- Contenido del modal -->
+  <div class="modal-card">
+    <!-- Visualizador de documentos -->
+    <div class="document-viewer">
+      <mat-card>
+        <ngx-doc-viewer
+        [url]='fileurl'
+        viewer='google'
+        style="width:100%;height:70vh;"
+        >
+        </ngx-doc-viewer>
+      </mat-card>
+    </div>
+
+    <!-- Campos de entrada y botones -->
+      <mat-card class="input-section" >
+        <!-- Inputs -->
+        <div class="input-container">
+          <mat-card>
+            <label for="input1">Input 1:</label>
+            <input type="text" id="input1" name="input1">
+          </mat-card>
+        </div>
+        <br><br>
+        <div class="input-container">
+          <mat-card>
+            <label for="input2">Input 2:</label>
+            <input type="text" id="input2" name="input2">
+          </mat-card>
+        </div>
+        <br><br>
+        <div class="input-container">
+          <mat-card>
+            <label for="input3">Input 3:</label>
+            <input type="text" id="input3" name="input3">
+          </mat-card>
+        </div>
+
+        <!-- Botones -->
+        <div class="button-container">
+          <button class="btn boton-aprobar">Aprobar</button>
+          <button class="btn boton-rechazar">Rechazar</button>
+        </div>
+      </mat-card>
+  </div>
+</div>
