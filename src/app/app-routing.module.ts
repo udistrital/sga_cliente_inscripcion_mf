@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TransferenciaComponent } from './modules/transferencia/transferencia.component';
 import { SolicitudTransferenciaComponent } from './modules/transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
-import { LegalizacionMatriculaComponent } from './modules/legalizacion/components/legalizacion-matricula/legalizacion-matricula.component';
+import { LegalizacionMatriculaAspiranteComponent } from './modules/legalizacion/legalizacion-matricula-aspirante/legalizacion-matricula-aspirante.component';
 
 const routes: Routes = [
   { 
@@ -23,8 +23,8 @@ const routes: Routes = [
     component: SolicitudTransferenciaComponent,
   },
   {
-    path: 'legalizacion',
-    component: LegalizacionMatriculaComponent,
+    path: 'legalizacion-matricula-aspirante',
+    component: LegalizacionMatriculaAspiranteComponent,
   }
 ];
 

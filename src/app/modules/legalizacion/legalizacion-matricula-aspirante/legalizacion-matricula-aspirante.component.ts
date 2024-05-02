@@ -1,3 +1,14 @@
+// import { Component } from '@angular/core';
+
+// @Component({
+//   selector: 'app-legalizacion-matricula-aspirante',
+//   templateUrl: './legalizacion-matricula-aspirante.component.html',
+//   styleUrls: ['./legalizacion-matricula-aspirante.component.scss']
+// })
+// export class LegalizacionMatriculaAspiranteComponent {
+
+// }
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SoporteParams } from 'src/app/models/forms/define-form-fields';
@@ -13,11 +24,11 @@ import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service'
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-legalizacion-matricula',
-  templateUrl: './legalizacion-matricula.component.html',
-  styleUrls: ['./legalizacion-matricula.component.scss']
-})
-export class LegalizacionMatriculaComponent implements OnInit {
+    selector: 'app-legalizacion-matricula-aspirante',
+    templateUrl: './legalizacion-matricula-aspirante.component.html',
+    styleUrls: ['./legalizacion-matricula-aspirante.component.scss']
+  })
+  export class LegalizacionMatriculaAspiranteComponent {
 
   constructor(
     private fb: FormBuilder,
