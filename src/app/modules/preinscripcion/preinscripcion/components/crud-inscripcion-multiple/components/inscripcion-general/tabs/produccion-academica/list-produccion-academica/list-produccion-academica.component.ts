@@ -50,11 +50,11 @@ export class ListProduccionAcademicaComponent implements OnInit {
   loadData(): void {
     this.inscripcionMidService.get('academico/produccion/tercero/' + this.persona_id)
       .subscribe(res => {
-        if (res !== null && res.status == '200') {
+        if (res.data !== null && res.status == '200') {
           const data = <Array<ProduccionAcademicaPost>>res.data;
           this.dataSource = new MatTableDataSource(data)
           this.result.emit(1);
-        } else if (res !== null && res.status == '404') {
+        } else if (res.data == null && res.status == '200') {
           this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
           this.dataSource = new MatTableDataSource();
           this.result.emit(0);
@@ -112,7 +112,6 @@ export class ListProduccionAcademicaComponent implements OnInit {
             //todo: falta parametro
             this.inscripcionMidService.delete('academico/produccion/', event).subscribe((res: any) => {
               if (res !== null ) {
-                this.dataSource = new MatTableDataSource();
                   this.loadData();
                   this.snackBar.open(this.translate.instant('produccion_academica.produccion_eliminada'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
                 } else {

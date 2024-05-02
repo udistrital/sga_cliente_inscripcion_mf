@@ -29,10 +29,6 @@ const routes: Routes = [
   { 
     path: "**",
     redirectTo: "preinscripcion"
-  },
-  {
-    path: 'legalizacion',
-    component: LegalizacionMatriculaComponent,
   }
 ];
 

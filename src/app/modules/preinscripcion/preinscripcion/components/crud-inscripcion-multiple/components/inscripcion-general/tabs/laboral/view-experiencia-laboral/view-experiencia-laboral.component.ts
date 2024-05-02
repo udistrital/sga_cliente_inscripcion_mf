@@ -87,7 +87,7 @@ export class ViewExperienciaLaboralComponent implements OnInit {
       (response: any) => {
         const soportes = [];
         let soportes1 = "";
-        if (response.status == '200') {
+        if (response.status == '200' && response.data.length > 0) {
           this.data = <Array<any>>response.data;
           this.infoCarga.nCargas = this.data.length;
           this.info_experiencia_laboral = this.data;

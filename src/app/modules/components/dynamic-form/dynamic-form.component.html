@@ -916,7 +916,7 @@
             <mat-form-field
               *ngSwitchCase="'fileRev'"
               style="width: 100%"
-              class="form-group"
+              class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
               floatLabel="always"
               [hidden]="c.ocultar"
             >
@@ -1472,7 +1472,7 @@
                   <mat-form-field
                     *ngSwitchCase="'fileRev'"
                     style="width: 100%"
-                    class="form-group"
+                    class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
                     floatLabel="always"
                     [hidden]="c.ocultar"
                   >
@@ -1482,7 +1482,7 @@
                       (change)="onChange2($event, c)"
                       style="display: none"
                     />
-                    <mat-label>{{
+                    <mat-label> {{
                       c.requerido ? "* " + c.label : c.label
                     }}</mat-label>
                     <div class="row">

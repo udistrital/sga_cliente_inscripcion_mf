@@ -111,27 +111,29 @@ export class UserService {
     return new Promise<boolean>((resolve, reject) => {
     this.anyService.get(path, 'tercero?query=UsuarioWSO2:' + UserEmail)
       .subscribe((res:any) => {
-        if (res !== null) {
-          this.user = res[0];
-          if (Object.keys(this.user).length !== 0) {
-            this.user$.next(this.user);
-            this.userSubject.next(this.user);
-            const persona_id = encrypt(this.user.Id.toString())
-            window.localStorage.setItem('persona_id', persona_id);
-            resolve(true);
-          } else {
+        setTimeout(()=>{
+          if (res !== null) {
+            this.user = res[0];
+            if (Object.keys(this.user).length !== 0) {
+              this.user$.next(this.user);
+              this.userSubject.next(this.user);
+              const persona_id = encrypt(this.user.Id.toString())
+              window.localStorage.setItem('persona_id', persona_id);
+              resolve(true);
+            } else {
+              //this.user$.next(this.user);
+              const persona_id = encrypt('0')
+              window.localStorage.setItem('persona_id', persona_id);
+              reject(false);
+            }
+          }
+          else {
             //this.user$.next(this.user);
             const persona_id = encrypt('0')
             window.localStorage.setItem('persona_id', persona_id);
             reject(false);
           }
-        }
-        else {
-          //this.user$.next(this.user);
-          const persona_id = encrypt('0')
-          window.localStorage.setItem('persona_id', persona_id);
-          reject(false);
-        }
+        }, 500)
       });
     });
   }
