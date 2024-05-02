@@ -48,8 +48,8 @@
             <td>{{ docDiscapacidad?docDiscapacidad.estadoObservacion:'' }}</td>
             <td>{{ docDiscapacidad?docDiscapacidad.observacion:'' }}</td>
             <td>
-                <button mat-button type="button" (click)="verInfoCaracteristca(docDiscapacidad)">
-                    <i class="nb-search" title="{{ 'GLOBAL.tooltip_ver_registro' | translate }}"></i></button>
+                <button mat-flat-button color="accent" type="button" (click)="verInfoCaracteristca(docDiscapacidad)">
+                    <mat-icon fontIcon="search"></mat-icon></button>
             </td>
         </tr>
         <tr *ngIf="idSoportePoblacion">

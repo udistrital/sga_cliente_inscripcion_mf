@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist/sga-cliente-inscripcion-mf",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.single-spa.ts",
             "polyfills": [
@@ -35,6 +35,7 @@
               }
             ],
             "styles": [
+              "src/assets/styles/sga-theme-angular-material.scss",
               "src/styles.scss"
             ],
             "scripts": [],
@@ -42,36 +43,46 @@
               "path": "extra-webpack.config.js",
               "libraryName": "sga-cliente-inscripcion-mf",
               "libraryTarget": "umd"
-            },
-            "deployUrl": "http://localhost:4209/"
+            }
           },
           "configurations": {
             "production": {
-              "budgets": [
+              "optimization":true,
+              "outputHashing": "none",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "buildOptimizer": true,
+              "fileReplacements": [
                 {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production.ts"
                 }
               ],
-              "outputHashing": "none"
+              "deployUrl": "https://sgainscripcion.portaloas.udistrital.edu.co/"
             },
             "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true,
-              "outputHashing": "none"
+              "optimization": true,
+              "outputHashing": "none",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
+              "deployUrl": "https://pruebassgainscripcion.portaloas.udistrital.edu.co/"
+            },
+            "local": {
+              "deployUrl": "http://localhost:4209/"
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "local"
         },
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
@@ -81,9 +92,12 @@
             },
             "development": {
               "browserTarget": "sga-cliente-inscripcion-mf:build:development"
+            },
+            "local": {
+              "browserTarget": "sga-cliente-inscripcion-mf:build:local"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "local"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

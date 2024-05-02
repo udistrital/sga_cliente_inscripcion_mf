@@ -9,10 +9,10 @@ import { Inscripcion } from 'src/app/models/inscripcion/inscripcion';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { TAGS_INSCRIPCION_PROGRAMA } from './def_tags_por_programa';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { ListService } from 'src/app/services/list.service';
@@ -483,7 +483,6 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   loadPercentageInfoCaracteristica(factor: number) {
-    return new Promise((resolve, reject) => {
       this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(res => {
           if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
@@ -493,16 +492,10 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             this.percentage_info = this.percentage_info + 0;
             this.percentage_tab_info[1] = 0;
           }
-          resolve(this.percentage_info);
-        },
-          error => {
-            reject(error);
-          });
-    });
+        });
   }
 
   loadPercentageInfoContacto(factor: number) {
-    return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.info_persona_id)
         .subscribe(res => {
           if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
@@ -512,16 +505,10 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             this.percentage_info = this.percentage_info + 0;
             this.percentage_tab_info[2] = 0;
           }
-          resolve(this.percentage_info);
-        },
-          error => {
-            reject(error);
-          });
-    });
+        });
   }
 
   loadPercentageInfoFamiliar(factor: number) {
-    return new Promise((resolve, reject) => {
       this.terceroMidService.get('personas/' + this.info_persona_id + '/familiar')
         .subscribe(res => {
           if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
@@ -531,16 +518,10 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             this.percentage_info = this.percentage_info + 0;
             this.percentage_tab_info[3] = 0;
           }
-          resolve(this.percentage_info);
-        },
-          error => {
-            reject(error);
-          });
-    });
+        });
   }
 
   loadPercentageFormacionAcademica() {
-    return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('academico/formacion/?Id=' + this.info_persona_id)
         .subscribe(res => {
           if (res.status == '200' && (Object.keys(res.data).length > 0)) {
@@ -550,16 +531,11 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             this.percentage_acad = 0;
             this.percentage_tab_acad[0] = 0;
           }
-          resolve(this.percentage_acad)
-        },
-          error => {
-            reject(error)
-          });
+        
     });
   }
 
   loadPercentageFormacionAcademicaPregado(factor:any) {
-    return new Promise((resolve, reject) => {
       this.terceroMidService.get('personas/' + this.info_persona_id + '/formacion-pregrado')
         .subscribe(res => {
           if (res.Status == '200') {
@@ -569,16 +545,10 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             this.percentage_acad = this.percentage_acad + 0;
             this.percentage_tab_acad[0] = 0;
           }
-          resolve(this.percentage_acad)
-        },
-          error => {
-            reject(error)
-          });
-    });
+        });
   }
   
   loadPercentageIdiomas() {
-    return new Promise((resolve, reject) => {
       this.idiomaService.get('conocimiento_idioma?query=Activo:true,TercerosId:' + this.info_persona_id + '&limit=0')
         .subscribe(res => {
           if (res !== null && JSON.stringify(res[0]) !== '{}') {
@@ -588,55 +558,36 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             this.percentage_idio = 0;
             this.percentage_tab_idio[0] = 0;
           }
-          resolve(this.percentage_acad);
-        },
-          error => {
-            reject(error);
-          });
     });
   }
 
   loadPercentageExperienciaLaboral() {
-    return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.info_persona_id)
         .subscribe((res: any) => {
-          if (res.status == '200') {
+          if (res.status == '200' && res.data.length > 0) {
             this.percentage_expe = 100;
             this.percentage_tab_expe[0] = 100;
           } else {
             this.percentage_expe = 0;
             this.percentage_tab_expe[0] = 0;
           }
-          resolve(this.percentage_expe);
-        },
-          error => {
-            reject(error);
-          });
-    });
+        });
   }
 
   loadPercentageProduccionAcademica() {
-    return new Promise((resolve, reject) => {
-      //todo: backend repetido
       this.inscripcionMidService.get('academico/produccion/' + this.info_persona_id)
         .subscribe(res => {
-          if (res.status == '200') {
+          if (res.status == '200' && res.data != null) {
             this.percentage_prod = 100;
             this.percentage_tab_prod[0] = 100;
           } else {
             this.percentage_prod = 0;
             this.percentage_tab_prod[0] = 0;
           }
-          resolve(this.percentage_prod);
-        },
-          error => {
-            reject(error);
-          });
-    });
+        });
   }
 
   loadPercentageDocumentos() {
-    return new Promise((resolve, reject) => {
       this.inscripcionService.get('soporte_documento_programa?query=InscripcionId.Id:' +
         this.inscripcion.Id + ',DocumentoProgramaId.ProgramaId:' + parseInt(sessionStorage['ProgramaAcademicoId'], 10) + ',DocumentoProgramaId.TipoInscripcionId:' + parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) + ',DocumentoProgramaId.PeriodoId:' + parseInt(sessionStorage.getItem('IdPeriodo')!, 10) + ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true&limit=0').subscribe(
           (res: any[]) => {
@@ -646,44 +597,30 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
                 this.percentage_docu = 100;
               }
               this.percentage_tab_docu[0] = Math.round(this.percentage_docu);
-              resolve(this.percentage_docu);
             } else {
               this.percentage_docu = 0;
               this.percentage_tab_docu[0] = 0;
-              resolve(this.percentage_docu);
             }
-          },
-          error => {
-            reject(error);
           });
-    });
   }
 
   loadPercentageDescuentos() {
     const id = decrypt(window.localStorage.getItem('persona_id'));
-
-    return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('academico/descuento/detalle?' + 'PersonaId=' +
-        Number(window.localStorage.getItem('persona_id')) + '&DependenciaId=' +
+        id + '&DependenciaId=' +
         Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
         .subscribe((res: any) => {
-          if (res.status == '200') {
+          if (res.status == '200' && res.data != null) {
             this.percentage_desc = 100;
             this.percentage_tab_desc[0] = 100;
           } else {
             this.percentage_desc = 0;
             this.percentage_tab_desc[0] = 0;
           }
-          resolve(this.percentage_desc)
-        },
-          error => {
-            reject(error);
-          });
-    });
+        });
   }
 
   loadPercentageTrabajoDeGrado() {
-    return new Promise((resolve, reject) => {
       this.inscripcionService.get('propuesta?query=Activo:true,InscripcionId:' +
         Number(window.sessionStorage.getItem('IdInscripcion'))).subscribe((res: any) => {
           if (res !== null && JSON.stringify(res[0]) !== '{}') {
@@ -693,13 +630,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             this.percentage_proy = 0;
             this.percentage_tab_proy[0] = 0;
           }
-          resolve(this.percentage_proy)
-
-        },
-          error => {
-            reject(error);
-          });
-    });
+        });
   }
 
   loadLists() {  

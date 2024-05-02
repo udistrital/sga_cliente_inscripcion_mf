@@ -6,7 +6,6 @@ import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { PivotDocument } from 'src/app/services/pivot_document.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
 
 @Component({

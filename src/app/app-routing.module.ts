@@ -5,6 +5,7 @@ import { TransferenciaComponent } from './modules/transferencia/transferencia.co
 import { SolicitudTransferenciaComponent } from './modules/transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
 import { LegalizacionMatriculaComponent } from './modules/legalizacion-matricula/legalizacion-matricula.component';
 
+
 const routes: Routes = [
   { 
     path: "",
