@@ -4,7 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { validateLang } from 'src/app/app.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { ModalComponent } from './components/modal/modal.component';
+//import { ModalComponent } from './components/modal/modal.component';
 //import multiMonthPlugin from '@fullcalendar/multimonth'
 import { OikosService } from 'src/app/services/oikos.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -17,7 +17,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { DocumentoService } from 'src/app/services/documento.service';
-import { DialogoDocumentosComponent } from '../components/dialogo-documentos/dialogo-documentos.component';
+import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ROLES } from 'src/app/models/diccionario/diccionario';
@@ -103,6 +103,7 @@ export class LegalizacionMatriculaComponent {
     this.autenticationService.getRole().then(
       (rol: any) => {
         console.log("ROL: ", rol);
+        //const r = ROLES.DECANO
         const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
         const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
         if (r1 || r2) {

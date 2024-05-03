@@ -171,6 +171,20 @@ mat-table {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.contendedor-no-autorizado {
+  text-align: center;
+  width: 50%;
+  margin: 100px auto !important;
+}
+
+.contendedor-no-autorizado mat-card-header {
+  background-color: rgb(212, 64, 64);
+}
+
+.contendedor-no-autorizado mat-card-content {
+  padding: 18px;
+}
+
 @media(width > 580px) {
   .form-container {
     grid-template-columns: repeat(2, 1fr);

@@ -65,8 +65,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
-import { LegalizacionMatriculaComponent } from './modules/legalizacion-matricula/legalizacion-matricula.component';
-import { ModalComponent } from './modules/legalizacion-matricula/components/modal/modal.component';
+import { LegalizacionMatriculaComponent } from './modules/legalizacion/legalizacion-matricula/legalizacion-matricula.component';
+//import { ModalComponent } from './modules/legalizacion-matricula/components/modal/modal.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -76,7 +76,7 @@ export function createTranslateLoader(http: HttpClient) {
   declarations: [
     AppComponent,
     LegalizacionMatriculaComponent,
-    ModalComponent,
+    //ModalComponent,
   ],
   imports: [
     NgxExtendedPdfViewerModule,
