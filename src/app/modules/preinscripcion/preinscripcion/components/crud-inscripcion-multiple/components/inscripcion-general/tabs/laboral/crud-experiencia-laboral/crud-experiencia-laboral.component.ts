@@ -38,6 +38,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   @Input('info_experiencia_laboral_id')
   set name(info_experiencia_laboral_id: number) {
     this.info_experiencia_laboral_id = info_experiencia_laboral_id;
+    console.log(this.info_experiencia_laboral_id)
     // this.loadInfoExperienciaLaboral();
   }
 
@@ -375,7 +376,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         },
           (error: HttpErrorResponse) => {
             if (error.status === 404) {
-              this.clean = !this.clean;
               [this.formInfoExperienciaLaboral.campos[inombre],
               this.formInfoExperienciaLaboral.campos[idir],
               this.formInfoExperienciaLaboral.campos[icorreo],
@@ -383,7 +383,8 @@ export class CrudExperienciaLaboralComponent implements OnInit {
               this.formInfoExperienciaLaboral.campos[itipo],
               this.formInfoExperienciaLaboral.campos[itel]]
                 .forEach(element => {
-                  element.deshabilitar = false;
+                  element.deshabilitar = true;
+                  element.valor = '';
                 });
             }
             const opt: any = {
@@ -425,7 +426,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   }
 
   createInfoExperienciaLaboral(infoExperienciaLaboral: any): void {
-    if (this.detalleExp != null && this.indexSelect != null && !Number.isNaN(this.indexSelect)) {
+    if (this.detalleExp != null && this.info_experiencia_laboral_id != 0) {
       this.putExperiencia(infoExperienciaLaboral);
     } else {
       const opt: any = {
@@ -492,7 +493,10 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             if (responseNux[0].Status == "200") {
               this.info_experiencia_laboral.Experiencia.DocumentoId = responseNux[0].res.Id;
               this.info_experiencia_laboral.Experiencia.EnlaceDocumento = responseNux[0].res.Enlace;
-              if (this.detalleExp != null && this.indexSelect != null && !Number.isNaN(this.indexSelect)) {
+              console.log(this.detalleExp)
+              console.log(this.indexSelect)
+              console.log(this.info_experiencia_laboral_id)
+              if (this.detalleExp != null && this.info_experiencia_laboral_id != 0) {
                 this.info_experiencia_laboral.indexSelect = this.indexSelect;
                 this.info_experiencia_laboral.Id = this.info_id_experiencia;
                 this.info_experiencia_laboral.terceroID = this.persona_id;
@@ -505,7 +509,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             reject(error);
           });
       } else {
-        if (this.detalleExp != null && this.indexSelect != null && !Number.isNaN(this.indexSelect)) {
+        if (this.detalleExp != null && this.info_experiencia_laboral_id != 0) {
           this.info_experiencia_laboral.indexSelect = this.indexSelect;
           this.info_experiencia_laboral.Id = this.info_id_experiencia;
           this.info_experiencia_laboral.terceroID = this.persona_id;
@@ -640,7 +644,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
 
   limpiarBuscadorDeInstitucion() {
     const buscadorIndex = this.getIndexForm('Nit');
-    console.log(buscadorIndex)
     this.formInfoExperienciaLaboral.campos[buscadorIndex].valor = '';
     this.formInfoExperienciaLaboral.campos[buscadorIndex].deshabilitar = false;
   }

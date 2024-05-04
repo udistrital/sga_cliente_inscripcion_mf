@@ -40,7 +40,7 @@ import { ProduccionAcademicaService } from './services/produccion_academica.serv
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatSelectModule } from '@angular/material/select';
+import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER, MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -55,6 +55,7 @@ import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
 import { TerceroMidService } from './services/sga_tercero_mid.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -127,10 +128,14 @@ export function createTranslateLoader(http: HttpClient) {
     { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MatDialogRef, useValue: {} },
     {
-      provide: MAT_TOOLTIP_SCROLL_STRATEGY,
+      provide: MAT_TOOLTIP_SCROLL_STRATEGY, 
       deps: [Overlay],
       useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.reposition({ scrollThrottle: 20 })
-    }
+    },
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useValue: MAT_SELECT_SCROLL_STRATEGY_PROVIDER,
+     },
   ],
   bootstrap: [AppComponent]
 })
