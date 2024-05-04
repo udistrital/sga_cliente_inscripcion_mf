@@ -50,11 +50,11 @@ export class ListProduccionAcademicaComponent implements OnInit {
   loadData(): void {
     this.inscripcionMidService.get('academico/produccion/tercero/' + this.persona_id)
       .subscribe(res => {
-        if (res.data !== null && res.status == '200') {
-          const data = <Array<ProduccionAcademicaPost>>res.data;
+        if (res.Data !== null && res.Status == '200') {
+          const data = <Array<ProduccionAcademicaPost>>res.Data;
           this.dataSource = new MatTableDataSource(data)
           this.result.emit(1);
-        } else if (res.data == null && res.status == '200') {
+        } else if (res.Data == null && res.Status == '200') {
           this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
           this.dataSource = new MatTableDataSource();
           this.result.emit(0);
@@ -172,7 +172,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
               }
               this.inscripcionMidService.put('academico/produccion/autor/' + dataPut.AutorProduccionAcademica.Id, dataPut)
                 .subscribe((res: any) => {
-                  if (res.data === null) {
+                  if (res.Data === null) {
                     Swal.fire({
                       icon: 'error',
                       title: res.Code,

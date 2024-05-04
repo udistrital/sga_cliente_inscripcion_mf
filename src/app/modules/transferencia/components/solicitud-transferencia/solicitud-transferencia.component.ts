@@ -474,7 +474,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
         this.inscripcionMidService.put('transferencia/' + this.solicitudId, data).subscribe(
           (res:any) => {
             const r = <any>res
-            if (r.success == true) {
+            if (r.Success == true) {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
                 this.ngOnInit();
                 this.goback();
@@ -488,7 +488,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
         this.inscripcionMidService.post('transferencia/', data).subscribe(
           (res:any) => {
             const r = <any>res
-            if (r.success == true) {
+            if (r.Success == true) {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
                 this.ngOnInit();
               });
@@ -542,7 +542,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
       this.inscripcionMidService.put('transferencia/respuesta-solicitud/' + this.solicitudId, Respuesta).subscribe(
         (res: any) => {
-          if (res.status == '200') {
+          if (res.Status == '200') {
             this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.info_estado') + ' ' +
               this.translate.instant('GLOBAL.operacion_exitosa'));
           } else {

@@ -88,8 +88,8 @@ export class ViewProduccionAcademicaComponent implements OnInit {
     this.inscripcionMidService.get('academico/produccion/tercero/' + this.persona_id)
       .subscribe((res: any) => {
         if (res !== null) {
-          if (res.status == '200'  && res.data != null) {
-            this.info_produccion_academica = <Array<ProduccionAcademicaPost>>res.data;
+          if (res.Status == '200'  && res.Data != null) {
+            this.info_produccion_academica = <Array<ProduccionAcademicaPost>>res.Data;
             this.infoCarga.nCargas = this.info_produccion_academica.length;
             this.info_produccion_academica.forEach((produccion:any) => {
               produccion["VerSoportes"] = false;
@@ -100,7 +100,7 @@ export class ViewProduccionAcademicaComponent implements OnInit {
                 let itemForm = JSON.parse(m.MetadatoSubtipoProduccionId.TipoMetadatoId.FormDefinition)
                 this.documentoService.get('documento/'+m.Valor)
                   .subscribe((resp: any) => {
-                    if(resp.Status && (resp.Status == "400" || resp.status == "404")) {
+                    if(resp.Status && (resp.Status == "400" || resp.Status == "404")) {
                       this.infoFalla();
                     } else {
                       let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);
