@@ -308,13 +308,13 @@ export class TransferenciaComponent implements OnInit {
 
         });
       } else {
-        this.codigosEstudiante = parametros["data"]["CodigoEstudiante"];
-        this.proyectosCurriculares = parametros["data"]["ProyectoCurricular"];
+        this.codigosEstudiante = parametros["Data"]["CodigoEstudiante"];
+        this.proyectosCurriculares = parametros["Data"]["ProyectoCurricular"];
 
         this.formTransferencia.campos.forEach((campo: any) => {
 
           if (campo.nombre === 'ProyectoCurricular' || campo.nombre === 'TipoInscripcion') {
-            campo.opciones = parametros["data"][campo.nombre];
+            campo.opciones = parametros["Data"][campo.nombre];
             campo.ocultar = false;
           }
         });
