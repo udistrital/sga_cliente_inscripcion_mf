@@ -242,6 +242,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
       // if (this.persona_id != null){
       await this.inscripcionMidService.get('inscripciones/estado-recibos?persona-id='+ this.info_persona_id +'&id-periodo=' + PeriodoActual).subscribe(
         (response: any) => {
+          console.log(response)
           if (response !== null && response.status == '400') {
             this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
           } else if (response != null && response.status == '404') {

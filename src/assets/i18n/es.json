@@ -1159,7 +1159,8 @@
         "crear_entidad": "¿Desea crear una nueva entidad?",
         "titulo2_crear_entidad": "no ha sido encontrado",
         "titulo1_crear_entidad": "El Nit. ",
-        "eliminar": "¿Desea eliminar el registro de experiencia laboral?"
+        "eliminar": "¿Desea eliminar el registro de experiencia laboral?",
+        "borrada": "Experiencia laboral borrada"
     },
     "produccion_academica": {
         "titulo_revista": "Título de revista",

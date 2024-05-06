@@ -1159,7 +1159,8 @@
         "crear_entidad": "Do you want to create a new entity?",
         "titulo2_crear_entidad": "not found",
         "titulo1_crear_entidad": "The Nit. ",
-        "eliminar": "Do you wish to remove the work experience record?"
+        "eliminar": "Do you wish to remove the work experience record?",
+        "borrada": "Erased work experience"
     },
     "produccion_academica": {
         "titulo_revista": "Magazine title",

@@ -181,7 +181,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
           this.inscripcionMidService.delete('experiencia-laboral/', event).subscribe(res => {
             if (res !== null) {
               this.loadData();
-              this.snackBar.open(this.translate.instant('GLOBAL.experiencia_laboral'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
+              this.snackBar.open(this.translate.instant('experiencia_laboral.borrada'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
             }
           },
             (error: HttpErrorResponse) => {
