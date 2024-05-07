@@ -1690,6 +1690,8 @@
         "soporte_general": "Soporte general",
         "sin_informacion": "Sin información",
         "estado_sin_revisar": "Sin revisar",
-        "estado_revisado_observaciones": "Revisado con observaciones"
+        "estado_revisado_observaciones": "Revisado con observaciones",
+        "titulo_sin_data_tabla": "No se encontro información",
+        "sin_data_tabla": "No hay aspirantes con información de legalización para este proyecto y periodo"
     }
 }

@@ -54,7 +54,7 @@
           </form>
 
         <div class="button-stepper">
-          <button mat-stroked-button matStepperNext class="btn boton-primary" (click)="generarBusqueda(stepper)" [disabled]="!firstFormGroup.valid" [ngClass]="{'button-disabled': !firstFormGroup.valid}">{{ 'legalizacion_matricula.consultar' | translate }}</button>
+          <button mat-stroked-button matStepperNext class="boton-general btn boton-primary" (click)="generarBusqueda(stepper)" [disabled]="!firstFormGroup.valid" [ngClass]="{'button-disabled': !firstFormGroup.valid}">{{ 'legalizacion_matricula.consultar' | translate }}</button>
         </div>
 
         </mat-card-content>
@@ -134,7 +134,7 @@
 
             <div class="button-container">
               <div class="button-stepper">
-                <button mat-stroked-button class="btn boton-primary">{{ 'legalizacion_matricula.guardar' | translate }}</button>
+                <button mat-stroked-button class="boton-general btn boton-primary">{{ 'legalizacion_matricula.guardar' | translate }}</button>
               </div>
             </div>
 

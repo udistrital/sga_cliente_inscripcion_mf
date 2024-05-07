@@ -201,6 +201,10 @@ export class LegalizacionMatriculaComponent {
 
     for (const inscripcion of this.inscripciones) {
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
+      console.log("CONSULTA TERCERO:", persona)
+      if (Array.isArray(persona) && persona.length === 0) {
+        continue;
+      }
       const proyecto = this.proyectosCurriculares.find((item: any) => item.Id === inscripcion.ProgramaAcademicoId)
       const infoLegalizacion = await this.getLegalizacionMatricula(persona.Id)
       if (infoLegalizacion == "No existe legalizacion") {
@@ -239,6 +243,9 @@ export class LegalizacionMatriculaComponent {
         "genero": persona.Genero.Nombre
       }
       this.inscritosData.push(personaData);
+    }
+    if (this.inscritosData.length == 0) {
+      this.popUpManager.showAlert(this.translate.instant('legalizacion_matricula.titulo_sin_data_tabla'), this.translate.instant('legalizacion_matricula.sin_data_tabla'));
     }
     console.log("Data inscritos: ", this.inscritosData)
 
@@ -377,18 +384,29 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
-  consultarTercero(personaId: any) {
-    return new Promise((resolve, reject) => {
-      this.sgamidService.get('persona/consultar_persona/' + personaId)
-        .subscribe((res: any) => {
-          resolve(res)
-        },
-          (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
-            console.log(error);
-            reject([]);
-          });
-    });
+  // consultarTercero(personaId: any) {
+  //   return new Promise((resolve, reject) => {
+  //     this.sgamidService.get('persona/consultar_persona/' + personaId)
+  //       .subscribe((res: any) => {
+  //         resolve(res)
+  //       },
+  //         (error: any) => {
+  //           this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
+  //           console.log(error);
+  //           reject([]);
+  //         });
+  //   });
+  // }
+
+  async consultarTercero(personaId: any): Promise<any | []> {
+    try {
+      const response = await this.sgamidService.get('persona/consultar_persona/' + personaId).toPromise();
+      return response;
+    } catch (error) {
+      // this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
+      console.log(error);
+      return []; // Return an empty array to indicate an error
+    }
   }
 
   async openModal(data: any) {

@@ -1690,6 +1690,8 @@
         "soporte_general": "General support",
         "sin_informacion": "No information",
         "estado_sin_revisar": "Without checking",
-        "estado_revisado_observaciones": "Reviewed with observations"
+        "estado_revisado_observaciones": "Reviewed with observations",
+        "titulo_sin_data_tabla": "No information found",
+        "sin_data_tabla": "There are no applicants with legalization information for this project and period"
     }
 }
