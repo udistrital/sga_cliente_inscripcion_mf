@@ -150,10 +150,10 @@ export class SolicitudTransferenciaComponent implements OnInit {
       console.log(inscripcion)
       if (inscripcion !== null) {
         if (inscripcion.success) {
-          this.periodo = inscripcion['data']['Periodo']['Nombre'];
-          this.nivelNombre = inscripcion['data']['Nivel']['Nombre'];
-          this.nivel = inscripcion['data']['Nivel']['Id'];
-          this.tipo = inscripcion['data']['TipoInscripcion']['Nombre'];
+          this.periodo = inscripcion['Data']['Periodo']['Nombre'];
+          this.nivelNombre = inscripcion['Data']['Nivel']['Nombre'];
+          this.nivel = inscripcion['Data']['Nivel']['Id'];
+          this.tipo = inscripcion['Data']['TipoInscripcion']['Nombre'];
 
           this.formTransferencia.campos.forEach((campo:any) => {
             delete campo.deshabilitar;
@@ -172,7 +172,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
           const ultimo = this.getIndexFormTrans('UltimoSemestre');
 
           //todo: no existe programaDestino
-          this.formTransferencia.campos[destino].valor = inscripcion['data']['ProgramaDestino'];
+          this.formTransferencia.campos[destino].valor = inscripcion['Data']['ProgramaDestino'];
           this.formTransferencia.campos[destino].deshabilitar = true;
 
           this.ocultarCampo(acuerdo, true);
@@ -199,43 +199,43 @@ export class SolicitudTransferenciaComponent implements OnInit {
             this.formTransferencia.campos[universidad].valor = 'Universidad Distrital Francisco José de Caldas'
 
             this.formTransferencia.campos[estudiante].deshabilitar = false;
-            this.formTransferencia.campos[estudiante].opciones = inscripcion['data']['CodigoEstudiante'];
+            this.formTransferencia.campos[estudiante].opciones = inscripcion['Data']['CodigoEstudiante'];
 
             this.formTransferencia.campos[origen].deshabilitar = false;
-            this.formTransferencia.campos[origen].opciones = inscripcion['data']['ProyectoCurricular'];
-            this.formTransferencia.campos[origen].opciones = inscripcion['data']['ProyectoCodigo'];
+            this.formTransferencia.campos[origen].opciones = inscripcion['Data']['ProyectoCurricular'];
+            this.formTransferencia.campos[origen].opciones = inscripcion['Data']['ProyectoCodigo'];
 
             if (this.tipo === 'Reingreso') {
               this.ocultarCampo(acuerdo, false);
               this.formTransferencia.campos[cancelo].ocultar = false;
 
-              inscripcion['data']['CodigoEstudiante'].forEach((codigo:any) => {
-                if (codigo.IdProyecto === inscripcion['data']['ProgramaDestino']['Id']) {
+              inscripcion['Data']['CodigoEstudiante'].forEach((codigo:any) => {
+                if (codigo.IdProyecto === inscripcion['Data']['ProgramaDestino']['Id']) {
                   this.formTransferencia.campos[estudiante].valor = codigo;
                   this.formTransferencia.campos[estudiante].deshabilitar = true;
                 }
               });
 
-              this.formTransferencia.campos[origen].valor = inscripcion['data']['ProgramaDestino'];
+              this.formTransferencia.campos[origen].valor = inscripcion['Data']['ProgramaDestino'];
               this.formTransferencia.campos[origen].deshabilitar = true;
             }
           }
 
           if (inscripcion.data.SolicitudId) {
-            this.estado = inscripcion['data']['Estado']['Nombre'];
+            this.estado = inscripcion['Data']['Estado']['Nombre'];
             let data = {
-              Cancelo: inscripcion['data']['DatosInscripcion']['CanceloSemestre'],
-              Acuerdo: inscripcion['data']['DatosInscripcion']['SolicitudAcuerdo'],
-              CantidadCreditos: inscripcion['data']['DatosInscripcion']['CantidadCreditos'],
-              CodigoEstudiante: inscripcion['data']['DatosInscripcion']['CodigoEstudiante'],
-              CodigoEstudianteExterno: inscripcion['data']['DatosInscripcion']['CodigoEstudiante'],
-              SoporteDocumento: inscripcion['data']['DatosInscripcion']['DocumentoId'],
-              MotivoCambio: inscripcion['data']['DatosInscripcion']['MotivoRetiro'],
-              UltimoSemestre: inscripcion['data']['DatosInscripcion']['UltimoSemestreCursado'],
-              ProgramaOrigen: inscripcion['data']['DatosInscripcion']['ProyectoCurricularProviene'],
-              ProgramaOrigenInput: inscripcion['data']['DatosInscripcion']['ProyectoCurricularProviene'],
-              UniversidadOrigen: inscripcion['data']['DatosInscripcion']['UniversidadProviene'],
-              ProgramaDestino: inscripcion['data']['ProgramaDestino'],
+              Cancelo: inscripcion['Data']['DatosInscripcion']['CanceloSemestre'],
+              Acuerdo: inscripcion['Data']['DatosInscripcion']['SolicitudAcuerdo'],
+              CantidadCreditos: inscripcion['Data']['DatosInscripcion']['CantidadCreditos'],
+              CodigoEstudiante: inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'],
+              CodigoEstudianteExterno: inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'],
+              SoporteDocumento: inscripcion['Data']['DatosInscripcion']['DocumentoId'],
+              MotivoCambio: inscripcion['Data']['DatosInscripcion']['MotivoRetiro'],
+              UltimoSemestre: inscripcion['Data']['DatosInscripcion']['UltimoSemestreCursado'],
+              ProgramaOrigen: inscripcion['Data']['DatosInscripcion']['ProyectoCurricularProviene'],
+              ProgramaOrigenInput: inscripcion['Data']['DatosInscripcion']['ProyectoCurricularProviene'],
+              UniversidadOrigen: inscripcion['Data']['DatosInscripcion']['UniversidadProviene'],
+              ProgramaDestino: inscripcion['Data']['ProgramaDestino'],
             }
             if (!(this.tipo === 'Transferencia externa')) {
               data.UniversidadOrigen = 'Universidad Distrital Francisco José de Caldas';
@@ -245,12 +245,12 @@ export class SolicitudTransferenciaComponent implements OnInit {
             }
             this.dataTransferencia = data;
 
-            this.nombreEstudiante = inscripcion['data']['DatosEstudiante']['Nombre'];
-            this.documentoEstudiante = inscripcion['data']['DatosEstudiante']['Identificacion'];
-            this.codigoEstudiante = inscripcion['data']['DatosInscripcion']['CodigoEstudiante'];
-            this.solicitudId = inscripcion['data']['SolicitudId'];
+            this.nombreEstudiante = inscripcion['Data']['DatosEstudiante']['Nombre'];
+            this.documentoEstudiante = inscripcion['Data']['DatosEstudiante']['Identificacion'];
+            this.codigoEstudiante = inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'];
+            this.solicitudId = inscripcion['Data']['SolicitudId'];
 
-            if ((inscripcion['data']['Estado']['Nombre'] !== 'Requiere modificación' && this.process === 'my') || this.process === 'all') {
+            if ((inscripcion['Data']['Estado']['Nombre'] !== 'Requiere modificación' && this.process === 'my') || this.process === 'all') {
               this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = true;
               // this.formTransferencia.campos[origenExterno].ocultar = true;
               this.solicitudCreada = true;
@@ -261,7 +261,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
               this.formTransferencia.btn = '';
 
               this.file = {
-                id: inscripcion['data']['DatosInscripcion']['DocumentoId'],
+                id: inscripcion['Data']['DatosInscripcion']['DocumentoId'],
                 label: this.translate.instant('inscripcion.' + 'placeholder_soportes_documentos')
               }
             } else {
@@ -269,7 +269,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
               this.formTransferencia.campos[origenExterno].deshabilitar = true;
               this.solicitudCreada = true;
               this.mostrarDocumento = false;
-              this.comentario = inscripcion['data']['DatosRespuesta']['Observacion'];
+              this.comentario = inscripcion['Data']['DatosRespuesta']['Observacion'];
 
               this.inscriptionSettings = this.nivelNombre === 'Pregrado' ? {
                 basic_info_button: true,
@@ -296,7 +296,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
               const SoporteDocumento = this.getIndexFormTrans('SoporteDocumento');
 
               this.formTransferencia.campos[SoporteDocumento].ocultar = false;
-              this.idFileDocumento = inscripcion['data']['DatosInscripcion']['DocumentoId'];
+              this.idFileDocumento = inscripcion['Data']['DatosInscripcion']['DocumentoId'];
               this.nuxeo.get([{ 'Id': this.idFileDocumento }]).subscribe(file => {
                 this.formTransferencia.campos[SoporteDocumento].urlTemp = (file[0] as any).url + '';
                 this.formTransferencia.campos[SoporteDocumento].valor = (file[0] as any).url + '';
@@ -356,7 +356,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
       if (estados !== null) {
         if (estados.success) {
           const respuesta = this.getIndexFormRes('Respuesta');
-          this.formRespuesta.campos[respuesta].opciones = estados['data'].filter((estado:any) => estado.Nombre != 'Radicada' && estado.Nombre != 'Solicitado');
+          this.formRespuesta.campos[respuesta].opciones = estados['Data'].filter((estado:any) => estado.Nombre != 'Radicada' && estado.Nombre != 'Solicitado');
         }
       }
     });
@@ -474,7 +474,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
         this.inscripcionMidService.put('transferencia/' + this.solicitudId, data).subscribe(
           (res:any) => {
             const r = <any>res
-            if (r.success == true) {
+            if (r.Success == true) {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
                 this.ngOnInit();
                 this.goback();
@@ -488,7 +488,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
         this.inscripcionMidService.post('transferencia/', data).subscribe(
           (res:any) => {
             const r = <any>res
-            if (r.success == true) {
+            if (r.Success == true) {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
                 this.ngOnInit();
               });
@@ -542,7 +542,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
       this.inscripcionMidService.put('transferencia/respuesta-solicitud/' + this.solicitudId, Respuesta).subscribe(
         (res: any) => {
-          if (res.status == '200') {
+          if (res.Status == '200') {
             this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.info_estado') + ' ' +
               this.translate.instant('GLOBAL.operacion_exitosa'));
           } else {
