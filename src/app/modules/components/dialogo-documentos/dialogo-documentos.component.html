@@ -4,8 +4,8 @@
       <legend>
         &nbsp; <b>{{ 'admision.revisar_docs' | translate }}</b>
       </legend>
-      <div class="row">
-        <div class="col-8">
+      <div class="row contenedor-principal">
+        <div class="col-8 contenedor-documento">
           <ngx-doc-viewer [url]="documento" viewer="pdf" style="width:100%;height:100%;"
             *ngIf="isPDF"></ngx-doc-viewer>
 
@@ -21,7 +21,7 @@
             <mat-form-field style="width: 100%;" appearance="fill">
               <mat-label>{{ 'GLOBAL.soporte_documento' | translate }}</mat-label>
               <input matInput placeholder="{{ 'GLOBAL.placeholder_soporte_documento' | translate }}"
-                value="{{nombreDocumento}}" readonly>
+                value="{{nombreDocumento | translate}}" readonly>
             </mat-form-field>
           </div>
           <div class="row">
