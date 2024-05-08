@@ -55,6 +55,7 @@ fieldset {
     border: solid 1px #b09500;
     background-color: #e3c800;
     width: 90%;
+    margin: auto;
 }
 
 .fila {
@@ -74,6 +75,7 @@ fieldset {
     background-color: #dae8fc;
     width: 280px;
     padding: 20px;
+    margin: 15px auto;
 }
 
 .f-2 .column {
@@ -225,6 +227,25 @@ fieldset {
     background-color: rgba(117, 115, 115, 0.5);
     /* Fondo semitransparente rojo */
     z-index: 1;
+}
+
+.contendedor-no-autorizado {
+    text-align: center;
+    width: 50%;
+    margin: 100px auto !important;
+}
+
+.contendedor-no-autorizado mat-card-header {
+    background-color: rgb(212, 64, 64);
+}
+
+.contendedor-no-autorizado mat-card-content {
+    padding: 18px;
+}
+
+.contenedor-archivos-grid {
+    display: flex !important;
+    flex-direction: column;
 }
 
 @media (width > 650px) {

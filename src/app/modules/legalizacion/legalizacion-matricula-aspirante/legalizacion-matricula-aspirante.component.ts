@@ -1,13 +1,3 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-legalizacion-matricula-aspirante',
-//   templateUrl: './legalizacion-matricula-aspirante.component.html',
-//   styleUrls: ['./legalizacion-matricula-aspirante.component.scss']
-// })
-// export class LegalizacionMatriculaAspiranteComponent {
-
-// }
 
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -17,11 +7,16 @@ import { ParametrosService } from 'src/app/services/parametros.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
-import { MODALS } from 'src/app/models/informacion/diccionario';
+import { MODALS, ROLES } from 'src/app/models/informacion/diccionario';
 import { LegalizacionMatricula } from 'src/app/models/legalizacion/legalizacion_matricula';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
+import { UserService } from 'src/app/services/users.service';
+import { InscripcionService } from 'src/app/services/inscripcion.service';
+import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { OikosService } from 'src/app/services/oikos.service';
 
 @Component({
     selector: 'app-legalizacion-matricula-aspirante',
@@ -39,7 +34,14 @@ import { HttpErrorResponse } from '@angular/common/http';
     private translate: TranslateService,
     private gestorDocumentalService: NewNuxeoService,
     private inscripcionMidService: InscripcionMidService,
-  ) { }
+    private autenticationService: ImplicitAutenticationService,
+    private oikosService: OikosService,
+    private userService: UserService,
+    private inscripcionService: InscripcionService,
+    private sgamidService: SgaMidService,
+  ) { 
+    console.log("Empieza constructor")
+  }
 
   isLinear = false;
   loading!: boolean;
@@ -48,6 +50,12 @@ import { HttpErrorResponse } from '@angular/common/http';
   valorPensionSML = 0;
   valorIngresos = 0;
   valorIngresosSML = 0;
+
+  estaAutorizado: boolean = true;
+  info_persona_id: any;
+  persona: any;
+  inscripcion: any;
+  proyectoAcademico: any;
 
   formInfoSocioEconomicaPersonal!: FormGroup;
   formInfoSocioEconomicaCosteara!: FormGroup;
@@ -121,6 +129,169 @@ import { HttpErrorResponse } from '@angular/common/http';
   async ngOnInit() {
     this.initFormularios();
     this.cargarDatosFormularios();
+
+    //RECUPERACIÓN DE PERSONA ID 1
+    const email: any = this.autenticationService.getMail();
+    console.log("Email", email);
+    this.info_persona_id = await this.recuperarTerceroId(email.__zone_symbol__value)
+
+    //RECUPERACIÓN DE PERSONA ID 2 
+    //this.info_persona_id = await this.userService.getPersonaIdNew();
+    console.log("PERSONA ID", this.info_persona_id);
+    this.inscripcion = await this.buscarInscritoAdmitido()
+    this.proyectoAcademico = await this.recuperarProyectoPorId(this.inscripcion[0].ProgramaAcademicoId);
+    console.log("PERSONA ID", this.info_persona_id, this.inscripcion, this.proyectoAcademico);
+    this.persona = await this.consultarTercero(this.info_persona_id);
+    this.autenticationService.getRole().then(
+      async (rol: any) => {
+        // const r = ROLES.ADMIN_SGA;
+        // console.log("ROL: ", rol, r);
+        const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
+        const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
+        const esEstudianteAdmitido = this.esEstudianteAdmitido(this.inscripcion)
+        if (r1 || r2 || esEstudianteAdmitido) {
+          // if (esEstudianteAdmitido && !r1 && !r2) {
+          //   //const estudiante: any = await this.buscarInscritoAdmitido()
+          // //   console.log(estudiante, Object.keys(estudiante[0]).length)
+          // //   if (Object.keys(estudiante[0]).length > 0) {
+          // //     this.estaAutorizado = true;
+          // //     console.log("HAY TERCERO");
+          // //   } else {
+          // //     console.log("NO HAY TERCERO");
+          // //   }
+          // // } else {
+          // //   this.estaAutorizado = true;
+          // //   console.log(r1, r2, r3);
+          // }
+          this.estaAutorizado = true;
+        }
+        console.log(this.estaAutorizado);
+      }
+    );
+    //this.persona = await this.consultarTercero(this.info_persona_id);
+    console.log(this.persona)
+  }
+
+  // async ngOnInit() {
+  //   this.initFormularios();
+  //   this.cargarDatosFormularios();
+
+  //   const email: any = this.autenticationService.getMail();
+  //   this.info_persona_id = await this.recuperarTerceroId(email.__zone_symbol__value)
+  //   this.inscripcion = await this.buscarInscritoAdmitido()
+  //   this.persona = await this.consultarTercero(this.info_persona_id);
+  //   this.autenticationService.getRole().then(
+  //     async (rol: any) => {
+  //       const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
+  //       const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
+  //       if (r1 || r2 || this.esEstudianteAdmitido(this.inscripcion)) {
+  //         // if (r3 && !r1 && !r2) {
+  //         //   //const estudiante: any = await this.buscarInscritoAdmitido()
+  //         //   console.log(estudiante, Object.keys(estudiante[0]).length)
+  //         //   if (Object.keys(estudiante[0]).length > 0) {
+  //         //     this.estaAutorizado = true;
+  //         //     console.log("HAY TERCERO");
+  //         //   } else {
+  //         //     console.log("NO HAY TERCERO");
+  //         //   }
+  //         // } else {
+  //         //   this.estaAutorizado = true;
+  //         //   console.log(r1, r2, r3);
+  //         // }
+  //         this.estaAutorizado = true;
+  //       }
+  //       console.log(this.estaAutorizado);
+  //     }
+  //   );
+  //   //this.persona = await this.consultarTercero(this.info_persona_id);
+  //   console.log(this.persona)
+  // }
+
+  esEstudianteAdmitido(estudiante: any) {
+    console.log(estudiante, Object.keys(estudiante[0]).length)
+    if (Object.keys(estudiante[0]).length > 0) {
+      //this.estaAutorizado = true;
+      console.log("HAY TERCERO");
+      return true
+    } else {
+      console.log("NO HAY TERCERO");
+      return false
+    }
+  }
+
+  buscarInscritoAdmitido() {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get('inscripcion?query=PersonaId:' + this.info_persona_id + ',EstadoInscripcionId.Id:2&sortby=Id&order=asc')
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  consultarTercero(personaId: any) {
+    return new Promise((resolve, reject) => {
+      this.sgamidService.get('persona/consultar_persona/' + personaId)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  async recuperarTerceroId(userEmail: any) {
+    let persona: any = await this.recuperarTerceroByUsuario(userEmail);
+    console.log("RECUPERACION USER 1",persona);
+  
+    if (Object.keys(persona[0]).length > 0) {
+      return persona[0].Id
+    } else {
+      let emailUser: string = userEmail.slice(0, userEmail.indexOf('@'));
+      persona = await this.recuperarTerceroByUsuario(emailUser);
+      console.log("RECUPERACION USER 1",persona);
+      if (Object.keys(persona[0]).length > 0) {
+        return persona[0].Id
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  recuperarTerceroByUsuario(usuario: any) {
+    return new Promise((resolve, reject) => {
+      this.tercerosService.get('tercero?query=UsuarioWSO2:' + usuario)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  recuperarProyectoPorId(proyectoId: any) {
+    return new Promise((resolve, reject) => {
+      this.oikosService.get('dependencia/' + proyectoId)
+        .subscribe((res: any) => {
+          console.log(res);
+          resolve(res.Nombre)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('admision.facultades_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
   }
 
   // MANJEO ARCHIVOS //
@@ -222,7 +393,7 @@ import { HttpErrorResponse } from '@angular/common/http';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.localidad_error'));
             console.log(error);
             reject([]);
           });
@@ -237,7 +408,7 @@ import { HttpErrorResponse } from '@angular/common/http';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.situaciones_laborales_error'));
             console.log(error);
             reject([]);
           });
@@ -252,7 +423,7 @@ import { HttpErrorResponse } from '@angular/common/http';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.estratos_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.estratos_error'));
             console.log(error);
             reject([]);
           });
@@ -267,7 +438,7 @@ import { HttpErrorResponse } from '@angular/common/http';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.nucleo_familiar_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.nucleo_familiar_error'));
             console.log(error);
             reject([]);
           });
@@ -282,7 +453,7 @@ import { HttpErrorResponse } from '@angular/common/http';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.ubicaciones_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.ubicaciones_error'));
             console.log(error);
             reject([]);
           });
@@ -292,8 +463,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   guardar() {
     if (this.validarFormulario()) {
       this.popUpManager.showPopUpGeneric(
-        this.translate.instant('legalizacion_admision.titulo'),
-        this.translate.instant('legalizacion_admision.crear_legalizacion'),
+        this.translate.instant('legalizacion_matricula.titulo'),
+        this.translate.instant('legalizacion_matricula.crear_legalizacion'),
         MODALS.INFO,
         true).then(
           (action) => {
@@ -302,7 +473,7 @@ import { HttpErrorResponse } from '@angular/common/http';
             }
           });
     } else {
-      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.formulario_error'));
+      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.formulario_error'));
     }
   }
 
@@ -344,7 +515,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   async prepararCreacion() {
     this.loading = true;
     let newLegalizacionMatricula = new LegalizacionMatricula();
-    newLegalizacionMatricula.TerceroId = 9871;
+    newLegalizacionMatricula.TerceroId = this.info_persona_id;
     newLegalizacionMatricula.DireccionResidencia = this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
     newLegalizacionMatricula.Localidad = this.localidades.find((localidad: any) => localidad.Id == this.formInfoSocioEconomicaPersonal.get('localidad')?.value).Nombre
     newLegalizacionMatricula.ColegioGraduado = this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
@@ -395,13 +566,13 @@ import { HttpErrorResponse } from '@angular/common/http';
       this.inscripcionMidService.post('legalizacion/base', legalizacionBody)
         .subscribe((res: any) => {
           this.loading = false;
-          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.legalizacion_creacion_ok'));
+          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_matricula.legalizacion_creacion_ok'));
           resolve(res.data);
         },
           (error: HttpErrorResponse) => {
             this.loading = false;
             this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
+              this.translate.instant('legalizacion_matricula.legalizacion_creacion_error')
             );
           });
     });

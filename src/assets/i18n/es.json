@@ -1486,7 +1486,7 @@
         "error_solicitud_generada": "La solicitud no pudo ser generada.",
         "error_respuesta_solicitud": "No fue posible dar respuesta a la solicitud."
     },
-    "legalizacion_admision": {
+    "legalizacion_matricula": {
         "titulo": "Legalización admisión",
         "contenido-informativo": "Estimada(o), aspirante. Se le solicita que diligencie el siguiernte formulario y adjunte los documentos que aquí se solicitan de DD del mes MM del año AAAA, con la presentación de los documentos y demas información por parte de los aspirantes admitidos, se entiende que los mismos declaran bajo la gravedad de juramento que la misma es completa, actualizada y veraz; sopena de las sanciones a las que haya lugar.",
         "titulo_informacion_personal": "Información personal",

@@ -1486,7 +1486,7 @@
         "error_respuesta_solicitud": "It was not possible to respond to the request.",
         "id": "Id"
     },
-    "legalizacion_admision": {
+    "legalizacion_matricula": {
         "titulo": "Admission legalization",
         "contenido-informativo": "Dear candidate, You are requested to complete the following form and attach the documents requested here for the DD of the month MM of the year YYYY, with the presentation of the documents and other information by the admitted applicants, it is understood that they declare under the severity of oath that it is complete, up-to-date and true; regardless of the sanctions that may apply.",
         "titulo_informacion_personal": "Personal information",

@@ -148,6 +148,17 @@ export class UserService {
     return parseInt(window.localStorage.getItem('persona_id')!, 10);
   }
 
+  public getPersonaIdNew(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const strId = localStorage.getItem('persona_id');
+      if (strId) {
+        resolve(parseInt(strId, 10));
+      } else {
+        reject(new Error('No id found'));
+      }
+    });
+  }
+
   public getPeriodo(): number {
     return parseInt(window.localStorage.getItem('IdPeriodo')!, 10)
   }
