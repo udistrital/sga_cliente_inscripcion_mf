@@ -39,9 +39,7 @@ import { OikosService } from 'src/app/services/oikos.service';
     private userService: UserService,
     private inscripcionService: InscripcionService,
     private sgamidService: SgaMidService,
-  ) { 
-    console.log("Empieza constructor")
-  }
+  ) { }
 
   isLinear = false;
   loading!: boolean;
@@ -140,81 +138,23 @@ import { OikosService } from 'src/app/services/oikos.service';
     console.log("PERSONA ID", this.info_persona_id);
     this.inscripcion = await this.buscarInscritoAdmitido()
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.inscripcion[0].ProgramaAcademicoId);
-    console.log("PERSONA ID", this.info_persona_id, this.inscripcion, this.proyectoAcademico);
     this.persona = await this.consultarTercero(this.info_persona_id);
     this.autenticationService.getRole().then(
       async (rol: any) => {
-        // const r = ROLES.ADMIN_SGA;
-        // console.log("ROL: ", rol, r);
         const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
         const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
         const esEstudianteAdmitido = this.esEstudianteAdmitido(this.inscripcion)
         if (r1 || r2 || esEstudianteAdmitido) {
-          // if (esEstudianteAdmitido && !r1 && !r2) {
-          //   //const estudiante: any = await this.buscarInscritoAdmitido()
-          // //   console.log(estudiante, Object.keys(estudiante[0]).length)
-          // //   if (Object.keys(estudiante[0]).length > 0) {
-          // //     this.estaAutorizado = true;
-          // //     console.log("HAY TERCERO");
-          // //   } else {
-          // //     console.log("NO HAY TERCERO");
-          // //   }
-          // // } else {
-          // //   this.estaAutorizado = true;
-          // //   console.log(r1, r2, r3);
-          // }
           this.estaAutorizado = true;
         }
-        console.log(this.estaAutorizado);
       }
     );
-    //this.persona = await this.consultarTercero(this.info_persona_id);
-    console.log(this.persona)
   }
 
-  // async ngOnInit() {
-  //   this.initFormularios();
-  //   this.cargarDatosFormularios();
-
-  //   const email: any = this.autenticationService.getMail();
-  //   this.info_persona_id = await this.recuperarTerceroId(email.__zone_symbol__value)
-  //   this.inscripcion = await this.buscarInscritoAdmitido()
-  //   this.persona = await this.consultarTercero(this.info_persona_id);
-  //   this.autenticationService.getRole().then(
-  //     async (rol: any) => {
-  //       const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
-  //       const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
-  //       if (r1 || r2 || this.esEstudianteAdmitido(this.inscripcion)) {
-  //         // if (r3 && !r1 && !r2) {
-  //         //   //const estudiante: any = await this.buscarInscritoAdmitido()
-  //         //   console.log(estudiante, Object.keys(estudiante[0]).length)
-  //         //   if (Object.keys(estudiante[0]).length > 0) {
-  //         //     this.estaAutorizado = true;
-  //         //     console.log("HAY TERCERO");
-  //         //   } else {
-  //         //     console.log("NO HAY TERCERO");
-  //         //   }
-  //         // } else {
-  //         //   this.estaAutorizado = true;
-  //         //   console.log(r1, r2, r3);
-  //         // }
-  //         this.estaAutorizado = true;
-  //       }
-  //       console.log(this.estaAutorizado);
-  //     }
-  //   );
-  //   //this.persona = await this.consultarTercero(this.info_persona_id);
-  //   console.log(this.persona)
-  // }
-
   esEstudianteAdmitido(estudiante: any) {
-    console.log(estudiante, Object.keys(estudiante[0]).length)
     if (Object.keys(estudiante[0]).length > 0) {
-      //this.estaAutorizado = true;
-      console.log("HAY TERCERO");
       return true
     } else {
-      console.log("NO HAY TERCERO");
       return false
     }
   }
@@ -249,14 +189,12 @@ import { OikosService } from 'src/app/services/oikos.service';
 
   async recuperarTerceroId(userEmail: any) {
     let persona: any = await this.recuperarTerceroByUsuario(userEmail);
-    console.log("RECUPERACION USER 1",persona);
   
     if (Object.keys(persona[0]).length > 0) {
       return persona[0].Id
     } else {
       let emailUser: string = userEmail.slice(0, userEmail.indexOf('@'));
       persona = await this.recuperarTerceroByUsuario(emailUser);
-      console.log("RECUPERACION USER 1",persona);
       if (Object.keys(persona[0]).length > 0) {
         return persona[0].Id
       } else {
@@ -283,7 +221,6 @@ import { OikosService } from 'src/app/services/oikos.service';
     return new Promise((resolve, reject) => {
       this.oikosService.get('dependencia/' + proyectoId)
         .subscribe((res: any) => {
-          console.log(res);
           resolve(res.Nombre)
         },
           (error: any) => {
@@ -367,7 +304,7 @@ import { OikosService } from 'src/app/services/oikos.service';
     }
   }
 
-  // MANJEO ARCHIVOS //
+  // FIN MANJEO ARCHIVOS //
 
   initFormularios() {
     this.formInfoSocioEconomicaPersonal = this.infoSocioEconomicaPersonal;
@@ -492,8 +429,6 @@ import { OikosService } from 'src/app/services/oikos.service';
         break;
       }
     }
-
-    console.log(completos, this.soportes, situacion);
     return completos;
   }
 
@@ -530,18 +465,14 @@ import { OikosService } from 'src/app/services/oikos.service';
     newLegalizacionMatricula.IngresosCosteaSM = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior_sm')?.value;
 
     const archivos: { [key: string]: any } = this.prepararArchivos();
-    console.log(archivos);
     let idsArchivos: any = {};
     const propiedades = Object.keys(archivos);
 
 
     for (const propiedad of propiedades) {
-      console.log(propiedades, propiedad)
       const carpetaArchivos = archivos[propiedad];
-      console.log(`Propiedad: ${propiedad}`, carpetaArchivos);
       let ids = await this.cargarArchivos(carpetaArchivos);
       idsArchivos[propiedad] = ids
-      console.log(idsArchivos)
     }
 
     newLegalizacionMatricula.SoporteDiploma = this.prepareIds2Stringify(idsArchivos['diplomaBachiller'], 'diplomaBachiller');
@@ -554,10 +485,7 @@ import { OikosService } from 'src/app/services/oikos.service';
       newLegalizacionMatricula.SoporteSituacionLaboral = this.prepareIds2Stringify(idsArchivos['soporteSituacionLaboral'], 'soporteSituacionLaboral');
     }
 
-    console.log(newLegalizacionMatricula);
-
     let res = await this.crearLegalizacionMatricula(newLegalizacionMatricula)
-    console.log(res)
   }
 
   async crearLegalizacionMatricula(legalizacionBody: LegalizacionMatricula) {
