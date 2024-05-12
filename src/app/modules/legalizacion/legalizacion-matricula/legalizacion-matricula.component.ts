@@ -22,13 +22,6 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ROLES } from 'src/app/models/diccionario/diccionario';
 
-// interface InfoSocioEconomica {
-//   Orden: number;
-//   Concepto: string;
-//   Informacion: string;
-//   Estado: string;
-// }
-
 interface Proyecto {
   opcion: number;
   nombre: string;
@@ -102,13 +95,10 @@ export class LegalizacionMatriculaComponent {
   async ngOnInit() {
     this.autenticationService.getRole().then(
       (rol: any) => {
-        console.log("ROL: ", rol);
-        //const r = ROLES.DECANO
         const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
         const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
         if (r1 || r2) {
           this.estaAutorizado = true;
-          console.log(r1)
         }
       }
     );
@@ -132,7 +122,6 @@ export class LegalizacionMatriculaComponent {
       this.oikosService.get('dependencia_padre/FacultadesConProyectos?Activo:true&limit=0')
         .subscribe((res: any) => {
           this.facultades = res;
-          console.log(this.facultades);
           resolve(res)
         },
           (error: any) => {
@@ -163,7 +152,6 @@ export class LegalizacionMatriculaComponent {
       this.parametrosService.get('periodo/?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
         .subscribe((res: any) => {
           this.periodos = res.Data;
-          console.log(this.periodos);
           resolve(res)
         },
           (error: any) => {
@@ -182,26 +170,21 @@ export class LegalizacionMatriculaComponent {
   onAnioChange(event: any) {
     const anio = this.anios.find((item: any) => item.Id === event.value);
     const periodosAnio = this.periodos.filter((item: any) => item.Nombre.startsWith(anio.Nombre));
-    console.log(event, anio);
     this.periodosAnio = periodosAnio;
   }
 
   async generarBusqueda(stepper: MatStepper) {
     const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
     const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
-    const anio = this.firstFormGroup.get('validatorAño')?.value;
-    console.log(proyecto, anio, periodo);
 
     this.inscritosData = [];
     this.inscripciones = [];
     let ordenCount = 0 ;
 
     this.inscripciones = await this.buscarInscripciones(stepper, proyecto, periodo)
-    console.log(this.inscripciones)
 
     for (const inscripcion of this.inscripciones) {
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
-      console.log("CONSULTA TERCERO:", persona)
       if (Array.isArray(persona) && persona.length === 0) {
         continue;
       }
@@ -213,13 +196,9 @@ export class LegalizacionMatriculaComponent {
       ordenCount += 1;
       this.infoLegalizacionAspirantes[persona.Id] = infoLegalizacion
       const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
-      // set aqui
       this.estadoDocumentosAspirantes[persona.Id] = estados;
       const estadoRevision = this.revisarEstadosRevision(estados)
 
-      console.log("Genracion busqueda: ", persona, inscripcion, infoLegalizacion, estados, this.infoLegalizacionAspirantes, this.estadoDocumentosAspirantes)
-
-      //estados["soporteSituacionLaboral"] ? true : false
       const personaData = {
         "personaId": persona.Id,
         "orden": ordenCount,
@@ -232,11 +211,9 @@ export class LegalizacionMatriculaComponent {
         "apellidos": persona.PrimerApellido + " " + persona.SegundoApellido,
         "tipo_documento": persona.TipoIdentificacion.Nombre,
         "documento": persona.NumeroIdentificacion,
-        // "estado_admision": inscripcion.EstadoInscripcionId.Nombre,
         "estado_admision": inscripcion.EstadoInscripcionId.Nombre == "ADMITIDO" ? 'admision.estado_admitido' : 'admision.estado_admitido_legalizado',
         "estado_revision": estadoRevision,
         "proyecto_admitido": proyecto.Nombre,
-        // "fecha_nacimiento": persona.FechaNacimiento,
         "fecha_nacimiento": this.formatearFecha(persona.FechaNacimiento),
         "numero_celular": persona.Telefono,
         "correo": persona.UsuarioWSO2,
@@ -247,7 +224,6 @@ export class LegalizacionMatriculaComponent {
     if (this.inscritosData.length == 0) {
       this.popUpManager.showAlert(this.translate.instant('legalizacion_matricula.titulo_sin_data_tabla'), this.translate.instant('legalizacion_matricula.sin_data_tabla'));
     }
-    console.log("Data inscritos: ", this.inscritosData)
 
     this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
   }
@@ -263,9 +239,7 @@ export class LegalizacionMatriculaComponent {
 
   revisarEstadosRevision(estados: any) {
     let estado = "legalizacion_matricula.estado_sin_revisar"
-    // Boolean para saber si el aspirante puede tener todos los documentos aprobados, si un documento no esta aprobado se vuelve false
     let puedeAprobar = true;
-    // Boolean para saber si ya se ha evaluado el estado de algún documento
     let hayEstado = false;
     for (const key in estados) {
       if (estados[key] != 1) {
@@ -290,22 +264,17 @@ export class LegalizacionMatriculaComponent {
 
   async retornasEstadosDocumentos(infoLegalizacion: any) {
     const keys = Object.keys(infoLegalizacion)
-    //console.log("Llaves", keys);
     const filteredList = keys.filter(item => item.startsWith('soporte'));
-    //console.log("Llaves soporte", filteredList);
     let estados: any = {}
 
     for (const key in infoLegalizacion) {
       if (filteredList.includes(key)) {
         const value = JSON.parse(infoLegalizacion[key]);
-        //console.log("llave info: ", infoLegalizacion[key], typeof(infoLegalizacion[key]), value, typeof(value));
         for (const key in value) {
           const documentoId = value[key][0];
           const documento: any = await this.cargarDocumento(documentoId);
           const estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
-          // estados[key] = estadoDoc.estadoObservacion === "Por definir" ? "Sin revisar" : estadoDoc.estadoObservacion;
           estados[key] = this.retornarEstadoObservacion(estadoDoc.estadoObservacion);
-          console.log("llave value info: ", value[key], documentoId, documento, estadoDoc.estadoObservacion, estados);
         }
       }
     }
@@ -313,8 +282,6 @@ export class LegalizacionMatriculaComponent {
   }
 
   retornarEstadoObservacion(estado: any) {
-    // Hay 3 estados = 1-> Sin revisar, 2-> Aprobado, 3-> No aprobado
-    console.log(estado);
     if (estado === "Por definir" || estado === "To be defined") {
       return 1
     } else if (estado === "No aprobado" || estado === "Not approved") {
@@ -384,28 +351,13 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
-  // consultarTercero(personaId: any) {
-  //   return new Promise((resolve, reject) => {
-  //     this.sgamidService.get('persona/consultar_persona/' + personaId)
-  //       .subscribe((res: any) => {
-  //         resolve(res)
-  //       },
-  //         (error: any) => {
-  //           this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
-  //           console.log(error);
-  //           reject([]);
-  //         });
-  //   });
-  // }
-
   async consultarTercero(personaId: any): Promise<any | []> {
     try {
       const response = await this.sgamidService.get('persona/consultar_persona/' + personaId).toPromise();
       return response;
     } catch (error) {
-      // this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
       console.log(error);
-      return []; // Return an empty array to indicate an error
+      return [];
     }
   }
 
@@ -426,7 +378,6 @@ export class LegalizacionMatriculaComponent {
       "nombreSoporte": nombreSoporteDoc,
       "Documento": dataDoc ? dataDoc : {}
     }
-    console.log("Data modal: ", data, idDoc, documento, estadoDoc, nombreSoporteDoc, dataDoc); 
     const assignConfig = new MatDialogConfig();
     assignConfig.width = '1600px';
     assignConfig.height = '750px';
@@ -434,7 +385,6 @@ export class LegalizacionMatriculaComponent {
     const dialogo = this.dialog.open(DialogoDocumentosComponent, assignConfig);
 
     dialogo.afterClosed().subscribe(async(result) => {
-      // por aqui
       let metadatosDocumento = JSON.parse(documento.Metadatos)
       metadatosDocumento["aprobado"] = result["metadata"]["aprobado"];
       metadatosDocumento["observacion"] = result["metadata"]["observacion"];
@@ -445,16 +395,11 @@ export class LegalizacionMatriculaComponent {
       }
       documento.Metadatos = JSON.stringify(metadatosDocumento);
       const res = await this.actualizarDocumento(documento);
-      //const estados = this.estadoDocumentosAspirantes[this.aspiranteActualId];
-      console.log("estados antes: ", this.estadoDocumentosAspirantes[this.aspiranteActualId]);
       
       this.estadoDocumentosAspirantes[this.aspiranteActualId][result["nombreSoporte"]] = this.retornarEstadoObservacion(metadatosDocumento["estadoObservacion"])
       await this.cambioEstadoRevisionAspirante();
-      console.log("Data inscritos: ",this.inscritosData, this.aspiranteActualId)
 
       this.cargarInfoTablasSocioeconomicas(this.infoLegalizacionAspirantes[this.aspiranteActualId]);
-      console.log('Modal cerrado, resultado: ', result, documento, metadatosDocumento, res, this.estadoDocumentosAspirantes[this.aspiranteActualId]);
-
     });
   }
 
@@ -473,7 +418,6 @@ export class LegalizacionMatriculaComponent {
 
     if (cambioEstado) {
       for (const inscrito of this.inscritosData) {
-        console.log(inscrito, this.aspiranteActualId)
         if (inscrito.personaId == this.aspiranteActualId) {
           inscrito.estado_revision = estadoRev;
           if (estadoRev == 'GLOBAL.estado_aprobado') {
@@ -481,17 +425,14 @@ export class LegalizacionMatriculaComponent {
             const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
             inscripcion.EstadoInscripcionId.Id = 8;
             const res = await this.actualizarEstadoInscripcion(inscripcion);
-            console.log(inscripcion, res)
           }
         }
       }
       this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
     }
-    console.log("Aspirante: ", aspirante, this.inscritosData, this.personaDataSource);
   }
 
   verificarEstadosSinRevisar() {
-    console.log(this.estadoDocumentosAspirantes[this.aspiranteActualId])
     let todosSinRevisar = true
     for (const key in this.estadoDocumentosAspirantes[this.aspiranteActualId]) {
       if (this.estadoDocumentosAspirantes[this.aspiranteActualId][key] != 1) {
@@ -503,7 +444,6 @@ export class LegalizacionMatriculaComponent {
   }
 
   verificarEstadosAprobados() {
-    console.log(this.estadoDocumentosAspirantes[this.aspiranteActualId])
     let todosAprobados = true
     for (const key in this.estadoDocumentosAspirantes[this.aspiranteActualId]) {
       if (this.estadoDocumentosAspirantes[this.aspiranteActualId][key] != 2) {
@@ -526,12 +466,6 @@ export class LegalizacionMatriculaComponent {
             reject([]);
           });
     });
-    // this.newNuxeoService.getByIdLocal(documentoId)
-    //   .subscribe(file => {
-    //     console.log(file);
-    //   }, error => {
-    //     this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
-    //   })
   }
 
   actualizarDocumento(documento:any) {
@@ -552,7 +486,6 @@ export class LegalizacionMatriculaComponent {
     return new Promise((resolve, reject) => {
       this.newNuxeoService.getByIdLocal(documentoId)
         .subscribe((res: any) => {
-          console.log(res);
           resolve(res)
         },
           (error: any) => {
@@ -575,18 +508,14 @@ export class LegalizacionMatriculaComponent {
     const dataString: string = objeto;
     const data2 = JSON.parse(dataString);
     const keys = Object.keys(data2)
-    //const id = data2[keys[0]][0]
     return keys[0]
   }
 
   editar = async (data: any) => {
-    console.log('Editando...');
-    console.log(data);
     this.aspirante = data;
     this.aspiranteActualId = this.aspirante.personaId;
     this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
     const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspiranteActualId]
-    console.log(infoLegalizacion);
     this.cargarInfoTablasSocioeconomicas(infoLegalizacion);
     if (!this.docsDescargados.includes(this.aspiranteActualId)) {
       this.docsDescargados.push(this.aspiranteActualId)
@@ -596,19 +525,14 @@ export class LegalizacionMatriculaComponent {
   }
 
   descargarArchivos(infoLegalizacion: any) { 
-    console.log("Data descargar archivos: ", infoLegalizacion);
     let idList: any[] = [];
     const keys = Object.keys(infoLegalizacion)
-    //console.log("Llaves", keys);
     const filteredList = keys.filter(item => item.startsWith('soporte'));
-    //console.log("Llaves soporte", filteredList);
-    let estados: any = {}
 
     for (const key in infoLegalizacion) {
       if (filteredList.includes(key)) {
         const docId = this.recuperarIdDocumento(infoLegalizacion[key]);
         idList.push(docId);
-        console.log("Soporte a descargar: ", infoLegalizacion[key], docId, idList);
       }
     }
 
@@ -618,7 +542,6 @@ export class LegalizacionMatriculaComponent {
       idsForQuery += f;
       if (i < limitQuery - 1) idsForQuery += '|';
     });
-    console.log("idsquery info: ", idList, idsForQuery, limitQuery)
 
     this.newNuxeoService.getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
       .subscribe((res: any) => {
@@ -631,7 +554,6 @@ export class LegalizacionMatriculaComponent {
 
   async getLegalizacionMatricula(personaId: any) {
     return new Promise((resolve, reject) => {
-      //this.loading = true;
       this.inscripcionMidService.get('legalizacion/informacion-legalizacion/' + personaId)
         .subscribe((res: any) => {
           resolve(res.data);
