@@ -67,9 +67,9 @@ export class ListFormacionAcademicaComponent implements OnInit {
   loadData(): void {
     this.inscripcionMidService.get('academico/formacion/?Id=' + this.persona_id)
     .subscribe(response => {
-      if (response !== null && response.status == '200') {
-          if (Object.keys(response.data).length > 0) {
-            const data = <Array<any>>response.data;
+      if (response !== null && response.Status == '200') {
+          if (Object.keys(response.Data).length > 0) {
+            const data = <Array<any>>response.Data;
             const dataInfo = <Array<any>>[];
             data.forEach(async element => {
               const FechaI = element.FechaInicio;
