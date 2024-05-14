@@ -10,22 +10,6 @@ export let FORM_EXPERIENCIA_LABORAL = {
   campos: [
     {
       step: 1,
-      etiqueta: 'autocomplete',
-      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
-      nombre: 'Buscador',
-      label_i18n: 'buscador_entidad',
-      placeholder_i18n: 'buscador_entidad',
-      path: environment.SGA_MID_TERCERO,
-      query: "persona/consultar_terceros_con_nit?query=ROLE_TEXT_HERE",
-      keyToFilter: 'ROLE_TEXT_HERE',
-      requerido: true,
-      tipo: 'text',
-      key: 'Label',
-      valor: "",
-      opciones: [],
-    },
-    {
-      step: 1,
       etiqueta: 'input',
       claseGrid: 'col-lg-4 col-md-4 col-sm-4 col-xs-4',
       nombre: 'Nit',
@@ -34,6 +18,15 @@ export let FORM_EXPERIENCIA_LABORAL = {
       requerido: true,
       tipo: 'text',
       deshabilitar: true
+    },
+    {
+      step: 1,
+      etiqueta: 'button',
+      claseGrid: 'col-lg-2 col-md-2 col-sm-3 col-xs-4',
+      nombre: 'BusquedaBoton',
+      claseBoton: 'btn boton-primary',
+      icono: 'fa fa-search',
+      label_i18n: 'buscar',
     },
     {
       step: 1,

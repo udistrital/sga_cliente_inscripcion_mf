@@ -8,10 +8,11 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Documento } from 'src/app/models/documento/documento';
 import { DocumentoService } from 'src/app/services/documento.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-formacion-academica',
@@ -27,7 +28,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
   persona_id: number;
 
   displayedColumns = ['nit', 'nombre', 'pais', 'programa', 'fecha_inicio', 'fecha_fin',
-  'estado', 'observacion', 'acciones'];
+    'estado', 'observacion', 'acciones'];
 
   dataSource!: MatTableDataSource<any>;
 
@@ -35,7 +36,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean = true;
   percentage!: number;
 
   selected = 0;
@@ -44,7 +44,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
     private translate: TranslateService,
     private popUpManager: PopUpManager,
     private userService: UserService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
     private snackBar: MatSnackBar) {
@@ -52,10 +52,9 @@ export class ListFormacionAcademicaComponent implements OnInit {
     });
     this.persona_id = this.userService.getPersonaId();
     //this.loadData();
-    this.loading = true;
   }
 
-  getPercentage(event:any) {
+  getPercentage(event: any) {
     this.percentage = event;
     this.result.emit(this.percentage);
   }
@@ -66,47 +65,40 @@ export class ListFormacionAcademicaComponent implements OnInit {
   }
 
   loadData(): void {
-    this.loading = true;
-    this.sgaMidService.get('formacion_academica?Id=' + this.persona_id)
+    this.inscripcionMidService.get('academico/formacion/?Id=' + this.persona_id)
     .subscribe(response => {
-      if (response !== null && response.Response.Code === '404') {
-        this.loading = false;
-        this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
-      } else if (response !== null && response.Response.Code === '200') {
-        if (Object.keys(response.Response.Body[0]).length > 0) {
-        const data = <Array<any>>response.Response.Body[0];
-        const dataInfo = <Array<any>>[];
-        data.forEach(async element => {
-          const FechaI = element.FechaInicio;
-          const FechaF = element.FechaFinalizacion;
-          element.FechaInicio = FechaI.substring(0, 2) + '-' + FechaI.substring(2, 4) + '-' + FechaI.substring(4, 8);
-          if(FechaF !== ''){
-            element.FechaFinalizacion = FechaF.substring(0, 2) + '-' + FechaF.substring(2, 4) + '-' + FechaF.substring(4, 8);
-          }else{
-            element.FechaFinalizacion = 'Actual';
+      if (response !== null && response.Status == '200') {
+          if (Object.keys(response.Data).length > 0) {
+            const data = <Array<any>>response.Data;
+            const dataInfo = <Array<any>>[];
+            data.forEach(async element => {
+              const FechaI = element.FechaInicio;
+              const FechaF = element.FechaFinalizacion;
+              element.FechaInicio = FechaI.substring(0, 2) + '-' + FechaI.substring(2, 4) + '-' + FechaI.substring(4, 8);
+              if (FechaF !== '') {
+                element.FechaFinalizacion = FechaF.substring(0, 2) + '-' + FechaF.substring(2, 4) + '-' + FechaF.substring(4, 8);
+              } else {
+                element.FechaFinalizacion = 'Actual';
+              }
+              let estadoDoc = await <any>this.cargarEstadoDocumento(element.Documento);
+              element.Estado = estadoDoc.estadoObservacion;
+              element.Observacion = estadoDoc.observacion;
+              dataInfo.push(element);
+              this.getPercentage(1);
+              this.dataSource = new MatTableDataSource(dataInfo);
+            });
+          } else {
+            this.getPercentage(0);
+            this.dataSource = new MatTableDataSource();
+            this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
           }
-          let estadoDoc = await <any>this.cargarEstadoDocumento(element.Documento);
-          element.Estado = estadoDoc.estadoObservacion;
-          element.Observacion = estadoDoc.observacion;
-          dataInfo.push(element);
-          this.getPercentage(1);
-          this.dataSource = new MatTableDataSource(dataInfo);
+        } else {
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.400'));
+        }
+      },
+        (error: HttpErrorResponse) => {
+          this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
         });
-        this.loading = false;
-      } else {
-        this.getPercentage(0);
-        this.dataSource = new MatTableDataSource();
-        this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
-      }
-      } else {
-        this.loading = false;
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.400'));
-      }
-    },
-    (error: HttpErrorResponse) => {
-      this.loading = false;
-      this.popUpManager.showAlert('', this.translate.instant('formacion_academica.no_data'));
-    });
   }
 
   cargarEstadoDocumento(Id: any) {
@@ -128,7 +120,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.loadData();
   }
 
-  onEdit(event:any): void {
+  onEdit(event: any): void {
     this.id = event.Id;
     this.uid = event.Nit;
     this.pid = event.ProgramaAcademico.Id;
@@ -141,17 +133,17 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.irAIndexTab(1)
   }
 
-  onChange(event:any) {
+  onChange(event: any) {
     this.irAIndexTab(0)
   }
 
-  itemselec(event:any): void {
+  itemselec(event: any): void {
     this.id = event.Id;
     this.uid = event.Nit;
     this.pid = event.ProgramaAcademico.Id;
   }
 
-  onDelete(event:any): void {
+  onDelete(event: any): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.eliminar'),
       text: this.translate.instant('formacion_academica.eliminar'),
@@ -162,19 +154,18 @@ export class ListFormacionAcademicaComponent implements OnInit {
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
+    console.log(event)
     Swal.fire(opt)
-      .then((willDelete) => {
-        this.loading = true;
+      .then((willDelete: any) => {
         if (willDelete.value) {
-          this.sgaMidService.delete('formacion_academica', event).subscribe(res => {
+          //todo, raro el ednpoint
+          this.inscripcionMidService.delete('academico/formacion', event).subscribe(res => {
             if (res !== null) {
               this.loadData();
-                this.snackBar.open(this.translate.instant('GLOBAL.confirmarEliminar'), '', { duration: 3000, panelClass: ['info-snackbar'] })
+              this.snackBar.open(this.translate.instant('GLOBAL.confirmarEliminar'), '', { duration: 3000, panelClass: ['info-snackbar'] })
             }
-            this.loading = false;
           },
             (error: HttpErrorResponse) => {
-              this.loading = false;
               Swal.fire({
                 icon: 'error',
                 title: error.status + '',
@@ -185,7 +176,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
               });
             });
         }
-        this.loading = false;
       });
   }
 
@@ -193,7 +183,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
     this.irAIndexTab(event.index)
   }
 
-  irAIndexTab(index:number){
+  irAIndexTab(index: number) {
     this.selected = index
   }
 }

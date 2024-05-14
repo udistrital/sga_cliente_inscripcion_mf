@@ -1,7 +1,18 @@
 <ng-container>
-    <div class="video-container" [innerHTML]="videoIframe"></div>
-    <hr>
-    <div class="modal-footer">
-      <button mat-button (click)="closeModal()" class="btn boton-primary mb-3 mr-3">{{ "GLOBAL.cerrar" | translate }}</button>
-    </div>
-  </ng-container>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <h2>{{ "GLOBAL.ayuda" | translate }}</h2>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <br />
+      <div class="video-container" [innerHTML]="videoIframe"></div>
+    </mat-card-content>
+    <mat-card-actions style="display: flex; justify-content: center;">
+      <button mat-flat-button color="primary" (click)="closeModal()">
+        {{ "GLOBAL.cerrar" | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</ng-container>

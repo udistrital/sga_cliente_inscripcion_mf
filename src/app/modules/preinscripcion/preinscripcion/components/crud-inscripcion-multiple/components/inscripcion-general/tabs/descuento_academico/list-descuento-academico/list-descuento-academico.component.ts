@@ -10,9 +10,13 @@ import { CampusMidService } from 'src/app/services/campus_mid.service';
 import { DescuentoAcademicoService } from 'src/app/services/descuento_academico.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+import { decrypt } from 'src/app/utils/util-encrypt';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-descuento-academico',
@@ -51,92 +55,41 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean;
   percentage!: number;
 
   constructor(private translate: TranslateService,
     private mid: CampusMidService,
-    private sgaMidService: SgaMidService,
+    private inscripcionMidService: InscripcionMidService,
     private popUpManager: PopUpManager,
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
     private newNuxeoService: NewNuxeoService,
     private descuentoAcademicoService: DescuentoAcademicoService) {
-    this.cargarCampos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.cargarCampos();
     });
     this.loadData();
-    this.loading = false;
   }
 
-  cargarCampos() {
-    this.settings = {
-      columns: {
-        DescuentosDependenciaId: {
-          title: this.translate.instant('GLOBAL.tipo_descuento_matricula'),
-          width: '30%',
-          valuePrepareFunction: (value: any) => {
-            return value.TipoDescuentoId.Nombre;
-          },
-        },
-        EstadoObservacion: {
-          title: this.translate.instant('admision.estado'),
-          width: '20%',
-          editable: false,
-        },
-        Observacion: {
-          title: this.translate.instant('admision.observacion'),
-          width: '40%',
-          editable: false,
-        },
-      },
-      mode: 'external',
-      actions: {
-        position: 'right',
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
-        add: true,
-        edit: false,
-        delete: false,
-        custom: [
-          {
-            name: 'open',
-            title: '<i class="nb-compose" title="' + this.translate.instant('GLOBAL.tooltip_ver_registro') + '"></i>',
-          },
-          {
-            name: 'edit',
-            title: '<i class="nb-edit" title="' + this.translate.instant('GLOBAL.tooltip_editar_registro') + '"></i>',
-          },
-          {
-            name: 'delete',
-            title: '<i class="nb-trash" title="' + this.translate.instant('GLOBAL.eliminar') + '"></i>',
-          },
-        ],
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="' + this.translate.instant('descuento_academico.tooltip_crear') + '"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close" title="' + this.translate.instant('GLOBAL.cancelar') + '"></i>',
-      },
-    };
-  }
+
 
   useLanguage(language: string) {
     this.translate.use(language);
   }
 
   loadData(): void {
-    this.sgaMidService.get('descuento_academico/descuentopersonaperiododependencia?' +
-      'PersonaId=' + Number(window.localStorage.getItem('persona_id')) + '&DependenciaId=' +
+    const id = decrypt(window.localStorage.getItem('persona_id'));
+    this.inscripcionMidService.get('academico/descuento/detalle?' +
+      'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
       .subscribe((result: any) => {
-        const r = <any>result.Data.Body[1];
-        if (result !== null && (result.Data.Code == '400' || result.Data.Code == '404')) {
+        console.log(result)
+        const r = <any>result.Data;
+        if (result.Data == null && result.Status == '200') {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource()
 
-        } else {
+        } else if (result.Data != null && result.Status == '200') {
           this.data = <Array<SolicitudDescuento>>r;
           this.data.forEach(async (docDesc: any) => {
             let estadoDoc = await <any>this.cargarEstadoDocumento(docDesc["DocumentoId"]);
@@ -149,10 +102,8 @@ export class ListDescuentoAcademicoComponent implements OnInit {
           this.getPercentage(1);
           this.dataSource = new MatTableDataSource(this.data)
         }
-        //this.loading = false;
       },
         (error: HttpErrorResponse) => {
-          //this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -178,7 +129,23 @@ export class ListDescuentoAcademicoComponent implements OnInit {
 
   ngOnInit() {
     this.uid = 0;
+    this.selected = 0
     this.irAIndexTab(0)
+  }
+  
+  
+  onAction(event: any): void {
+    switch (event.action) {
+      case 'open':
+        this.onOpen(event);
+        break;
+      case 'edit':
+        this.onEdit(event);
+        break;
+      case 'delete':
+        this.onDelete(event);
+        break;
+    }
   }
 
   onOpen(event: any) {
@@ -245,8 +212,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willDelete) => {
-          this.loading = true;
+        .then((willDelete: any) => {
           if (willDelete.value) {
             event.Activo = false;
             this.descuentoAcademicoService.put('solicitud_descuento', event).subscribe(res => {
@@ -259,10 +225,8 @@ export class ListDescuentoAcademicoComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               }
-              this.loading = false;
             },
               (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -273,8 +237,15 @@ export class ListDescuentoAcademicoComponent implements OnInit {
                 });
               });
           }
-          this.loading = false;
         });
+    }
+  }
+
+  activetab(): void {
+    if (this.selected == 0) {
+      this.selected = 1
+    } else {
+      this.selected = 0
     }
   }
 

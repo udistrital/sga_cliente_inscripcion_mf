@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ImplicitAutenticationService } from './implicit_autentication.service';
 import { AnyService } from './any.service';
+import { decrypt, encrypt } from '../utils/util-encrypt';
 
 const path = environment.TERCEROS_SERVICE;
 
@@ -48,7 +49,8 @@ export class UserService {
         }
 
         if (!foundId) {
-          window.localStorage.setItem('persona_id', '0');
+          const persona_id = encrypt('0')
+          window.localStorage.setItem('persona_id', persona_id);
         }
 
       });
@@ -89,11 +91,13 @@ export class UserService {
           if (Object.keys(this.user).length !== 0) {
             this.user$.next(this.user);
             this.userSubject.next(this.user);              // window.localStorage.setItem('ente', res[0].Ente);
-            window.localStorage.setItem('persona_id', this.user.Id);
+            const persona_id = encrypt(this.user.Id.toString())
+            window.localStorage.setItem('persona_id', persona_id);
             resolve(true);
           } else {
             //this.user$.next(this.user);
-            window.localStorage.setItem('persona_id', '0');
+            const persona_id = encrypt('0')
+            window.localStorage.setItem('persona_id', persona_id);
             reject(false);
           }
         } else {
@@ -107,24 +111,29 @@ export class UserService {
     return new Promise<boolean>((resolve, reject) => {
     this.anyService.get(path, 'tercero?query=UsuarioWSO2:' + UserEmail)
       .subscribe((res:any) => {
-        if (res !== null) {
-          this.user = res[0];
-          if (Object.keys(this.user).length !== 0) {
-            this.user$.next(this.user);
-            this.userSubject.next(this.user);
-            window.localStorage.setItem('persona_id', this.user.Id);
-            resolve(true);
-          } else {
+        setTimeout(()=>{
+          if (res !== null) {
+            this.user = res[0];
+            if (Object.keys(this.user).length !== 0) {
+              this.user$.next(this.user);
+              this.userSubject.next(this.user);
+              const persona_id = encrypt(this.user.Id.toString())
+              window.localStorage.setItem('persona_id', persona_id);
+              resolve(true);
+            } else {
+              //this.user$.next(this.user);
+              const persona_id = encrypt('0')
+              window.localStorage.setItem('persona_id', persona_id);
+              reject(false);
+            }
+          }
+          else {
             //this.user$.next(this.user);
-            window.localStorage.setItem('persona_id', '0');
+            const persona_id = encrypt('0')
+            window.localStorage.setItem('persona_id', persona_id);
             reject(false);
           }
-        }
-        else {
-          //this.user$.next(this.user);
-          window.localStorage.setItem('persona_id', '0');
-          reject(false);
-        }
+        }, 500)
       });
     });
   }
@@ -145,7 +154,8 @@ export class UserService {
     const id_token = window.localStorage.getItem('user')!;
     const user = JSON.parse(atob(id_token)); 
     this.findByUserEmail(user.userService.email)
-    return parseInt(window.localStorage.getItem('persona_id')!, 10);
+    const id = decrypt(localStorage.getItem('persona_id'));
+    return parseInt(id!, 10);
   }
 
   public getPersonaIdNew(): Promise<number> {

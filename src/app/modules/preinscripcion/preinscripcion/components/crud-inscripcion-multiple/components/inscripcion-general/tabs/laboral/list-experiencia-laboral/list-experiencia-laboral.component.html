@@ -1,100 +1,127 @@
-<div class="col-md-12 col-lg-12 ">
-    <div>
-        <mat-card-content>
-            <div class="info my-3">
-                <mat-icon class="info-icon">info</mat-icon> &nbsp;
-                <span>{{ 'inscripcion.alerta_experiencia' | translate }}</span>
-            </div>
-            <mat-tab-group fullWidth [selectedIndex]="selected" (selectedTabChange)="tabChanged($event)">
-                <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
-                    <br />
-                    <div class="d-flex justify-content-end">
-                        <button class="btn boton-primary mx-4" (click)="onCreate()" mat-button>
-                            <mat-icon>add</mat-icon>
-                            {{ 'GLOBAL.agregar' | translate }}
-                        </button>
-                    </div>
-                    <div class="table-container">
-                        <mat-table [dataSource]="dataSource" class="demo-table">
-                            <ng-container matColumnDef="empresa">
-                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.nombre_empresa' | translate }}</b>
-
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.NombreEmpresa.NombreCompleto }} </mat-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="cargo">
-                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.cargo' | translate }}</b>
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.Cargo.Nombre}} </mat-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="fecha_inicio">
-                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.fecha_inicio' | translate }}</b>
-
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.FechaInicio | date:'yyyy-MM-dd'}} </mat-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="fecha_fin">
-                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.fecha_fin' | translate }}</b>
-
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.FechaFinalizacion | date:'yyyy-MM-dd'}}
-                                </mat-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="estado">
-                                <mat-header-cell *matHeaderCellDef><b>{{ 'admision.estado' | translate }}</b>
-
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.Estado }} </mat-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="observacion">
-                                <mat-header-cell *matHeaderCellDef><b>{{ 'admision.observacion' | translate }}</b>
-
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row"> {{row.Observacion }} </mat-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="acciones">
-                                <mat-header-cell *matHeaderCellDef><b>{{ 'GLOBAL.acciones' | translate }}</b>
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let row">
-                                    <mat-icon class="link icono" (click)="onEdit(row)" aria-hidden="false"
-                                        title="{{'experiencia_laboral.tooltip_editar' | translate}}"
-                                        fontIcon="edit_outline"></mat-icon>
-
-                                    <mat-icon class="link icono" (click)="onDelete(row)" aria-hidden="false"
-                                        title="{{'experiencia_laboral.tooltip_eliminar' | translate}}"
-                                        fontIcon="delete_outline"></mat-icon>
-                                </mat-cell>
-
-                            </ng-container>
-                            <mat-header-row *matHeaderRowDef="displayedColumns" class="encabezado"></mat-header-row>
-                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-                        </mat-table>
-                    </div>
-                    <!-- <div class="text-center">
-                        <button (click)="activetab()" class="btn btn-info btn-sm">
-                          <i class="nb-plus"></i> {{ 'GLOBAL.agregar' | translate }}
-                        </button>
-                    </div> -->
-                </mat-tab>
-                <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
-                    <div *ngIf="selected == 1">
-                        <ngx-crud-experiencia-laboral [detalle_experiencia_laboral]="detalleExp"
-                            [index_select]="indexSelect" [info_experiencia_laboral_id]="uid" [info_id_experiencia]="id"
-                            [ente_id]="eid" (eventChange)="onChange($event)"
-                            (result)="getPercentage($event)"></ngx-crud-experiencia-laboral>
-                        <button (click)="irAIndexTab(0)" class="btn boton-primary btn-sm" style="max-height: 35px;">
-                            <mat-icon>arrow_back_ios</mat-icon>
-                            <p class="mt-1">{{ 'GLOBAL.regresar' | translate }}</p>
-                        </button>
-                    </div>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card-content>
+<mat-card>
+  <mat-card-content>
+    <div class="info margin-y">
+      <mat-icon>info</mat-icon> &nbsp;
+      <span>{{ "inscripcion.alerta_experiencia" | translate }}</span>
     </div>
-</div>
+    <mat-tab-group
+      fullWidth
+      [selectedIndex]="selected"
+      (selectedTabChange)="tabChanged($event)"
+    >
+      <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
+        
+        
+          <button
+            mat-flat-button
+            color="accent"
+            (click)="onCreate()"
+            class="margin-y"
+          >
+            <mat-icon>add</mat-icon>
+            {{ "GLOBAL.agregar" | translate }}
+          </button>
+        
+        <div class="table mat-elevation-z8">
+          <mat-table [dataSource]="dataSource" class="demo-table">
+            <ng-container matColumnDef="empresa">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "GLOBAL.nombre_empresa" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.NombreEmpresa.NombreCompleto }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="cargo">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "GLOBAL.cargo" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.Cargo.Nombre }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="fecha_inicio">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "GLOBAL.fecha_inicio" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.FechaInicio | date : "yyyy-MM-dd" }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="fecha_fin">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "GLOBAL.fecha_fin" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.FechaFinalizacion | date : "yyyy-MM-dd" }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="estado">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "admision.estado" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.Estado }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="observacion">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "admision.observacion" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.Observacion }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="acciones">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "GLOBAL.acciones" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <button mat-icon-button color="accent" (click)="onEdit(row)">
+                  <mat-icon>edit_outline</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onDelete(row)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+              class="encabezado"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+        </div>
+        <!-- <div class="text-center">
+                              <button (click)="activetab()" class="btn btn-info btn-sm">
+                                <i class="nb-plus"></i> {{ 'GLOBAL.agregar' | translate }}
+                              </button>
+                          </div> -->
+      </mat-tab>
+      <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
+        <div *ngIf="selected == 1">
+          <ngx-crud-experiencia-laboral
+            [detalle_experiencia_laboral]="detalleExp"
+            [index_select]="indexSelect"
+            [info_experiencia_laboral_id]="uid"
+            [info_id_experiencia]="id"
+            [ente_id]="eid"
+            (eventChange)="onChange($event)"
+            (result)="getPercentage($event)"
+          ></ngx-crud-experiencia-laboral>
+          <button
+            (click)="irAIndexTab(0)"
+            mat-flat-button
+            color="primary"
+            class="margin-y"
+          >
+            <mat-icon>arrow_back_ios</mat-icon>
+            <p class="mt-1">{{ "GLOBAL.regresar" | translate }}</p>
+          </button>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</mat-card>

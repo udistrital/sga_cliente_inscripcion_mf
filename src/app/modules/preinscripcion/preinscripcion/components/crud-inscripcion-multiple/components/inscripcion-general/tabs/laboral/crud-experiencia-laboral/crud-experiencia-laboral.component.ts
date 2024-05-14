@@ -1,21 +1,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
-import { DocumentoService } from 'src/app/services/documento.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
-import { TercerosService } from 'src/app/services/terceros.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_EXPERIENCIA_LABORAL } from './form-experiencia_laboral';
 import { Organizacion } from 'src/app/models/ente/organizacion';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
   selector: 'ngx-crud-experiencia-laboral',
@@ -34,11 +33,12 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   nuevoTercero: boolean = false;
   nit: any;
 
-  
+
 
   @Input('info_experiencia_laboral_id')
   set name(info_experiencia_laboral_id: number) {
     this.info_experiencia_laboral_id = info_experiencia_laboral_id;
+    console.log(this.info_experiencia_laboral_id)
     // this.loadInfoExperienciaLaboral();
   }
 
@@ -76,26 +76,21 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   clean!: boolean;
   percentage!: number;
   persona_id: number;
-  loading: boolean = false;
   canEmit: boolean = false;
 
   constructor(
     private autenticationService: ImplicitAutenticationService,
     private translate: TranslateService,
-    private sgaMidService: SgaMidService,
-    private documentoService: DocumentoService,
+    private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>,
     private listService: ListService,
-    private tercerosService: TercerosService,
     private newNuxeoService: NewNuxeoService,
     private popUpManager: PopUpManager,
     private users: UserService,
     private utilidades: UtilidadesService,) {
     this.formInfoExperienciaLaboral = FORM_EXPERIENCIA_LABORAL;
+    this.limpiarBuscadorDeInstitucion()
     this.construirForm();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
-    });
     this.persona_id = this.users.getPersonaId();
     this.loadLists();
     this.listService.findPais();
@@ -125,10 +120,10 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         this.formInfoExperienciaLaboral.campos[i].label_i18n);
       this.formInfoExperienciaLaboral.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' +
         this.formInfoExperienciaLaboral.campos[i].label_i18n);
-        if (this.formInfoExperienciaLaboral.campos[i].placeholder_i18n_2) {
-          this.formInfoExperienciaLaboral.campos[i].placeholder2 = this.translate.instant('GLOBAL.placeholder_' + 
-            this.formInfoExperienciaLaboral.campos[i].placeholder_i18n_2)
-        }
+      if (this.formInfoExperienciaLaboral.campos[i].placeholder_i18n_2) {
+        this.formInfoExperienciaLaboral.campos[i].placeholder2 = this.translate.instant('GLOBAL.placeholder_' +
+          this.formInfoExperienciaLaboral.campos[i].placeholder_i18n_2)
+      }
     }
   }
 
@@ -136,26 +131,26 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     this.translate.use(language);
   }
 
-  onChangeDate (){
+  onChangeDate() {
     this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].minDate
-    = this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaInicio')].valor
-    if(this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].valor < 
-    this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaInicio')].valor){
+      = this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaInicio')].valor
+    if (this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].valor <
+      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaInicio')].valor) {
       this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].valor = ''
     }
   }
 
-  updateFinishDate (data:any){
-    if(data.button == 'ExperienciaBoton' || data == 'EditOption'){
+  updateFinishDate(data: any) {
+    if (data.button == 'ExperienciaBoton' || data == 'EditOption') {
       const fechaFinalizacion = this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')]
       this.formInfoExperienciaLaboral.campos[this.getIndexForm('Telefono')].ocultar = true
       fechaFinalizacion.requerido = !fechaFinalizacion.requerido
       fechaFinalizacion.deshabilitar = !fechaFinalizacion.deshabilitar
       fechaFinalizacion.ocultar = !fechaFinalizacion.ocultar
-      if(fechaFinalizacion.deshabilitar){
+      if (fechaFinalizacion.deshabilitar) {
         fechaFinalizacion.valor = ''
         this.formInfoExperienciaLaboral.campos[this.getIndexForm('ExperienciaBoton')].icono = 'fa fa-check'
-      }else{
+      } else {
         this.formInfoExperienciaLaboral.campos[this.getIndexForm('ExperienciaBoton')].icono = ''
       }
 
@@ -163,7 +158,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   }
 
 
-  NuevoTercero(event:any) {
+  NuevoTercero(event: any) {
     this.nuevoTercero = false;
     const iNit = this.getIndexForm('Nit');
     this.formInfoExperienciaLaboral.campos[iNit].valor = event['infoPost'].Nit;
@@ -196,7 +191,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     const iactividades = this.getIndexForm('Actividades');
     const isoporte = this.getIndexForm('Soporte');
 
-    if(this.detalleExp.FechaFinalizacion == ''){
+    if (this.detalleExp.FechaFinalizacion == '') {
       this.updateFinishDate('EditOption')
     }
 
@@ -219,7 +214,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     this.formInfoExperienciaLaboral.campos[icargo].valor = (this.detalleExp.Cargo &&
       this.detalleExp.Cargo.Id) ? this.detalleExp.Cargo : { Id: 0, Nombre: 'No registrado' };
     this.formInfoExperienciaLaboral.campos[iactividades].valor = (this.detalleExp.Actividades);
-     this.formInfoExperienciaLaboral.campos[init].deshabilitar = true;
+    this.formInfoExperienciaLaboral.campos[init].deshabilitar = false;
 
     const files = []
     if (this.detalleExp.Soporte + '' !== '0') {
@@ -227,7 +222,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     }
 
     if (this.detalleExp.Soporte !== undefined && this.detalleExp.Soporte !== null && this.detalleExp.Soporte !== 0) {
-      this.loading = true;
       this.newNuxeoService.get(files).subscribe(
         response => {
           const filesResponse = <Array<any>>response;
@@ -248,57 +242,52 @@ export class CrudExperienciaLaboralComponent implements OnInit {
               .forEach(element => {
                 element.deshabilitar = false
               });
-              this.loading = false;
           } else {
-            this.loading = false;
           }
         },
-          (error: HttpErrorResponse) => {
-            this.loading = false;
-            Swal.fire({
-              icon: 'error',
-              title: error.status + '',
-              text: this.translate.instant('ERROR.' + error.status),
-              footer: this.translate.instant('GLOBAL.cargar') + '-' +
-                this.translate.instant('GLOBAL.experiencia_laboral') + '|' +
-                this.translate.instant('GLOBAL.soporte_documento'),
-              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-            });
+        (error: HttpErrorResponse) => {
+          Swal.fire({
+            icon: 'error',
+            title: error.status + '',
+            text: this.translate.instant('ERROR.' + error.status),
+            footer: this.translate.instant('GLOBAL.cargar') + '-' +
+              this.translate.instant('GLOBAL.experiencia_laboral') + '|' +
+              this.translate.instant('GLOBAL.soporte_documento'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
+        });
     }
   }
 
 
-  searchNit(event:any) {
-    console.log("THIS IS A EVENT --> ", event)
-    if(event != null){
-      this.searchOrganizacion(event.NIT)
-    } else {
-      FORM_EXPERIENCIA_LABORAL.campos.filter( (campo:any) => {
-        if (campo.nombre == "Buscador"){
-          campo.opciones = [
-            {
-              "NIT": "Na-1",
-              "NombreCompleto": "CREAR NUEVO REGISTRO",
-              "Label": "CREAR NUEVO REGISTRO"
-            }
-          ]
-        }
-      })
+  searchNit(event: any) {
+    if (event.button == 'BusquedaBoton') {
+      if (event != null) {
+        this.searchOrganizacion(event.data.Nit)
+      } else {
+        FORM_EXPERIENCIA_LABORAL.campos.filter((campo: any) => {
+          if (campo.nombre == "Buscador") {
+            campo.opciones = [
+              {
+                "NIT": "Na-1",
+                "NombreCompleto": "CREAR NUEVO REGISTRO",
+                "Label": "CREAR NUEVO REGISTRO"
+              }
+            ]
+          }
+        })
+      }
     }
   }
 
-  getSeleccion(event:any) {
-  
-    // Funcion que se ejecuta con el evento interlaced de dinamicform
-    // se recibe un objeto, {name, value}
+  getSeleccion(event: any) {
     switch (event.name) {
       case "selected_value_autocomplete_Buscador":
-        if(event.value != null){
+        if (event.value != null) {
           this.searchOrganizacion(event.value.NIT)
         } else {
-          FORM_EXPERIENCIA_LABORAL.campos.filter( (campo:any) => {
-            if (campo.nombre == "Buscador"){
+          FORM_EXPERIENCIA_LABORAL.campos.filter((campo: any) => {
+            if (campo.nombre == "Buscador") {
               campo.opciones = [
                 {
                   "NIT": null,
@@ -307,58 +296,49 @@ export class CrudExperienciaLaboralComponent implements OnInit {
                 }
               ]
             }
-          }) 
+          })
         }
         break;
 
       case "selected_value_autocomplete_Cargo":
-          // NO SE QUE HACE ESTO AQUI ???
-          // let IdEmpresa = event.value.Id
-          // this.tercerosService.get('datos_identificacion?query=TerceroId__Id:' + IdEmpresa).subscribe(
-          //   (res: any) => {
-          //     console.log(res[0]['Numero'])
-          //     this.searchOrganizacion(res[0]['Numero'])
-          //   },
-          //   (error: HttpErrorResponse) => {
-          //   },
-          //   )
-          break;
+        break;
     }
-    
-    
+
+
   }
 
   loadListEmpresa(nombre: string): void {
-    if(nombre){
+    if (nombre) {
       let consultaEmpresa: Array<any> = [];
-    const empresa: Array<any> = [];
-    this.sgaMidService.get('experiencia_laboral/informacion_empresa?nombre=' + nombre)
-      .subscribe(res => {
-        if (res !== null) {
-          consultaEmpresa = <Array<InfoPersona>>res;
-          for (let i = 0; i < consultaEmpresa.length; i++) {
-            empresa.push(consultaEmpresa[i]);
+      const empresa: Array<any> = [];
+      //todo: endpoint no existe?
+      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?nombre=' + nombre)
+        .subscribe(res => {
+          if (res !== null) {
+            consultaEmpresa = <Array<InfoPersona>>res;
+            for (let i = 0; i < consultaEmpresa.length; i++) {
+              empresa.push(consultaEmpresa[i]);
+            }
           }
-        }
-        this.formInfoExperienciaLaboral.campos[this.getIndexForm('NombreEmpresa')].opciones = empresa;
-      },
-        (error: HttpErrorResponse) => {
-          Swal.fire({
-            icon: 'error',
-            title: error.status + '',
-            text: this.translate.instant('ERROR.' + error.status),
-            footer: this.translate.instant('experiencia_laboral.error_cargar_empresa'),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          this.formInfoExperienciaLaboral.campos[this.getIndexForm('NombreEmpresa')].opciones = empresa;
+        },
+          (error: HttpErrorResponse) => {
+            Swal.fire({
+              icon: 'error',
+              title: error.status + '',
+              text: this.translate.instant('ERROR.' + error.status),
+              footer: this.translate.instant('experiencia_laboral.error_cargar_empresa'),
+              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+            });
           });
-        });
     } else {
       this.popUpManager.showAlert(this.translate.instant('inscripcion.experiencia_laboral'), this.translate.instant('GLOBAL.no_vacio'))
     }
   }
 
-  searchOrganizacion(nit: string | null): void {
+  searchOrganizacion(nit: string): void {
+    console.log(nit)
     if (nit != null) {
-      this.loading = true;
       nit = nit.trim();
       this.nit = nit.trim();
       const init = this.getIndexForm('Nit');
@@ -368,8 +348,10 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       const itel = this.getIndexForm('Telefono');
       const icorreo = this.getIndexForm('Correo');
       const ipais = this.getIndexForm('Pais');
-      this.sgaMidService.get('experiencia_laboral/informacion_empresa?Id=' + nit)
+      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?Id=' + nit)
         .subscribe((res: any) => {
+          console.log(res)
+          res = res.data
           this.formInfoExperienciaLaboral.campos[init].valor = res.NumeroIdentificacion;
           this.formInfoExperienciaLaboral.campos[inombre].valor = (res.NombreCompleto &&
             res.NombreCompleto.Id) ? res.NombreCompleto : { Id: 0, NombreCompleto: 'No registrado' };
@@ -390,11 +372,10 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             .forEach(element => {
               element.deshabilitar = element.valor ? true : false
             });
-          this.loading = false;
+            this.formInfoExperienciaLaboral.campos[init].deshabilitar = false;
         },
           (error: HttpErrorResponse) => {
             if (error.status === 404) {
-              this.clean = !this.clean;
               [this.formInfoExperienciaLaboral.campos[inombre],
               this.formInfoExperienciaLaboral.campos[idir],
               this.formInfoExperienciaLaboral.campos[icorreo],
@@ -402,10 +383,10 @@ export class CrudExperienciaLaboralComponent implements OnInit {
               this.formInfoExperienciaLaboral.campos[itipo],
               this.formInfoExperienciaLaboral.campos[itel]]
                 .forEach(element => {
-                  element.deshabilitar = false;
+                  element.deshabilitar = true;
+                  element.valor = '';
                 });
             }
-            this.loading = false;
             const opt: any = {
               title: this.translate.instant('experiencia_laboral.titulo1_crear_entidad') + ` ${nit} ` +
                 this.translate.instant('experiencia_laboral.titulo2_crear_entidad'),
@@ -418,35 +399,34 @@ export class CrudExperienciaLaboralComponent implements OnInit {
               cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
             };
             Swal.fire(opt)
-              .then((action) => {
+              .then((action: any) => {
                 if (action.value) {
                   this.nuevoTercero = true;
                 }
               });
           });
-        } else {
-          this.loading = false;
-            const opt: any = {
-              title: this.translate.instant('experiencia_laboral.crear_entidad'),
-              icon: 'warning',
-              buttons: true,
-              dangerMode: true,
-              showCancelButton: true,
-              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-              cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
-            };
-            Swal.fire(opt)
-              .then((action) => {
-                if (action.value) {
-                  this.nuevoTercero = true;
-                }
-              });
+    } else {
+      const opt: any = {
+        title: this.translate.instant('experiencia_laboral.crear_entidad'),
+        icon: 'warning',
+        buttons: true,
+        dangerMode: true,
+        showCancelButton: true,
+        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+        cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
+      };
+      Swal.fire(opt)
+        .then((action: any) => {
+          if (action.value) {
+            this.nuevoTercero = true;
+          }
+        });
 
-        }
+    }
   }
 
   createInfoExperienciaLaboral(infoExperienciaLaboral: any): void {
-    if (this.detalleExp != null && this.indexSelect != null && !Number.isNaN(this.indexSelect)) {
+    if (this.detalleExp != null && this.info_experiencia_laboral_id != 0) {
       this.putExperiencia(infoExperienciaLaboral);
     } else {
       const opt: any = {
@@ -460,16 +440,15 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willDelete) => {
+        .then((willDelete: any) => {
           if (willDelete.value) {
-            this.loading = true;
             this.info_experiencia_laboral = <any>infoExperienciaLaboral;
             const files = [];
             if (this.info_experiencia_laboral.Experiencia.Soporte.file !== undefined) {
               files.push({
                 IdDocumento: 4,
                 nombre: this.autenticationService.getPayload().sub,
-                file: this.info_experiencia_laboral.Experiencia.Soporte.file, 
+                file: this.info_experiencia_laboral.Experiencia.Soporte.file,
               });
             }
             this.uploadResolutionFile(files);
@@ -490,7 +469,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_experiencia_laboral = <any>infoExperienciaLaboral;
           const files = [];
@@ -498,7 +477,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             files.push({
               IdDocumento: 4,
               nombre: this.autenticationService.getPayload().sub,
-              file: this.info_experiencia_laboral.Experiencia.Soporte.file, 
+              file: this.info_experiencia_laboral.Experiencia.Soporte.file,
             });
           }
           this.uploadResolutionFile(files);
@@ -506,31 +485,31 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       });
   }
 
-  uploadResolutionFile(file:any) {
+  uploadResolutionFile(file: any) {
     return new Promise((resolve, reject) => {
       if (file.length !== 0 && this.info_experiencia_laboral.Experiencia.Soporte.file !== undefined && this.info_experiencia_laboral.Experiencia.Soporte.file !== null) {
         this.newNuxeoService.uploadFiles(file).subscribe(
           (responseNux: any[]) => {
             if (responseNux[0].Status == "200") {
-                this.info_experiencia_laboral.Experiencia.DocumentoId = responseNux[0].res.Id;
-                this.info_experiencia_laboral.Experiencia.EnlaceDocumento = responseNux[0].res.Enlace;
-                if (this.detalleExp != null && this.indexSelect != null && !Number.isNaN(this.indexSelect)) {
-                  this.info_experiencia_laboral.indexSelect = this.indexSelect;
-                  this.info_experiencia_laboral.Id = this.info_id_experiencia;
-                  this.info_experiencia_laboral.terceroID = this.persona_id;
-                  this.putExperianciaLaboral();
-                } else {
-                  this.postExperianciaLaboral();
-                }
-            } else {
-              this.loading = false;
+              this.info_experiencia_laboral.Experiencia.DocumentoId = responseNux[0].res.Id;
+              this.info_experiencia_laboral.Experiencia.EnlaceDocumento = responseNux[0].res.Enlace;
+              console.log(this.detalleExp)
+              console.log(this.indexSelect)
+              console.log(this.info_experiencia_laboral_id)
+              if (this.detalleExp != null && this.info_experiencia_laboral_id != 0) {
+                this.info_experiencia_laboral.indexSelect = this.indexSelect;
+                this.info_experiencia_laboral.Id = this.info_id_experiencia;
+                this.info_experiencia_laboral.terceroID = this.persona_id;
+                this.putExperianciaLaboral();
+              } else {
+                this.postExperianciaLaboral();
+              }
             }
           }, error => {
-            this.loading = false;
             reject(error);
           });
       } else {
-        if (this.detalleExp != null && this.indexSelect != null && !Number.isNaN(this.indexSelect)) {
+        if (this.detalleExp != null && this.info_experiencia_laboral_id != 0) {
           this.info_experiencia_laboral.indexSelect = this.indexSelect;
           this.info_experiencia_laboral.Id = this.info_id_experiencia;
           this.info_experiencia_laboral.terceroID = this.persona_id;
@@ -540,13 +519,11 @@ export class CrudExperienciaLaboralComponent implements OnInit {
           this.postExperianciaLaboral();
         }
       }
-      this.loading = false;
     });
   }
 
   putExperianciaLaboral() {
-    this.loading = true;
-    this.sgaMidService.put('experiencia_laboral', this.info_experiencia_laboral)
+    this.inscripcionMidService.put('experiencia-laboral/', this.info_experiencia_laboral)
       .subscribe(res => {
         const r = <any>res;
         if (r !== null && r.Type !== 'error') {
@@ -562,10 +539,8 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         } else {
           this.popUpManager.showErrorAlert(this.translate.instant('experiencia_laboral.experiencia_laboral_no_registrada'));
         }
-        this.loading = false;
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -577,8 +552,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   }
 
   postExperianciaLaboral() {
-    this.loading = true;
-    this.sgaMidService.post('experiencia_laboral/', this.info_experiencia_laboral)
+    this.inscripcionMidService.post('experiencia-laboral/', this.info_experiencia_laboral)
       .subscribe(res => {
         const r = <any>res;
         if (r !== null && r.Type !== 'error') {
@@ -595,10 +569,8 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         } else {
           this.popUpManager.showErrorAlert(this.translate.instant('experiencia_laboral.experiencia_laboral_no_registrada'));
         }
-        this.loading = false;
       },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: error.status + '',
@@ -613,9 +585,9 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     // this.loadInfoExperienciaLaboral();
   }
 
-  setPercentage(event:any) {
+  setPercentage(event: any) {
     this.percentage = event;
-    if(this.percentage == 0){
+    if (this.percentage == 0) {
       this.formInfoExperienciaLaboral.campos[this.getIndexForm('Nit')].deshabilitar = true;
     } else {
       if (this.canEmit) {
@@ -625,7 +597,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     }
   }
 
-  validarForm(event:any) {
+  validarForm(event: any) {
     if (event.valid) {
       const formData = event.data.InfoExperienciaLaboral;
       const organizacionData = {
@@ -668,5 +640,11 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       this.createInfoExperienciaLaboral(postData);
       //this.result.emit(event);
     }
+  }
+
+  limpiarBuscadorDeInstitucion() {
+    const buscadorIndex = this.getIndexForm('Nit');
+    this.formInfoExperienciaLaboral.campos[buscadorIndex].valor = '';
+    this.formInfoExperienciaLaboral.campos[buscadorIndex].deshabilitar = false;
   }
 }

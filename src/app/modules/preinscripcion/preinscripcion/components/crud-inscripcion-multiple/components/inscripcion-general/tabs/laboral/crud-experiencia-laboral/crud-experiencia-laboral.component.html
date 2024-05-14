@@ -1,21 +1,32 @@
-<div class="info my-3">
-    <mat-icon class="info-icon">info</mat-icon> &nbsp;
-    <span>{{ 'inscripcion.alerta_experiencia_laboral' | translate }}</span>
+<div class="info margin-y">
+  <mat-icon class="info-icon">info</mat-icon>
+  {{ "inscripcion.alerta_experiencia_laboral" | translate }}
 </div>
-<ngx-dinamicform *ngIf="!nuevoTercero" [normalform]="formInfoExperienciaLaboral" [modeloData]="info_experiencia_laboral"
-    (result)="validarForm($event)" (resultAux)="searchNit($event); updateFinishDate($event)"
-    (dateChange)="onChangeDate()" [clean]="clean" (interlaced)="getSeleccion($event)"
-    (percentage)="setPercentage($event)">
+
+<ngx-dinamicform
+  *ngIf="!nuevoTercero"
+  [normalform]="formInfoExperienciaLaboral"
+  [modeloData]="info_experiencia_laboral"
+  (result)="validarForm($event)"
+  (resultAux)="searchNit($event); updateFinishDate($event)"
+  (dateChange)="onChangeDate()"
+  [clean]="clean"
+  (interlaced)="getSeleccion($event)"
+  (percentage)="setPercentage($event)"
+>
 </ngx-dinamicform>
 
 <div class="row">
-    <ngx-new-tercero *ngIf="nuevoTercero" (result)="NuevoTercero($event)">
-    </ngx-new-tercero>
+  <ngx-new-tercero *ngIf="nuevoTercero" (result)="NuevoTercero($event)">
+  </ngx-new-tercero>
 
-    <div class="d-flex justify-content-center">
-        <div class="col-2">
-            <button *ngIf="nuevoTercero" align="center" class="btn boton-primary mx-5" (click)="nuevoTercero=false">{{
-                'GLOBAL.cancelar' | translate }}</button>
-        </div>
-    </div>
+  <button
+    *ngIf="nuevoTercero"
+    mat-flat-button
+    color="warn"
+    (click)="nuevoTercero = false"
+    class="margin-y"
+  >
+    {{ "GLOBAL.cancelar" | translate }}
+  </button>
 </div>

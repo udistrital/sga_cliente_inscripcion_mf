@@ -10,7 +10,8 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-documento-programa',
@@ -57,7 +58,6 @@ export class ListDocumentoProgramaComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
-  loading: boolean;
   percentage: number;
 
   constructor(
@@ -70,12 +70,10 @@ export class ListDocumentoProgramaComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-    this.loading = false;
     this.percentage = 0;
   }
 
   async loadData() {
-    this.loading = true;
     this.soporteDocumento = [];
     this.percentage = 0;
     this.inscripcionService.get('soporte_documento_programa?query=InscripcionId.Id:' +
@@ -108,13 +106,9 @@ export class ListDocumentoProgramaComponent implements OnInit {
             });
           } else {
             this.dataSource = new MatTableDataSource()
-            this.getPercentage(0);
-            this.popUpManager.showAlert('', this.translate.instant('documento_programa.no_documentos'));
-          }
-          this.loading = false;
+            this.getPercentage(0);          }
         },
         (error: HttpErrorResponse) => {
-          this.loading = false;
           this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status));
         },
       );
@@ -229,8 +223,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willDelete) => {
-          this.loading = true;
+        .then((willDelete: any) => {
           if (willDelete.value) {
             event.DocumentoProgramaId.Activo = false;
             this.inscripcionService.put('documento_programa/', event.DocumentoProgramaId).subscribe(res => {
@@ -243,9 +236,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               }
-              this.loading = false;
             }, (error: HttpErrorResponse) => {
-                this.loading = false;
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -256,7 +247,6 @@ export class ListDocumentoProgramaComponent implements OnInit {
                 });
               });
           }
-          this.loading = false;
         });
     }
   }

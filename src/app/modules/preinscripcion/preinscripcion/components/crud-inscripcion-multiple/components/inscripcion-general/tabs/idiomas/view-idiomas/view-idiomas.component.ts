@@ -4,7 +4,8 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { IdiomaService } from 'src/app/services/idioma.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { UserService } from 'src/app/services/users.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-view-idiomas',
@@ -48,8 +49,6 @@ export class ViewIdiomasComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private users: UserService,
-    private inscripcionService: InscripcionService,
     private idiomaService: IdiomaService) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
