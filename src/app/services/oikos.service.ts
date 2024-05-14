@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { RequestManager } from '../managers/requestManager'; 
 
+
 const httpOptions = {
     headers: new HttpHeaders({
         'Accept': 'application/json',
@@ -33,6 +34,7 @@ export class OikosService {
     return this.requestManager.put(endpoint, element);
   }
   delete(endpoint: any, element: any) {
+
     this.requestManager.setPath('OIKOS_SERVICE');
     return this.requestManager.delete(endpoint, element.Id);
   }

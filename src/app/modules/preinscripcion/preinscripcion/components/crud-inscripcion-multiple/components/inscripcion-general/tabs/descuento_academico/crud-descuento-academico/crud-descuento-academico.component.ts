@@ -11,9 +11,9 @@ import { ImplicitAutenticationService } from 'src/app/services/implicit_autentic
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_DESCUENTO } from './form-descuento_academico';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
@@ -233,7 +233,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete:any) => {
         if (willDelete.value) {
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;
           const files = [];
@@ -336,7 +336,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete:any) => {
         if (willDelete.value) {
           const files = [];
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;

@@ -735,7 +735,8 @@
         "no_edit_doc_aprobado": "No puedes editar documento aprobado",
         "ya_existe_registro": "Ya cuenta con información cargada para este campo",
         "informar_estado_inscrito_obs": "Aspirante, su inscripción se encuentra condicionada por observaciones en documentación adjunta, por favor diríjase a Detalle de inscripción para revisar y corregir la información no aprobada. Si no lo hace no puede continuar con el proceso.",
-        "info_boton_cambio_inscrito": "No olvide presionar el botón \"Confirmar edición de documentos con observaciones\" para volver al estado INSCRITO, este se habilita cuando haya editado todos los documentos no aprobados."
+        "info_boton_cambio_inscrito": "No olvide presionar el botón \"Confirmar edición de documentos con observaciones\" para volver al estado INSCRITO, este se habilita cuando haya editado todos los documentos no aprobados.",
+        "no_documentos_proyecto": "El proyecto no tiene documentos definidos, comuníquese con el proyecto"
     },
     "ERROR": {
         "general": "La solicitud no pudo ser cumplida",
@@ -1159,7 +1160,8 @@
         "crear_entidad": "¿Desea crear una nueva entidad?",
         "titulo2_crear_entidad": "no ha sido encontrado",
         "titulo1_crear_entidad": "El Nit. ",
-        "eliminar": "¿Desea eliminar el registro de experiencia laboral?"
+        "eliminar": "¿Desea eliminar el registro de experiencia laboral?",
+        "borrada": "Experiencia laboral borrada"
     },
     "produccion_academica": {
         "titulo_revista": "Título de revista",
@@ -1693,5 +1695,52 @@
         "estado_revisado_observaciones": "Revisado con observaciones",
         "titulo_sin_data_tabla": "No se encontro información",
         "sin_data_tabla": "No hay aspirantes con información de legalización para este proyecto y periodo"
+        "resumen": "Resumen general de documentos"},
+    "recibo_pago": {
+        "generado": "El recibo de pago ha sido generado correctamente",
+        "no_generado": "El recibo no ha podido ser generado. Verifique su información personal",
+        "recibo_duplicado": "Ya ha generado un recibo con los criterios seleccionados",
+        "maximo_recibos": "Ya genero el máximo de recibos permitidos"
+    },
+    "legalizacion_admision": {
+        "titulo": "Legalización admisión",
+        "contenido-informativo": "Estimada(o), aspirante. Se le solicita que diligencie el siguiernte formulario y adjunte los documentos que aquí se solicitan de DD del mes MM del año AAAA, con la presentación de los documentos y demas información por parte de los aspirantes admitidos, se entiende que los mismos declaran bajo la gravedad de juramento que la misma es completa, actualizada y veraz; sopena de las sanciones a las que haya lugar.",
+        "titulo_informacion_personal": "Información personal",
+        "proyecto_admitido": "Proyecto curricular al que fue admitida(o)",
+        "tipo_identificacion": "Tipo de identificación",
+        "titulo_informacion_socioeconomica_personal": "Información socioeconómica personal",
+        "diploma_bachiller": "Acta o diploma de bachiller",
+        "valor_pension": "Valor de la pensión mensual pagada en grado once",
+        "valor_sm": "Valor en salarios minimos",
+        "soporte_valor_pension": "Soporte valor pagado pensión",
+        "nucleo_familiar": "Nucleo familiar",
+        "soporte_nucleo_familiar": "Soporte nucleo familiar",
+        "situacion_laboral": "Situación laboral",
+        "soporte_situacion_laboral": "Soporte situación laboral",
+        "titulo_informacion_socioeconomica_costeara": "Información socioeconómica de quien costeará los estudios",
+        "soporte_estrato": "Soporte de estrato",
+        "ingresos_costea": "Ingresos del año anterior",
+        "soporte_ingresos_costea": "Soporte de Ingresos",
+        "titulo_documentos": "Resumen general de documentos",
+        "info_documentos": "Aspirante usted deberá SUBIR LOS DOCUMENTOS que a continuación se relacionan en un (1) solo archivo PDF ordenados y digitalizados ESTRICTAMENTE EN EL SIGUIENTE ORDEN:",
+        "comprobante_admision": "Comprobante de admisión impreso de Internet Fotocopia del diploma de bachiller o acta de grado",
+        "certificado_colegio": "Certificado expedido por el colegio donde terminó sus estudios de bachillerato, en el cual se indique el valor mensual de la pensión pagada por el aspirante. En el caso de haber validado el estudio de educación media, la Universidad tendrá en cuenta el costo de la prueba de validación (Articulo 3 Acuerdo 004 de 2006 del Consejo Superior Universitario).",
+        "certificado_estrato": "Certificado de estrato socioeconómico de residencia de quien costeará los estudios, expedido por Planeación Distrital (SUPERCADE) para residentes en Bogotá para los residentes de fuera de Bogotá este certificado puede ser expedido por la Alcaldia Municipal y/o Oficina de Planeación del lugar de residencia.",
+        "declaracion_renta": "Declaración de Renta o Certificado de Ingresos y Retenciones de quien costeará los estudios. Este certificado debe ser expedido en formato de la Dirección de Impuestos y Aduanas Nacionales (DIAN). En caso de trabajadores independientes o familiares no declarantes debe presentarse el certificado de no contribuyente.",
+        "fotocopia_documento": "Fotocopia del documento de identidad",
+        "copia_examen": "Copia del Examen de Estado",
+        "copia_registro_civil": "Copia del Registro Civil de nacimiento",
+        "certificado_medico": "Certificado médico original, en que conste que el admitido no padece alguna enfermedad que le impida vivir en comunidad (El cual puede ser expedido por la EPS que este afiliado el aspirante o por un médico particular) Los admitidos a Ingeniería Catastral y Geodesia, deben adjuntar el examen de visión estereoscópica",
+        "soporte_documento": "Soporte documento general",
+        "crear_legalizacion": "¿Guardar la legalización de matricula?",
+        "ubicacion_residencia": "Ubicación residencia",
+        "localidad_error": "Error cargando las localidades",
+        "ubicaciones_error": "Error cargando las ubicaciones de residencia",
+        "situaciones_laborales_error": "Error cargando las situaciones laborales",
+        "estratos_error": "Error cargando los estratos socioeconómicos",
+        "nucleo_familiar_error": "Error cargando los posibles nucleos familiares",
+        "formulario_error": "El formulario no esta completo, por favor complete los campos antes de seguir",
+        "legalizacion_creacion_ok": "Los datos de legalización se crearon correctamente",
+        "legalizacion_creacion_error": "Ocurrio un error al crear los datos de legalización"
     }
 }

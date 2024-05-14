@@ -11,10 +11,10 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { ExperienciaService } from 'src/app/services/experiencia.service';
 import { OrganizacionService } from 'src/app/services/organizacion.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-experiencia-laboral',
@@ -77,8 +77,8 @@ export class ListExperienciaLaboralComponent implements OnInit {
   loadData(): void {
     this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.persona_id).subscribe(
       (response: any) => {
-        if (response !== null && response.status == '200') {
-          this.data = <Array<any>>response.data;
+        if (response.Data.length > 0 && response.Status == '200') {
+          this.data = <Array<any>>response.Data;
           this.getPercentage(1);
           this.data.forEach(async (expLab) => {
             let estadoDoc = await <any>this.cargarEstadoDocumento(expLab.Soporte);
@@ -86,7 +86,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
             expLab.Observacion = estadoDoc.observacion;
             this.dataSource = new MatTableDataSource(this.data)
           });
-        } else if (response !== null && response.status == '404') {
+        } else if (response.Data.length == 0) {
           this.popUpManager.showAlert('', this.translate.instant('experiencia_laboral.no_data'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource();
@@ -175,13 +175,13 @@ export class ListExperienciaLaboralComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           //todo: falta parametro
           this.inscripcionMidService.delete('experiencia-laboral/', event).subscribe(res => {
             if (res !== null) {
               this.loadData();
-              this.snackBar.open(this.translate.instant('GLOBAL.experiencia_laboral'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
+              this.snackBar.open(this.translate.instant('experiencia_laboral.borrada'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
             }
           },
             (error: HttpErrorResponse) => {

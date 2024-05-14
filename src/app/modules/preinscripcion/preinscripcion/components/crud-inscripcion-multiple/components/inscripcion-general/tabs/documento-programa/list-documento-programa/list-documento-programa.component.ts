@@ -10,7 +10,8 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-documento-programa',
@@ -105,9 +106,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
             });
           } else {
             this.dataSource = new MatTableDataSource()
-            this.getPercentage(0);
-            this.popUpManager.showAlert('', this.translate.instant('documento_programa.no_documentos'));
-          }
+            this.getPercentage(0);          }
         },
         (error: HttpErrorResponse) => {
           this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status));
@@ -224,7 +223,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willDelete) => {
+        .then((willDelete: any) => {
           if (willDelete.value) {
             event.DocumentoProgramaId.Activo = false;
             this.inscripcionService.put('documento_programa/', event.DocumentoProgramaId).subscribe(res => {

@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "build:single-spa:sga-cliente-inscripcion-mf": "ng build sga-cliente-inscripcion-mf --configuration production",
-    "serve:single-spa:sga-cliente-inscripcion-mf": "ng s --project sga-cliente-inscripcion-mf --disable-host-check --port 4209 --live-reload false"
+    "serve:single-spa:sga-cliente-inscripcion-mf": "ng s --project sga-cliente-inscripcion-mf --disable-host-check --port 4209 --live-reload false",
+    "build:prod": "ng build --progress --configuration=production",
+    "build:test": "ng build --progress --configuration=development"
   },
   "private": true,
   "dependencies": {
@@ -32,6 +34,7 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "@ngxs/store": "^3.8.2",
     "@popperjs/core": "^2.11.6",
+    "@sweetalert2/themes": "^5.0.16",
     "bootstrap": "^5.2.3",
     "crypto-js": "^4.2.0",
     "jszip": "^3.10.1",
