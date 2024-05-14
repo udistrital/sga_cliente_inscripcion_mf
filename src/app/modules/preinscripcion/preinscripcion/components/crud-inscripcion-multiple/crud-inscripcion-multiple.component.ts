@@ -47,6 +47,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   //dataSource: LocalDataSource;
   data: any[] = [];
   settings: any;
+  pdfs: Blob[] = [];
 
   @Input('inscripcion_id')
   set admision(inscripcion_id: number) {
@@ -401,6 +402,47 @@ export class CrudInscripcionMultipleComponent implements OnInit{
       );
     }
   }
+
+  generar_inscripcionv2() {
+    const reciboConceptos = [];
+    const reciboObs: { Ref: any; Descripcion: string; }[] = [];
+    reciboConceptos.push({ Ref: "1", Descripcion: "INSCTIPCIÓN", Valor: 1111 });
+    reciboObs.push({ Ref: "", Descripcion: "Transferencia" });
+
+    const recibo = {
+      Documento: parseInt(this.info_info_persona.NumeroIdentificacion, 10),
+      Nombre: `${this.info_info_persona.PrimerNombre} ${this.info_info_persona.SegundoNombre} ${this.info_info_persona.PrimerApellido} ${this.info_info_persona.SegundoApellido}`,
+      Tipo: "Inscripcion",
+      Periodo: this.periodo.Id,
+      Dependencia: {
+        Tipo: "Proyecto Curricular",
+        Nombre: this.selectedProject.Nombre
+      },
+      Conceptos: reciboConceptos,
+      Observaciones: reciboObs,
+      Fecha1: "30/02/2023",
+      Fecha2: "30/02/2023",
+      Recargo: 1,
+      Comprobante: "0666"
+    };
+    this.inscripcionService.post('recibov2/', recibo)
+      .subscribe(
+        (response: any) => {
+          if (response.success && response.data) {
+            const byteArray = atob(response.data);
+            const byteNumbers = new Array(byteArray.length);
+            for (let i = 0; i < byteArray.length; i++) {
+              byteNumbers[i] = byteArray.charCodeAt(i);
+            }
+            const file = new Blob([new Uint8Array(byteNumbers)], { type: 'application/pdf' });
+            this.pdfs.push(file);
+          }
+        },
+        (error: HttpErrorResponse) => {
+          console.error(error);
+        }
+      );
+  
 
   generar_inscripcion() {
     return new Promise((resolve, reject) => {

@@ -5,7 +5,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { validateLang } from 'src/app/app.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from './components/modal/modal.component';
-import multiMonthPlugin from '@fullcalendar/multimonth'
 
 
 interface Food {
