@@ -47,9 +47,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
 import { Overlay } from '@angular/cdk/overlay';
+import { LegalizacionMatriculaAspiranteComponent } from './modules/legalizacion/legalizacion-matricula-aspirante/legalizacion-matricula-aspirante.component';
 import { LegalizacionMatriculaComponent } from './modules/legalizacion/components/legalizacion-matricula/legalizacion-matricula.component';
 import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
@@ -82,6 +85,7 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
+    LegalizacionMatriculaAspiranteComponent
     LegalizacionMatriculaComponent,
     ModalComponent,
   ],
@@ -97,6 +101,8 @@ export function createTranslateLoader(http: HttpClient) {
     MatDialogModule,
     MatListModule,
     MatStepperModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatStepperModule,
