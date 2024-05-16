@@ -12,11 +12,11 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-list-descuento-academico',
@@ -82,13 +82,14 @@ export class ListDescuentoAcademicoComponent implements OnInit {
       'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
       .subscribe((result: any) => {
-        const r = <any>result.data;
-        if (result !== null && (result.status == '400' || result.status== '404')) {
+        console.log(result)
+        const r = <any>result.Data;
+        if (result.Data == null && result.Status == '200') {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));
           this.getPercentage(0);
           this.dataSource = new MatTableDataSource()
 
-        } else {
+        } else if (result.Data != null && result.Status == '200') {
           this.data = <Array<SolicitudDescuento>>r;
           this.data.forEach(async (docDesc: any) => {
             let estadoDoc = await <any>this.cargarEstadoDocumento(docDesc["DocumentoId"]);
@@ -211,7 +212,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
       Swal.fire(opt)
-        .then((willDelete) => {
+        .then((willDelete: any) => {
           if (willDelete.value) {
             event.Activo = false;
             this.descuentoAcademicoService.put('solicitud_descuento', event).subscribe(res => {

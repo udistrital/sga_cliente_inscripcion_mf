@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { environment } from 'src/environments/environment'; 
+import { environment } from 'src/environments/environment';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { RequestManager } from '../managers/requestManager'; 
+import { RequestManager } from '../managers/requestManager';
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -33,6 +33,7 @@ export class OikosService {
     return this.requestManager.put(endpoint, element);
   }
   delete(endpoint: any, element: any) {
+
     this.requestManager.setPath('OIKOS_SERVICE');
     return this.requestManager.delete(endpoint, element.Id);
   }

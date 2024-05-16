@@ -9,7 +9,8 @@ import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ListService } from 'src/app/services/list.service';
 import { UserService } from 'src/app/services/users.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_IDIOMAS } from './form-idiomas';
 import { DynamicFormComponent } from 'src/app/modules/components/dynamic-form/dynamic-form.component';
 

@@ -22,7 +22,7 @@
             <td>{{formacion.estadoObservacion?formacion.estadoObservacion:''}}</td>
             <td>{{formacion.observacion?formacion.observacion:''}}</td>
             <td *ngIf="formacion.Documento !== undefined">
-                <button class="boton-primary" mat-button type="button" (click)="abrirDocumento(formacion)">
+                <button color="accent" mat-flat-button type="button" (click)="abrirDocumento(formacion)">
                     <mat-icon fontIcon="search"></mat-icon></button>
             </td>
             <td *ngIf="formacion.Documento === undefined">

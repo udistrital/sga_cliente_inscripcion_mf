@@ -8,7 +8,6 @@ import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
@@ -107,8 +106,8 @@ export class ViewInfoPersonaComponent implements OnInit {
       this.terceroMidService.get('personas/' + id)
         .subscribe((res:any) => {
           const r = <any>res;
-          if (r !== null && r.message !== 'error') {
-            this.info_info_persona = <InfoPersona>res.data;
+          if (r !== null && r.Message !== 'error') {
+            this.info_info_persona = <InfoPersona>res.Data;
             let nombreAspirante: string = this.info_info_persona.PrimerApellido + ' ' + this.info_info_persona.SegundoApellido + ' '
                                   + this.info_info_persona.PrimerNombre + ' ' + this.info_info_persona.SegundoNombre;
             let nombreCarpetaDocumental: string = sessionStorage.getItem('IdInscripcion') + ' ' + nombreAspirante;
@@ -117,17 +116,17 @@ export class ViewInfoPersonaComponent implements OnInit {
 
             this.terceroMidService.get('personas/'+ this.info_persona_id +'/complementarios')
             .subscribe( (res:any) => {
-              if (res !== null && res.status != '404') {
-                this.info_info_caracteristica = <InfoCaracteristica>res.data;
+              if (res !== null && res.Status != '404') {
+                this.info_info_caracteristica = <InfoCaracteristica>res.Data;
 
                 //this.lugarOrigen = this.info_info_caracteristica.Lugar["Lugar"].CIUDAD.Nombre + ", " + this.info_info_caracteristica.Lugar["Lugar"].DEPARTAMENTO.Nombre
 
                 this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.info_persona_id)
                   .subscribe((resp:any) => {
-                    if (resp.status == "200") {
+                    if (resp.Status == "200") {
                       let rawDate = this.info_info_persona.FechaNacimiento.split('-')
                       this.fechaNacimiento = rawDate[2].slice(0,2)+"/"+rawDate[1]+"/"+rawDate[0];
-                      let info = resp.data;
+                      let info = resp.Data;
                       this.correo = info.Correo;
                       this.direccion = info.DireccionResidencia;
                       this.telefono = info.Telefono;

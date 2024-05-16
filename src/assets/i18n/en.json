@@ -735,7 +735,8 @@
         "ya_existe_registro": "You already have information loaded for this field",
         "informar_estado_inscrito_obs": "Applicant, your enrollment is conditioned by observations in the attached documentation, please go to Registration Details to review and correct the information not approved. If you do not, you cannot continue with the process.",
         "info_boton_cambio_inscrito": "Do not forget to press the button \"Confirm edition of documents with observations\" to return to the ENROLLED status, this is enabled when you have edited all the not approved documents.",
-        "no_fechas_inscripcion": "The selected curricular project does not present registration dates"
+        "no_fechas_inscripcion": "The selected curricular project does not present registration dates",
+        "no_documentos_proyecto": "El proyecto no tiene documentos definidos, contacte al proyecto"
     },
     "ERROR": {
         "general": "The request could not be satisfied",
@@ -1159,7 +1160,8 @@
         "crear_entidad": "Do you want to create a new entity?",
         "titulo2_crear_entidad": "not found",
         "titulo1_crear_entidad": "The Nit. ",
-        "eliminar": "Do you wish to remove the work experience record?"
+        "eliminar": "Do you wish to remove the work experience record?",
+        "borrada": "Erased work experience"
     },
     "produccion_academica": {
         "titulo_revista": "Magazine title",
@@ -1693,5 +1695,52 @@
         "estado_revisado_observaciones": "Reviewed with observations",
         "titulo_sin_data_tabla": "No information found",
         "sin_data_tabla": "There are no applicants with legalization information for this project and period"
+    },
+    "recibo_pago": {
+        "generado": "The payment receipt has been generated correctly",
+        "no_generado": "The receipt could not be generated. Verify your personal information",
+        "recibo_duplicado": "You have already generated a receipt with the selected criteria",
+        "maximo_recibos": "I already generate the maximum receipts allowed"
+    },
+    "legalizacion_admision": {
+        "titulo": "Admission legalization",
+        "contenido-informativo": "Dear candidate, You are requested to complete the following form and attach the documents requested here for the DD of the month MM of the year YYYY, with the presentation of the documents and other information by the admitted applicants, it is understood that they declare under the severity of oath that it is complete, up-to-date and true; regardless of the sanctions that may apply.",
+        "titulo_informacion_personal": "Personal information",
+        "proyecto_admitido": "Curriculum project to which you were admitted",
+        "tipo_identificacion": "ID Type",
+        "titulo_informacion_socioeconomica_personal": "Personal socioeconomic information",
+        "diploma_bachiller": "High school certificate or diploma",
+        "valor_pension": "Value of the monthly pension paid in grade eleven",
+        "valor_sm": "Value in minimum wages",
+        "soporte_valor_pension": "Pension paid value support",
+        "nucleo_familiar": "Family nucleus",
+        "soporte_nucleo_familiar": "Family nucleus support",
+        "situacion_laboral": "Employment situation",
+        "soporte_situacion_laboral": "Work situation support",
+        "titulo_informacion_socioeconomica_costeara": "Socioeconomic information of who will pay for the studies",
+        "soporte_estrato": "Strata support",
+        "ingresos_costea": "Previous year's income",
+        "soporte_ingresos_costea": "Income Support",
+        "titulo_documentos": "General summary of documents",
+        "info_documentos": "Applicant, you must UPLOAD THE DOCUMENTS listed below in one (1) single PDF file, ordered and digitized STRICTLY IN THE FOLLOWING ORDER:",
+        "comprobante_admision": "Proof of admission printed from the Internet Photocopy of the high school diploma or degree certificate",
+        "certificado_colegio": "Certificate issued by the school where he completed his high school studies, which indicates the monthly value of the pension paid by the applicant. In the case of having validated the secondary education study, the University will take into account the cost of the validation test (Article 3 Agreement 004 of 2006 of the Higher University Council).",
+        "certificado_estrato": "Certificate of socioeconomic stratum of residence of the person who will pay for the studies, issued by District Planning (SUPERCADE) for residents in Bogotá. For residents outside of Bogotá, this certificate can be issued by the Municipal Mayor's Office and/or Planning Office of the place of residence.",
+        "declaracion_renta": "Income Tax Declaration or Certificate of Income and Withholdings of the person who will pay for the studies. This certificate must be issued in the format of the National Tax and Customs Directorate (DIAN). In the case of independent workers or non-filing family members, the non-taxpayer certificate must be presented.",
+        "fotocopia_documento": "Photocopy of ID",
+        "copia_examen": "Copy of the State Exam",
+        "copia_registro_civil": "Copy of the Civil Registry of birth",
+        "certificado_medico": "Original medical certificate, stating that the person admitted does not suffer from any illness that prevents him from living in the community (Which can be issued by the EPS that the applicant is affiliated with or by a private doctor). Those admitted to Cadastral Engineering and Geodesy must attach stereoscopic vision examination",
+        "soporte_documento": "General document support",
+        "crear_legalizacion": "Save the legalization of registration?",
+        "ubicacion_residencia": "Residence location",
+        "localidad_error": "Error loading locations",
+        "ubicaciones_error": "Error loading residence locations",
+        "situaciones_laborales_error": "Error loading work situations",
+        "estratos_error": "Error loading socioeconomic strata",
+        "nucleo_familiar_error": "Error loading possible family units",
+        "formulario_error": "The form is not complete, please complete the fields before continuing",
+        "legalizacion_creacion_ok": "Legalization data was created successfully",
+        "legalizacion_creacion_error": "An error occurred while creating the legalization data"
     }
 }

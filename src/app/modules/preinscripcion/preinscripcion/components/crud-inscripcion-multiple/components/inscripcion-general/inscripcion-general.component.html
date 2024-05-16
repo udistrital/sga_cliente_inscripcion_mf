@@ -1,872 +1,1439 @@
-<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 d-block">
-    <div [hidden]="(show_profile ||
-        show_info_pregrado ||
-        show_acad_pregrado ||
-        show_expe || show_proy ||
-        show_prod || show_desc ||
-        show_docu ||show_info ||
-        show_acad || show_info_externa || show_idiomas)">
-        <mat-card-content>
-            <div *ngIf="!hide_header_labels">
-                <div class="info mb-3" *ngIf="!estaInscrito">
-                    <mat-icon class="info-icon">info</mat-icon> &nbsp;
-                    <span>{{ 'inscripcion.alerta_preinscripcion' | translate }}</span>
+<div
+  [hidden]="
+    show_profile ||
+    show_info_pregrado ||
+    show_acad_pregrado ||
+    show_expe ||
+    show_proy ||
+    show_prod ||
+    show_desc ||
+    show_docu ||
+    show_info ||
+    show_acad ||
+    show_info_externa ||
+    show_idiomas
+  "
+>
+  <mat-card>
+    <mat-card-content>
+      <!-- HEADER REPORTE Y FIELDS -->
+      <div *ngIf="!hide_header_labels">
+        <div class="info" *ngIf="!estaInscrito">
+          <mat-icon>info</mat-icon> &nbsp;
+          <span>{{ "inscripcion.alerta_preinscripcion" | translate }}</span>
+        </div>
+
+        <br />
+
+        <div style="display: flex; flex-direction: column">
+          <div>
+            <b>{{ "inscripcion.periodo" | translate }}: </b>
+            {{ this.inscripcion.PeriodoId }}
+          </div>
+          <div>
+            <b>{{ "inscripcion.nivel" | translate }}:</b>
+            {{ this.inscripcion.Nivel }}
+          </div>
+          <div>
+            <b>{{ "inscripcion.tipo" | translate }}:</b>
+            {{ this.inscripcion.TipoInscripcion }}
+          </div>
+          <div>
+            <b>{{ "inscripcion.estado_inscripcion" | translate }}:</b>
+            {{ estado_inscripcion_nombre }}
+          </div>
+        </div>
+        <br />
+
+        <div class="form-grid2">
+          <div class="form-col1">
+            <mat-form-field class="form-field">
+              <mat-label>{{
+                "inscripcion.aviso_programa" | translate
+              }}</mat-label>
+              <mat-select
+                [formControl]="Campo1Control"
+                [(ngModel)]="selectedValue"
+                placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
+                (ngModelChange)="tipo_inscripcion('programa')"
+              >
+                <mat-option>--Seleccionar--</mat-option>
+                <mat-option
+                  *ngFor="let item of posgrados"
+                  [value]="item.ProyectoId"
+                >
+                  {{ item.NombreProyecto }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="form-col1">
+            <mat-form-field class="form-field" *ngIf="tieneEnfasis">
+              <mat-label>{{ "enfasis.select_enfasis" | translate }}</mat-label>
+              <mat-select
+                [formControl]="enfasisControl"
+                [(ngModel)]="enfasisSelected"
+                placeholder="{{ 'enfasis.select_enfasis' | translate }}"
+                (ngModelChange)="tipo_inscripcion('enfasis')"
+              >
+                <mat-option>--Seleccionar--</mat-option>
+                <mat-option *ngFor="let item of enfasis" [value]="item.Id">
+                  {{ item.Nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- CAJAS PARA PEDIR INFORMACION -->
+      <div>
+        <div class="container">
+          <div
+            *ngIf="
+              tagsObject.info_persona.selected &&
+              puedeInscribirse &&
+              !soloPuedeVer
+            "
+          >
+            <mat-card class="exp-card" (click)="perfil_editar('info_persona')">
+              <mat-card-header class="exp-card-header">
+                <b>{{ "inscripcion.info_basica" | translate }}</b>
+              </mat-card-header>
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">info</mat-icon>
+                <p class="percentage">{{ percentage_info }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.info_persona.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
                 </div>
-                <div class="row">
-                    <div class="col-3">
-                        <b>{{ 'inscripcion.periodo' | translate }}: {{ this.inscripcion.PeriodoId }}</b>
-                    </div>
-                    <div class="col-2">
-                        <b>{{ 'inscripcion.nivel' | translate }}: {{ this.inscripcion.Nivel }}</b>
-                    </div>
-                    <div class="col-3">
-                        <b>{{ 'inscripcion.tipo' | translate }}: {{ this.inscripcion.TipoInscripcion }}</b>
-                    </div>
-                    <div class="col-4">
-                        <b>{{ 'inscripcion.estado_inscripcion' | translate }}: {{ estado_inscripcion_nombre }}</b>
-                    </div>
+                <div *ngIf="!tagsObject.info_persona.required">
+                  {{ "GLOBAL.opcional" | translate }}
                 </div>
-                <br>
+              </mat-card-footer>
+            </mat-card>
+          </div>
 
-                <mat-form-field style="width: 100%;">
-                    <mat-select [formControl]="Campo1Control" [(ngModel)]="selectedValue"
-                        placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
-                        (ngModelChange)="tipo_inscripcion('programa')">
-                        <mat-option>--Seleccionar--</mat-option>
-                        <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
-                            {{ item.NombreProyecto }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <mat-form-field style="width: 100%;" *ngIf="tieneEnfasis">
-                    <mat-select [formControl]="enfasisControl" [(ngModel)]="enfasisSelected"
-                        placeholder="{{ 'enfasis.select_enfasis' | translate }}"
-                        (ngModelChange)="tipo_inscripcion('enfasis')">
-                        <mat-option>--Seleccionar--</mat-option>
-                        <mat-option *ngFor="let item of enfasis" [value]="item.Id">
-                            {{ item.Nombre }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-
-            <br />
-
-            <div class="row">
-                <div class="row">
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.info_persona.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card"
-                            (click)="perfil_editar('info_persona')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{ 'inscripcion.info_basica'
-                                | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-address-card-o fa-4x"></i>
-                                <p class="percentage">{{percentage_info}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.info_persona.required"><b>{{ 'GLOBAL.obligatorio' | translate
-                                        }}</b></div>
-                                <div *ngIf="!tagsObject.info_persona.required"><b>{{ 'GLOBAL.opcional' | translate
-                                        }}</b></div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.formacion_academica.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('formacion_academica')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.formacion_academica' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-graduation-cap fa-4x"></i>
-                                <p class="percentage">{{percentage_acad}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.formacion_academica.required"><b>{{ 'GLOBAL.obligatorio' |
-                                        translate }}</b></div>
-                                <div *ngIf="!tagsObject.formacion_academica.required"><b>{{ 'GLOBAL.opcional' |
-                                        translate }}</b></div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.idiomas.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('idiomas')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{ 'inscripcion.idiomas' |
-                                translate }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-globe fa-4x"></i>
-                                <p class="percentage">{{percentage_idio}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.idiomas.required"><b>{{ 'GLOBAL.obligatorio' | translate
-                                        }}</b>
-                                </div>
-                                <div *ngIf="!tagsObject.idiomas.required"><b>{{ 'GLOBAL.opcional' | translate }}</b>
-                                </div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.experiencia_laboral.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('experiencia_laboral')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.experiencia_laboral' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-briefcase fa-4x"></i>
-                                <p class="percentage">{{percentage_expe}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.experiencia_laboral.required"><b>{{ 'GLOBAL.obligatorio' |
-                                        translate }}</b></div>
-                                <div *ngIf="!tagsObject.experiencia_laboral.required"><b>{{ 'GLOBAL.opcional' |
-                                        translate }}</b></div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.produccion_academica.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('produccion_academica')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.produccion_academica' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-book fa-4x"></i>
-                                <p class="percentage">{{percentage_prod}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.produccion_academica.required"><b>{{ 'GLOBAL.obligatorio' |
-                                        translate }}</b></div>
-                                <div *ngIf="!tagsObject.produccion_academica.required"><b>{{ 'GLOBAL.opcional' |
-                                        translate }}</b></div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.documento_programa.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('documento_programa')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.documento_programa' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-list-alt fa-4x"></i>
-                                <p class="percentage">{{percentage_docu}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.documento_programa.required"><b>{{ 'GLOBAL.obligatorio' |
-                                        translate }}</b></div>
-                                <div *ngIf="!tagsObject.documento_programa.required"><b>{{ 'GLOBAL.opcional' |
-                                        translate
-                                        }}</b></div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.descuento_matricula.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('descuento_matricula')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.descuento_matricula' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-dollar fa-4x"></i>
-                                <p class="percentage">{{percentage_desc}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.descuento_matricula.required"><b>{{ 'GLOBAL.obligatorio' |
-                                        translate }}</b></div>
-                                <div *ngIf="!tagsObject.descuento_matricula.required"><b>{{ 'GLOBAL.opcional' |
-                                        translate }}</b></div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.propuesta_grado.selected && (puedeInscribirse && !soloPuedeVer)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('propuesta_grado')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.propuesta_grado' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-file-text-o fa-4x"></i>
-                                <p class="percentage">{{percentage_proy}} %</p>
-                            </mat-card-content>
-                            <mat-card-footer>
-                                <div *ngIf="tagsObject.propuesta_grado.required"><b>{{ 'GLOBAL.obligatorio' |
-                                        translate
-                                        }}</b></div>
-                                <div *ngIf="!tagsObject.propuesta_grado.required"><b>{{ 'GLOBAL.opcional' |
-                                        translate
-                                        }}</b></div>
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="tagsObject.perfil.selected && (soloPuedeVer || puedeInscribirse)">
-                        <mat-card class="exp-card" align="center" (click)="perfil_editar('perfil')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{ 'inscripcion.perfil' |
-                                translate }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-user fa-5x"></i>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
+          <div
+            *ngIf="
+              tagsObject.formacion_academica.selected &&
+              puedeInscribirse &&
+              !soloPuedeVer
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('formacion_academica')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.formacion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">school</mat-icon>
+                <p class="percentage">{{ percentage_acad }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.formacion_academica.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
                 </div>
-
-                <div class="row" *ngIf="!hide_header_labels && false">
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="info_basica" *ngIf="puedeInscribirse && (selectTipo=='Pregrado' && selectedValue ||
-                             selectTipo=='Posgrado'|| selectTipo=='Transferencia interna'||
-                             selectTipo=='Reingreso' || selectTipo=='Transferencia externa'||
-                             selectTipo=='Transferencia externa')">
-                        <mat-card class="exp-card" (click)="perfil_editar('info_persona')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{ 'inscripcion.info_basica'
-                                | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-address-card-o fa-5x"></i>
-                                <p class="percentage">{{percentage_info}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="formacion_academica" *ngIf="puedeInscribirse && (selectTipo=='Pregrado' &&
-                             selectedValue || selectTipo=='Posgrado' ||
-                             selectTipo=='Transferencia externa')">
-                        <mat-card class="exp-card" (click)="perfil_editar('formacion_academica')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.formacion_academica' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-graduation-cap fa-5x"></i>
-                                <p class="percentage">{{percentage_acad}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="experiencia_laboral"
-                        *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)">
-                        <mat-card class="exp-card" (click)="perfil_editar('experiencia_laboral')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.experiencia_laboral' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-briefcase fa-5x"></i>
-                                <p class="percentage">{{percentage_expe}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="produccion_academica">
-                        <mat-card class="exp-card" (click)="perfil_editar('produccion_academica')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.produccion_academica' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-book fa-5x"></i>
-                                <p class="percentage">{{percentage_prod}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="documento_programa">
-                        <mat-card class="exp-card" (click)="perfil_editar('documento_programa')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.documento_programa' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-list-alt fa-5x"></i>
-                                <p class="percentage">{{percentage_docu}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="descuento_matricula">
-                        <mat-card class="exp-card" (click)="perfil_editar('descuento_matricula')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.descuento_matricula' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-dollar fa-5x"></i>
-                                <p class="percentage">{{percentage_desc}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="puedeInscribirse && (selectTipo=='Posgrado' && selectedValue)" id="propuesta_grado">
-                        <mat-card class="exp-card" (click)="perfil_editar('propuesta_grado')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.propuesta_grado' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-file-text-o fa-5x"></i>
-                                <p class="percentage">{{percentage_proy}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="(soloPuedeVer || puedeInscribirse) && (selectTipo=='Posgrado' && selectedValue)">
-                        <mat-card class="exp-card" (click)="perfil_editar('perfil')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{ 'inscripcion.perfil' |
-                                translate }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-user fa-5x"></i>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
+                <div *ngIf="!tagsObject.formacion_academica.required">
+                  {{ "GLOBAL.opcional" | translate }}
                 </div>
+              </mat-card-footer>
+            </mat-card>
+          </div>
 
-                <div class="row mb-3" *ngIf="hide_header_labels && false">
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4 mb-4" align="center" id="info_basica"
-                        *ngIf="puedeInscribirse && (basic_info_button)">
-                        <mat-card class="exp-card" (click)="perfil_editar('info_persona')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{ 'inscripcion.info_basica'
-                                | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-address-card-o fa-5x"></i>
-                                <p class="percentage">{{percentage_info}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="formacion_academica"
-                        *ngIf="puedeInscribirse && (formacion_academica_button)">
-                        <mat-card class="exp-card" (click)="perfil_editar('formacion_academica')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.formacion_academica' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-graduation-cap fa-5x"></i>
-                                <p class="percentage">{{percentage_acad}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" id="experiencia_laboral"
-                        *ngIf="puedeInscribirse && (puedeInscribirse && (experiencia_laboral))">
-                        <mat-card class="exp-card" (click)="perfil_editar('experiencia_laboral')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.experiencia_laboral' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-briefcase fa-5x"></i>
-                                <p class="percentage">{{percentage_expe}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="puedeInscribirse && (produccion_academica)" id="produccion_academica">
-                        <mat-card class="exp-card" (click)="perfil_editar('produccion_academica')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.produccion_academica' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-book fa-5x"></i>
-                                <p class="percentage">{{percentage_prod}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center"
-                        *ngIf="puedeInscribirse && (documentos_programa_button)" id="documento_programa">
-                        <mat-card class="exp-card" (click)="perfil_editar('documento_programa')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.documento_programa' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-list-alt fa-5x"></i>
-                                <p class="percentage">{{percentage_docu}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" *ngIf="puedeInscribirse"
-                        id="descuento_matricula">
-                        <mat-card class="exp-card" (click)="perfil_editar('descuento_matricula')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.descuento_matricula' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-dollar fa-5x"></i>
-                                <p class="percentage">{{percentage_desc}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4" align="center" *ngIf="puedeInscribirse"
-                        id="propuesta_grado">
-                        <mat-card class="exp-card" (click)="perfil_editar('propuesta_grado')">
-                            <mat-card-header class="mb-4 d-flex justify-content-center">{{
-                                'inscripcion.propuesta_grado' | translate
-                                }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-file-text-o fa-5x"></i>
-                                <p class="percentage">{{percentage_proy}} %</p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-
-                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4 mb-4" align="center"
-                        *ngIf="(soloPuedeVer || puedeInscribirse) && (detalle_inscripcion)">
-                        <mat-card class="exp-card" (click)="perfil_editar('perfil')">
-                            <mat-card-header>{{ 'inscripcion.perfil' | translate }}</mat-card-header>
-                            <mat-card-content class="icon-form">
-                                <i class="fa fa-user fa-5x"></i>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
+          <div
+            *ngIf="
+              tagsObject.idiomas.selected && puedeInscribirse && !soloPuedeVer
+            "
+          >
+            <mat-card class="exp-card" (click)="perfil_editar('idiomas')">
+              <mat-card-header class="exp-card-header"
+                ><b>{{ "inscripcion.idiomas" | translate }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >record_voice_over</mat-icon
+                >
+                <p class="percentage">{{ percentage_idio }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.idiomas.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
                 </div>
-            </div>
-
-            <div class="text-center mt-3">
-                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
-                    <div class="button-content">
-                        <mat-icon class="icon-help">live_help</mat-icon>
-                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
-                    </div>
-                </button>
-            </div>
-
-        </mat-card-content>
-
-        <mat-card-content class="example-items-rows trans text-center" *ngIf="!estaInscrito">
-            <div class="">
-                <ngb-progressbar [showValue]="true" type="success" [value]="percentage_total" [animated]="true"
-                    [height]="'15px'">
-                </ngb-progressbar>
-                <blockquote class="blockquote">
-                    <li>{{ 'inscripcion.aviso_progreso' | translate}}</li>
-                </blockquote>
-                <button *ngIf="!es_transferencia" mat-button class="btn boton-primary"
-                    [disabled]="total || !puedeInscribirse" (click)="realizarInscripcion()">
-                    {{ 'inscripcion.inscribirse' | translate }}
-                </button>
-            </div>
-        </mat-card-content>
-    </div>
-
-    <!--Formularios------------------------------------------------------------->
-
-
-    <!-- <mat-card [hidden]="!show_info_pregrado"> -->
-    <div *ngIf="show_info_pregrado">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_info" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
+                <div *ngIf="!tagsObject.idiomas.required">
+                  {{ "GLOBAL.opcional" | translate }}
                 </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info_pregrado=false;
-                                                                        show_acad=false; show_idiomas=false; show_expe=false; show_proy=false;
-                                                                        show_prod=false; show_docu=false; show_info_externa=false;
-                                                                        show_desc=false; mostrarBarraExterna(); redirectBecauseObservations(); ">X
-                    </button>
+              </mat-card-footer>
+            </mat-card>
+          </div>
+
+          <div
+            *ngIf="
+              tagsObject.experiencia_laboral.selected &&
+              puedeInscribirse &&
+              !soloPuedeVer
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('experiencia_laboral')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.experiencia_laboral" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">work_history</mat-icon>
+                <p class="percentage">{{ percentage_expe }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.experiencia_laboral.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
                 </div>
-            </div>
-            <mat-tab-group>
-                <mat-tab label="{{ 'inscripcion.info_caracteristica' | translate }}">
-                    <ngx-crud-info-caracteristica_pregrado [info_caracteristica_id]="info_ente_id"
-                        (eventChange)="perfil_editar('info_contacto')" (result)="setPercentage_info_externo($event,1)">
-                    </ngx-crud-info-caracteristica_pregrado>
-                </mat-tab>
-                <mat-tab label="{{ 'inscripcion.informacion_contacto' | translate }}">
-                    <ngx-crud-informacion-contacto [informacion_contacto_id]="info_ente_id"
-                        (eventChange)="perfil_editar('default')" (result)="setPercentage_info_externo($event,2)">
-                    </ngx-crud-informacion-contacto>
-                </mat-tab>
-                <mat-tab label="{{ 'inscripcion.informacion_familiar' | translate }}">
-                    <ngx-crud-informacion-familiar (eventChange)="perfil_editar('default')"
-                        (result)="setPercentage_info_externo($event,3)">
-                    </ngx-crud-informacion-familiar>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card-content>
-    </div>
-
-    <!-- <mat-card [hidden]="!show_info_externa"> -->
-    <div *ngIf="show_info_externa">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_info" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
+                <div *ngIf="!tagsObject.experiencia_laboral.required">
+                  {{ "GLOBAL.opcional" | translate }}
                 </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn" (click)="show_profile=false; show_info_pregrado=false;
-                                show_acad=false; show_idiomas=false; show_expe=false; show_proy=false;
-                                show_prod=false; show_docu=false; show_info_externa=false;
-                                show_desc=false; mostrarBarraExterna(); redirectBecauseObservations();">X
-                    </button>
+              </mat-card-footer>
+            </mat-card>
+          </div>
+
+          <div
+            *ngIf="
+              tagsObject.produccion_academica.selected &&
+              puedeInscribirse &&
+              !soloPuedeVer
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('produccion_academica')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.produccion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">article</mat-icon>
+                <p class="percentage">{{ percentage_prod }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.produccion_academica.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
                 </div>
-            </div>
-            <mat-tab-group>
-                <mat-tab label="{{ 'inscripcion.info_caracteristica' | translate }}">
-                    <ngx-crud-info-caracteristica_pregrado [info_caracteristica_id]=info_ente_id
-                        (eventChange)="perfil_editar('info_contacto')" (result)="setPercentage_info_externo($event,1)">
-                    </ngx-crud-info-caracteristica_pregrado>
-                </mat-tab>
-                <mat-tab label="{{ 'inscripcion.informacion_contacto' | translate }}">
-                    <ngx-crud-informacion-contacto [informacion_contacto_id]=info_ente_id
-                        (eventChange)="perfil_editar('default')" (result)="setPercentage_info_externo($event,2)">
-                    </ngx-crud-informacion-contacto>
-                </mat-tab>
-                <mat-tab label="{{ 'inscripcion.informacion_familiar' | translate }}">
-                    <ngx-crud-informacion-familiar (eventChange)="perfil_editar('default')"
-                        (result)="setPercentage_info_externo($event,3)">
-                    </ngx-crud-informacion-familiar>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card-content>
-    </div>
-
-    <!-- <mat-card [hidden]="!show_info"> -->
-    <div *ngIf="show_info">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_info" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
+                <div *ngIf="!tagsObject.produccion_academica.required">
+                  {{ "GLOBAL.opcional" | translate }}
                 </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations(); ">X
-                    </button>
+              </mat-card-footer>
+            </mat-card>
+          </div>
+
+          <div
+            *ngIf="
+              tagsObject.documento_programa.selected &&
+              puedeInscribirse &&
+              !soloPuedeVer
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('documento_programa')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.documento_programa" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >picture_as_pdf</mat-icon
+                >
+                <p class="percentage">{{ percentage_docu }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.documento_programa.required">
+                  <b>{{ "GLOBAL.obligatorio" | translate }}</b>
                 </div>
-            </div>
-            <mat-tab-group>
-                <mat-tab label="{{ 'inscripcion.info_caracteristica' | translate }}">
-                    <ngx-crud-info-caracteristica [info_caracteristica_id]="info_ente_id"
-                        [porcentaje]="percentage_tab_info[1]" (eventChange)="perfil_editar('info_contacto')"
-                        (result)="setPercentage_info($event,1)">
-                    </ngx-crud-info-caracteristica>
-                </mat-tab>
-                <mat-tab label="{{ 'inscripcion.informacion_contacto' | translate }}">
-                    <ngx-crud-informacion-contacto [informacion_contacto_id]="info_ente_id"
-                        (eventChange)="perfil_editar('default')" (result)="setPercentage_info($event,2)">
-                    </ngx-crud-informacion-contacto>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card-content>
-    </div>
-
-    <!-- TAG y formularios de formacion academica -->
-
-    <!-- <mat-card [hidden]="!show_acad_pregrado"> -->
-    <div *ngIf="show_acad_pregrado">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_acad" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
+                <div *ngIf="!tagsObject.documento_programa.required">
+                  <b>{{ "GLOBAL.opcional" | translate }}</b>
                 </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info_pregrado=false; show_acad_pregrado=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations(); ">X
-                    </button>
+              </mat-card-footer>
+            </mat-card>
+          </div>
+
+          <div
+            *ngIf="
+              tagsObject.descuento_matricula.selected &&
+              puedeInscribirse &&
+              !soloPuedeVer
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('descuento_matricula')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.descuento_matricula" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">history_edu</mat-icon>
+                <p class="percentage">{{ percentage_desc }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.descuento_matricula.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
                 </div>
-            </div>
-
-            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-                <mat-tab label="{{ 'inscripcion.icfes' | translate }}" active=true>
-                    <ngx-crud-icfes [info_persona_id]=info_persona_id (result)="setPercentage_acad_pre($event,0)">
-                    </ngx-crud-icfes>
-                </mat-tab>
-                <mat-tab *ngIf="!es_transferencia" label="{{ 'inscripcion.universidad' | translate }}">
-                    <ngx-crud-preguntas [info_formacion_academica_id]=info_persona_id
-                        (result)="setPercentage_acad_pre($event,1)"></ngx-crud-preguntas>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card-content>
-    </div>
-
-    <!-- <mat-card [hidden]="!show_acad"> -->
-    <div *ngIf="show_acad">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_acad" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
+                <div *ngIf="!tagsObject.descuento_matricula.required">
+                  {{ "GLOBAL.opcional" | translate }}
                 </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations(); ">X
-                    </button>
+              </mat-card-footer>
+            </mat-card>
+          </div>
+
+          <div
+            *ngIf="
+              tagsObject.propuesta_grado.selected &&
+              puedeInscribirse &&
+              !soloPuedeVer
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('propuesta_grado')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.propuesta_grado" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >workspace_premium</mat-icon
+                >
+                <p class="percentage">{{ percentage_proy }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.propuesta_grado.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
                 </div>
-            </div>
-
-            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-
-                <mat-tab label="{{ 'inscripcion.formacion_academica' | translate }}" active=true>
-                    <ngx-list-formacion-academica (result)="setPercentage_acad($event,0)">
-                    </ngx-list-formacion-academica>
-                </mat-tab>
-
-            </mat-tab-group>
-
-            <div class="text-center">
-                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
-                    <div class="button-content">
-                        <mat-icon class="icon-help">live_help</mat-icon>
-                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
-                    </div>
-                </button>
-            </div>
-
-        </mat-card-content>
-    </div>
-
-    <!-- idiomas -->
-    <div *ngIf="show_idiomas">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_idio" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
+                <div *ngIf="!tagsObject.propuesta_grado.required">
+                  {{ "GLOBAL.opcional" | translate }}
                 </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations();">X
-                    </button>
-                </div>
-            </div>
+              </mat-card-footer>
+            </mat-card>
+          </div>
 
-            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-                <mat-tab label="{{ 'inscripcion.idiomas' | translate }}">
-                    <ngx-list-idiomas (result)="setPercentage_idio($event,0)"
-                        (bridge_create_inscripcion)="create_inscription($event)" [inscripcion_id]="inscripcion_id">
-                    </ngx-list-idiomas>
-                </mat-tab>
-            </mat-tab-group>
+          <div
+            *ngIf="
+              tagsObject.perfil.selected && (soloPuedeVer || puedeInscribirse)
+            "
+          >
+            <mat-card class="exp-card" (click)="perfil_editar('perfil')">
+              <mat-card-header class="exp-card-header"
+                ><b>{{ "inscripcion.perfil" | translate }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">person_check</mat-icon>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
 
-            <div class="text-center">
-                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
-                    <div class="button-content">
-                        <mat-icon class="icon-help">live_help</mat-icon>
-                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
-                    </div>
-                </button>
-            </div>
-        </mat-card-content>
-    </div>
+        <div
+          class="container"
+          *ngIf="!hide_header_labels && false"
+          style="margin-top: 1rem"
+        >
+          <div
+            id="info_basica"
+            *ngIf="
+              puedeInscribirse &&
+              ((selectTipo == 'Pregrado' && selectedValue) ||
+                selectTipo == 'Posgrado' ||
+                selectTipo == 'Transferencia interna' ||
+                selectTipo == 'Reingreso' ||
+                selectTipo == 'Transferencia externa' ||
+                selectTipo == 'Transferencia externa')
+            "
+          >
+            <mat-card class="exp-card" (click)="perfil_editar('info_persona')">
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.info_basica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">info</mat-icon>
+                <p class="percentage">{{ percentage_info }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
+          <div
+            id="formacion_academica"
+            *ngIf="
+              puedeInscribirse &&
+              ((selectTipo == 'Pregrado' && selectedValue) ||
+                selectTipo == 'Posgrado' ||
+                selectTipo == 'Transferencia externa')
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('formacion_academica')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.formacion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">school</mat-icon>
+                <p class="percentage">{{ percentage_acad }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-    <!-- <mat-card [hidden]="!show_expe"> -->
-    <div *ngIf="show_expe">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_expe" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
-                </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations();">X
-                    </button>
-                </div>
-            </div>
-            <mat-tab-group fullWidth>
-                <mat-tab label="{{ 'inscripcion.experiencia_laboral' | translate }}">
-                    <ngx-list-experiencia-laboral [ente_id]="info_ente_id" (result)="setPercentage_expe($event,0)">
-                    </ngx-list-experiencia-laboral>
-                </mat-tab>
-            </mat-tab-group>
+          <div
+            id="experiencia_laboral"
+            *ngIf="
+              puedeInscribirse && selectTipo == 'Posgrado' && selectedValue
+            "
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('experiencia_laboral')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.experiencia_laboral" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">work_history</mat-icon>
+                <p class="percentage">{{ percentage_expe }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-            <div class="text-center">
-                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
-                    <div class="button-content">
-                        <mat-icon class="icon-help">live_help</mat-icon>
-                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
-                    </div>
-                </button>
-            </div>
-        </mat-card-content>
-    </div>
+          <div
+            *ngIf="
+              puedeInscribirse && selectTipo == 'Posgrado' && selectedValue
+            "
+            id="produccion_academica"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('produccion_academica')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.produccion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">article</mat-icon>
+                <p class="percentage">{{ percentage_prod }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-    <!-- <mat-card [hidden]="!show_prod"> -->
-    <div *ngIf="show_prod">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_prod" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
-                </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations();">X
-                    </button>
-                </div>
-            </div>
-            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-                <mat-tab label="{{ 'produccion_academica.producciones_academicas' | translate }}">
-                    <ngx-list-produccion-academica (result)="setPercentage_prod($event,0)">
-                    </ngx-list-produccion-academica>
-                </mat-tab>
-            </mat-tab-group>
+          <div
+            *ngIf="
+              puedeInscribirse && selectTipo == 'Posgrado' && selectedValue
+            "
+            id="documento_programa"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('documento_programa')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.documento_programa" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >picture_as_pdf</mat-icon
+                >
+                <p class="percentage">{{ percentage_docu }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-            <div class="text-center">
-                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
-                    <div class="button-content">
-                        <mat-icon class="icon-help">live_help</mat-icon>
-                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
-                    </div>
-                </button>
-            </div>
-        </mat-card-content>
-    </div>
+          <div
+            *ngIf="
+              puedeInscribirse && selectTipo == 'Posgrado' && selectedValue
+            "
+            id="descuento_matricula"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('descuento_matricula')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.descuento_matricula" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">history_edu</mat-icon>
+                <p class="percentage">{{ percentage_desc }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-    <!-- <mat-card [hidden]="!show_docu"> -->
-    <div *ngIf="show_docu">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_docu" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
-                </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations();">X
-                    </button>
-                </div>
-            </div>
-            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-                <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
-                    <ngx-list-documento-programa (result)="setPercentage_docu($event,0)" [persona_id]="info_persona_id"
-                        [inscripcion_id]="inscripcion_id">
-                    </ngx-list-documento-programa>
-                </mat-tab>
-            </mat-tab-group>
+          <div
+            *ngIf="
+              puedeInscribirse && selectTipo == 'Posgrado' && selectedValue
+            "
+            id="propuesta_grado"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('propuesta_grado')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.propuesta_grado" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >workspace_premium</mat-icon
+                >
+                <p class="percentage">{{ percentage_proy }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-            <div class="text-center">
-                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
-                    <div class="button-content">
-                        <mat-icon class="icon-help">live_help</mat-icon>
-                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
-                    </div>
-                </button>
-            </div>
-        </mat-card-content>
-    </div>
+          <div
+            *ngIf="
+              (soloPuedeVer || puedeInscribirse) &&
+              selectTipo == 'Posgrado' &&
+              selectedValue
+            "
+          >
+            <mat-card class="exp-card" (click)="perfil_editar('perfil')">
+              <mat-card-header class="exp-card-header"
+                ><b>{{ "inscripcion.perfil" | translate }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">person_check</mat-icon>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
 
-    <!-- <mat-card [hidden]="!show_desc"> -->
-    <div *ngIf="show_desc">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_desc" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
-                </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations();">X
-                    </button>
-                </div>
-            </div>
-            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-                <mat-tab label="{{ 'inscripcion.descuento_matricula' | translate }}">
-                    <ngx-list-descuento-academico (result)="setPercentage_desc($event,0)" [persona_id]="info_persona_id"
-                        [inscripcion_id]="inscripcion_id">
-                    </ngx-list-descuento-academico>
-                </mat-tab>
-            </mat-tab-group>
+        <div
+          class="container"
+          *ngIf="hide_header_labels && false"
+          style="margin-top: 1rem"
+        >
+          <div id="info_basica" *ngIf="puedeInscribirse && basic_info_button">
+            <mat-card class="exp-card" (click)="perfil_editar('info_persona')">
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.info_basica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">info</mat-icon>
+                <p class="percentage">{{ percentage_info }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-            <div class="text-center">
-                <button (click)="openVideoModal('video7')" class="round-button btn boton-help float-right">
-                    <div class="button-content">
-                        <mat-icon class="icon-help">live_help</mat-icon>
-                        <p style="font-weight: 500;">{{ 'GLOBAL.ayuda' | translate }}</p>
-                    </div>
-                </button>
-            </div>
-        </mat-card-content>
-    </div>
+          <div
+            id="formacion_academica"
+            *ngIf="puedeInscribirse && formacion_academica_button"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('formacion_academica')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.formacion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">school</mat-icon>
+                <p class="percentage">{{ percentage_acad }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-    <!-- <mat-card [hidden]="!show_proy"> -->
-    <div *ngIf="show_proy">
-        <mat-card-content>
-            <div class="row">
-                <div class="col-md-11">
-                    <ngb-progressbar [showValue]="true" type="success" [value]="percentage_proy" [animated]="true"
-                        [height]="'15px'">
-                    </ngb-progressbar>
-                </div>
-                <div class="col-md-1" align="right">
-                    <button class="btn btn-danger btn-icon input-group-text btn-tn"
-                        (click)="show_profile=false; show_info=false; show_acad=false;
-                                show_idiomas=false; show_expe=false; show_proy=false; show_prod=false; show_docu=false;
-                                show_desc=false; showRegreso=true; mostrarBarraExterna(); redirectBecauseObservations();">X
-                    </button>
-                </div>
-            </div>
-            <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-                <mat-tab label="{{ 'inscripcion.propuesta_grado' | translate }}">
-                    <ngx-crud-propuesta-grado (result)="setPercentage_proy($event,0)" [persona_id]="info_ente_id"
-                        [inscripcion_id]="inscripcion_id" (crear_inscripcion)="create_inscription($event)">
-                    </ngx-crud-propuesta-grado>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card-content>
-    </div>
+          <div
+            id="experiencia_laboral"
+            *ngIf="puedeInscribirse && puedeInscribirse && experiencia_laboral"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('experiencia_laboral')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.experiencia_laboral" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">work_history</mat-icon>
+                <p class="percentage">{{ percentage_expe }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-    <!--Vista de perfil------------------------------------------------------------->
+          <div
+            *ngIf="puedeInscribirse && produccion_academica"
+            id="produccion_academica"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('produccion_academica')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.produccion_academica" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">article</mat-icon>
+                <p class="percentage">{{ percentage_prod }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
 
-    <!-- <div [hidden]="!show_profile"> -->
-    <div *ngIf="show_profile">
-        <ngx-perfil class="text-center" [SuiteTags]="tagsObject" [en_revision]="false"
-            (revisar_doc)="revisarDocumento($event)" (url_editar)="perfil_editar($event)"
-            info_persona_id="{{this.info_persona_id}}" [inscripcion_id]="inscripcion_id" [imprimir]="imprimir">
-        </ngx-perfil>
-    </div>
-    <div *ngIf="showRegreso && !hide_header_labels">
-        <button (click)="activateTab()" class="btn boton-primary btn-sm" style="max-height: 35px;">
-            <div class="d-flex">
-                <mat-icon>arrow_back_ios</mat-icon>
-                <p class="mt-1 ml-1">{{ 'GLOBAL.regresar' | translate }}</p>
-            </div>
+          <div
+            *ngIf="puedeInscribirse && documentos_programa_button"
+            id="documento_programa"
+          >
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('documento_programa')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.documento_programa" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >picture_as_pdf</mat-icon
+                >
+                <p class="percentage">{{ percentage_docu }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div *ngIf="puedeInscribirse" id="descuento_matricula">
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('descuento_matricula')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.descuento_matricula" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">history_edu</mat-icon>
+                <p class="percentage">{{ percentage_desc }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div *ngIf="puedeInscribirse" id="propuesta_grado">
+            <mat-card
+              class="exp-card"
+              (click)="perfil_editar('propuesta_grado')"
+            >
+              <mat-card-header class="exp-card-header"
+                ><b>{{
+                  "inscripcion.propuesta_grado" | translate
+                }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon"
+                  >workspace_premium</mat-icon
+                >
+                <p class="percentage">{{ percentage_proy }} %</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div
+            *ngIf="(soloPuedeVer || puedeInscribirse) && detalle_inscripcion"
+          >
+            <mat-card class="exp-card" (click)="perfil_editar('perfil')">
+              <mat-card-header class="exp-card-header"
+                ><b>{{ "inscripcion.perfil" | translate }}</b></mat-card-header
+              >
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">person_check</mat-icon>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTON DE AYUDA -->
+      <div style="display: flex; justify-content: end; padding: 1rem">
+        <button
+          mat-fab
+          color="primary"
+          (click)="openVideoModal('video7')"
+          class="round-button btn boton-help float-right"
+        >
+          <div>
+            <mat-icon class="icon-help">live_help</mat-icon>
+            <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+          </div>
         </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <!-- BARRA DE PROGRESO  -->
+  <mat-card *ngIf="!estaInscrito" style="margin-top: 1rem">
+    <mat-card-content>
+      <div class="">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_total"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+        <blockquote class="blockquote">
+          <li>{{ "inscripcion.aviso_progreso" | translate }}</li>
+        </blockquote>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <!-- BOTON PARA INSCRIBIRSE -->
+  <button
+    style="margin-top: 1rem; width: 100%"
+    *ngIf="!es_transferencia"
+    mat-flat-button
+    color="accent"
+    [disabled]="total || !puedeInscribirse"
+    (click)="realizarInscripcion()"
+  >
+    {{ "inscripcion.inscribirse" | translate }}
+  </button>
+</div>
+
+<!--Formularios------------------------------------------------------------->
+
+<!-- <mat-card [hidden]="!show_info_pregrado"> -->
+<div *ngIf="show_info_pregrado">
+  <mat-card>
+    <mat-card-content>
+      <div class="row">
+        <div class="col-md-11">
+          <ngb-progressbar
+            [showValue]="true"
+            type="success"
+            [value]="percentage_info"
+            [animated]="true"
+            [height]="'15px'"
+          >
+          </ngb-progressbar>
+        </div>
+        <div class="col-md-1" align="right">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="
+              show_profile = false;
+              show_info_pregrado = false;
+              show_acad = false;
+              show_idiomas = false;
+              show_expe = false;
+              show_proy = false;
+              show_prod = false;
+              show_docu = false;
+              show_info_externa = false;
+              show_desc = false;
+              mostrarBarraExterna();
+              redirectBecauseObservations()
+            "
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+      <mat-tab-group>
+        <mat-tab label="{{ 'inscripcion.info_caracteristica' | translate }}">
+          <ngx-crud-info-caracteristica_pregrado
+            [info_caracteristica_id]="info_ente_id"
+            (eventChange)="perfil_editar('info_contacto')"
+            (result)="setPercentage_info_externo($event, 1)"
+          >
+          </ngx-crud-info-caracteristica_pregrado>
+        </mat-tab>
+        <mat-tab label="{{ 'inscripcion.informacion_contacto' | translate }}">
+          <ngx-crud-informacion-contacto
+            [informacion_contacto_id]="info_ente_id"
+            (eventChange)="perfil_editar('default')"
+            (result)="setPercentage_info_externo($event, 2)"
+          >
+          </ngx-crud-informacion-contacto>
+        </mat-tab>
+        <mat-tab label="{{ 'inscripcion.informacion_familiar' | translate }}">
+          <ngx-crud-informacion-familiar
+            (eventChange)="perfil_editar('default')"
+            (result)="setPercentage_info_externo($event, 3)"
+          >
+          </ngx-crud-informacion-familiar>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- <mat-card [hidden]="!show_info_externa"> -->
+<div *ngIf="show_info_externa">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_info"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info_pregrado = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_info_externa = false;
+            show_desc = false;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
     </div>
+    <mat-tab-group>
+      <mat-tab label="{{ 'inscripcion.info_caracteristica' | translate }}">
+        <ngx-crud-info-caracteristica_pregrado
+          [info_caracteristica_id]="info_ente_id"
+          (eventChange)="perfil_editar('info_contacto')"
+          (result)="setPercentage_info_externo($event, 1)"
+        >
+        </ngx-crud-info-caracteristica_pregrado>
+      </mat-tab>
+      <mat-tab label="{{ 'inscripcion.informacion_contacto' | translate }}">
+        <ngx-crud-informacion-contacto
+          [informacion_contacto_id]="info_ente_id"
+          (eventChange)="perfil_editar('default')"
+          (result)="setPercentage_info_externo($event, 2)"
+        >
+        </ngx-crud-informacion-contacto>
+      </mat-tab>
+      <mat-tab label="{{ 'inscripcion.informacion_familiar' | translate }}">
+        <ngx-crud-informacion-familiar
+          (eventChange)="perfil_editar('default')"
+          (result)="setPercentage_info_externo($event, 3)"
+        >
+        </ngx-crud-informacion-familiar>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</div>
+
+<!-- <mat-card [hidden]="!show_info"> -->
+<div *ngIf="show_info">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_info"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-tab-group>
+      <mat-tab label="{{ 'inscripcion.info_caracteristica' | translate }}">
+        <ngx-crud-info-caracteristica
+          [info_caracteristica_id]="info_ente_id"
+          [porcentaje]="percentage_tab_info[1]"
+          (eventChange)="perfil_editar('info_contacto')"
+          (result)="setPercentage_info($event, 1)"
+        >
+        </ngx-crud-info-caracteristica>
+      </mat-tab>
+      <mat-tab label="{{ 'inscripcion.informacion_contacto' | translate }}">
+        <ngx-crud-informacion-contacto
+          [informacion_contacto_id]="info_ente_id"
+          (eventChange)="perfil_editar('default')"
+          (result)="setPercentage_info($event, 2)"
+        >
+        </ngx-crud-informacion-contacto>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</div>
+
+<!-- TAG y formularios de formacion academica -->
+
+<!-- <mat-card [hidden]="!show_acad_pregrado"> -->
+<div *ngIf="show_acad_pregrado">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_acad"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info_pregrado = false;
+            show_acad_pregrado = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+      <mat-tab label="{{ 'inscripcion.icfes' | translate }}" active="true">
+        <ngx-crud-icfes
+          [info_persona_id]="info_persona_id"
+          (result)="setPercentage_acad_pre($event, 0)"
+        >
+        </ngx-crud-icfes>
+      </mat-tab>
+      <mat-tab
+        *ngIf="!es_transferencia"
+        label="{{ 'inscripcion.universidad' | translate }}"
+      >
+        <ngx-crud-preguntas
+          [info_formacion_academica_id]="info_persona_id"
+          (result)="setPercentage_acad_pre($event, 1)"
+        ></ngx-crud-preguntas>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</div>
+
+<!-- <mat-card [hidden]="!show_acad"> -->
+<div *ngIf="show_acad">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_acad"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+      <mat-tab
+        label="{{ 'inscripcion.formacion_academica' | translate }}"
+        active="true"
+      >
+        <ngx-list-formacion-academica (result)="setPercentage_acad($event, 0)">
+        </ngx-list-formacion-academica>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div style="display: flex; justify-content: center;">
+      <button
+        (click)="openVideoModal('video7')"
+        mat-fab
+        color="primary"
+      >
+        <div class="button-content">
+          <mat-icon class="icon-help">live_help</mat-icon>
+          <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+        </div>
+      </button>
+    </div>
+  </mat-card-content>
+</div>
+
+<!-- idiomas -->
+<div *ngIf="show_idiomas">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_idio"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+      <mat-tab label="{{ 'inscripcion.idiomas' | translate }}">
+        <ngx-list-idiomas
+          (result)="setPercentage_idio($event, 0)"
+          (bridge_create_inscripcion)="create_inscription($event)"
+          [inscripcion_id]="inscripcion_id"
+        >
+        </ngx-list-idiomas>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div style="display: flex; justify-content: center;">
+      <button
+        mat-fab
+        color="primary"
+        (click)="openVideoModal('video7')"
+      >
+        <div class="button-content">
+          <mat-icon class="icon-help">live_help</mat-icon>
+          <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+        </div>
+      </button>
+    </div>
+  </mat-card-content>
+</div>
+
+<!-- <mat-card [hidden]="!show_expe"> -->
+<div *ngIf="show_expe">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_expe"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-tab-group fullWidth>
+      <mat-tab label="{{ 'inscripcion.experiencia_laboral' | translate }}">
+        <ngx-list-experiencia-laboral
+          [ente_id]="info_ente_id"
+          (result)="setPercentage_expe($event, 0)"
+        >
+        </ngx-list-experiencia-laboral>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div style="display: flex; justify-content: center;">
+      <button
+        mat-fab
+        color="primary"
+        (click)="openVideoModal('video7')"
+      >
+        <div class="button-content">
+          <mat-icon class="icon-help">live_help</mat-icon>
+          <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+        </div>
+      </button>
+    </div>
+  </mat-card-content>
+</div>
+
+<!-- <mat-card [hidden]="!show_prod"> -->
+<div *ngIf="show_prod">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_prod"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+      <mat-tab
+        label="{{ 'produccion_academica.producciones_academicas' | translate }}"
+      >
+        <ngx-list-produccion-academica (result)="setPercentage_prod($event, 0)">
+        </ngx-list-produccion-academica>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div style="display: flex; justify-content: center;">
+      <button
+        mat-fab
+        color="primary"
+        (click)="openVideoModal('video7')"
+      >
+        <div class="button-content">
+          <mat-icon class="icon-help">live_help</mat-icon>
+          <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+        </div>
+      </button>
+    </div>
+  </mat-card-content>
+</div>
+
+<!-- <mat-card [hidden]="!show_docu"> -->
+<div *ngIf="show_docu">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_docu"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+      <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
+        <ngx-list-documento-programa
+          (result)="setPercentage_docu($event, 0)"
+          [persona_id]="info_persona_id"
+          [inscripcion_id]="inscripcion_id"
+        >
+        </ngx-list-documento-programa>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div style="display: flex; justify-content: center;">
+      <button
+        mat-fab
+        color="primary"
+        (click)="openVideoModal('video7')"
+      >
+        <div class="button-content">
+          <mat-icon class="icon-help">live_help</mat-icon>
+          <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+        </div>
+      </button>
+    </div>
+  </mat-card-content>
+</div>
+
+<!-- <mat-card [hidden]="!show_desc"> -->
+<div *ngIf="show_desc">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_desc"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+      <mat-tab label="{{ 'inscripcion.descuento_matricula' | translate }}">
+        <ngx-list-descuento-academico
+          (result)="setPercentage_desc($event, 0)"
+          [persona_id]="info_persona_id"
+          [inscripcion_id]="inscripcion_id"
+        >
+        </ngx-list-descuento-academico>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div style="display: flex; justify-content: center;">
+      <button
+        mat-fab
+        (click)="openVideoModal('video7')"
+      >
+        <div class="button-content">
+          <mat-icon class="icon-help">live_help</mat-icon>
+          <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+        </div>
+      </button>
+    </div>
+  </mat-card-content>
+</div>
+
+<!-- <mat-card [hidden]="!show_proy"> -->
+<div *ngIf="show_proy">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-11">
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="percentage_proy"
+          [animated]="true"
+          [height]="'15px'"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="col-md-1" align="right">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="
+            show_profile = false;
+            show_info = false;
+            show_acad = false;
+            show_idiomas = false;
+            show_expe = false;
+            show_proy = false;
+            show_prod = false;
+            show_docu = false;
+            show_desc = false;
+            showRegreso = true;
+            mostrarBarraExterna();
+            redirectBecauseObservations()
+          "
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-tab-group fullWidth (changeTab)="selectTab($event)">
+      <mat-tab label="{{ 'inscripcion.propuesta_grado' | translate }}">
+        <ngx-crud-propuesta-grado
+          (result)="setPercentage_proy($event, 0)"
+          [persona_id]="info_ente_id"
+          [inscripcion_id]="inscripcion_id"
+          (crear_inscripcion)="create_inscription($event)"
+        >
+        </ngx-crud-propuesta-grado>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</div>
+
+<!--Vista de perfil------------------------------------------------------------->
+
+<!-- <div [hidden]="!show_profile"> -->
+<div *ngIf="show_profile">
+  <ngx-perfil
+    class="text-center"
+    [SuiteTags]="tagsObject"
+    [en_revision]="false"
+    (revisar_doc)="revisarDocumento($event)"
+    (url_editar)="perfil_editar($event)"
+    info_persona_id="{{ this.info_persona_id }}"
+    [inscripcion_id]="inscripcion_id"
+    [imprimir]="imprimir"
+  >
+  </ngx-perfil>
+</div>
+
+<div *ngIf="showRegreso && !hide_header_labels" style="margin-top: 1rem">
+  <button (click)="activateTab()" mat-flat-button color="primary">
+    <mat-icon>arrow_back_ios</mat-icon>
+    <p class="mt-1 ml-1">{{ "GLOBAL.regresar" | translate }}</p>
+  </button>
 </div>

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { RequestManager } from '../managers/requestManager';
-
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { environment } from 'src/environments/environment'; 
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { RequestManager } from '../managers/requestManager'; 
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -41,7 +42,7 @@ export class SgaMidService {
     this.requestManager.setPath('SGA_MID_SERVICE');
     return this.requestManager.put(endpoint, element);
   }
-  delete(endpoint: any, element: { Id: any; }) {
+  delete(endpoint: any, element: any) {
     this.requestManager.setPath('SGA_MID_SERVICE');
     return this.requestManager.delete(endpoint, element.Id);
   }
