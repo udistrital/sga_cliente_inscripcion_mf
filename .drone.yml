@@ -85,7 +85,7 @@ steps:
     - feature/*
     - fix/*
     event:
-    - pull_request
+    - push
 
 - name: nodejs_develop
   image: node:lts-bullseye
@@ -98,7 +98,7 @@ steps:
     - feature/*
     - fix/*
     event:
-    - pull_request
+    - push
 
 - name: nodejs_release
   image: node:lts-bullseye
