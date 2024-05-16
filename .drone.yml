@@ -82,6 +82,7 @@ steps:
   - git merge --no-ff "${DRONE_SOURCE_BRANCH}"
   when:
     branch:
+    - develop
     - feature/*
     - fix/*
     event:
@@ -95,6 +96,7 @@ steps:
   - npm run build
   when:
     branch:
+    - develop
     - feature/*
     - fix/*
     event:
