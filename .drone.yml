@@ -74,6 +74,32 @@ steps:
     event:
     - push
 
+- name: merge_develop
+  image: alpine/git
+  commands:
+  - git fetch origin
+  - git checkout develop
+  - git merge --no-ff "${DRONE_SOURCE_BRANCH}"
+  when:
+    branch:
+    - feature/*
+    - fix/*
+    event:
+    - pull_request
+
+- name: nodejs_develop
+  image: node:lts-bullseye
+  commands:
+  - npm i
+  - git checkout develop
+  - npm run build
+  when:
+    branch:
+    - feature/*
+    - fix/*
+    event:
+    - pull_request
+
 - name: nodejs_release
   image: node:lts-bullseye
   commands:
