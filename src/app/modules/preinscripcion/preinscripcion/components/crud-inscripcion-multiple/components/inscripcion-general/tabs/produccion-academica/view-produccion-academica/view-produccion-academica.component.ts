@@ -7,11 +7,11 @@ import { ProduccionAcademicaPost } from 'src/app/models/produccion_academica/pro
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-view-produccion-academica',
@@ -88,8 +88,8 @@ export class ViewProduccionAcademicaComponent implements OnInit {
     this.inscripcionMidService.get('academico/produccion/tercero/' + this.persona_id)
       .subscribe((res: any) => {
         if (res !== null) {
-          if (res.status === '200') {
-            this.info_produccion_academica = <Array<ProduccionAcademicaPost>>res.data;
+          if (res.Status == '200'  && res.Data != null) {
+            this.info_produccion_academica = <Array<ProduccionAcademicaPost>>res.Data;
             this.infoCarga.nCargas = this.info_produccion_academica.length;
             this.info_produccion_academica.forEach((produccion:any) => {
               produccion["VerSoportes"] = false;
@@ -100,7 +100,7 @@ export class ViewProduccionAcademicaComponent implements OnInit {
                 let itemForm = JSON.parse(m.MetadatoSubtipoProduccionId.TipoMetadatoId.FormDefinition)
                 this.documentoService.get('documento/'+m.Valor)
                   .subscribe((resp: any) => {
-                    if(resp.Status && (resp.Status == "400" || resp.status == "404")) {
+                    if(resp.Status && (resp.Status == "400" || resp.Status == "404")) {
                       this.infoFalla();
                     } else {
                       let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);

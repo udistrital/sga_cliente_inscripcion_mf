@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PreinscripcionModule } from './modules/preinscripcion/preinscripcion.module';
@@ -29,7 +29,6 @@ import { ListService } from './services/list.service';
 import { NewNuxeoService } from './services/new_nuxeo.service';
 import { ParametrosService } from './services/parametros.service';
 import { ProyectoAcademicoService } from './services/proyecto_academico.service';
-import { SgaMidService } from './services/sga_mid.service';
 import { TercerosMidService } from './services/terceros_mid.service';
 import { TimeService } from './services/time.service';
 import { UbicacionService } from './services/ubicacion.service';
@@ -41,32 +40,35 @@ import { ProduccionAcademicaService } from './services/produccion_academica.serv
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatListModule } from '@angular/material/list';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
 import { Overlay } from '@angular/cdk/overlay';
+import { LegalizacionMatriculaAspiranteComponent } from './modules/legalizacion/legalizacion-matricula-aspirante/legalizacion-matricula-aspirante.component';
 import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
 import { TerceroMidService } from './services/sga_tercero_mid.service';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { LegalizacionMatriculaComponent } from './modules/legalizacion/legalizacion-matricula/legalizacion-matricula.component';
 //import { ModalComponent } from './modules/legalizacion-matricula/components/modal/modal.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatCardModule } from '@angular/material/card';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -75,6 +77,7 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
+    LegalizacionMatriculaAspiranteComponent,
     LegalizacionMatriculaComponent,
     //ModalComponent,
   ],
@@ -83,9 +86,11 @@ export function createTranslateLoader(http: HttpClient) {
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatInputModule,
     MatSnackBarModule,
     BrowserModule,
     MatDialogModule,
+    MatListModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatStepperModule,
@@ -100,9 +105,9 @@ export function createTranslateLoader(http: HttpClient) {
     MatTabsModule,
     MatExpansionModule,
     MatAutocompleteModule,
-    MatInputModule,
     NgxDocViewerModule,
     MatProgressSpinnerModule,
+    MatButtonModule,
     StoreModule.forRoot(rootReducer),
     TranslateModule.forRoot({
       loader: {
@@ -115,10 +120,8 @@ export function createTranslateLoader(http: HttpClient) {
     SpinnerUtilModule,
   ],
   providers: [
-    TranslateService,
-    TranslateStore,
-    PopUpManager,
     AnyService,
+    CalendarioMidService,
     CampusMidService,
     CIDCService,
     CoreService,
@@ -131,28 +134,33 @@ export function createTranslateLoader(http: HttpClient) {
     ExperienciaService,
     IdiomaService,
     ImplicitAutenticationService,
+    InscripcionMidService,
     InscripcionService,
     ListService,
     NewNuxeoService,
     ParametrosService,
+    PopUpManager,
+    ProduccionAcademicaService,
     ProyectoAcademicoService,
-    SgaMidService,
+    TerceroMidService,
     TercerosMidService,
     TimeService,
+    TranslateService,
+    TranslateStore,
     UbicacionService,
     UserService,
     UtilidadesService,
-    ProduccionAcademicaService,
-    InscripcionMidService,
-    CalendarioMidService,
-    TerceroMidService,
-    {provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi:true},
+    { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MatDialogRef, useValue: {} },
-    { 
-      provide: MAT_TOOLTIP_SCROLL_STRATEGY,
+    {
+      provide: MAT_TOOLTIP_SCROLL_STRATEGY, 
       deps: [Overlay],
       useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.reposition({ scrollThrottle: 20 })
-    }
+    },
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useValue: MAT_SELECT_SCROLL_STRATEGY_PROVIDER,
+     },
   ],
   bootstrap: [AppComponent]
 })

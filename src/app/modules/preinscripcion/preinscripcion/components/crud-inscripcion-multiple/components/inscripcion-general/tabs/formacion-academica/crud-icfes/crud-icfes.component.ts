@@ -4,11 +4,11 @@ import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Lugar } from 'src/app/models/informacion/lugar';
 import { ListService } from 'src/app/services/list.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
-import Swal from 'sweetalert2';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_ICFES } from './form-icfes';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
@@ -415,7 +415,7 @@ export class CrudIcfesComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_icfes = <any>infoIcfes;
           this.inscripcionMidService.post('inscripciones/pruebas-de-estado/informacion/saber-once', this.info_icfes)
@@ -449,7 +449,7 @@ export class CrudIcfesComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete) => {
+      .then((willDelete: any) => {
         if (willDelete.value) {
           this.id_inscripcion = Number(sessionStorage.getItem('IdInscripcion'));
           const inscripcion = {

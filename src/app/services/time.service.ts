@@ -19,7 +19,7 @@ export class TimeService {
    */
   async getDate(format?: string): Promise<Date> {
     return new Promise<Date>((resolve, reject) => {
-    this.anyService.get(environment.SGA_MID_SERVICE,'time_bog')
+    this.anyService.get(environment.SGA_INSCRIPCION_MID_SERVICE,'time_bog')
       .subscribe((respTime: any) => {
         if (!format) {
           const timeNow = new Date(respTime.Data.BOG);

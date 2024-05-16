@@ -1,11 +1,11 @@
 <!--Botón de descarga cuando el recibo se encuentra activo-->
 <button *ngIf="download" (click)="showDownload()" class="boton-search">
-    <mat-icon class="icon-search">search-outline</mat-icon> {{ 'inscripcion.visualizar_recibo' | translate }} 
-  </button>
-  
-  <!--Botón de bloqueo cuando el recibo se encuentra inactivo-->
-  <label class="recibo-vencido" *ngIf="expired">
-    &nbsp;<mat-icon class="close-icon">close</mat-icon>{{ 'inscripcion.Recibo_vencido' | translate }} </label>
-  
-    
-  
+  &nbsp;<mat-icon class="icon-search">search-outline</mat-icon>
+  {{ "inscripcion.visualizar_recibo" | translate }}
+</button>
+
+<!--Botón de bloqueo cuando el recibo se encuentra inactivo-->
+<label class="recibo-vencido" *ngIf="expired">
+  &nbsp;<mat-icon class="close-icon">close</mat-icon
+  >{{ "inscripcion.Recibo_vencido" | translate }}
+</label>
