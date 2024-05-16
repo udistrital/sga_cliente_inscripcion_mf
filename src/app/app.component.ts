@@ -10,7 +10,7 @@ import { UserService } from './services/users.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  //title = 'sga-cliente-inscripcion-mf';
+  title = 'sga-cliente-inscripcion-mf';
 
   ngOnInit(): void {
     
