@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TransferenciaComponent } from './modules/transferencia/transferencia.component';
 import { SolicitudTransferenciaComponent } from './modules/transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
+import { LegalizacionMatriculaAspiranteComponent } from './modules/legalizacion/legalizacion-matricula-aspirante/legalizacion-matricula-aspirante.component';
 import { LegalizacionMatriculaComponent } from './modules/legalizacion-matricula/legalizacion-matricula.component';
 
 const routes: Routes = [
@@ -23,12 +24,16 @@ const routes: Routes = [
     component: SolicitudTransferenciaComponent,
   },
   { 
-    path: "legalizacion-matricula-aspirante",
+    path: "legalizacion-matricula",
     component: LegalizacionMatriculaComponent
   },
   { 
     path: "**",
     redirectTo: "preinscripcion"
+  },
+  {
+    path: 'legalizacion-matricula-aspirante',
+    component: LegalizacionMatriculaAspiranteComponent,
   }
 ];
 

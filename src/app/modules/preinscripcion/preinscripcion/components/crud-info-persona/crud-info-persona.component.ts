@@ -114,7 +114,7 @@ export class CrudInfoPersonaComponent implements OnInit {
       this.info_persona_id.toString() !== '' && this.info_persona_id.toString() !== '0') {
       await this.terceroMidService.get('personas/' + this.info_persona_id)
         .subscribe(res => {
-          res = res.data
+          res = res.Data
           if (res !== null && res.Id !== undefined) {
             const temp = <InfoPersona>res;
             this.aceptaTerminos = true;

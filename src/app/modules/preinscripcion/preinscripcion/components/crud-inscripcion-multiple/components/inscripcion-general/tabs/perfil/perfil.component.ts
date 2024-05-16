@@ -202,7 +202,7 @@ export class PerfilComponent implements OnInit {
 
     this.inscripcionMidService.post('recibos/comprobante-inscripcion', this.data).subscribe(
       (response: any) => {
-        const dataComprobante = new Uint8Array(atob(response['data']).split('').map((char: any) => char.charCodeAt(0)));
+        const dataComprobante = new Uint8Array(atob(response['Data']).split('').map((char: any) => char.charCodeAt(0)));
         let comprobante_generado = window.URL.createObjectURL(new Blob([dataComprobante], { type: 'application/pdf' }));
         let nombre: any = sessionStorage.getItem('nameFolder');
         this.guardar_archivo(comprobante_generado, nombre, ".pdf");
