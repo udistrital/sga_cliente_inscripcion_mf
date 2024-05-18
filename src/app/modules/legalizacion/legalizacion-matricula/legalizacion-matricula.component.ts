@@ -426,8 +426,14 @@ export class LegalizacionMatriculaComponent {
             inscrito.estado_admision = 'admision.estado_admitido_legalizado';
             const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
             inscripcion.EstadoInscripcionId.Id = 8;
-            const resEstado = await this.actualizarEstadoInscripcion(inscripcion);
-            await this.generarLiquidacionmatricula()
+            const resEstado: any = await this.actualizarEstadoInscripcion(inscripcion);
+            const resLiquidacion = await this.generarLiquidacionmatricula()
+            if(Object.keys(resEstado).length == 0 || !resLiquidacion) {
+              this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.cambio_estado_legalizado_error'));
+            } else {
+              this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_matricula.cambio_estado_legalizado_ok'));
+            }
+            console.log("INFO AL ACTUALIZAR ESTADO GENERAL:", resEstado, resLiquidacion);
           }
         }
       }
@@ -447,21 +453,32 @@ export class LegalizacionMatriculaComponent {
       "tipo_programa_id": nivel,
       "activo": true,
     }
-    const res: any = await this.crearLiquidacionMatricula(liquidacionBody)
-    const liquidacionId = res._id
-    console.log("INFO BODY LIQUIDACIÓN:", this.aspiranteActualId, periodo, programaAcademico, nivel, liquidacionBody, res, liquidacionId)
-    await this.generarDetallesLiquidacionMatricula(liquidacionId);
-  }
+    const resLiquidacion: any = await this.crearLiquidacionMatricula(liquidacionBody)
+    if (Object.keys(resLiquidacion).length == 0) {
+      return false;
+    }
 
+    const liquidacionId = resLiquidacion._id
+    const resDetalle = await this.generarDetallesLiquidacionMatricula(liquidacionId);
+    if (!resDetalle) {
+      return false;
+    }
+
+    return true;
+  }
 
   crearLiquidacionMatricula(liquidacionBody: any) {
     return new Promise((resolve, reject) => {
       this.liquidacionMatriculaService.post('liquidacion', liquidacionBody)
         .subscribe((res: any) => {
-          resolve(res.Data)
+          if (res.Success) {
+            resolve(res.Data)
+          } else {
+            resolve({})
+          }
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.liquidacion_error'));
             console.log(error);
             reject([]);
           });
@@ -472,10 +489,14 @@ export class LegalizacionMatriculaComponent {
     return new Promise((resolve, reject) => {
       this.liquidacionMatriculaService.post('liquidacion-detalle', detalleBody)
         .subscribe((res: any) => {
-          resolve(res.Data)
+          if (res.Success) {
+            resolve(res.Data)
+          } else {
+            resolve({})
+          }
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.liquidacion_detalle_error'));
             console.log(error);
             reject([]);
           });
@@ -484,7 +505,6 @@ export class LegalizacionMatriculaComponent {
 
   async generarDetallesLiquidacionMatricula(liquidacionId: any) {
     const conceptosLiquidacion: any = await this.recuperarConceptosLiquidacion();
-    console.log("INFO GENERACION DETALLES:", liquidacionId, conceptosLiquidacion, this.infoLegalizacionAspirantes[this.aspiranteActualId]);
     const valores: any = this.calcularValoresConceptos();
     for (const key in valores) {
       const concepto = conceptosLiquidacion.find((item: any) => item.Id == key);
@@ -497,10 +517,12 @@ export class LegalizacionMatriculaComponent {
         "liquidacionbid": liquidacionId,
       }
 
-      const res = await this.crearDetalleLiquidacionMatricula(detalleLiquidacionBody);
-
-      console.log(`Key: ${key}, Value: ${valores[key]}`, concepto, detalleLiquidacionBody, res);
+      const res: any = await this.crearDetalleLiquidacionMatricula(detalleLiquidacionBody);
+      if (Object.keys(res).length == 0) {
+        return false;
+      }
     }
+    return true;
   }
 
   recuperarConceptosLiquidacion() {
@@ -510,7 +532,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res.Data)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.anio_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.conceptos_error'));
             console.log(error);
             reject([]);
           });
