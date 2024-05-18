@@ -21,6 +21,7 @@ import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ROLES } from 'src/app/models/diccionario/diccionario';
+import { LiquidacionMatriculaService } from 'src/app/services/liquidacion_matricula.service';
 
 interface Proyecto {
   opcion: number;
@@ -86,6 +87,7 @@ export class LegalizacionMatriculaComponent {
     private utilidades: UtilidadesService,
     private documentoService: DocumentoService,
     private autenticationService: ImplicitAutenticationService,
+    private liquidacionMatriculaService: LiquidacionMatriculaService,
     private popUpManager: PopUpManager
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -424,12 +426,366 @@ export class LegalizacionMatriculaComponent {
             inscrito.estado_admision = 'admision.estado_admitido_legalizado';
             const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
             inscripcion.EstadoInscripcionId.Id = 8;
-            const res = await this.actualizarEstadoInscripcion(inscripcion);
+            const resEstado = await this.actualizarEstadoInscripcion(inscripcion);
+            await this.generarLiquidacionmatricula()
           }
         }
       }
       this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
     }
+  }
+
+  async generarLiquidacionmatricula() {
+    const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
+    const programaAcademico = this.firstFormGroup.get('validatorProyecto')?.value;
+    // Esta variable nivel apunta al id de nivel de formación de pregrado en la tabla nivel formacion del esquema proyecto acemico, siempre es uno porque esta pantalla solo es de pregrado
+    const nivel = 1
+    const liquidacionBody = {
+      "tercero_id": this.aspiranteActualId,
+      "periodo_id": periodo,
+      "programa_academico_id": programaAcademico,
+      "tipo_programa_id": nivel,
+      "activo": true,
+    }
+    const res: any = await this.crearLiquidacionMatricula(liquidacionBody)
+    const liquidacionId = res._id
+    console.log("INFO BODY LIQUIDACIÓN:", this.aspiranteActualId, periodo, programaAcademico, nivel, liquidacionBody, res, liquidacionId)
+    await this.generarDetallesLiquidacionMatricula(liquidacionId);
+  }
+
+
+  crearLiquidacionMatricula(liquidacionBody: any) {
+    return new Promise((resolve, reject) => {
+      this.liquidacionMatriculaService.post('liquidacion', liquidacionBody)
+        .subscribe((res: any) => {
+          resolve(res.Data)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  crearDetalleLiquidacionMatricula(detalleBody: any) {
+    return new Promise((resolve, reject) => {
+      this.liquidacionMatriculaService.post('liquidacion-detalle', detalleBody)
+        .subscribe((res: any) => {
+          resolve(res.Data)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  async generarDetallesLiquidacionMatricula(liquidacionId: any) {
+    const conceptosLiquidacion: any = await this.recuperarConceptosLiquidacion();
+    console.log("INFO GENERACION DETALLES:", liquidacionId, conceptosLiquidacion, this.infoLegalizacionAspirantes[this.aspiranteActualId]);
+    const valores: any = this.calcularValoresConceptos();
+    for (const key in valores) {
+      const concepto = conceptosLiquidacion.find((item: any) => item.Id == key);
+
+      const detalleLiquidacionBody = {
+        "tipo_concepto_id": concepto.ParametroPadreId.Id,
+        "concepto_id": key,
+        "valor": valores[key],
+        "activo": true,
+        "liquidacionbid": liquidacionId,
+      }
+
+      const res = await this.crearDetalleLiquidacionMatricula(detalleLiquidacionBody);
+
+      console.log(`Key: ${key}, Value: ${valores[key]}`, concepto, detalleLiquidacionBody, res);
+    }
+  }
+
+  recuperarConceptosLiquidacion() {
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A95')
+        .subscribe((res: any) => {
+          resolve(res.Data)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.anio_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  calcularValoresConceptos() {
+    const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspiranteActualId]
+    const valorA1 = this.calcularValorEstratoA1(infoLegalizacion["estratoCostea"])
+    const valorA2 = this.calcularValorMatriculaSecundariaA2(infoLegalizacion["pensionSM11"])
+    const valorA3 = this.calcularValorIngresosA3(infoLegalizacion["ingresosSMCostea"])
+    const valorB1 = this.calcularValorLugarResidenciaB1(infoLegalizacion["estratoCostea"])
+    const valorB2 = this.calcularValorLugarResB2(infoLegalizacion["ubicacionResidenciaCostea"])
+    const valorB3 = this.calcularValorNucleoFamB3(infoLegalizacion["nucleoFamiliar"])
+    const valorB4 = this.calcularValorSituacionLabB4(infoLegalizacion["situacionLaboral"])
+    // Este valor se setea en 0 porque aún faltan datos para ser calculado y ese proceso se hace en una instancia más adelantada del proceso para admitir definitivamente a un estudiante
+    const valorPBM = 0
+    
+    // Se relaciona el id que se encuentra en la base de datos de cada concepto con el valor para ese concepto del aspirante
+    const valores = {
+      "5986": valorA1,
+      "5987": valorA2,
+      "5988": valorA3,
+      "5989": valorB2,
+      "5990": valorB3,
+      "5991": valorB4,
+      "5992": valorB1,
+      "5993": valorPBM,
+    }
+    console.log("INFO DE LEGALIZACION:", infoLegalizacion, valores);
+
+    return valores;
+  }
+
+  calcularValorEstratoA1(estratoId: any) {
+    let valor = 0;
+    console.log("DATA CALCULO VALORES A1:", estratoId)
+
+    switch (estratoId) {
+      case "1":
+        valor = 0;
+        break;
+      case "2":
+        valor = 25;
+        break;
+      case "3":
+        valor = 45;
+        break;
+      case "4":
+        valor = 75;
+        break;
+      case "5":
+        valor = 95;
+        break;
+      case "6":
+        valor = 100;
+        break;
+      case "No Informa":
+        valor = 100;
+        break;
+      case "Área rural":
+        valor = 20;
+        break;
+      case "Ciudad menor de cien mil habitantes":
+        valor = 45;
+        break;
+      case "Ciudad mayor de cien mil habitantes":
+        valor = 70;
+        break;
+      default:
+        valor = 100;
+    }
+    return valor
+  }
+
+  calcularValorMatriculaSecundariaA2(valorSM: any) {
+    let valor = 0;
+    console.log("DATA CALCULO VALORES A2:", valorSM)
+
+    switch (true) {
+      case valorSM <= 0.004:
+        valor = 15
+        break;
+      case valorSM <= 0.08:
+        valor = 20
+        break;
+      case valorSM <= 0.12:
+        valor = 30
+        break;
+      case valorSM <= 0.16:
+        valor = 40
+        break;
+      case valorSM <= 0.2:
+        valor = 50
+        break;
+      case valorSM <= 0.3:
+        valor = 60
+        break;
+      case valorSM <= 0.4:
+        valor = 70
+        break;
+      case valorSM <= 0.5:
+        valor = 80
+        break;
+      case valorSM <= 0.6:
+        valor = 90
+        break;
+      case valorSM <= 0.7:
+        valor = 100
+        break;
+      case valorSM > 0.7:
+        valor = 100
+        break;
+      default:
+        valor = 100
+    }
+    return valor
+  }
+
+  calcularValorIngresosA3(valorSM: any) {
+    let valor = 0;
+    console.log("DATA CALCULO VALORES A3:", valorSM)
+
+    switch (true) {
+      case valorSM <= 2:
+        valor = 15
+        break;
+      case valorSM <= 2.5:
+        valor = 25
+        break;
+      case valorSM <= 3:
+        valor = 30
+        break;
+      case valorSM <= 4:
+        valor = 35
+        break;
+      case valorSM <= 5:
+        valor = 40
+        break;
+      case valorSM <= 5.5:
+        valor = 45
+        break;
+      case valorSM <= 6:
+        valor = 50
+        break;
+      case valorSM <= 6.5:
+        valor = 55
+        break;
+      case valorSM <= 7:
+        valor = 60
+        break;
+      case valorSM <= 7.5:
+        valor = 70
+        break;
+      case valorSM <= 8:
+        valor = 75
+        break;
+      case valorSM <= 9.5:
+        valor = 80
+        break;
+      case valorSM <= 11:
+        valor = 85
+        break;
+      case valorSM <= 14:
+        valor = 90
+        break;
+      case valorSM <= 18:
+        valor = 95
+        break;
+      case valorSM > 18:
+        valor = 100
+        break;
+      default:
+        valor = 100
+    }
+
+    return valor;
+  }
+
+  calcularValorLugarResidenciaB1(lugar: any) {
+    let valor = 0;
+    console.log("DATA CALCULO VALORES B1:", lugar)
+
+    switch (lugar) {
+      case "1":
+        valor = 0.6;
+        break;
+      case "2":
+        valor = 0.6;
+        break;
+      case "3":
+        valor = 0.9;
+        break;
+      case "4":
+        valor = 0.9;
+        break;
+      case "5":
+        valor = 1;
+        break;
+      case "6":
+        valor = 1;
+        break;
+      case "No Informa":
+        valor = 1;
+        break;
+      case "Área rural":
+        valor = 0.6;
+        break;
+      case "Ciudad menor de cien mil habitantes":
+        valor = 0.9;
+        break;
+      case "Ciudad mayor de cien mil habitantes":
+        valor = 1;
+        break;
+      default:
+        valor = 1;
+    }
+    return valor
+  }
+
+  calcularValorLugarResB2(lugar: any) {
+    let valor = 0;
+    console.log("DATA CALCULO VALORES B2:", lugar)
+
+    switch (lugar) {
+      case "Fuera del perimetro urbano":
+        valor = 0.9;
+        break;
+      case "Dentro del perimetro urbano":
+        valor = 1;
+        break;
+      default:
+        valor = 1;
+    }
+
+    return valor;
+  }
+
+  calcularValorNucleoFamB3(nucleo: any) {
+    let valor = 0;
+    console.log("DATA CALCULO VALORES B3:", nucleo)
+
+    switch (nucleo) {
+      case "Vive solo":
+        valor = 0.85;
+        break;
+      case "Es casado":
+        valor = 0.85;
+        break;
+      case "Otro":
+        valor = 1;
+        break;
+      default:
+        valor = 1;
+    }
+
+    return valor;
+  }
+
+  calcularValorSituacionLabB4(situacion: any) {
+    let valor = 0;
+    console.log("DATA CALCULO VALORES B4:", situacion)
+
+    switch (situacion) {
+      case "Empleado":
+        valor = 0.9;
+        break;
+      case "Desempleado":
+        valor = 1;
+        break;
+      default:
+        valor = 1;
+    }
+
+    return valor;
   }
 
   verificarEstadosSinRevisar() {
