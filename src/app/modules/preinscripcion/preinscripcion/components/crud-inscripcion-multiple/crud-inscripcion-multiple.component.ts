@@ -33,7 +33,7 @@ import { decrypt } from 'src/app/utils/util-encrypt';
   templateUrl: './crud-inscripcion-multiple.component.html',
   styleUrls: ['./crud-inscripcion-multiple.component.scss']
 })
-export class CrudInscripcionMultipleComponent implements OnInit{
+export class CrudInscripcionMultipleComponent implements OnInit {
 
   displayedColumns: string[] = [
     'recibo', 'inscripcion', 'programa', 'estado_inscripcion', 'fecha', 'estado_recibo',
@@ -86,7 +86,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   periodo: Periodo = new Periodo;
   periodos: any = [];
   selectednivel: any;
-  tipo_inscripciones: any= [];
+  tipo_inscripciones: any = [];
   proyectos_preinscripcion!: any[];
   proyectos_preinscripcion_post: any;
   niveles!: NivelFormacion[];
@@ -105,7 +105,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   parametros_pago: any;
 
   arr_proyecto: InstitucionEnfasis[] = [];
-  
+
   proyectos = [];
 
   CampoControl = new FormControl('', [Validators.required]);
@@ -180,20 +180,20 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     this.showInscription = false;
   }
 
-  onRenderButtonPaymentComponent(data:any){
-      sessionStorage.setItem('EstadoInscripcion', data.estado);
-      // Solamente se usa esta linea para pruebas saltaldo el pago de recibo
-      // sessionStorage.setItem('EstadoInscripcion', 'true');
-      if (data.estado === false || data.estado === 'false') {
-        this.abrirPago(data.data);
-      } else if (data.estado === true || data.estado === 'true') {
-        sessionStorage.setItem('IdEstadoInscripcion', data.data.EstadoInscripcion);
-        this.itemSelect({ data: data.data });
-      }
+  onRenderButtonPaymentComponent(data: any) {
+    sessionStorage.setItem('EstadoInscripcion', data.estado);
+    // Solamente se usa esta linea para pruebas saltaldo el pago de recibo
+    // sessionStorage.setItem('EstadoInscripcion', 'true');
+    if (data.estado === false || data.estado === 'false') {
+      this.abrirPago(data.data);
+    } else if (data.estado === true || data.estado === 'true') {
+      sessionStorage.setItem('IdEstadoInscripcion', data.data.EstadoInscripcion);
+      this.itemSelect({ data: data.data });
+    }
 
   }
 
-  itemSelect(event:any): void {
+  itemSelect(event: any): void {
     sessionStorage.setItem('IdInscripcion', event.data.Id);
     sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
     this.inscripcionService.get('inscripcion/' + event.data.Id).subscribe(
@@ -241,7 +241,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     const PeriodoActual = localStorage.getItem('IdPeriodo')
     if (this.info_persona_id != null && PeriodoActual != null) {
       // if (this.persona_id != null){
-      await this.inscripcionMidService.get('inscripciones/estado-recibos?persona-id='+ this.info_persona_id +'&id-periodo=' + PeriodoActual).subscribe(
+      await this.inscripcionMidService.get('inscripciones/estado-recibos?persona-id=' + this.info_persona_id + '&id-periodo=' + PeriodoActual).subscribe(
         (response: any) => {
           console.log(response)
           if (response !== null && response.status == '400') {
@@ -253,44 +253,44 @@ export class CrudInscripcionMultipleComponent implements OnInit{
             const dataInfo = <Array<any>>[];
             this.recibos_pendientes = 0;
             data.forEach(element => {
-              if(element != null){
-              this.projectService.get('proyecto_academico_institucion?query=Id:' + element.ProgramaAcademicoId).subscribe(
-                res => {
-                  const auxRecibo = element.ReciboInscripcion;
-                  const NumRecibo = auxRecibo.split('/', 1);
-                  element.ReciboInscripcion = NumRecibo;
-                  element.FechaCreacion = momentTimezone.tz(element.FechaCreacion, 'America/Bogota').format('DD-MM-YYYY hh:mm:ss');
-                  element.ProgramaAcademicoId = res[0].Nombre;
-                  let level = res[0].NivelFormacionId.NivelFormacionPadreId;
-                  if (level == null || level == undefined) {
-                    level = res[0].NivelFormacionId.Id;
-                  } else {
-                    level = res[0].NivelFormacionId.NivelFormacionPadreId.Id;
-                  }
-                  element.NivelPP = level;
-                  if (element.Estado === 'Pendiente pago') {
-                    this.recibos_pendientes++;
-                  }
-                  this.result.emit(1);
-                  dataInfo.push(element);
-                  this.dataSource = new MatTableDataSource(dataInfo);
-                  //this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
-                },
-                (error:any) => {
-                  this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-                },
-              );
+              if (element != null) {
+                this.projectService.get('proyecto_academico_institucion?query=Id:' + element.ProgramaAcademicoId).subscribe(
+                  res => {
+                    const auxRecibo = element.ReciboInscripcion;
+                    const NumRecibo = auxRecibo.split('/', 1);
+                    element.ReciboInscripcion = NumRecibo;
+                    element.FechaCreacion = momentTimezone.tz(element.FechaCreacion, 'America/Bogota').format('DD-MM-YYYY hh:mm:ss');
+                    element.ProgramaAcademicoId = res[0].Nombre;
+                    let level = res[0].NivelFormacionId.NivelFormacionPadreId;
+                    if (level == null || level == undefined) {
+                      level = res[0].NivelFormacionId.Id;
+                    } else {
+                      level = res[0].NivelFormacionId.NivelFormacionPadreId.Id;
+                    }
+                    element.NivelPP = level;
+                    if (element.Estado === 'Pendiente pago') {
+                      this.recibos_pendientes++;
+                    }
+                    this.result.emit(1);
+                    dataInfo.push(element);
+                    this.dataSource = new MatTableDataSource(dataInfo);
+                    //this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
+                  },
+                  (error: any) => {
+                    this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+                  },
+                );
               }
             })
           }
-        }, (error:any) => {
+        }, (error: any) => {
           this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
         },
       );
     }
   }
 
-  filtrarProyecto(proyecto:any) {
+  filtrarProyecto(proyecto: any) {
     if (this.selectedLevel === proyecto['NivelFormacionId']['Id']) {
       return true
     }
@@ -298,7 +298,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
       if (proyecto['NivelFormacionId']['NivelFormacionPadreId']['Id'] === this.selectedLevel) {
         return true
       }
-    } 
+    }
     return false;
   }
 
@@ -312,11 +312,11 @@ export class CrudInscripcionMultipleComponent implements OnInit{
         text: this.translate.instant('inscripcion.alerta_posgrado'),
       })
       this.projectService.get('proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId').subscribe(
-        (response:any) => {
-          this.projects = <any[]>response.filter((proyecto:any) => this.filtrarProyecto(proyecto));
+        (response: any) => {
+          this.projects = <any[]>response.filter((proyecto: any) => this.filtrarProyecto(proyecto));
           this.validateProject();
         },
-        (error:any) => {
+        (error: any) => {
           this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
         },
       );
@@ -331,7 +331,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     this.loadTipoInscripcion();
   }
 
-  onSelectTipoInscripcion(tipo:any) {
+  onSelectTipoInscripcion(tipo: any) {
     if (this.inscripcionProjects != null) {
       this.showInfo = true;
     }
@@ -344,7 +344,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     this.showInfo = false;
     let periodo = localStorage.getItem('IdPeriodo');
     this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
-      (response:any) => {
+      (response: any) => {
         const r = <any>response;
         if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
           const inscripcionP = <Array<any>>response.data;
@@ -358,7 +358,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
           this.showInfo = false;
         }
       },
-      (error:any) => {
+      (error: any) => {
         this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
       },
     );
@@ -370,7 +370,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.maximo_recibos'));
     } else {
       this.popUpManager.showConfirmAlert(this.translate.instant('inscripcion.seguro_inscribirse')).then(
-        async (ok:any) => {
+        async (ok: any) => {
           if (ok.value) {
             if (this.info_info_persona === undefined) {
               this.info_persona_id = this.userService.getPersonaId();
@@ -442,7 +442,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
           console.error(error);
         }
       );
-  
+  }
 
   generar_inscripcion() {
     return new Promise((resolve, reject) => {
@@ -497,14 +497,14 @@ export class CrudInscripcionMultipleComponent implements OnInit{
             });
           }
         },
-        (error:any) => {
+        (error: any) => {
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
         },
       );
     });
   }
 
-  descargarReciboPago(data:any) {
+  descargarReciboPago(data: any) {
     this.itemSelect({ data: data })
     if (this.selectedLevel === undefined) {
       this.selectedLevel = parseInt(data.NivelPP, 10);
@@ -534,37 +534,37 @@ export class CrudInscripcionMultipleComponent implements OnInit{
               }
             });
             this.parametrosService.get('parametro_periodo?query=ParametroId.TipoParametroId.Id:2,' +
-              'ParametroId.CodigoAbreviacion:' + this.parametro + ',PeriodoId.Year:'+ this.periodo.Year +',PeriodoId.CodigoAbreviacion:VG').subscribe(
-                (response:any) => {
+              'ParametroId.CodigoAbreviacion:' + this.parametro + ',PeriodoId.Year:' + this.periodo.Year + ',PeriodoId.CodigoAbreviacion:VG').subscribe(
+                (response: any) => {
                   const parametro = <any>response['Data'][0];
                   this.recibo_pago.Descripcion = parametro['ParametroId']['Nombre'];
                   const valor = JSON.parse(parametro['Valor']);
                   this.recibo_pago.ValorDerecho = valor['Costo']
                   this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago).subscribe(
-                    (response:any) => {
+                    (response: any) => {
                       const reciboData = new Uint8Array(atob(response['data']).split('').map(char => char.charCodeAt(0)));
                       this.recibo_generado = window.URL.createObjectURL(new Blob([reciboData], { type: 'application/pdf' }));
                       window.open(this.recibo_generado);
                     },
-                    (error:any) => {
+                    (error: any) => {
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     },
                   );
                 },
-                (error:any) => {
+                (error: any) => {
                   this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
                 },
               );
           }
         },
-        (error:any) => {
+        (error: any) => {
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
         },
       );
     }
   }
 
-  abrirPago(data:any) {
+  abrirPago(data: any) {
     this.parametros_pago.NUM_DOC_IDEN = this.info_info_persona.NumeroIdentificacion;
     this.parametros_pago.REFERENCIA = data['ReciboInscripcion'][0];
     this.parametros_pago.TIPO_DOC_IDEN = this.info_info_persona.TipoIdentificacion.CodigoAbreviacion;
@@ -620,7 +620,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   cargarPeriodo() {
     return new Promise((resolve, reject) => {
       this.parametrosService.get('periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=1')
-        .subscribe((res:any) => {
+        .subscribe((res: any) => {
           const r = <any>res;
           if (res !== null && r.Status == '200') {
             this.periodo = <any>res['Data'][0];
@@ -675,7 +675,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     }; Swal.fire(opt)
       .then((willDelete: any) => {
         this.inscripcionMidService.post('inscripciones/preinscripcion', this.proyectos_preinscripcion_post)
-          .subscribe((res:any) => {
+          .subscribe((res: any) => {
             this.info_inscripcion = <Inscripcion><unknown>res.data;
             this.inscripcion_id = this.info_inscripcion.Id;
             this.eventChange.emit(true);
@@ -706,7 +706,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
     const projetc = event.value;
     if (!this.arr_proyecto.find((proyectos: any) => projetc.Id === proyectos.Id) && projetc.Id) {
       this.arr_proyecto.push(projetc);
-      
+
       //this.source_emphasys.load(this.arr_proyecto);
       const matSelect: MatSelect = event.source;
       matSelect.writeValue(null);
@@ -721,7 +721,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   }
 
   onDeleteEmphasys(event: any) {
-    const findInArray = (value:any, array:any, attr:any) => {
+    const findInArray = (value: any, array: any, attr: any) => {
       for (let i = 0; i < array.length; i += 1) {
         if (array[i][attr] === value) {
           return i;
@@ -736,7 +736,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   preinscripcion() {
     this.proyectos_preinscripcion = [];
     const id = decrypt(localStorage.getItem('persona_id'));
-    this.arr_proyecto.forEach((proyecto:any) => {
+    this.arr_proyecto.forEach((proyecto: any) => {
       Number(localStorage.getItem('IdNivel'))
       this.proyectos_preinscripcion.push({
         PersonaId: Number(id),
@@ -766,7 +766,7 @@ export class CrudInscripcionMultipleComponent implements OnInit{
   }
   // termina
 
-  setPercentage(event:any) {
+  setPercentage(event: any) {
     this.percentage = event;
     this.result.emit(this.percentage);
   }
