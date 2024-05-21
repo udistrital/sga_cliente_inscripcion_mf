@@ -86,13 +86,10 @@ export class CrudPropuestaGradoComponent implements OnInit {
       this.listService.findTipoProyecto();
     this.formPropuestaGrado = FORM_PROPUESTA_GRADO;
     this.construirForm();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
-    });
     this.cargarValores().then(aux => {
       this.loadLists();
+      this.loadPropuestaGrado();
     });
-    this.loadPropuestaGrado();
   }
 
   async cargarValores() {
@@ -142,6 +139,7 @@ export class CrudPropuestaGradoComponent implements OnInit {
   public loadPropuestaGrado(): void {
     this.inscripcionService.get('propuesta?query=Activo:true,InscripcionId:' + Number(window.sessionStorage.getItem('IdInscripcion')))
       .subscribe(res => {
+        console.log(res)
         if (res !== null && JSON.stringify(res[0]) !== '{}') {
           this.existePropuesta = true;
           const temp = <PropuestaGrado>res[0];

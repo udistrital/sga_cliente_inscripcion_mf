@@ -99,17 +99,21 @@ export class CrudDocumentoProgramaComponent implements OnInit {
     this.sin_docs = false;
     this.inscripcionService.get('documento_programa?query=Activo:true,PeriodoId:' + this.periodo + ',ProgramaId:' + this.programa + ',TipoInscripcionId:' + this.tipoInscripcion + '&limit=0').subscribe(
       (response: Object[]) => {
-        if(response === undefined || response === null){
-          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-        }
-        else if (response.length == 1 && !response[0].hasOwnProperty('TipoDocumentoProgramaId')){
-          this.popUpManager.showErrorAlert(this.translate.instant('documento_programa.no_documentos'));
-          this.tipo_documentos = [{TipoDocumentoProgramaId: {Id: 1, Nombre: "-"}}];
-          this.sin_docs = true;
-        }
-        else{
-          this.tipo_documentos = <any[]>response;
-          this.sin_docs = false;
+        if(response.length == 0){
+          this.popUpManager.showErrorToast(this.translate.instant('inscripcion.no_documentos_proyecto'));
+        }else{
+          if(response === undefined || response === null){
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          }
+          else if (response.length == 1 && !response[0].hasOwnProperty('TipoDocumentoProgramaId')){
+            this.popUpManager.showErrorAlert(this.translate.instant('documento_programa.no_documentos'));
+            this.tipo_documentos = [{TipoDocumentoProgramaId: {Id: 1, Nombre: "-"}}];
+            this.sin_docs = true;
+          }
+          else{
+            this.tipo_documentos = <any[]>response;
+            this.sin_docs = false;
+          }
         }
           this.eventChange.emit(this.tipo_documentos.length);
           this.construirForm();

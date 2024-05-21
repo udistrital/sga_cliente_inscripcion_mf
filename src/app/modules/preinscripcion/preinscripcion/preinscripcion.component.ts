@@ -91,15 +91,14 @@ export class PreinscripcionComponent implements OnInit{
     private popUpManager: PopUpManager,
   ) {
     // this.translate = translate;
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
+    validateLang(this.translate);
     this.total = true;
     this.show_info = true;
   }
 
   ngOnInit() {
-    this.loadData();
-    validateLang(this.translate);
+
+    this.loadData()
   }
   
   async loadData() {
