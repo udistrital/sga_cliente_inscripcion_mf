@@ -225,7 +225,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   nivel_load() {
     // Solo se cargan el nivel de posgrado
-    this.projectService.get('nivel_formacion?query=Id:2').subscribe(
+    this.projectService.get('nivel_formacion').subscribe(
       (response: NivelFormacion[]) => {
         this.niveles = response// .filter(nivel => nivel.NivelFormacionPadreId === null)
       },

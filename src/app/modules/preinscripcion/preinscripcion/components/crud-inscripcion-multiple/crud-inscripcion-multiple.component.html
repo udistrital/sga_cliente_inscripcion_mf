@@ -113,16 +113,7 @@
 
     <mat-card *ngIf="showNew">
       <mat-card-content>
-        <!-- select periodo -->
-        <mat-form-field style="width: 40%" *ngIf="showNew">
-          <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
-          <mat-select [(ngModel)]="periodo" [disabled]="true">
-            <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let item of periodos" [value]="item">
-              {{ item.Nombre }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+
 
         <!-- select Nivel -->
         <mat-form-field style="width: 100%" *ngIf="showNew">
@@ -161,6 +152,17 @@
           <mat-error *ngIf="Campo1Control.hasError('required')">
             {{ "inscripcion.erro_selec" | translate }}
           </mat-error>
+        </mat-form-field>
+
+        <!-- select periodo -->
+        <mat-form-field style="width: 40%" *ngIf="showNew">
+          <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
+          <mat-select [(ngModel)]="periodo" [disabled]="true">
+            <mat-option>--Seleccionar--</mat-option>
+            <mat-option *ngFor="let item of periodos" [value]="item">
+              {{ item.Nombre }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
 
         <!-- select tipo de inscripcion -->
