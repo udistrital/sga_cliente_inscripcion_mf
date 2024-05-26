@@ -126,7 +126,6 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.facultades_error'));
-            console.log(error);
             reject([]);
           });
     });
@@ -141,7 +140,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.anio_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -156,7 +155,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.periodo_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -317,7 +316,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -331,7 +330,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -345,7 +344,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -356,7 +355,7 @@ export class LegalizacionMatriculaComponent {
       const response = await this.sgamidService.get('persona/consultar_persona/' + personaId).toPromise();
       return response;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return [];
     }
   }
@@ -462,7 +461,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.documento_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -476,7 +475,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.actualizar_documento_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -489,7 +488,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            console.log(error);
+            console.error(error);
             this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
             reject([]);
           });
