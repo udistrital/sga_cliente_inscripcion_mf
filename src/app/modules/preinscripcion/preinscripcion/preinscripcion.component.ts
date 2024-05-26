@@ -9,10 +9,9 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 @Component({
   selector: 'app-preinscripcion',
   templateUrl: './preinscripcion.component.html',
-  styleUrls: ['./preinscripcion.component.scss']
+  styleUrls: ['./preinscripcion.component.scss'],
 })
-export class PreinscripcionComponent implements OnInit{
-  
+export class PreinscripcionComponent implements OnInit {
   @Input('inscripcion_id')
   set name(inscripcion_id: number) {
     this.inscripcion_id = inscripcion_id;
@@ -20,8 +19,12 @@ export class PreinscripcionComponent implements OnInit{
       this.selectedValue = undefined;
       window.localStorage.setItem('programa', this.selectedValue);
     }
-    if (this.inscripcion_id !== undefined && this.inscripcion_id !== 0 && this.inscripcion_id.toString() !== ''
-      && this.inscripcion_id.toString() !== '0') {
+    if (
+      this.inscripcion_id !== undefined &&
+      this.inscripcion_id !== 0 &&
+      this.inscripcion_id.toString() !== '' &&
+      this.inscripcion_id.toString() !== '0'
+    ) {
       // this.getInfoInscripcion();
     }
   }
@@ -30,14 +33,15 @@ export class PreinscripcionComponent implements OnInit{
   // tslint:disable-next-line: no-output-rename
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
+  isLoading: boolean = true;
   inscripcion_id!: number;
-  info_persona_id!: number;
+  info_persona_id: number | null = null;
   info_ente_id!: number;
   estado_inscripcion!: number;
   info_info_persona: any;
   usuariowso2: any;
   datos_persona: any;
-  inscripcion: Inscripcion = new Inscripcion;
+  inscripcion: Inscripcion = new Inscripcion();
   preinscripcion!: boolean;
   step = 0;
   isBarraOculta: boolean = false;
@@ -56,13 +60,12 @@ export class PreinscripcionComponent implements OnInit{
 
   total: boolean = false;
 
-  percentage_tab_info:any[] = [];
-  percentage_tab_acad:any[] = [];
-  percentage_tab_proy:any[] = [];
-  percentage_tab_prod:any[] = [];
-  percentage_tab_desc:any[] = [];
-  percentage_tab_docu:any[] = [];
-  
+  percentage_tab_info: any[] = [];
+  percentage_tab_acad: any[] = [];
+  percentage_tab_proy: any[] = [];
+  percentage_tab_prod: any[] = [];
+  percentage_tab_desc: any[] = [];
+  percentage_tab_docu: any[] = [];
 
   show_info = false;
   show_profile = false;
@@ -88,48 +91,57 @@ export class PreinscripcionComponent implements OnInit{
   constructor(
     private translate: TranslateService,
     private userService: UserService,
-    private popUpManager: PopUpManager,
+    private popUpManager: PopUpManager
   ) {
-    // this.translate = translate;
     validateLang(this.translate);
     this.total = true;
     this.show_info = true;
   }
 
   ngOnInit() {
-
-    this.loadData()
+    this.loadData();
   }
-  
+
   async loadData() {
     try {
-      this.info_persona_id = this.userService.getPersonaId();
+      this.info_persona_id = await this.userService.getPersonaId();
     } catch (error) {
-      this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_cargar_informacion'));
+      this.popUpManager.showErrorAlert(
+        this.translate.instant('inscripcion.error_cargar_informacion' + error)
+      );
+    } finally {
+      this.isLoading = false;
     }
   }
 
-setPercentage_info(number:any, tab:any) {
-  this.percentage_tab_info[tab] = (number * 100) / 2;
-  this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info));
-  if (number === 1) {
-    this.habilitar_inscripcion = false;
+  setPercentage_info(number: any, tab: any) {
+    this.percentage_tab_info[tab] = (number * 100) / 2;
+    this.percentage_info = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_info)
+    );
+    if (number === 1) {
+      this.habilitar_inscripcion = false;
+    }
+    this.setPercentage_total();
   }
-  this.setPercentage_total();
-}
 
-
-  setPercentage_acad(number:any, tab:any) {
+  setPercentage_acad(number: any, tab: any) {
     this.percentage_tab_acad[tab] = (number * 100) / 2;
-    this.percentage_acad = Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad));
+    this.percentage_acad = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_acad)
+    );
     this.setPercentage_total();
   }
 
   setPercentage_total() {
-    this.percentage_total = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info)) / 2;
-    this.percentage_total += Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad)) / 4;
-    this.percentage_total += Math.round(UtilidadesService.getSumArray(this.percentage_tab_docu)) / 4;
-    this.percentage_total += Math.round(UtilidadesService.getSumArray(this.percentage_tab_proy)) / 4;
+    this.percentage_total =
+      Math.round(UtilidadesService.getSumArray(this.percentage_tab_info)) / 2;
+    this.percentage_total +=
+      Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad)) / 4;
+    this.percentage_total +=
+      Math.round(UtilidadesService.getSumArray(this.percentage_tab_docu)) / 4;
+    this.percentage_total +=
+      Math.round(UtilidadesService.getSumArray(this.percentage_tab_proy)) / 4;
     if (this.info_inscripcion !== undefined) {
       if (this.info_inscripcion.EstadoInscripcionId.Id > 1) {
         this.percentage_total = 100;
@@ -146,14 +158,14 @@ setPercentage_info(number:any, tab:any) {
     this.translate.use(language);
   }
 
-  perfil_editar(event:any): void {
+  perfil_editar(event: any): void {
     switch (event) {
       case 'info_persona':
         this.show_info = true;
         break;
       case 'info_preinscripcion':
-          this.preinscripcion = true;
-          break;
+        this.preinscripcion = true;
+        break;
       case 'perfil':
         this.show_info = false;
         this.show_profile = true;
@@ -173,5 +185,4 @@ setPercentage_info(number:any, tab:any) {
   ocultarBarra(event: boolean) {
     this.isBarraOculta = event;
   }
-
 }
