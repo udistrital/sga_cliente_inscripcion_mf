@@ -16,6 +16,7 @@
     <mat-tab-group fullWidth>
       <mat-tab label="{{ 'inscripcion.info_persona' | translate }}">
         <ngx-crud-info-persona
+          *ngIf="!isLoading"
           [info_persona_id]="info_persona_id"
           [inscripcion_id]="inscripcion_id"
           (eventChange)="perfil_editar('info_preinscripcion')"
@@ -26,6 +27,7 @@
       </mat-tab>
       <mat-tab label="{{ 'inscripcion.preinscripcion' | translate }}">
         <ngx-crud-inscripcion-multiple
+          *ngIf="!isLoading"
           [info_persona_id]="info_persona_id"
           [inscripcion_id]="inscripcion_id"
           (eventChange)="perfil_editar('default')"
