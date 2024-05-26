@@ -441,8 +441,6 @@ export class TransferenciaComponent implements OnInit {
         (response: any) => {
           if (response !== null && response.Success == true) {
             this.inscripcionProjects = response.Data;
-            console.log(this.inscripcionProjects)
-            console.log(this.dataTransferencia)
             
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
@@ -450,7 +448,6 @@ export class TransferenciaComponent implements OnInit {
 
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
-                    console.log(response)
                     if (response.Status == '200') {
                       this.listadoSolicitudes = true;
 

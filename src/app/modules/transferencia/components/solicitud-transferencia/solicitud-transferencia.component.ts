@@ -147,7 +147,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
   loadSolicitud() {
     this.inscripcionMidService.get('transferencia/inscripcion/' + this.id).subscribe(inscripcion => {
-      console.log(inscripcion)
       if (inscripcion !== null) {
         if (inscripcion.success) {
           this.periodo = inscripcion['Data']['Periodo']['Nombre'];
