@@ -22,7 +22,7 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
   styleUrls: ['./crud-informacion-contacto.component.scss']
 })
 export class CrudInformacionContactoComponent implements OnInit {
-  persona_id: number;
+  persona_id!: number;
   informacion_contacto_id!: number;
   info_informacion_contacto: any;
   InfoSocioEconomica: any;
@@ -43,7 +43,7 @@ export class CrudInformacionContactoComponent implements OnInit {
   paisSeleccionado: any;
   departamentoSeleccionado: any;
   denied_acces: boolean = false;
-  info_persona_id!: number;
+  info_persona_id!: number | null;
 
   constructor(
     private autenticationService: ImplicitAutenticationService,
@@ -65,12 +65,10 @@ export class CrudInformacionContactoComponent implements OnInit {
     this.listService.findInfoSocioEconomica();
     this.listService.findInfoContacto();
     this.loadLists();
-    this.persona_id = this.userService.getPersonaId();
     this.loadInformacionContacto();
   }
 
   construirForm() {
-    this.info_persona_id = this.userService.getPersonaId();
     this.formInformacionContacto.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formInformacionContacto.campos.length; i++) {
       this.formInformacionContacto.campos[i].label = this.translate.instant('GLOBAL.' + this.formInformacionContacto.campos[i].label_i18n);
@@ -163,7 +161,18 @@ export class CrudInformacionContactoComponent implements OnInit {
     return 0;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.initializePersonaId();
+    this.construirForm();
+  }
+
+  async initializePersonaId() {
+    try {
+      this.info_persona_id = await this.userService.getPersonaId();
+    } catch (error) {
+      this.info_persona_id = 1; // Valor por defecto en caso de error
+      console.error('Error al obtener persona_id:', error);
+    }
   }
 
   loadInformacionContacto() {

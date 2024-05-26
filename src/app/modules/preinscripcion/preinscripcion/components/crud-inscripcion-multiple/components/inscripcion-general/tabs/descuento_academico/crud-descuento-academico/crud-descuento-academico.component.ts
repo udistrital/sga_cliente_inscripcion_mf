@@ -30,7 +30,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   filesUp: any;
   SoporteDescuento: any;
   estado!: number;
-  persona!: number;
+  persona!: number | null;
   programa!: number;
   periodo!: number;
   inscripcion!: number;
@@ -51,7 +51,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   }
 
   @Input('persona_id')
-  set info(persona_id: number) {
+  set info(persona_id: number | null) {
     this.persona = persona_id;
   }
 
@@ -252,7 +252,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                   this.info_descuento_academico.DocumentoId = documentos_actualizados.Id;
                   this.info_descuento_academico.Id = this.descuento_academico_id;
                   this.info_descuento_academico.PeriodoId = Number(window.sessionStorage.getItem('IdPeriodo'));
-                  this.info_descuento_academico.PersonaId = (1 * this.persona);
+                  this.info_descuento_academico.PersonaId = this.persona ? (1 * this.persona) : null;
                   this.info_descuento_academico.DescuentoDependencia.Dependencia = Number(window.sessionStorage.getItem('ProgramaAcademicoId'));
                   this.info_descuento_academico.DescuentoDependencia.Periodo = Number(window.sessionStorage.getItem('IdPeriodo'));
           
@@ -297,7 +297,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             this.info_descuento_academico.DocumentoId = this.SoporteDescuento;
             this.info_descuento_academico.Id = this.descuento_academico_id;
             this.info_descuento_academico.PeriodoId = Number(window.sessionStorage.getItem('IdPeriodo'));
-            this.info_descuento_academico.PersonaId = (1 * this.persona);
+            this.info_descuento_academico.PersonaId = this.persona ? (1 * this.persona) : null;
             this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
 
             this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)

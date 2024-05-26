@@ -6,7 +6,6 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { SolicitudDescuento } from 'src/app/models/descuento/solicitud_descuento';
 import { Documento } from 'src/app/models/documento/documento';
-import { CampusMidService } from 'src/app/services/campus_mid.service';
 import { DescuentoAcademicoService } from 'src/app/services/descuento_academico.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
@@ -25,7 +24,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 })
 export class ListDescuentoAcademicoComponent implements OnInit {
   uid!: number;
-  persona!: number;
+  persona!: number | null;
   programa!: number;
   periodo!: number;
   inscripcion!: number;
@@ -38,7 +37,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   dataSource!: MatTableDataSource<any>;
 
   @Input('persona_id')
-  set info(info: number) {
+  set info(info: number | null) {
     this.persona = info;
   }
 
@@ -58,7 +57,6 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   percentage!: number;
 
   constructor(private translate: TranslateService,
-    private mid: CampusMidService,
     private inscripcionMidService: InscripcionMidService,
     private popUpManager: PopUpManager,
     private documentoService: DocumentoService,

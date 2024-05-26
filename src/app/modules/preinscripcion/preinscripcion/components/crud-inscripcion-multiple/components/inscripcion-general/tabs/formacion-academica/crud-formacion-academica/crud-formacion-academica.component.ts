@@ -37,7 +37,7 @@ export class CrudFormacionAcademicaComponent implements OnInit{
   info_id_formacion!: number;
   edit_status!: boolean;
   organizacion: any;
-  persona_id: number;
+  persona_id!: number | null;
   nuevoTercero: boolean = false;
   SoporteDocumento: any;
   filesUp: any;
@@ -110,12 +110,10 @@ export class CrudFormacionAcademicaComponent implements OnInit{
     this.formInfoFormacionAcademica = FORM_FORMACION_ACADEMICA;
     this.limpiarBuscadorDeInstitucion()
     this.formInfoNuevoTercero = NUEVO_TERCERO;
-    this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
     this.loadLists();
-    this.persona_id = this.users.getPersonaId();
     this.listService.findPais();
     //this.listService.findProgramaAcademico();
     this.listService.findTipoTercero();
@@ -676,7 +674,13 @@ export class CrudFormacionAcademicaComponent implements OnInit{
             });
           }
           
-          ngOnInit() {
+          async ngOnInit() {
+            try {
+              this.persona_id = await this.users.getPersonaId();
+            } catch (error) {
+              this.popUpManager.showAlert('Error', 'No se pudo obtener el id de la persona');
+            }
+            this.construirForm();
             this.loadInfoFormacionAcademica();
           }
           

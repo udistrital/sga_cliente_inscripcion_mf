@@ -25,7 +25,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
   pid!: number;
   UpdateInfo: boolean = false;
   settings: any;
-  persona_id: number;
+  persona_id!: number | null;
 
   displayedColumns = ['nit', 'nombre', 'pais', 'programa', 'fecha_inicio', 'fecha_fin',
     'estado', 'observacion', 'acciones'];
@@ -50,8 +50,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
     private snackBar: MatSnackBar) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-    this.persona_id = this.userService.getPersonaId();
-    //this.loadData();
+    
   }
 
   getPercentage(event: any) {
@@ -111,13 +110,23 @@ export class ListFormacionAcademicaComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.initializePersonaId();
     this.id = 0;
     this.uid = 0;
     this.pid = 0;
     this.UpdateInfo = false;
     this.irAIndexTab(0)
     this.loadData();
+  }
+
+  async initializePersonaId() {
+    try {
+      this.persona_id = await this.userService.getPersonaId();
+    } catch (error) {
+      this.persona_id = 1; // Valor por defecto en caso de error
+      console.error('Error al obtener persona_id:', error);
+    }
   }
 
   onEdit(event: any): void {
