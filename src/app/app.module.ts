@@ -13,7 +13,6 @@ import { environment } from 'src/environments/environment';
 import { PopUpManager } from './managers/popUpManager';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnyService } from './services/any.service';
-import { CampusMidService } from './services/campus_mid.service';
 import { CIDCService } from './services/cidc.service';
 import { CoreService } from './services/core.service';
 import { DescuentoAcademicoService } from './services/descuento_academico.service';
@@ -123,7 +122,6 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     AnyService,
     CalendarioMidService,
-    CampusMidService,
     CIDCService,
     CoreService,
     DescuentoAcademicoService,
