@@ -1694,7 +1694,12 @@
         "estado_sin_revisar": "Sin revisar",
         "estado_revisado_observaciones": "Revisado con observaciones",
         "titulo_sin_data_tabla": "No se encontro información",
-        "sin_data_tabla": "No hay aspirantes con información de legalización para este proyecto y periodo"
+        "sin_data_tabla": "No hay aspirantes con información de legalización para este proyecto y periodo",
+        "liquidacion_error": "Error creando la liquidación",
+        "liquidacion_detalle_error": "Error creando el detalle de la liquidación",
+        "conceptos_error": "Error recuperando los conceptos",
+        "cambio_estado_legalizado_error": "Error cambiando el estado del aspirante a admitido legalizado",
+        "cambio_estado_legalizado_ok": "Se actualizo el estado del aspirante correctamente a admitido legalizado"
     },
     "recibo_pago": {
         "generado": "El recibo de pago ha sido generado correctamente",
