@@ -1,0 +1,162 @@
+<div>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Datos de contacto del acudiente</mat-card-title>
+    </mat-card-header>
+
+
+    <mat-card-content>
+    
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="firstFormGroup">
+          <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>Nombre del acudiente</ng-template>
+            <mat-form-field>
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="firstCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup">
+          <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>Parentezco</ng-template>
+            <mat-form-field>
+              <mat-label>Parentezco</mat-label>
+              <input matInput formControlName="secondCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="thirdFormGroup">
+          <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>Coreo electrónico del acudiente</ng-template>
+            <mat-form-field>
+              <mat-label>Coreo</mat-label>
+              <input matInput formControlName="thirdCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="fourthFormGroup">
+          <form [formGroup]="fourthFormGroup">
+            <ng-template matStepLabel>Dirección del acudiente</ng-template>
+            <mat-form-field>
+              <mat-label>Dirección</mat-label>
+              <input matInput formControlName="fourthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="fifthFormGroup">
+          <form [formGroup]="fifthFormGroup">
+            <ng-template matStepLabel>Teléfono del acudiente</ng-template>
+            <mat-form-field>
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="fifthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+
+    </mat-card-content>
+
+    <mat-card-header>
+      <mat-card-title>Datos de contacto de otro familiar</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+    
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="sixthFormGroup">
+          <form [formGroup]="sixthFormGroup">
+            <ng-template matStepLabel>Nombre del otro familiar</ng-template>
+            <mat-form-field>
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="sixthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="seventhFormGroup">
+          <form [formGroup]="seventhFormGroup">
+            <ng-template matStepLabel>Parentezco</ng-template>
+            <mat-form-field>
+              <mat-label>Parentezco</mat-label>
+              <input matInput formControlName="seventhCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="eighthFormGroup">
+          <form [formGroup]="eighthFormGroup">
+            <ng-template matStepLabel>Correo electrónico</ng-template>
+            <mat-form-field>
+              <mat-label>Correo</mat-label>
+              <input matInput formControlName="eighthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="ninthFormGroup">
+          <form [formGroup]="ninthFormGroup">
+            <ng-template matStepLabel>Dirección</ng-template>
+            <mat-form-field>
+              <mat-label>Dirección</mat-label>
+              <input matInput formControlName="ninthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="tenthFormGroup">
+          <form [formGroup]="tenthFormGroup">
+            <ng-template matStepLabel>Teléfono</ng-template>
+            <mat-form-field>
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="tenthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+    </mat-card-content>
+      
+
+    <mat-card-actions>
+      <button [disabled]="!firstFormGroup.valid || !secondFormGroup.valid || 
+                          !thirdFormGroup.valid || !fourthFormGroup.valid || 
+                          !fifthFormGroup.valid || !sixthFormGroup.valid || 
+                          !seventhFormGroup.valid || !eighthFormGroup.valid || 
+                          !ninthFormGroup.valid || !tenthFormGroup.valid"
+      (click)="submit()">Guardar</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+

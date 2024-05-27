@@ -81,6 +81,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   showInfo: boolean;
   showNew: boolean;
   showInscription: boolean;
+  nivelInscripcion!: boolean;
   programa!: number;
   aspirante!: number;
   periodo: Periodo = new Periodo;
@@ -194,16 +195,13 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   itemSelect(event: any): void {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",event.data)
+    let nivel = 2
     sessionStorage.setItem('IdInscripcion', event.data.Id);
     this.inscripcionService.get('inscripcion/' + event.data.Id).subscribe(
       (response: any) => {
-        console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBB",response)
-        if ( response.TipoInscripcionId.Id === 1) {
-          this.loadInscriptionModule();
-        }
-
-        // if (response.TipoInscripcionId.Id === 2) {
+        // if ( response.TipoInscripcionId.Id === 1) {
+        if (nivel === 1) {
+          console.log("Pregrado")
           sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
           sessionStorage.setItem('IdPeriodo', response.PeriodoId);
           sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
@@ -211,9 +209,23 @@ export class CrudInscripcionMultipleComponent implements OnInit {
           sessionStorage.setItem('IdEnfasis', response.EnfasisId);
           const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
           if (EstadoIns === 'true') {
+            this.nivelInscripcion = true;
             this.loadInscriptionModule();
           }
-        // }
+        }else{
+          console.log("Posgrado")
+          sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
+          sessionStorage.setItem('IdPeriodo', response.PeriodoId);
+          sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
+          sessionStorage.setItem('ProgramaAcademicoId', response.ProgramaAcademicoId);
+          sessionStorage.setItem('IdEnfasis', response.EnfasisId);
+          const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
+          if (EstadoIns === 'true') {
+            this.nivelInscripcion = false;
+            this.loadInscriptionModule();
+          }
+
+        }
       }
     );
   }
