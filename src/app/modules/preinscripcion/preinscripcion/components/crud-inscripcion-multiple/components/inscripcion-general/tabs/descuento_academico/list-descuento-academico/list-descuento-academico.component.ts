@@ -80,7 +80,6 @@ export class ListDescuentoAcademicoComponent implements OnInit {
       'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
       .subscribe((result: any) => {
-        console.log(result)
         const r = <any>result.Data;
         if (result.Data == null && result.Status == '200') {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));

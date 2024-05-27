@@ -316,7 +316,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         )
         .subscribe(
           (response: any) => {
-            console.log(response);
             if (response !== null && response.status == '400') {
               this.popUpManager.showErrorToast(
                 this.translate.instant('inscripcion.error')
@@ -641,7 +640,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                     .post('inscripciones/nueva', inscripcion)
                     .subscribe(
                       (response: any) => {
-                        console.log(response);
                         if (response.status == '200') {
                           this.showProyectoCurricular = false;
                           this.showTipoInscripcion = false;

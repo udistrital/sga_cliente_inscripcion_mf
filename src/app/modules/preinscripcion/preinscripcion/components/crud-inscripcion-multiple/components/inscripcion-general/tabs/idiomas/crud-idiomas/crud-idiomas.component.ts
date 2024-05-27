@@ -143,7 +143,6 @@ export class CrudIdiomasComponent implements OnInit {
         .subscribe(
           (res) => {
             const r = <any>res;
-            console.log(res);
             if (
               res !== null &&
               r.Type !== 'error' &&

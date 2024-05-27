@@ -163,7 +163,6 @@ export class ListFormacionAcademicaComponent implements OnInit {
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
-    console.log(event)
     Swal.fire(opt)
       .then((willDelete: any) => {
         if (willDelete.value) {

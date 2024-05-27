@@ -429,7 +429,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
-          console.log(this.info_produccion_academica)
           this.inscripcionMidService.put('academico/produccion', this.info_produccion_academica)
             .subscribe((res: any) => {
               if (res !== null) {
