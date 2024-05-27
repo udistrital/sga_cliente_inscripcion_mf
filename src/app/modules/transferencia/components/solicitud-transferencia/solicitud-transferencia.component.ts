@@ -24,8 +24,8 @@ import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 export class SolicitudTransferenciaComponent implements OnInit {
   formTransferencia: any;
   formRespuesta: any;
-  sub:any;
-  uid:any;
+  sub: any;
+  uid: any;
   nivelNombre!: string;
   nivel!: string;
   tipo!: string;
@@ -51,17 +51,18 @@ export class SolicitudTransferenciaComponent implements OnInit {
   comentario!: string;
 
   constructor(
-    private translate: TranslateService,
-    private utilidades: UtilidadesService,
-    private terceroMidService: TerceroMidService,
-    private inscripcionMidService: InscripcionMidService,
-    private calendarioMidService: CalendarioMidService,
-    private nuxeo: NewNuxeoService,
+    private _Activatedroute: ActivatedRoute,
     private autenticationService: ImplicitAutenticationService,
+    private calendarioMidService: CalendarioMidService,
+    private inscripcionMidService: InscripcionMidService,
+    private nuxeo: NewNuxeoService,
     private popUpManager: PopUpManager,
-    private userService: UserService,
     private router: Router,
-    private _Activatedroute: ActivatedRoute
+    private terceroMidService: TerceroMidService,
+    private translate: TranslateService,
+    private userService: UserService,
+    private utilidades: UtilidadesService
+
   ) {
     this.formTransferencia = FORM_SOLICITUD_TRANSFERENCIA;
     this.formRespuesta = FORM_RESPUESTA_SOLICITUD;
@@ -89,7 +90,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
     })
   }
 
-  ocultarCampo(campo:any, ocultar:any) {
+  ocultarCampo(campo: any, ocultar: any) {
     this.formTransferencia.campos[campo].ocultar = ocultar;
     this.formTransferencia.campos[campo].requerido = !ocultar;
   }
@@ -149,13 +150,13 @@ export class SolicitudTransferenciaComponent implements OnInit {
     this.inscripcionMidService.get('transferencia/inscripcion/' + this.id).subscribe(inscripcion => {
       console.log(inscripcion)
       if (inscripcion !== null) {
-        if (inscripcion.success) {
+        if (inscripcion.Success) {
           this.periodo = inscripcion['Data']['Periodo']['Nombre'];
           this.nivelNombre = inscripcion['Data']['Nivel']['Nombre'];
           this.nivel = inscripcion['Data']['Nivel']['Id'];
           this.tipo = inscripcion['Data']['TipoInscripcion']['Nombre'];
 
-          this.formTransferencia.campos.forEach((campo:any) => {
+          this.formTransferencia.campos.forEach((campo: any) => {
             delete campo.deshabilitar;
           });
           this.formTransferencia.btn = 'Guardar';
@@ -188,12 +189,15 @@ export class SolicitudTransferenciaComponent implements OnInit {
             this.ocultarCampo(origen, true);
 
             this.formTransferencia.campos[universidad].deshabilitar = false;
+            this.solicitudCreada = true;
           } else {
             this.ocultarCampo(estudianteExterno, true);
             this.ocultarCampo(estudiante, false);
 
             this.ocultarCampo(origenExterno, true);
             this.ocultarCampo(origen, false);
+
+            this.solicitudCreada = false;
 
             this.formTransferencia.campos[universidad].deshabilitar = true;
             this.formTransferencia.campos[universidad].valor = 'Universidad Distrital Francisco José de Caldas'
@@ -208,8 +212,8 @@ export class SolicitudTransferenciaComponent implements OnInit {
             if (this.tipo === 'Reingreso') {
               this.ocultarCampo(acuerdo, false);
               this.formTransferencia.campos[cancelo].ocultar = false;
+              inscripcion['Data']['CodigoEstudiante'].forEach((codigo: any) => {
 
-              inscripcion['Data']['CodigoEstudiante'].forEach((codigo:any) => {
                 if (codigo.IdProyecto === inscripcion['Data']['ProgramaDestino']['Id']) {
                   this.formTransferencia.campos[estudiante].valor = codigo;
                   this.formTransferencia.campos[estudiante].deshabilitar = true;
@@ -221,7 +225,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
             }
           }
 
-          if (inscripcion.data.SolicitudId) {
+          if (inscripcion.Data.SolicitudId) {
             this.estado = inscripcion['Data']['Estado']['Nombre'];
             let data = {
               Cancelo: inscripcion['Data']['DatosInscripcion']['CanceloSemestre'],
@@ -253,9 +257,8 @@ export class SolicitudTransferenciaComponent implements OnInit {
             if ((inscripcion['Data']['Estado']['Nombre'] !== 'Requiere modificación' && this.process === 'my') || this.process === 'all') {
               this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = true;
               // this.formTransferencia.campos[origenExterno].ocultar = true;
-              this.solicitudCreada = true;
               this.mostrarDocumento = true;
-              this.formTransferencia.campos.forEach((campo:any) => {
+              this.formTransferencia.campos.forEach((campo: any) => {
                 campo.deshabilitar = true;
               });
               this.formTransferencia.btn = '';
@@ -267,7 +270,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
             } else {
               this.formTransferencia.campos[origen].deshabilitar = true;
               this.formTransferencia.campos[origenExterno].deshabilitar = true;
-              this.solicitudCreada = true;
               this.mostrarDocumento = false;
               this.comentario = inscripcion['Data']['DatosRespuesta']['Observacion'];
 
@@ -303,18 +305,18 @@ export class SolicitudTransferenciaComponent implements OnInit {
               })
             }
 
-            if (inscripcion.data.DatosRespuesta) {
+            if (inscripcion.Data.DatosRespuesta) {
               const EstadoId = this.getIndexFormRes('EstadoId');
               const FechaEspecifica = this.getIndexFormRes('FechaEspecifica');
               const Observacion = this.getIndexFormRes('Observacion');
               const SoporteRespuesta = this.getIndexFormRes('SoporteRespuesta');
 
-              if (inscripcion.data.Estado.Nombre != "Pago" || inscripcion.data.Estado.Nombre != "Solicitado") {
-                this.formRespuesta.campos[EstadoId].valor = inscripcion.data.Estado;
+              if (inscripcion.Data.Estado.Nombre != "Pago" || inscripcion.Data.Estado.Nombre != "Solicitado") {
+                this.formRespuesta.campos[EstadoId].valor = inscripcion.Data.Estado;
               }
-              this.formRespuesta.campos[FechaEspecifica].valor = inscripcion.data.DatosRespuesta.FechaEvaluacion.slice(0, -4);
-              this.formRespuesta.campos[Observacion].valor = inscripcion.data.DatosRespuesta.Observacion;
-              this.idFileDocumento = inscripcion.data.DatosRespuesta.DocRespuesta
+              this.formRespuesta.campos[FechaEspecifica].valor = inscripcion.Data.DatosRespuesta.FechaEvaluacion.slice(0, -4);
+              this.formRespuesta.campos[Observacion].valor = inscripcion.Data.DatosRespuesta.Observacion;
+              this.idFileDocumento = inscripcion.Data.DatosRespuesta.DocRespuesta
               this.nuxeo.get([{ 'Id': this.idFileDocumento }]).subscribe(file => {
                 this.formRespuesta.campos[SoporteRespuesta].urlTemp = (file[0] as any).url + '';
                 this.formRespuesta.campos[SoporteRespuesta].valor = (file[0] as any).url + '';
@@ -356,7 +358,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
       if (estados !== null) {
         if (estados.success) {
           const respuesta = this.getIndexFormRes('Respuesta');
-          this.formRespuesta.campos[respuesta].opciones = estados['Data'].filter((estado:any) => estado.Nombre != 'Radicada' && estado.Nombre != 'Solicitado');
+          this.formRespuesta.campos[respuesta].opciones = estados['Data'].filter((estado: any) => estado.Nombre != 'Radicada' && estado.Nombre != 'Solicitado');
         }
       }
     });
@@ -416,7 +418,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
       });
   }
 
-  validarFormRespuesta(event:any) {
+  validarFormRespuesta(event: any) {
     const FechaEspecifica = this.getIndexFormRes('FechaEspecifica');
     if (event.nombre === 'EstadoId') {
       if (event.valor.Nombre !== 'Prueba especifica') {
@@ -428,7 +430,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
     }
   }
 
-  async validarForm(event:any) {
+  async validarForm(event: any) {
     if (event.valid) {
       let files: any;
       const element = event.data.dataTransferencia.SoporteDocumento;
@@ -469,10 +471,11 @@ export class SolicitudTransferenciaComponent implements OnInit {
         'SolicitanteId': this.userService.getPersonaId(),
         'FechaRadicacion': moment().format('YYYY-MM-DD hh:mm:ss'),
       }
+      console.log(data.SolicitanteId)
 
       if (this.estado === 'Requiere modificación') {
         this.inscripcionMidService.put('transferencia/' + this.solicitudId, data).subscribe(
-          (res:any) => {
+          (res: any) => {
             const r = <any>res
             if (r.Success == true) {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
@@ -486,7 +489,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
         );
       } else {
         this.inscripcionMidService.post('transferencia/', data).subscribe(
-          (res:any) => {
+          (res: any) => {
             const r = <any>res
             if (r.Success == true) {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.solicitud_generada')).then(cerrado => {
@@ -502,7 +505,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
     }
   }
 
-  async respuestaForm(event:any) {
+  async respuestaForm(event: any) {
     if (event.valid) {
       let files: any;
 

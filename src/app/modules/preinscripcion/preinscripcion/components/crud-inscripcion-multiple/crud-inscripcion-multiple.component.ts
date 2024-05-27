@@ -152,7 +152,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.info_persona_id.toString() !== '' && this.info_persona_id.toString() !== '0') {
       this.terceroMidService.get('personas/' + this.info_persona_id).subscribe((res: any) => {
         if (res !== null) {
-          const temp = <InfoPersona>res.data;
+          const temp = <InfoPersona>res.Data;
           this.info_info_persona = temp;
           const files = []
         }
@@ -244,12 +244,12 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       await this.inscripcionMidService.get('inscripciones/estado-recibos?persona-id=' + this.info_persona_id + '&id-periodo=' + PeriodoActual).subscribe(
         (response: any) => {
           console.log(response)
-          if (response !== null && response.status == '400') {
+          if (response !== null && response.Status == '400') {
             this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
-          } else if (response != null && response.status == '404') {
+          } else if (response != null && response.Status == '404') {
             this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
           } else {
-            const data = <Array<any>>response.data.Inscripciones;
+            const data = <Array<any>>response.Data.Inscripciones;
             const dataInfo = <Array<any>>[];
             this.recibos_pendientes = 0;
             data.forEach(element => {
@@ -347,7 +347,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       (response: any) => {
         const r = <any>response;
         if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
-          const inscripcionP = <Array<any>>response.data;
+          const inscripcionP = <Array<any>>response.Data;
           this.inscripcionProjects = inscripcionP;
           this.showProyectoCurricular = true;
           // this.loadTipoInscripcion();
@@ -377,7 +377,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
               this.terceroMidService.get('personas/' + this.info_persona_id)
                 .subscribe(async res => {
                   if (res !== null) {
-                    const temp = <InfoPersona>res.data;
+                    const temp = <InfoPersona>res.Data;
                     this.info_info_persona = temp;
                     const files = [];
                     await this.generar_inscripcion();
@@ -464,14 +464,14 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
         (response: any) => {
           if (response !== null && response.length !== 0) {
-            this.inscripcionProjects = response.data;
+            this.inscripcionProjects = response.Data;
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
                     console.log(response)
-                    if (response.status == '200') {
+                    if (response.Status == '200') {
                       this.showProyectoCurricular = false;
                       this.showTipoInscripcion = false;
                       this.showInfo = false;
@@ -479,10 +479,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                       this.loadInfoInscripcion();
                       resolve(response);
                       this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
-                    } else if (response.status == '204') {
+                    } else if (response.Status == '204') {
                       reject([]);
                       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
-                    } else if (response.status == '400') {
+                    } else if (response.Status == '400') {
                       reject([]);
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     }
@@ -527,7 +527,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
         (response: any) => {
           if (response !== null && response.length !== 0) {
-            this.inscripcionProjects = response.data;
+            this.inscripcionProjects = response.Data;
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null) {
                 this.recibo_pago.Fecha_pago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
@@ -541,8 +541,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                   const valor = JSON.parse(parametro['Valor']);
                   this.recibo_pago.ValorDerecho = valor['Costo']
                   this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago).subscribe(
-                    (response: any) => {
-                      const reciboData = new Uint8Array(atob(response['data']).split('').map(char => char.charCodeAt(0)));
+                    (response:any) => {
+                      const reciboData = new Uint8Array(atob(response['Data']).split('').map(char => char.charCodeAt(0)));
+
                       this.recibo_generado = window.URL.createObjectURL(new Blob([reciboData], { type: 'application/pdf' }));
                       window.open(this.recibo_generado);
                     },
@@ -675,8 +676,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     }; Swal.fire(opt)
       .then((willDelete: any) => {
         this.inscripcionMidService.post('inscripciones/preinscripcion', this.proyectos_preinscripcion_post)
-          .subscribe((res: any) => {
-            this.info_inscripcion = <Inscripcion><unknown>res.data;
+          .subscribe((res:any) => {
+            this.info_inscripcion = <Inscripcion><unknown>res.Data;
             this.inscripcion_id = this.info_inscripcion.Id;
             this.eventChange.emit(true);
             Swal.fire({

@@ -18,13 +18,12 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { environment } from 'src/environments/environment';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
-import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
-import { CustomizeButtonComponent } from '../components/customize-button/customize-button.component';
-import { DialogoDocumentosTransferenciasComponent } from '../components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { MatTableDataSource } from '@angular/material/table';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { FORM_TRANSFERENCIA_INTERNA } from '../../forms-transferencia';
+import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 
 @Component({
   selector: 'app-transferencia',
@@ -185,10 +184,12 @@ export class TransferenciaComponent implements OnInit {
 
                 }
 
+                element.Opcion.disabled = false;
                 if (element.Estado === 'Solicitado') {
                   element.Opcion.disabled = true;
                 }
 
+                
                 if (element.SolicitudFinalizada) {
                   element.Descargar = {
                     icon: 'fa fa-download fa-2x',
@@ -392,8 +393,9 @@ export class TransferenciaComponent implements OnInit {
           if (this.info_info_persona === undefined) {
             this.terceroMidService.get('personas/' + this.uid)
               .subscribe(async res => {
-                if (res !== null) {
-                  const temp = <InfoPersona>res;
+                console.log(res)
+                if (res != null) {
+                  const temp = <InfoPersona>res.Data;
                   this.info_info_persona = temp;
                   const files = [];
                   await this.generar_inscripcion();
@@ -418,7 +420,6 @@ export class TransferenciaComponent implements OnInit {
   }
 
   generar_inscripcion() {
-    return new Promise((resolve, reject) => {
       const inscripcion = {
         Id: parseInt(this.info_info_persona.NumeroIdentificacion, 10),
         Nombre: `${this.info_info_persona.PrimerNombre} ${this.info_info_persona.SegundoNombre}`,
@@ -434,6 +435,7 @@ export class TransferenciaComponent implements OnInit {
         FechaPago: '',
       };
 
+
       let periodo = localStorage.getItem('IdPeriodo');
       //TODO: parametros
       
@@ -441,13 +443,9 @@ export class TransferenciaComponent implements OnInit {
         (response: any) => {
           if (response !== null && response.Success == true) {
             this.inscripcionProjects = response.Data;
-            console.log(this.inscripcionProjects)
-            console.log(this.dataTransferencia)
-            
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
                     console.log(response)
@@ -458,31 +456,22 @@ export class TransferenciaComponent implements OnInit {
 
                       this.loadDataTercero(this.process);
 
-                      resolve(response);
                       this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
                     } else if (response.Status == '204') {
-                      reject([]);
                       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
                     } else if (response.Status == '400') {
-                      reject([]);
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     }
                   },
                   (error: HttpErrorResponse) => {
                     this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
-                    reject([]);
                   },
                 );
               }
             });
           }
-        },
-        error => {
-          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
-          reject([]);
-        },
+        }
       );
-    });
   }
 
   clean() {
