@@ -131,7 +131,7 @@ export class TransferenciaComponent implements OnInit {
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
       this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
         if (res !== null) {
-          const temp = <InfoPersona>res.data;
+          const temp = <InfoPersona>res.Data;
           this.info_info_persona = temp;
           const files = [];
         }
@@ -145,12 +145,12 @@ export class TransferenciaComponent implements OnInit {
     await this.cargarPeriodo(); 
     this.inscripcionMidService.get('transferencia/estado-recibos/' + this.uid)
       .subscribe(response => {
-        if (response !== null && response.status === '400') {
+        if (response !== null && response.Status === '400') {
           this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
-        } else if ((response != null && response.status == '404') || response.data.length == 0) {
+        } else if ((response != null && response.Status == '404') || response.Data.length == 0) {
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
         } else {
-          const inscripciones = <Array<any>>response.data;
+          const inscripciones = <Array<any>>response.Data;
           const dataInfo = <Array<any>>[];
           inscripciones.forEach(element => {
             this.projectService.get('proyecto_academico_institucion/' + element.Programa).subscribe(
@@ -185,10 +185,12 @@ export class TransferenciaComponent implements OnInit {
 
                 }
 
+                element.Opcion.disabled = false;
                 if (element.Estado === 'Solicitado') {
                   element.Opcion.disabled = true;
                 }
 
+                
                 if (element.SolicitudFinalizada) {
                   element.Descargar = {
                     icon: 'fa fa-download fa-2x',
@@ -253,10 +255,10 @@ export class TransferenciaComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('transferencia/consultar-periodo').subscribe(
         (response: any) => {
-          if (response.success) {
+          if (response.Success) {
             this.formTransferencia.campos.forEach((campo: any) => {
               if (campo.etiqueta === 'select') {
-                campo.opciones = response.data[campo.nombre];
+                campo.opciones = response.Data[campo.nombre];
                 if (campo.nombre === 'Periodo') {
                   campo.valor = campo.opciones[0];
                 }
@@ -308,13 +310,13 @@ export class TransferenciaComponent implements OnInit {
 
         });
       } else {
-        this.codigosEstudiante = parametros["data"]["CodigoEstudiante"];
-        this.proyectosCurriculares = parametros["data"]["ProyectoCurricular"];
+        this.codigosEstudiante = parametros["Data"]["CodigoEstudiante"];
+        this.proyectosCurriculares = parametros["Data"]["ProyectoCurricular"];
 
         this.formTransferencia.campos.forEach((campo: any) => {
 
           if (campo.nombre === 'ProyectoCurricular' || campo.nombre === 'TipoInscripcion') {
-            campo.opciones = parametros["data"][campo.nombre];
+            campo.opciones = parametros["Data"][campo.nombre];
             campo.ocultar = false;
           }
         });
@@ -358,7 +360,7 @@ export class TransferenciaComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('transferencia/consultar-parametros/?id-calendario='+calendarioId+'&persona-id='+ this.uid).subscribe(
         (response: any) => {
-          if (response.success) {
+          if (response.Success) {
             resolve(response);
           } else {
             if (response.Message == 'No se encuentran proyectos') {
@@ -392,8 +394,9 @@ export class TransferenciaComponent implements OnInit {
           if (this.info_info_persona === undefined) {
             this.terceroMidService.get('personas/' + this.uid)
               .subscribe(async res => {
-                if (res !== null) {
-                  const temp = <InfoPersona>res;
+                console.log(res)
+                if (res != null) {
+                  const temp = <InfoPersona>res.Data;
                   this.info_info_persona = temp;
                   const files = [];
                   await this.generar_inscripcion();
@@ -418,7 +421,6 @@ export class TransferenciaComponent implements OnInit {
   }
 
   generar_inscripcion() {
-    return new Promise((resolve, reject) => {
       const inscripcion = {
         Id: parseInt(this.info_info_persona.NumeroIdentificacion, 10),
         Nombre: `${this.info_info_persona.PrimerNombre} ${this.info_info_persona.SegundoNombre}`,
@@ -434,55 +436,44 @@ export class TransferenciaComponent implements OnInit {
         FechaPago: '',
       };
 
+
       let periodo = localStorage.getItem('IdPeriodo');
       //TODO: parametros
       
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.dataTransferencia.TipoInscripcion!.NivelId + '&id-periodo=' + periodo).subscribe(
         (response: any) => {
-          if (response !== null && response.success == true) {
-            this.inscripcionProjects = response.data;
-            console.log(this.inscripcionProjects)
-            console.log(this.dataTransferencia)
-            
+          if (response !== null && response.Success == true) {
+            this.inscripcionProjects = response.Data;
+
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
                     console.log(response)
-                    if (response.status == '200') {
+                    if (response.Status == '200') {
                       this.listadoSolicitudes = true;
 
                       this.clean();
 
                       this.loadDataTercero(this.process);
 
-                      resolve(response);
                       this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
-                    } else if (response.status == '204') {
-                      reject([]);
+                    } else if (response.Status == '204') {
                       this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
-                    } else if (response.status == '400') {
-                      reject([]);
+                    } else if (response.Status == '400') {
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     }
                   },
                   (error: HttpErrorResponse) => {
                     this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
-                    reject([]);
                   },
                 );
               }
             });
           }
-        },
-        error => {
-          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
-          reject([]);
-        },
+        }
       );
-    });
   }
 
   clean() {

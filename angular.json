@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist",
+            "outputPath": "dist/sga-cliente-inscripcion-mf",
             "index": "src/index.html",
             "main": "src/main.single-spa.ts",
             "polyfills": [
@@ -43,46 +43,36 @@
               "path": "extra-webpack.config.js",
               "libraryName": "sga-cliente-inscripcion-mf",
               "libraryTarget": "umd"
-            }
+            },
+            "deployUrl": "http://localhost:4209/"
           },
           "configurations": {
             "production": {
-              "optimization":true,
-              "outputHashing": "none",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "buildOptimizer": true,
-              "fileReplacements": [
+              "budgets": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.production.ts"
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
                 }
               ],
-              "deployUrl": "https://sgainscripcion.portaloas.udistrital.edu.co/"
+              "outputHashing": "none"
             },
             "development": {
-              "optimization": true,
-              "outputHashing": "none",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "buildOptimizer": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
-                }
-              ],
-              "deployUrl": "https://pruebassgainscripcion.portaloas.udistrital.edu.co/"
-            },
-            "local": {
-              "deployUrl": "http://localhost:4209/"
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "outputHashing": "none"
             }
           },
-          "defaultConfiguration": "local"
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
@@ -92,12 +82,9 @@
             },
             "development": {
               "browserTarget": "sga-cliente-inscripcion-mf:build:development"
-            },
-            "local": {
-              "browserTarget": "sga-cliente-inscripcion-mf:build:local"
             }
           },
-          "defaultConfiguration": "local"
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

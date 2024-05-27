@@ -229,7 +229,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
       response => {
         const r = <any>response;
         if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
-          const inscripcionP = <Array<any>>response.data;
+          const inscripcionP = <Array<any>>response.Data;
           this.posgrados = inscripcionP;
           this.selectedValue = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10);
         } else {
@@ -485,7 +485,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageInfoCaracteristica(factor: number) {
       this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
+          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2));
             this.percentage_tab_info[1] = Number((100 / factor));
           } else {
@@ -498,7 +498,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageInfoContacto(factor: number) {
       this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.info_persona_id)
         .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
+          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2));
             this.percentage_tab_info[2] = Number((100 / factor));
           } else {
@@ -524,7 +524,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageFormacionAcademica() {
       this.inscripcionMidService.get('academico/formacion/?Id=' + this.info_persona_id)
         .subscribe(res => {
-          if (res.status == '200' && (Object.keys(res.data).length > 0)) {
+          if (res.Status == '200' && (Object.keys(res.Data).length > 0)) {
             this.percentage_acad = 100;
             this.percentage_tab_acad[0] = 100;
           } else {
@@ -564,7 +564,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageExperienciaLaboral() {
       this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.info_persona_id)
         .subscribe((res: any) => {
-          if (res.status == '200' && res.data.length > 0) {
+          if (res.Status == '200' && res.Data.length > 0) {
             this.percentage_expe = 100;
             this.percentage_tab_expe[0] = 100;
           } else {
@@ -577,7 +577,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageProduccionAcademica() {
       this.inscripcionMidService.get('academico/produccion/' + this.info_persona_id)
         .subscribe(res => {
-          if (res.status == '200' && res.data != null) {
+          if (res.Status == '200' && res.Data != null) {
             this.percentage_prod = 100;
             this.percentage_tab_prod[0] = 100;
           } else {
@@ -610,7 +610,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         id + '&DependenciaId=' +
         Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
         .subscribe((res: any) => {
-          if (res.status == '200' && res.data != null) {
+          if (res.Status == '200' && res.Data != null) {
             this.percentage_desc = 100;
             this.percentage_tab_desc[0] = 100;
           } else {
