@@ -1,0 +1,33 @@
+mat-card {
+  margin: 20px;
+}
+
+mat-card-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.top-row {
+  margin-bottom: 20px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+.grid-item {
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.grid-item.blue {
+  background-color: #1976d2; /* Color azul de Angular Material */
+  color: #fff;
+  font-weight: bold;
+}

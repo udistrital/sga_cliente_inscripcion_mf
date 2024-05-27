@@ -1,3 +1,42 @@
-<ngx-dinamicform [normalform]="formDocumentoPrograma" [modeloData]="info_documento_programa"
+<div>
+    <ngx-dinamicform [normalform]="formDocumentoPrograma" [modeloData]="info_documento_programa"
     (result)="validarForm($event)" [clean]="clean">
-</ngx-dinamicform>
+    </ngx-dinamicform>
+
+    <mat-card>
+        <mat-card-title>Examen de estado detallado</mat-card-title>
+        <mat-card-content>
+          <mat-card class="top-row">
+            <div class="grid-container">
+              <div class="grid-item blue">SNP</div>
+              <div class="grid-item blue">Nombre</div>
+              <div class="grid-item blue">Tipo documento</div>
+              <div class="grid-item blue">Numero documento</div>
+            </div>
+          </mat-card>
+          <mat-card>
+            <div class="grid-container">
+              <div class="grid-item">PERPGLOB</div>
+              <div class="grid-item">PERPGLOBPE</div>
+              <div class="grid-item">GLOBAL</div>
+              <div class="grid-item">PLC</div>
+              <div class="grid-item">PMA</div>
+              <div class="grid-item">PSC</div>
+              <div class="grid-item">PCN</div>
+              <div class="grid-item">PIN</div>
+              <div class="grid-item">PERLC</div>
+              <div class="grid-item">PERMA</div>
+              <div class="grid-item">PERSC</div>
+              <div class="grid-item">PERCN</div>
+              <div class="grid-item">PERIN</div>
+              <div class="grid-item">NLC</div>
+              <div class="grid-item">NMA</div>
+              <div class="grid-item">NSC</div>
+              <div class="grid-item">NCN</div>
+              <div class="grid-item">NIN</div>
+            </div>
+          </mat-card>
+        </mat-card-content>
+      </mat-card>
+</div>
+

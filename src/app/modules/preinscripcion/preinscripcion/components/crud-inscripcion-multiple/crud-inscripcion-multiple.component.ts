@@ -195,7 +195,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   itemSelect(event: any): void {
-    let nivel = 2
+    let nivel = 1
     sessionStorage.setItem('IdInscripcion', event.data.Id);
     this.inscripcionService.get('inscripcion/' + event.data.Id).subscribe(
       (response: any) => {
