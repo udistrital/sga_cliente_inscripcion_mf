@@ -68,6 +68,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
 import { SgaMidService } from './services/sga_mid.service';
+import { LiquidacionMatriculaService } from './services/liquidacion_matricula.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -148,6 +149,7 @@ export function createTranslateLoader(http: HttpClient) {
     UserService,
     UtilidadesService,
     SgaMidService,
+    LiquidacionMatriculaService,
     { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MatDialogRef, useValue: {} },
     {
