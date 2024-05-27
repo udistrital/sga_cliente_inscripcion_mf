@@ -511,7 +511,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   loadPercentageInfoFamiliar(factor: number) {
       this.terceroMidService.get('personas/' + this.info_persona_id + '/familiar')
         .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.status != '404') {
+          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2)) + 0.01;
             this.percentage_tab_info[3] = Number((100 / factor));
           } else {

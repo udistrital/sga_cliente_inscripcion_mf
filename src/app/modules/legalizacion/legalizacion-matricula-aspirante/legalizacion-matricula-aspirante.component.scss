@@ -55,6 +55,7 @@ fieldset {
     border: solid 1px #b09500;
     background-color: #e3c800;
     width: 90%;
+    margin: auto;
 }
 
 .fila {
@@ -74,6 +75,7 @@ fieldset {
     background-color: #dae8fc;
     width: 280px;
     padding: 20px;
+    margin: 15px auto;
 }
 
 .f-2 .column {
@@ -164,17 +166,86 @@ fieldset {
 }
 
 .my-button {
-    /* Estilos generales para el botón */
-    background-color: #8f8f8f; /* Color de fondo verde */
-    color: white; /* Color de texto blanco */
-    padding: 5px 32px; /* Espacio interno */
-    text-align: center; /* Alinear texto al centro */
-    text-decoration: none; /* Eliminar subrayado */
-    display: inline-block; /* Hacer que el botón se comporte como un bloque en línea */
-    border: none; /* Eliminar borde predeterminado */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cambiar el cursor a mano al pasar el cursor sobre el botón */
+    background-color: white;
+    color: black;
+    padding: 5px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     margin: 0 auto;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.my-button:hover {
+    background-color: #dddddd;
+}
+
+.button-disabled {
+    background-color: #ccc; /* Color de fondo grisáceo */
+    color: #999; /* Color de texto gris claro */
+    cursor: not-allowed; /* Cursor de no permitido */
+    border: black solid 1px !important;
+}
+
+.info-personal {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.info-personal li {
+    list-style-type: none;
+}
+
+.info-personal li span {
+    font-weight: bold;
+}
+
+.info-personal mat-card-header {
+    background-color: #006eaf;
+    padding: 10px 0;
+}
+
+.info-personal mat-card-content {
+    margin: 0;
+    padding: 10px 0;
+}
+
+.loader-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(117, 115, 115, 0.5);
+    /* Fondo semitransparente rojo */
+    z-index: 1;
+}
+
+.contendedor-no-autorizado {
+    text-align: center;
+    width: 50%;
+    margin: 100px auto !important;
+}
+
+.contendedor-no-autorizado mat-card-header {
+    background-color: rgb(212, 64, 64);
+}
+
+.contendedor-no-autorizado mat-card-content {
+    padding: 18px;
+}
+
+.contenedor-archivos-grid {
+    display: flex !important;
+    flex-direction: column;
 }
 
 @media (width > 650px) {

@@ -82,8 +82,8 @@ export class ViewFormacionAcademicaComponent implements OnInit {
   loadData(): void {
     this.inscripcionMidService.get('academico/formacion?Id=' + this.persona_id)
       .subscribe((response:any) => {
-        if (response !== null && response.status == '200' && (Object.keys(response.data).length > 0)) {
-          const data = <Array<any>>response.data
+        if (response !== null && response.Status == '200' && (Object.keys(response.Data).length > 0)) {
+          const data = <Array<any>>response.Data
           this.infoCarga.nCargas = data.length;
           const dataInfo = <Array<any>>[];
           data.forEach(element => {
@@ -96,7 +96,7 @@ export class ViewFormacionAcademicaComponent implements OnInit {
             if (Number(element.Documento) > 0) {
               this.documentoService.get('documento/'+element.Documento)
                 .subscribe((resp: any) => {
-                    if(resp.Status && (resp.Status == "400" || resp.status == "404")) {
+                    if(resp.Status && (resp.Status == "400" || resp.Status == "404")) {
                       this.infoFalla();
                     } else {
                       //element.Documento = response[0]["Documento"]; 

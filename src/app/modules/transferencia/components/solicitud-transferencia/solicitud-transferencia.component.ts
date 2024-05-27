@@ -212,8 +212,8 @@ export class SolicitudTransferenciaComponent implements OnInit {
             if (this.tipo === 'Reingreso') {
               this.ocultarCampo(acuerdo, false);
               this.formTransferencia.campos[cancelo].ocultar = false;
-
               inscripcion['Data']['CodigoEstudiante'].forEach((codigo: any) => {
+
                 if (codigo.IdProyecto === inscripcion['Data']['ProgramaDestino']['Id']) {
                   this.formTransferencia.campos[estudiante].valor = codigo;
                   this.formTransferencia.campos[estudiante].deshabilitar = true;
@@ -545,7 +545,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
       this.inscripcionMidService.put('transferencia/respuesta-solicitud/' + this.solicitudId, Respuesta).subscribe(
         (res: any) => {
-          if (res.status == '200') {
+          if (res.Status == '200') {
             this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.info_estado') + ' ' +
               this.translate.instant('GLOBAL.operacion_exitosa'));
           } else {

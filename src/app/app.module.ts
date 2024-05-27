@@ -40,22 +40,37 @@ import { ProduccionAcademicaService } from './services/produccion_academica.serv
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER, MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
+import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
-import { MatStepperModule } from '@angular/material/stepper';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
 import { Overlay } from '@angular/cdk/overlay';
-import { LegalizacionMatriculaComponent } from './modules/legalizacion/components/legalizacion-matricula/legalizacion-matricula.component';
+import { LegalizacionMatriculaAspiranteComponent } from './modules/legalizacion/legalizacion-matricula-aspirante/legalizacion-matricula-aspirante.component';
 import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
 import { TerceroMidService } from './services/sga_tercero_mid.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { LegalizacionMatriculaComponent } from './modules/legalizacion/legalizacion-matricula/legalizacion-matricula.component';
+//import { ModalComponent } from './modules/legalizacion-matricula/components/modal/modal.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatCardModule } from '@angular/material/card';
+import { SgaMidService } from './services/sga_mid.service';
+import { LiquidacionMatriculaService } from './services/liquidacion_matricula.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -64,7 +79,9 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
+    LegalizacionMatriculaAspiranteComponent,
     LegalizacionMatriculaComponent,
+    //ModalComponent,
   ],
   imports: [
     NgxExtendedPdfViewerModule,
@@ -73,15 +90,25 @@ export function createTranslateLoader(http: HttpClient) {
     MatSelectModule,
     MatInputModule,
     MatSnackBarModule,
-    MatCardModule,
     BrowserModule,
     MatDialogModule,
     MatListModule,
-    MatStepperModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    MatStepperModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatTableModule,
+    MatPaginatorModule,
     FormsModule,
     ReactiveFormsModule,
+    MatTabsModule,
+    MatExpansionModule,
+    MatAutocompleteModule,
+    NgxDocViewerModule,
+    MatProgressSpinnerModule,
     MatButtonModule,
     StoreModule.forRoot(rootReducer),
     TranslateModule.forRoot({
@@ -92,7 +119,7 @@ export function createTranslateLoader(http: HttpClient) {
       }
     }),
     HttpClientModule,
-    SpinnerUtilModule
+    SpinnerUtilModule,
   ],
   providers: [
     AnyService,
@@ -125,6 +152,8 @@ export function createTranslateLoader(http: HttpClient) {
     UbicacionService,
     UserService,
     UtilidadesService,
+    SgaMidService,
+    LiquidacionMatriculaService,
     { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MatDialogRef, useValue: {} },
     {
