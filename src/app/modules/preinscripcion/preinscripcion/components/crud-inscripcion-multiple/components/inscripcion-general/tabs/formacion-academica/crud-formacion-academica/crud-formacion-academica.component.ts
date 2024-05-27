@@ -11,7 +11,6 @@ import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { Lugar } from 'src/app/models/informacion/lugar';
 import { Parametro } from 'src/app/models/parametro/parametro';
 import { DocumentoService } from 'src/app/services/documento.service';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
@@ -100,7 +99,6 @@ export class CrudFormacionAcademicaComponent implements OnInit{
     private translate: TranslateService,
     private inscripcionMidService: InscripcionMidService,
     private tercerosService: TercerosService,
-    private autenticationService: ImplicitAutenticationService,
     private users: UserService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -522,7 +520,7 @@ export class CrudFormacionAcademicaComponent implements OnInit{
             if (this.info_formacion_academica.DocumentoId.file !== undefined) {
               files.push({
                 IdDocumento: 16,
-                nombre: this.autenticationService.getPayload().sub,
+                nombre: this.users.getPayload().sub,
                 file: this.info_formacion_academica.DocumentoId.file
               });
             }
@@ -619,7 +617,7 @@ export class CrudFormacionAcademicaComponent implements OnInit{
                 if (this.info_formacion_academica.DocumentoId.file !== undefined) {
                   files.push({
                     IdDocumento: 16,
-                    nombre: this.autenticationService.getPayload().sub,
+                    nombre: this.users.getPayload().sub,
                     file: this.info_formacion_academica.DocumentoId.file, 
                   });
                 }

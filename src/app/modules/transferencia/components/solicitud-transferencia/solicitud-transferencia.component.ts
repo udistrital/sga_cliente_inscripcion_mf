@@ -5,14 +5,12 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TransferenciaInternaReintegro } from 'src/app/models/inscripcion/transferencia_reintegro';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_SOLICITUD_TRANSFERENCIA, FORM_RESPUESTA_SOLICITUD } from '../../forms-transferencia';
-import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
@@ -47,7 +45,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
   codigoEstudiante: any;
   documentoEstudiante: any;
   nombreCordinador: any;
-  rolCordinador: any;
   comentario!: string;
 
   constructor(
@@ -55,9 +52,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
     private utilidades: UtilidadesService,
     private terceroMidService: TerceroMidService,
     private inscripcionMidService: InscripcionMidService,
-    private calendarioMidService: CalendarioMidService,
     private nuxeo: NewNuxeoService,
-    private autenticationService: ImplicitAutenticationService,
     private popUpManager: PopUpManager,
     private userService: UserService,
     private router: Router,
@@ -116,13 +111,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
   loadInfoPersona(): void {
     this.uid = this.userService.getPersonaId();
-
-    this.autenticationService.getRole().then((rol: any) => {
-      if (rol.includes('COORDINADOR') || rol.includes('COORDINADOR_PREGADO') || rol.includes('COORDINADOR_POSGRADO')) {
-        this.rolCordinador = 'COORDINADOR';
-      }
-    });
-
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
       this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {

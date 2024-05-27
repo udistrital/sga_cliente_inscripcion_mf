@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
@@ -77,7 +76,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   canEmit: boolean = false;
 
   constructor(
-    private autenticationService: ImplicitAutenticationService,
     private translate: TranslateService,
     private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>,
@@ -442,7 +440,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             if (this.info_experiencia_laboral.Experiencia.Soporte.file !== undefined) {
               files.push({
                 IdDocumento: 4,
-                nombre: this.autenticationService.getPayload().sub,
+                nombre: this.users.getPayload().sub,
                 file: this.info_experiencia_laboral.Experiencia.Soporte.file,
               });
             }
@@ -471,7 +469,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
           if (this.info_experiencia_laboral.Experiencia.Soporte.file !== undefined) {
             files.push({
               IdDocumento: 4,
-              nombre: this.autenticationService.getPayload().sub,
+              nombre: this.users.getPayload().sub,
               file: this.info_experiencia_laboral.Experiencia.Soporte.file,
             });
           }

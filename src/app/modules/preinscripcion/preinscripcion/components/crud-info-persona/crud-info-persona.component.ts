@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { IAppState } from 'src/app/utils/reducers/app.state';
@@ -19,6 +18,8 @@ import { validateLang } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { encrypt } from 'src/app/utils/util-encrypt';
+import { UserService } from 'src/app/services/users.service';
+import { ROLES } from 'src/app/models/diccionario/diccionario';
 
 @Component({
   selector: 'ngx-crud-info-persona',
@@ -43,10 +44,6 @@ export class CrudInfoPersonaComponent implements OnInit {
   @Input('inscripcion_id')
   set admision(inscripcion_id: number) {
     this.inscripcion_id = inscripcion_id;
-    console.log(
-      'CRUD INFO PERSONA COMPONENT inscripcion_id',
-      this.inscripcion_id
-    );
     if (
       this.inscripcion_id !== undefined &&
       this.inscripcion_id !== 0 &&
@@ -76,16 +73,16 @@ export class CrudInfoPersonaComponent implements OnInit {
   periodo: any;
 
   constructor(
-    private autenticationService: ImplicitAutenticationService,
     private dialog: MatDialog,
     private listService: ListService,
     private popUpManager: PopUpManager,
     private store: Store<IAppState>,
     private terceroMidService: TerceroMidService,
+    private userService: UserService,
     private translate: TranslateService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.formInfoPersona = UtilidadesService.hardCopy(FORM_INFO_PERSONA);
     this.construirForm();
     Promise.all([
@@ -95,7 +92,7 @@ export class CrudInfoPersonaComponent implements OnInit {
       this.loadLists();
     });
     this.formInfoPersona.campos[this.getIndexForm('CorreoElectronico')].valor =
-      this.autenticationService.getPayload().email;
+      this.userService.getPayload().email;
   }
 
   construirForm() {
@@ -130,7 +127,6 @@ export class CrudInfoPersonaComponent implements OnInit {
         .subscribe(
           (res) => {
             res = res.Data;
-            console.log("RESPUESTA DE TERCEROS", res)
             if (res !== null && res.Id !== undefined) {
               const temp = <InfoPersona>res;
               this.aceptaTerminos = true;
@@ -255,9 +251,7 @@ export class CrudInfoPersonaComponent implements OnInit {
             )
             .then(() => {
               let UsuarioExistente = <string>this.info_info_persona.UsuarioWSO2;
-              let correoActual = <string>(
-                this.autenticationService.getPayload().email
-              );
+              let correoActual = <string>this.userService.getPayload().email;
               if (
                 UsuarioExistente.match(UtilidadesService.ListaPatrones.correo)
               ) {
@@ -283,7 +277,8 @@ export class CrudInfoPersonaComponent implements OnInit {
                       if (action.value) {
                         this.forzarCambioUsuario = true;
                       } else {
-                        this.autenticationService.logout('from inscripcion');
+                        console.log('LOGOUT');
+                        // this.autenticationService.logout('from inscripcion');
                       }
                     });
                 }
@@ -294,7 +289,7 @@ export class CrudInfoPersonaComponent implements OnInit {
           this.existePersona = true;
         },
         (error) => {
-          console.log(error);
+          console.error(error);
         }
       );
     }
@@ -334,7 +329,7 @@ export class CrudInfoPersonaComponent implements OnInit {
     if (!this.datosEncontrados.UsuarioWSO2 || this.forzarCambioUsuario) {
       prepareUpdate.Tercero.hasId = infoPersona.Id;
       prepareUpdate.Tercero.data['UsuarioWSO2'] =
-        this.autenticationService.getPayload().email;
+        this.userService.getPayload().email;
     }
 
     if (!this.datosEncontrados.FechaExpedicion) {
@@ -408,7 +403,7 @@ export class CrudInfoPersonaComponent implements OnInit {
     infoPersona.FechaExpedicion = infoPersona.FechaExpedicion + ' +0000 +0000';
     infoPersona.NumeroIdentificacion =
       infoPersona.NumeroIdentificacion.toString();
-    infoPersona.Usuario = this.autenticationService.getPayload().email;
+    infoPersona.Usuario = this.userService.getPayload().email;
     this.terceroMidService.post('personas/', infoPersona).subscribe(
       (res: any) => {
         res = res.data;
@@ -570,10 +565,6 @@ export class CrudInfoPersonaComponent implements OnInit {
     const dialogRef = this.dialog.open(VideoModalComponent, {
       width: '600px',
       data: { videoId: videoId },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('Modal cerrado');
     });
   }
 }

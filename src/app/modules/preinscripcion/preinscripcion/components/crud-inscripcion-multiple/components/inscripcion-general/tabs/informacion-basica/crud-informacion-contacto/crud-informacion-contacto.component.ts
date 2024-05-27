@@ -5,7 +5,6 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InformacionContacto } from 'src/app/models/informacion/informacion_contacto';
 import { Lugar } from 'src/app/models/informacion/lugar';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { UserService } from 'src/app/services/users.service';
@@ -46,7 +45,6 @@ export class CrudInformacionContactoComponent implements OnInit {
   info_persona_id!: number | null;
 
   constructor(
-    private autenticationService: ImplicitAutenticationService,
     private inscripcionMidService: InscripcionMidService,
     private listService: ListService,
     private popUpManager: PopUpManager,
@@ -74,7 +72,7 @@ export class CrudInformacionContactoComponent implements OnInit {
       this.formInformacionContacto.campos[i].label = this.translate.instant('GLOBAL.' + this.formInformacionContacto.campos[i].label_i18n);
       this.formInformacionContacto.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formInformacionContacto.campos[i].label_i18n);
     }
-    this.formInformacionContacto.campos[this.getIndexForm('CorreoIngreso')].valor = this.autenticationService.getPayload().email;
+    this.formInformacionContacto.campos[this.getIndexForm('CorreoIngreso')].valor = this.userService.getPayload().email;
   }
 
   useLanguage(language: string) {

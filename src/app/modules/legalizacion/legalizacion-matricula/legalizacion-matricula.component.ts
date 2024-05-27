@@ -19,8 +19,8 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ROLES } from 'src/app/models/diccionario/diccionario';
+import { UserService } from 'src/app/services/users.service';
 
 interface Proyecto {
   opcion: number;
@@ -85,23 +85,20 @@ export class LegalizacionMatriculaComponent {
     private newNuxeoService: NewNuxeoService,
     private utilidades: UtilidadesService,
     private documentoService: DocumentoService,
-    private autenticationService: ImplicitAutenticationService,
-    private popUpManager: PopUpManager
+    private popUpManager: PopUpManager,
+    private usuarioService: UserService
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
   }
 
   async ngOnInit() {
-    this.autenticationService.getRole().then(
-      (rol: any) => {
-        const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
-        const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
-        if (r1 || r2) {
-          this.estaAutorizado = true;
-        }
-      }
-    );
+    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
+    this.usuarioService.esAutorizado(rolesRequeridos).then(esAutorizado => {
+      if (esAutorizado) this.estaAutorizado = true;
+    }).catch( error => {
+      console.error('Error al validar autorización', error)
+    });
     validateLang(this.translate);
     await this.cargarSelects();
   }
@@ -544,9 +541,8 @@ export class LegalizacionMatriculaComponent {
 
     this.newNuxeoService.getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
       .subscribe((res: any) => {
-        console.log(res);
       }, (error: any) => {
-        console.log(error);
+        console.error(error);
         this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
       })
   }

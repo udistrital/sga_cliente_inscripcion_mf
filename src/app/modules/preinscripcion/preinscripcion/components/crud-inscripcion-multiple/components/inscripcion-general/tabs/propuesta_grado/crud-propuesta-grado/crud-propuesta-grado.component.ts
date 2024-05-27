@@ -5,8 +5,6 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { PropuestaGrado } from 'src/app/models/inscripcion/propuesta_grado';
 import { PropuestaPost } from 'src/app/models/inscripcion/propuesta_post';
-import { DocumentoService } from 'src/app/services/documento.service';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
@@ -16,6 +14,7 @@ import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_PROPUESTA_GRADO } from './form-propuesta_grado';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'ngx-crud-propuesta-grado',
@@ -73,13 +72,13 @@ export class CrudPropuestaGradoComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private autenticationService: ImplicitAutenticationService,
     private inscripcionService: InscripcionService,
     private store: Store<IAppState>,
     private listService: ListService,
     private popUpManager: PopUpManager,
     private newNuxeoService: NewNuxeoService,
     private utilidades: UtilidadesService,
+    private userService: UserService,
     private snackBar: MatSnackBar) {
       this.listService.findGrupoInvestigacion();
       this.listService.findLineaInvestigacion();
@@ -207,7 +206,7 @@ export class CrudPropuestaGradoComponent implements OnInit {
           if (this.info_propuesta_grado.FormatoProyecto.file !== undefined) {
             files.push({
               IdDocumento: 5,
-              nombre: this.autenticationService.getPayload().sub,
+              nombre: this.userService.getPayload().sub,
               file: this.info_propuesta_grado.FormatoProyecto.file, 
             });
           }
@@ -394,5 +393,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
       },
     );
   }
+
 }
 
