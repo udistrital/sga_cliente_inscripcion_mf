@@ -20,7 +20,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 })
 export class ListDocumentoProgramaComponent implements OnInit {
   uid!: number;
-  persona!: number;
+  persona!: number | null;
   programa!: number;
   periodo!: number;
   inscripcion!: number;
@@ -41,7 +41,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
   dataSource!: MatTableDataSource<any>;
 
   @Input('persona_id')
-  set info(info: number) {
+  set info(info: number | null) {
     this.persona = info;
   }
 

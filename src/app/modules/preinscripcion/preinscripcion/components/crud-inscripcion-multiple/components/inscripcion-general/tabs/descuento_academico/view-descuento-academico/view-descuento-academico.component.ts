@@ -4,7 +4,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { SolicitudDescuento } from 'src/app/models/descuento/solicitud_descuento';
-import { CampusMidService } from 'src/app/services/campus_mid.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';

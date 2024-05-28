@@ -30,7 +30,6 @@ export class DialogoDocumentosTransferenciasComponent implements OnInit {
   ngOnInit() {
     this.documento = "blob:http://localhost:4200/3674d5ca-88a7-4264-bcd9-09351476eba4"
     this.documento = this.sanitizer.bypassSecurityTrustResourceUrl(this.documento);
-    console.log(this.documento)
     //this.documento = this.data.documento.Documento['changingThisBreaksApplicationSecurity'];
     this.pruebaEspecifica = this.data.documento.fecha == '';
     // const fecha = this.data.documento.fecha.substring(0, this.data.documento.fecha.length - 1);

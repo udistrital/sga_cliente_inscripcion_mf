@@ -76,7 +76,6 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   @Input('inscripcion_id')
   set name(inscripcion_id: number) {
     this.inscripcion_id = inscripcion_id;
-    console.log(this.inscripcion_id)
     if (this.inscripcion_id === 0 || this.inscripcion_id.toString() === '0') {
       this.selectedValue = undefined;
       window.localStorage.setItem('programa', this.selectedValue);
@@ -92,7 +91,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   // @ViewChild('videoModal', { static: true }) videoModal: ElementRef;
 
   inscripcion_id!: number;
-  info_persona_id: number;
+  info_persona_id!: number | null;
   info_ente_id!: number;
   estado_inscripcion!: number;
   estado_inscripcion_nombre: string = "";
@@ -190,7 +189,6 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     private timeService: TimeService,
   ) {
     sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
-    this.info_persona_id = this.userService.getPersonaId();
     this.translate = translate;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.total = true;
@@ -653,6 +651,16 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.initializePersonaId();
+  }
+
+  async initializePersonaId() {
+    try {
+      this.info_persona_id = await this.userService.getPersonaId();
+    } catch (error) {
+      this.info_persona_id = 1; // Valor por defecto en caso de error
+      console.error('Error al obtener persona_id:', error);
+    }
   }
 
   async getPorcentajes() {
@@ -1273,7 +1281,6 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   revisarDocumento(doc: any) {
-      console.log(doc)
       const assignConfig = new MatDialogConfig();
       assignConfig.width = '1300px';
       assignConfig.height = '750px';

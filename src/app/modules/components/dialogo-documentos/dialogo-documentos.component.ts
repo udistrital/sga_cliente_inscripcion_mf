@@ -34,7 +34,6 @@ export class DialogoDocumentosComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("DATA EN DIALOG", this.data)
     this.isPDF = true;
     this.tabName = this.data.documento.tabName || "";
     if(this.data.documento.hasOwnProperty('nombreDocumento')){
@@ -99,7 +98,6 @@ export class DialogoDocumentosComponent implements OnInit {
               folderOrTag: this.data.documento.carpeta || "",
               nombreSoporte: this.data.documento.nombreSoporte,
             }
-            console.log(data)
             this.dialogRef.close(data)
           } else {
             this.revisionForm.patchValue({

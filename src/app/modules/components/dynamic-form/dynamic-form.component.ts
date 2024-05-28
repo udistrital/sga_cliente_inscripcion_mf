@@ -187,7 +187,6 @@ export class DynamicFormComponent implements OnInit, OnChanges{
   }
 
   preview(url:any, title:any, message:any) {
-    console.log(url)
     const dialogDoc = new MatDialogConfig();
     dialogDoc.width = '80vw';
     dialogDoc.height = '90vh';

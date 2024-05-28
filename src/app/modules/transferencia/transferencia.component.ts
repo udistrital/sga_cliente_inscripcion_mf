@@ -22,7 +22,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
-import { FORM_TRANSFERENCIA_INTERNA } from '../../forms-transferencia';
+import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 
 @Component({
@@ -443,12 +443,14 @@ export class TransferenciaComponent implements OnInit {
         (response: any) => {
           if (response !== null && response.Success == true) {
             this.inscripcionProjects = response.Data;
+            console.log(this.inscripcionProjects)
+            console.log(this.dataTransferencia)
+            
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
-                    console.log(response)
                     if (response.Status == '200') {
                       this.listadoSolicitudes = true;
 
