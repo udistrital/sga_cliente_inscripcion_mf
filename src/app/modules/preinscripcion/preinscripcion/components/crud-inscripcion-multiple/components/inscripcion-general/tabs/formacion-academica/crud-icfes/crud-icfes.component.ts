@@ -22,14 +22,14 @@ import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 })
 export class CrudIcfesComponent implements OnInit {
   info_formacion_academica_id!: number;
-  info_persona_id!: number;
+  info_persona_id!: number | null;
   persiona_id!: number;
   denied_acces: boolean = false;
 
 
 
   @Input('info_persona_id')
-  set inscripcion(info_persona_id: number) {
+  set inscripcion(info_persona_id: number | null) {
     this.info_persona_id = info_persona_id;
     this.loadInfoFormacionAcademica();
   }
@@ -331,8 +331,7 @@ export class CrudIcfesComponent implements OnInit {
   }
 
   public loadInfoFormacionAcademica(): void {
-    if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
-      this.info_persona_id.toString() !== '') {
+    if (this.info_persona_id !== null) {
       this.denied_acces = false;
 
       this.inscripcionMidService.get('personas/'+ this.info_persona_id+ '/formacion-pregrado')

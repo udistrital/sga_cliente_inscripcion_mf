@@ -48,7 +48,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
   info_info_caracteristica: InfoCaracteristica = new InfoCaracteristica;
-  info_persona_id!: number;
+  info_persona_id!: number | null;
   info_info_persona: any;
   datosGet: InfoCaracteristicaGet = new InfoCaracteristicaGet;
   formInfoCaracteristica: any;
@@ -73,7 +73,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     private userService: UserService
   ) {
     this.formInfoCaracteristica = FORM_INFO_CARACTERISTICA_PREGRADO;
-    this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -87,7 +86,6 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   }
 
   construirForm() {
-    this.info_persona_id = this.userService.getPersonaId();
     this.formInfoCaracteristica.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formInfoCaracteristica.campos.length; i++) {
       this.formInfoCaracteristica.campos[i].label = this.translate.instant('GLOBAL.' + this.formInfoCaracteristica.campos[i].label_i18n);
@@ -250,8 +248,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   }
 
   public loadInfoCaracteristica(): void {
-    if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
-      this.info_persona_id.toString() !== '') {
+    if (this.info_persona_id !== null) {
       this.denied_acces = false;
       this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(async res => {
@@ -394,8 +391,19 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.initializePersonaId();
+    this.construirForm();
     this.loadInfoCaracteristica();
+  }
+
+  async initializePersonaId() {
+    try {
+      this.info_persona_id = await this.userService.getPersonaId();
+    } catch (error) {
+      this.info_persona_id = 1; // Valor por defecto en caso de error
+      console.error('Error al obtener persona_id:', error);
+    }
   }
 
   validarForm(event: any) {

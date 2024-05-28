@@ -5,7 +5,6 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Tercero } from 'src/app/models/terceros/tercero';
 import { TrPostInformacionFamiliar } from 'src/app/models/terceros/tercero_familiar';
 import { TipoParentesco } from 'src/app/models/terceros/tipo_parentesco';
-import { CampusMidService } from 'src/app/services/campus_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { UserService } from 'src/app/services/users.service';
@@ -19,11 +18,11 @@ import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 @Component({
   selector: 'ngx-crud-informacion-familiar',
   templateUrl: './crud-informacion-familiar.component.html',
-  styleUrls: ['./crud-informacion-familiar.component.scss']
+  styleUrls: ['./crud-informacion-familiar.component.scss'],
 })
 export class CrudInformacionFamiliarComponent implements OnInit {
   informacion_contacto_id!: number;
-  info_persona_id!: number;
+  info_persona_id!: number | null;
   info_info_familiar: any;
   tempcorreoPrincipal: any;
   tempcorreoAlterno: any;
@@ -37,7 +36,6 @@ export class CrudInformacionFamiliarComponent implements OnInit {
     this.info_persona_id = info_persona_id;
     this.loadInfoPersona();
   }
-
 
   @Output() eventChange = new EventEmitter();
   // tslint:disable-next-line: no-output-rename
@@ -63,9 +61,9 @@ export class CrudInformacionFamiliarComponent implements OnInit {
     private inscripcionMidService: InscripcionMidService,
     private userService: UserService,
     private tercerosService: TercerosService,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar
+  ) {
     this.formInformacionFamiliar = FORM_INFORMACION_FAMILIAR;
-    this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -74,11 +72,16 @@ export class CrudInformacionFamiliarComponent implements OnInit {
 
   construirForm() {
     // this.formInformacionContacto.titulo = this.translate.instant('GLOBAL.informacion_contacto');
-    this.info_persona_id = this.userService.getPersonaId();
     this.formInformacionFamiliar.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formInformacionFamiliar.campos.length; i++) {
-      this.formInformacionFamiliar.campos[i].label = this.translate.instant('GLOBAL.' + this.formInformacionFamiliar.campos[i].label_i18n);
-      this.formInformacionFamiliar.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formInformacionFamiliar.campos[i].label_i18n);
+      this.formInformacionFamiliar.campos[i].label = this.translate.instant(
+        'GLOBAL.' + this.formInformacionFamiliar.campos[i].label_i18n
+      );
+      this.formInformacionFamiliar.campos[i].placeholder =
+        this.translate.instant(
+          'GLOBAL.placeholder_' +
+            this.formInformacionFamiliar.campos[i].label_i18n
+        );
     }
   }
 
@@ -86,37 +89,59 @@ export class CrudInformacionFamiliarComponent implements OnInit {
     this.translate.use(language);
   }
 
-
   getIndexForm(nombre: String): number {
-    for (let index = 0; index < this.formInformacionFamiliar.campos.length; index++) {
+    for (
+      let index = 0;
+      index < this.formInformacionFamiliar.campos.length;
+      index++
+    ) {
       const element = this.formInformacionFamiliar.campos[index];
       if (element.nombre === nombre) {
-        return index
+        return index;
       }
     }
     return 0;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.initializePersonaId();
+    this.construirForm();
     this.loadInfoPersona();
   }
 
+  async initializePersonaId() {
+    try {
+      this.info_persona_id = await this.userService.getPersonaId();
+    } catch (error) {
+      this.info_persona_id = 1; // Valor por defecto en caso de error
+      console.error('Error al obtener persona_id:', error);
+    }
+  }
+
   public loadInfoPersona(): void {
-    if (this.info_persona_id !== undefined && this.info_persona_id !== 0 &&
-      this.info_persona_id.toString() !== '') {
-        this.terceroMidService.get('personas/'+ this.info_persona_id +'/familiar')
-        .subscribe(res => {
-          if(res !== null && res.status == '404'){
-            this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
-          } else if (res !== null && res.status == '400'){
-            //MENSAJE DE ALGO ANDA MAL
-          } else if (res !== null && res.status == '200'){
-            this.info_info_familiar = <any>res.data;
-          }
-        },
+    if (this.info_persona_id !== null) {
+      this.terceroMidService
+        .get('personas/' + this.info_persona_id + '/familiar')
+        .subscribe(
+          (res) => {
+            if (res !== null && res.status == '404') {
+              this.popUpManager.showAlert(
+                '',
+                this.translate.instant('inscripcion.no_info')
+              );
+            } else if (res !== null && res.status == '400') {
+              //MENSAJE DE ALGO ANDA MAL
+            } else if (res !== null && res.status == '200') {
+              this.info_info_familiar = <any>res.data;
+            }
+          },
           (error: HttpErrorResponse) => {
-            this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_info'));
-          });
+            this.popUpManager.showAlert(
+              '',
+              this.translate.instant('inscripcion.no_info')
+            );
+          }
+        );
     } else {
       this.info_info_familiar = undefined;
       this.clean = !this.clean;
@@ -124,26 +149,31 @@ export class CrudInformacionFamiliarComponent implements OnInit {
     }
   }
 
-  setPercentage(event:any) {
-    setTimeout(()=>{
+  setPercentage(event: any) {
+    setTimeout(() => {
       this.result.emit(event);
     });
   }
 
   loadOptionsParentesco(): void {
     let parentescos: Array<any> = [];
-    this.tercerosService.get('tipo_parentesco?limit=0&query=Activo:true')
-      .subscribe(res => {
+    this.tercerosService
+      .get('tipo_parentesco?limit=0&query=Activo:true')
+      .subscribe((res) => {
         if (res !== null) {
           parentescos = <Array<TipoParentesco>>res;
         }
-        this.formInformacionFamiliar.campos[ this.getIndexForm('Parentesco') ].opciones = parentescos;
-        this.formInformacionFamiliar.campos[ this.getIndexForm('ParentescoAlterno') ].opciones = parentescos;
+        this.formInformacionFamiliar.campos[
+          this.getIndexForm('Parentesco')
+        ].opciones = parentescos;
+        this.formInformacionFamiliar.campos[
+          this.getIndexForm('ParentescoAlterno')
+        ].opciones = parentescos;
       });
   }
 
   public validarForm(event: any) {
-    if(event.valid){
+    if (event.valid) {
       const formData = event.data.InformacionFamiliar;
       const tercero: Tercero = {
         Id: Number(this.info_persona_id),
@@ -152,7 +182,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
           Id: 1,
           Nombre: undefined,
         },
-      }
+      };
       const informacionFamiliarPost: TrPostInformacionFamiliar = {
         Tercero_Familiar: tercero,
         Familiares: [
@@ -183,7 +213,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
                   Activo: undefined,
                   GrupoInfoComplementariaId: undefined,
                 },
-                Dato: JSON.stringify({value: formData.Telefono}),
+                Dato: JSON.stringify({ value: formData.Telefono }),
                 Activo: true,
               },
               {
@@ -197,7 +227,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
                   Activo: undefined,
                   GrupoInfoComplementariaId: undefined,
                 },
-                Dato: JSON.stringify({value: formData.CorreoElectronico}),
+                Dato: JSON.stringify({ value: formData.CorreoElectronico }),
                 Activo: true,
               },
               {
@@ -211,7 +241,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
                   Activo: undefined,
                   GrupoInfoComplementariaId: undefined,
                 },
-                Dato: JSON.stringify({value: formData.DireccionResidencia}),
+                Dato: JSON.stringify({ value: formData.DireccionResidencia }),
                 Activo: true,
               },
             ],
@@ -243,7 +273,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
                   Activo: undefined,
                   GrupoInfoComplementariaId: undefined,
                 },
-                Dato: JSON.stringify({value: formData.TelefonoAlterno}),
+                Dato: JSON.stringify({ value: formData.TelefonoAlterno }),
                 Activo: true,
               },
               {
@@ -257,7 +287,9 @@ export class CrudInformacionFamiliarComponent implements OnInit {
                   Activo: undefined,
                   GrupoInfoComplementariaId: undefined,
                 },
-                Dato: JSON.stringify({value: formData.CorreoElectronicoAlterno}),
+                Dato: JSON.stringify({
+                  value: formData.CorreoElectronicoAlterno,
+                }),
                 Activo: true,
               },
               {
@@ -271,22 +303,24 @@ export class CrudInformacionFamiliarComponent implements OnInit {
                   Activo: undefined,
                   GrupoInfoComplementariaId: undefined,
                 },
-                Dato: JSON.stringify({value: formData.DireccionResidenciaAlterno}),
+                Dato: JSON.stringify({
+                  value: formData.DireccionResidenciaAlterno,
+                }),
                 Activo: true,
               },
             ],
           },
         ],
-      }
+      };
       if (this.info_info_familiar === undefined && !this.denied_acces) {
-        this.createInfoFamiliar(informacionFamiliarPost);  
+        this.createInfoFamiliar(informacionFamiliarPost);
       } else {
         this.updateInfoFamiliar(informacionFamiliarPost);
       }
     }
   }
 
-  updateInfoFamiliar(info_familiar: any){
+  updateInfoFamiliar(info_familiar: any) {
     const opt: any = {
       title: this.translate.instant('GLOBAL.actualizar'),
       text: this.translate.instant('inscripcion.update'),
@@ -297,54 +331,86 @@ export class CrudInformacionFamiliarComponent implements OnInit {
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
-    Swal.fire(opt)
-      .then((willDelete: any) => {
-        if (willDelete.value) {
-          //FUNCION PUT
-          this.terceroMidService.put('personas/info-familiar', info_familiar).subscribe(
+    Swal.fire(opt).then((willDelete: any) => {
+      if (willDelete.value) {
+        //FUNCION PUT
+        this.terceroMidService
+          .put('personas/info-familiar', info_familiar)
+          .subscribe(
             (res: any) => {
-              if(res !== null && res.status == '404'){
-                this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_data'));
-              } else if (res !== null && res.status == '400'){
-                this.popUpManager.showAlert('', this.translate.instant('inscripcion.error_update'));
-              } else if (res !== null && res.status == '200'){
-                this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar'));
+              if (res !== null && res.status == '404') {
+                this.popUpManager.showAlert(
+                  '',
+                  this.translate.instant('inscripcion.no_data')
+                );
+              } else if (res !== null && res.status == '400') {
+                this.popUpManager.showAlert(
+                  '',
+                  this.translate.instant('inscripcion.error_update')
+                );
+              } else if (res !== null && res.status == '200') {
+                this.popUpManager.showSuccessAlert(
+                  this.translate.instant('inscripcion.actualizar')
+                );
                 this.loadInfoPersona();
               }
             },
             (error: HttpErrorResponse) => {
               Swal.fire({
-                icon:'error',
+                icon: 'error',
                 title: error.status + '',
                 text: this.translate.instant('ERROR.' + error.status),
-                footer: this.translate.instant('GLOBAL.actualizar') + '-' +
-                this.translate.instant('GLOBAL.info_caracteristica'),
+                footer:
+                  this.translate.instant('GLOBAL.actualizar') +
+                  '-' +
+                  this.translate.instant('GLOBAL.info_caracteristica'),
                 confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
               });
             }
           );
-        }
-      });
+      }
+    });
   }
 
-  createInfoFamiliar(info_familiar: any){
-    this.inscripcionMidService.post('inscripciones/informacion-familiar', info_familiar)
-      .subscribe((res: any) => {
-        if (res.message === 'error') {
-          Swal.fire({
-            icon:'error',
-            title: res.Code,
-            text: this.translate.instant('ERROR.' + res.status),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-          });
-          
-          this.snackBar.open(this.translate.instant('informacion_familiar.informacion_familiar_no_actualizada'), '', { duration: 3000, panelClass: ['error-snackbar'] });
+  createInfoFamiliar(info_familiar: any) {
+    this.inscripcionMidService
+      .post('inscripciones/informacion-familiar', info_familiar)
+      .subscribe(
+        (res: any) => {
+          if (res.message === 'error') {
+            Swal.fire({
+              icon: 'error',
+              title: res.Code,
+              text: this.translate.instant('ERROR.' + res.status),
+              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+            });
+
+            this.snackBar.open(
+              this.translate.instant(
+                'informacion_familiar.informacion_familiar_no_actualizada'
+              ),
+              '',
+              { duration: 3000, panelClass: ['error-snackbar'] }
+            );
           } else {
-            this.snackBar.open(this.translate.instant('informacion_familiar.informacion_familiar_actualizada'), '', { duration: 3000, panelClass: ['success-snackbar'] });
+            this.snackBar.open(
+              this.translate.instant(
+                'informacion_familiar.informacion_familiar_actualizada'
+              ),
+              '',
+              { duration: 3000, panelClass: ['success-snackbar'] }
+            );
           }
-      }, () => {
-        this.snackBar.open(this.translate.instant('informacion_familiar.informacion_familiar_no_actualizada'), '', { duration: 3000, panelClass: ['error-snackbar'] });
-      });
+        },
+        () => {
+          this.snackBar.open(
+            this.translate.instant(
+              'informacion_familiar.informacion_familiar_no_actualizada'
+            ),
+            '',
+            { duration: 3000, panelClass: ['error-snackbar'] }
+          );
+        }
+      );
   }
-
 }

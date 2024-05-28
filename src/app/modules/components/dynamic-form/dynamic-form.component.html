@@ -551,8 +551,8 @@
             <mat-form-field
               *ngSwitchCase="'input'"
               style="width: 100%"
-              class="form-group"
               floatLabel="always"
+              class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
               [hidden]="c.ocultar"
             >
               <mat-label
@@ -579,8 +579,8 @@
             <mat-form-field
               *ngSwitchCase="'inputConfirmacion'"
               style="width: 100%"
-              class="form-group"
               floatLabel="always"
+              class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
               [hidden]="c.ocultar"
             >
               <mat-label
@@ -727,6 +727,7 @@
               style="width: 100%"
               class="form-group"
               floatLabel="always"
+              class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
               [hidden]="c.ocultar"
             >
               <mat-label
@@ -1092,7 +1093,7 @@
                   <mat-form-field
                     *ngSwitchCase="'input'"
                     style="width: 100%"
-                    class="form-group"
+                    class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
                     floatLabel="always"
                     [hidden]="c.ocultar"
                   >
@@ -1120,7 +1121,7 @@
                   <mat-form-field
                     *ngSwitchCase="'inputConfirmacion'"
                     style="width: 100%"
-                    class="form-group"
+                    class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
                     floatLabel="always"
                     [hidden]="c.ocultar"
                   >
@@ -1267,7 +1268,7 @@
                   <mat-form-field
                     *ngSwitchCase="'select'"
                     style="width: 100%"
-                    class="form-group"
+                    class="form-group {{ c.ocultar ? 'no-mostrar' : '' }}"
                     floatLabel="always"
                     [hidden]="c.ocultar"
                   >

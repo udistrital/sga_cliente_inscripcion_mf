@@ -18,7 +18,7 @@ export class InfoCaracteristica {
   PaisNacimiento: Lugar = new Lugar;
   DepartamentoNacimiento: Lugar = new Lugar;
   TipoRelacionUbicacionEnte!: number;
-  Ente!: number;
+  Ente!: number | null;
   Tercero!: number;
   GrupoSisben!: string;
   EPS: Tercero = new Tercero;

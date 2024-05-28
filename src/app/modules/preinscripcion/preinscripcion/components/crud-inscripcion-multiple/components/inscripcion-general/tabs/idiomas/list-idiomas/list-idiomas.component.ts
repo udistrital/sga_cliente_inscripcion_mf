@@ -45,7 +45,7 @@ export class ListIdiomasComponent implements OnInit {
     private userService: UserService,
     private popUpManager: PopUpManager,
   ) {
-    this.loadData();
+    
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
 
     });
@@ -59,8 +59,8 @@ export class ListIdiomasComponent implements OnInit {
     this.translate.use(language);
   }
 
-  loadData(): void {
-    this.persona_id = this.userService.getPersonaId() || 1;
+  async loadData(): Promise<void> {
+    this.persona_id = await this.userService.getPersonaId() || 1;
     // no tiene campo Activo ??? Activo:true,
     this.idiomaService.get('conocimiento_idioma?query=Activo:true,TercerosId:' + this.persona_id +
       '&limit=0')
@@ -117,6 +117,7 @@ export class ListIdiomasComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadData();
     this.uid = 0;
     this.irAIndexTab(0)
   }

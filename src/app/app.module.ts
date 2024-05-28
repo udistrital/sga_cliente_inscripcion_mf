@@ -13,7 +13,6 @@ import { environment } from 'src/environments/environment';
 import { PopUpManager } from './managers/popUpManager';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnyService } from './services/any.service';
-import { CampusMidService } from './services/campus_mid.service';
 import { CIDCService } from './services/cidc.service';
 import { CoreService } from './services/core.service';
 import { DescuentoAcademicoService } from './services/descuento_academico.service';
@@ -23,7 +22,6 @@ import { EvaluacionInscripcionService } from './services/evaluacion_inscripcion.
 import { EventoService } from './services/evento.service';
 import { ExperienciaService } from './services/experiencia.service';
 import { IdiomaService } from './services/idioma.service';
-import { ImplicitAutenticationService } from './services/implicit_autentication.service';
 import { InscripcionService } from './services/inscripcion.service';
 import { ListService } from './services/list.service';
 import { NewNuxeoService } from './services/new_nuxeo.service';
@@ -70,6 +68,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
 import { SgaMidService } from './services/sga_mid.service';
+import { LiquidacionMatriculaService } from './services/liquidacion_matricula.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -123,7 +122,6 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     AnyService,
     CalendarioMidService,
-    CampusMidService,
     CIDCService,
     CoreService,
     DescuentoAcademicoService,
@@ -134,7 +132,6 @@ export function createTranslateLoader(http: HttpClient) {
     EventoService,
     ExperienciaService,
     IdiomaService,
-    ImplicitAutenticationService,
     InscripcionMidService,
     InscripcionService,
     ListService,
@@ -152,6 +149,7 @@ export function createTranslateLoader(http: HttpClient) {
     UserService,
     UtilidadesService,
     SgaMidService,
+    LiquidacionMatriculaService,
     { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MatDialogRef, useValue: {} },
     {

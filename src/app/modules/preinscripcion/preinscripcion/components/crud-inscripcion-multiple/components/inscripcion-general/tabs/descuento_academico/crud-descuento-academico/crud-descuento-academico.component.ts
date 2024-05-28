@@ -7,7 +7,6 @@ import { SolicitudDescuento } from 'src/app/models/descuento/solicitud_descuento
 import { CoreService } from 'src/app/services/core.service';
 import { DescuentoAcademicoService } from 'src/app/services/descuento_academico.service';
 import { DocumentoService } from 'src/app/services/documento.service';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
@@ -17,7 +16,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_DESCUENTO } from './form-descuento_academico';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { UserService } from 'src/app/services/users.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
@@ -30,7 +29,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   filesUp: any;
   SoporteDescuento: any;
   estado!: number;
-  persona!: number;
+  persona!: number | null;
   programa!: number;
   periodo!: number;
   inscripcion!: number;
@@ -51,7 +50,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
   }
 
   @Input('persona_id')
-  set info(persona_id: number) {
+  set info(persona_id: number | null) {
     this.persona = persona_id;
   }
 
@@ -84,25 +83,21 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private autenticationService: ImplicitAutenticationService,
     private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>,
     private popUpManager: PopUpManager,
+    private userService: UserService,
     private newNuxeoService: NewNuxeoService,) {
     this.formDescuentoAcademico = FORM_DESCUENTO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    //this.cargarPeriodo();
-    // this.listService.findDescuentoDependencia();
     this.findDescuentoAcademico(window.sessionStorage.getItem('ProgramaAcademicoId'));
-    // this.loadLists();
+    
   }
 
   findDescuentoAcademico(programa: any) {
-    // this.descuentoAcademicoService.get('tipo_descuento/?limit=0&query=Activo:true')
-    console.log(programa)
     this.inscripcionMidService.get('academico/descuento/' + programa)
     .subscribe(
       (result: any) => {
@@ -240,7 +235,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
           if (this.info_descuento_academico.Documento.file !== undefined) {
             files.push({
               IdDocumento: 7,
-              nombre: this.autenticationService.getPayload().sub,
+              nombre: this.userService.getPayload().sub,
               file: this.info_descuento_academico.Documento.file, 
             })
           }
@@ -252,12 +247,11 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                   this.info_descuento_academico.DocumentoId = documentos_actualizados.Id;
                   this.info_descuento_academico.Id = this.descuento_academico_id;
                   this.info_descuento_academico.PeriodoId = Number(window.sessionStorage.getItem('IdPeriodo'));
-                  this.info_descuento_academico.PersonaId = (1 * this.persona);
+                  this.info_descuento_academico.PersonaId = this.persona ? (1 * this.persona) : null;
                   this.info_descuento_academico.DescuentoDependencia.Dependencia = Number(window.sessionStorage.getItem('ProgramaAcademicoId'));
                   this.info_descuento_academico.DescuentoDependencia.Periodo = Number(window.sessionStorage.getItem('IdPeriodo'));
           
                   this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
-                  console.log(this.info_descuento_academico)
                   this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)
                     .subscribe(res => {
                       /* if (documentos_actualizados['SoporteDescuento'] !== undefined) {
@@ -297,7 +291,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             this.info_descuento_academico.DocumentoId = this.SoporteDescuento;
             this.info_descuento_academico.Id = this.descuento_academico_id;
             this.info_descuento_academico.PeriodoId = Number(window.sessionStorage.getItem('IdPeriodo'));
-            this.info_descuento_academico.PersonaId = (1 * this.persona);
+            this.info_descuento_academico.PersonaId = this.persona ? (1 * this.persona) : null;
             this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
 
             this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)
@@ -352,7 +346,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
           if (this.info_descuento_academico.Documento.file !== undefined) {
             files.push({
               IdDocumento: 7,
-              nombre: this.autenticationService.getPayload().sub,
+              nombre: this.userService.getPayload().sub,
               file: this.info_descuento_academico.Documento.file, 
             });
           }

@@ -19,7 +19,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 @Component({
   selector: 'ngx-list-experiencia-laboral',
   templateUrl: './list-experiencia-laboral.component.html',
-  styleUrls: ['./list-experiencia-laboral.component.scss']
+  styleUrls: ['./list-experiencia-laboral.component.scss'],
 })
 export class ListExperienciaLaboralComponent implements OnInit {
   uid!: number;
@@ -35,7 +35,11 @@ export class ListExperienciaLaboralComponent implements OnInit {
 
   @Input('ente_id')
   set name(ente_id: number) {
-    if (ente_id !== undefined && ente_id !== null && ente_id.toString() !== '') {
+    if (
+      ente_id !== undefined &&
+      ente_id !== null &&
+      ente_id.toString() !== ''
+    ) {
       this.eid = ente_id;
       this.loadData();
     }
@@ -46,9 +50,17 @@ export class ListExperienciaLaboralComponent implements OnInit {
   @Output('result') result: EventEmitter<any> = new EventEmitter();
 
   percentage!: number;
-  persona_id: number;
+  persona_id!: number | null;
 
-  displayedColumns = ['empresa', 'cargo', 'fecha_inicio', 'fecha_fin', 'estado', 'observacion', 'acciones'];
+  displayedColumns = [
+    'empresa',
+    'cargo',
+    'fecha_inicio',
+    'fecha_fin',
+    'estado',
+    'observacion',
+    'acciones',
+  ];
   dataSource!: MatTableDataSource<any>;
 
   constructor(
@@ -58,16 +70,16 @@ export class ListExperienciaLaboralComponent implements OnInit {
     private inscripcionMidService: InscripcionMidService,
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
-    private snackBar: MatSnackBar) {
-    if (this.eid !== undefined && this.eid !== null && this.eid.toString() !== '') {
+    private snackBar: MatSnackBar
+  ) {
+    if (
+      this.eid !== undefined &&
+      this.eid !== null &&
+      this.eid.toString() !== ''
+    ) {
       this.loadData();
     }
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
-    this.persona_id = this.userService.getPersonaId();
-    if (this.persona_id !== undefined && this.persona_id !== null && this.persona_id.toString() !== '') {
-      this.loadData();
-    }
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {});
   }
 
   useLanguage(language: string) {
@@ -75,65 +87,90 @@ export class ListExperienciaLaboralComponent implements OnInit {
   }
 
   loadData(): void {
-    this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.persona_id).subscribe(
-      (response: any) => {
-        if (response.Data.length > 0 && response.Status == '200') {
-          this.data = <Array<any>>response.Data;
-          this.getPercentage(1);
-          this.data.forEach(async (expLab) => {
-            let estadoDoc = await <any>this.cargarEstadoDocumento(expLab.Soporte);
-            expLab.Estado = estadoDoc.estadoObservacion;
-            expLab.Observacion = estadoDoc.observacion;
-            this.dataSource = new MatTableDataSource(this.data)
-          });
-        } else if (response.Data.length == 0) {
-          this.popUpManager.showAlert('', this.translate.instant('experiencia_laboral.no_data'));
-          this.getPercentage(0);
-          this.dataSource = new MatTableDataSource();
-        } else {
-          this.popUpManager.showAlert(this.translate.instant('GLOBAL.error'),
-            this.translate.instant('experiencia_laboral.error'));
+    this.inscripcionMidService
+      .get('experiencia-laboral/tercero/?Id=' + this.persona_id)
+      .subscribe(
+        (response: any) => {
+          if (response.Data.length > 0 && response.Status == '200') {
+            this.data = <Array<any>>response.Data;
+            this.getPercentage(1);
+            this.data.forEach(async (expLab) => {
+              let estadoDoc = await (<any>(
+                this.cargarEstadoDocumento(expLab.Soporte)
+              ));
+              expLab.Estado = estadoDoc.estadoObservacion;
+              expLab.Observacion = estadoDoc.observacion;
+              this.dataSource = new MatTableDataSource(this.data);
+            });
+          } else if (response.Data.length == 0) {
+            this.popUpManager.showAlert(
+              '',
+              this.translate.instant('experiencia_laboral.no_data')
+            );
+            this.getPercentage(0);
+            this.dataSource = new MatTableDataSource();
+          } else {
+            this.popUpManager.showAlert(
+              this.translate.instant('GLOBAL.error'),
+              this.translate.instant('experiencia_laboral.error')
+            );
             this.getPercentage(0);
             this.dataSource = new MatTableDataSource();
           }
-      },
-      (error: HttpErrorResponse) => {
-        Swal.fire({
-          icon: 'error',
-          title: error.status + '',
-          text: this.translate.instant('ERROR.' + error.status),
-          footer: this.translate.instant('experiencia_laboral.cargar_experiencia'),
-          confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-        });
-        this.getPercentage(0);
-        //this.source.load([]);
-      });
+        },
+        (error: HttpErrorResponse) => {
+          Swal.fire({
+            icon: 'error',
+            title: error.status + '',
+            text: this.translate.instant('ERROR.' + error.status),
+            footer: this.translate.instant(
+              'experiencia_laboral.cargar_experiencia'
+            ),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+          this.getPercentage(0);
+          //this.source.load([]);
+        }
+      );
   }
 
   cargarEstadoDocumento(Id: any) {
     return new Promise((resolve) => {
-      this.documentoService.get('documento/' + Id).subscribe(
-        (doc: Documento) => {
+      this.documentoService
+        .get('documento/' + Id)
+        .subscribe((doc: Documento) => {
           let estadoDoc = this.utilidades.getEvaluacionDocumento(doc.Metadatos);
-          resolve(estadoDoc)
+          resolve(estadoDoc);
         });
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    try {
+      this.persona_id = await this.userService.getPersonaId();
+      if (
+        this.persona_id !== undefined &&
+        this.persona_id !== null &&
+        this.persona_id.toString() !== ''
+      ) {
+        this.loadData();
+      }
+    } catch (error) {
+      console.error('Error al obtener persona_id:', error);
+    }
     this.uid = 0;
     this.indexSelect = 0;
     this.detalleExp = [];
-    this.irAIndexTab(0)
+    this.irAIndexTab(0);
   }
 
-  onEdit(event:any): void {
+  onEdit(event: any): void {
     this.id = event.Id;
     this.uid = event.Nit;
     this.indexSelect = event.index;
     this.detalleExp = this.data[0];
     this.crud = true;
-    this.irAIndexTab(1)
+    this.irAIndexTab(1);
   }
 
   onCreate(): void {
@@ -141,29 +178,29 @@ export class ListExperienciaLaboralComponent implements OnInit {
     this.crud = true;
     this.indexSelect = 0;
     this.detalleExp = [];
-    this.irAIndexTab(1)
+    this.irAIndexTab(1);
   }
 
-  onChange(event:any) {
+  onChange(event: any) {
     if (event) {
       this.uid = 0;
       this.indexSelect = 0;
       this.detalleExp = [];
       this.loadData();
-      this.irAIndexTab(0)
+      this.irAIndexTab(0);
     }
   }
 
-  getPercentage(event:any) {
+  getPercentage(event: any) {
     this.percentage = event;
     this.result.emit(this.percentage);
   }
 
-  itemselec(event:any): void {
+  itemselec(event: any): void {
     this.id = event.data.Id;
   }
 
-  onDelete(event:any): void {
+  onDelete(event: any): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.eliminar'),
       text: this.translate.instant('experiencia_laboral.eliminar'),
@@ -174,35 +211,44 @@ export class ListExperienciaLaboralComponent implements OnInit {
       confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
-    Swal.fire(opt)
-      .then((willDelete: any) => {
-        if (willDelete.value) {
-          //todo: falta parametro
-          this.inscripcionMidService.delete('experiencia-laboral/', event).subscribe(res => {
-            if (res !== null) {
-              this.loadData();
-              this.snackBar.open(this.translate.instant('experiencia_laboral.borrada'), '', { duration: 3000, panelClass: ['info-snackbar'] }) 
-            }
-          },
+    Swal.fire(opt).then((willDelete: any) => {
+      if (willDelete.value) {
+        //todo: falta parametro
+        this.inscripcionMidService
+          .delete('experiencia-laboral/', event)
+          .subscribe(
+            (res) => {
+              if (res !== null) {
+                this.loadData();
+                this.snackBar.open(
+                  this.translate.instant('experiencia_laboral.borrada'),
+                  '',
+                  { duration: 3000, panelClass: ['info-snackbar'] }
+                );
+              }
+            },
             (error: HttpErrorResponse) => {
               Swal.fire({
                 icon: 'error',
                 title: error.status + '',
                 text: this.translate.instant('ERROR.' + error.status),
-                footer: this.translate.instant('GLOBAL.eliminar') + '-' +
+                footer:
+                  this.translate.instant('GLOBAL.eliminar') +
+                  '-' +
                   this.translate.instant('GLOBAL.experiencia_laboral'),
                 confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
               });
-            });
-        }
-      });
+            }
+          );
+      }
+    });
   }
 
   tabChanged(event: MatTabChangeEvent) {
-    this.irAIndexTab(event.index)
+    this.irAIndexTab(event.index);
   }
 
-  irAIndexTab(index:number){
-    this.selected = index
+  irAIndexTab(index: number) {
+    this.selected = index;
   }
 }
