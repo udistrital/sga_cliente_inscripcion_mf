@@ -5,11 +5,8 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { SolicitudDescuento } from 'src/app/models/descuento/solicitud_descuento';
 import { DocumentoService } from 'src/app/services/documento.service';
-import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
 // @ts-ignore

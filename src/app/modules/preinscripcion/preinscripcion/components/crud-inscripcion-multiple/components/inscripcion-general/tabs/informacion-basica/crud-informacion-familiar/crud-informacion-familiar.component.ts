@@ -13,7 +13,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_INFORMACION_FAMILIAR } from './form-informacion_familiar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 
 @Component({
   selector: 'ngx-crud-informacion-familiar',
@@ -57,7 +57,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
   constructor(
     private popUpManager: PopUpManager,
     private translate: TranslateService,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private inscripcionMidService: InscripcionMidService,
     private userService: UserService,
     private tercerosService: TercerosService,
@@ -120,7 +120,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
 
   public loadInfoPersona(): void {
     if (this.info_persona_id !== null) {
-      this.terceroMidService
+      this.tercerosMidService
         .get('personas/' + this.info_persona_id + '/familiar')
         .subscribe(
           (res) => {
@@ -334,7 +334,7 @@ export class CrudInformacionFamiliarComponent implements OnInit {
     Swal.fire(opt).then((willDelete: any) => {
       if (willDelete.value) {
         //FUNCION PUT
-        this.terceroMidService
+        this.tercerosMidService
           .put('personas/info-familiar', info_familiar)
           .subscribe(
             (res: any) => {

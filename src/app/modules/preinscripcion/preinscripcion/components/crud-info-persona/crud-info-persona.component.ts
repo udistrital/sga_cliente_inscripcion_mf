@@ -16,10 +16,9 @@ import * as momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
 import { validateLang } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { encrypt } from 'src/app/utils/util-encrypt';
 import { UserService } from 'src/app/services/users.service';
-import { ROLES } from 'src/app/models/diccionario/diccionario';
 
 @Component({
   selector: 'ngx-crud-info-persona',
@@ -77,9 +76,9 @@ export class CrudInfoPersonaComponent implements OnInit {
     private listService: ListService,
     private popUpManager: PopUpManager,
     private store: Store<IAppState>,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private userService: UserService,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {}
 
   async ngOnInit() {
@@ -122,7 +121,7 @@ export class CrudInfoPersonaComponent implements OnInit {
 
   public async loadInfoPersona() {
     if (this.info_persona_id !== null) {
-      await this.terceroMidService
+      await this.tercerosMidService
         .get('personas/' + this.info_persona_id)
         .subscribe(
           (res) => {
@@ -205,7 +204,7 @@ export class CrudInfoPersonaComponent implements OnInit {
         this.getIndexForm('VerificarNumeroIdentificacion')
       ].valor;
     if (doc && verif && doc == verif && !this.aceptaTerminos) {
-      this.terceroMidService.get('personas/existencia/' + doc).subscribe(
+      this.tercerosMidService.get('personas/existencia/' + doc).subscribe(
         (res) => {
           res = res.data;
           this.info_info_persona = res[0];
@@ -361,7 +360,7 @@ export class CrudInfoPersonaComponent implements OnInit {
     };
     prepareUpdate.Complementarios.Telefono.data = JSON.stringify(dataTel);
 
-    this.terceroMidService.put('personas', prepareUpdate).subscribe(
+    this.tercerosMidService.put('personas', prepareUpdate).subscribe(
       (response: any) => {
         response = response.data;
         this.faltandatos = false;
@@ -404,7 +403,7 @@ export class CrudInfoPersonaComponent implements OnInit {
     infoPersona.NumeroIdentificacion =
       infoPersona.NumeroIdentificacion.toString();
     infoPersona.Usuario = this.userService.getPayload().email;
-    this.terceroMidService.post('personas/', infoPersona).subscribe(
+    this.tercerosMidService.post('personas/', infoPersona).subscribe(
       (res: any) => {
         res = res.data;
         const r = <any>res;

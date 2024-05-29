@@ -9,9 +9,7 @@ import { Documento } from 'src/app/models/documento/documento';
 import { DescuentoAcademicoService } from 'src/app/services/descuento_academico.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 // @ts-ignore

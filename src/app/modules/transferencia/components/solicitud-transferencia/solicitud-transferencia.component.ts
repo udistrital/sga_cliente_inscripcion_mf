@@ -12,7 +12,7 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_SOLICITUD_TRANSFERENCIA, FORM_RESPUESTA_SOLICITUD } from '../../forms-transferencia';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 
 @Component({
   selector: 'app-solicitud-transferencia',
@@ -53,7 +53,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
     private nuxeo: NewNuxeoService,
     private popUpManager: PopUpManager,
     private router: Router,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private translate: TranslateService,
     private userService: UserService,
     private utilidades: UtilidadesService
@@ -114,7 +114,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
     this.uid = this.userService.getPersonaId();
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
-      this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
+      this.tercerosMidService.get('personas/' + this.uid).subscribe((res: any) => {
         if (res !== null) {
           this.nombreCordinador = res.NombreCompleto;
         }

@@ -15,7 +15,7 @@ import { IAppState } from 'src/app/utils/reducers/app.state';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_INFO_CARACTERISTICA } from './form-info_caracteristica';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 
 @Component({
   selector: 'ngx-crud-info-caracteristica',
@@ -58,7 +58,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     private newNuxeoService: NewNuxeoService,
     private popUpManager: PopUpManager,
     private store: Store<IAppState>,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private translate: TranslateService,
     private ubicacionesService: UbicacionService,
     private userService: UserService,
@@ -350,7 +350,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
   public loadInfoCaracteristica(): void {
     if (this.info_persona_id !== null) {
       this.denied_acces = false;
-      this.terceroMidService
+      this.tercerosMidService
         .get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(
           async (res) => {
@@ -464,7 +464,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
       if (willDelete.value) {
         this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
         this.info_info_caracteristica.Ente = this.info_persona_id;
-        this.terceroMidService
+        this.tercerosMidService
           .put('personas/complementarios', this.info_info_caracteristica)
           .subscribe(
             (res) => {
@@ -509,7 +509,7 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
         const info_info_caracteristica_post = <any>infoCaracteristica;
         info_info_caracteristica_post.TipoRelacionUbicacionEnte = 1;
         info_info_caracteristica_post.Tercero = this.info_persona_id;
-        this.terceroMidService
+        this.tercerosMidService
           .post('personas/complementarios', info_info_caracteristica_post)
           .subscribe(
             (res) => {

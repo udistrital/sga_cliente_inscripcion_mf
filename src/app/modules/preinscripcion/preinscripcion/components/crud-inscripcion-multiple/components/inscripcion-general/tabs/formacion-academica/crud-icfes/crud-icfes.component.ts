@@ -11,9 +11,7 @@ import { IAppState } from 'src/app/utils/reducers/app.state';
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_ICFES } from './form-icfes';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
   selector: 'ngx-crud-icfes',

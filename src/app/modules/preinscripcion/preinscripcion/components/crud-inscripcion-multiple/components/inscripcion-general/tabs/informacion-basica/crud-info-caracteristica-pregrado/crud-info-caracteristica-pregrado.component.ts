@@ -16,7 +16,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as momentTimezone from 'moment-timezone';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 
 @Component({
   selector: 'ngx-crud-info-caracteristica_pregrado',
@@ -67,7 +67,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
     private popUpManager: PopUpManager,
     private snackBar: MatSnackBar,
     private store: Store<IAppState>,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private translate: TranslateService,
     private ubicacionesService: UbicacionService,
     private userService: UserService
@@ -250,7 +250,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   public loadInfoCaracteristica(): void {
     if (this.info_persona_id !== null) {
       this.denied_acces = false;
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
+      this.tercerosMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(async res => {
           if (res.status != "404") {
             this.datosGet = <InfoCaracteristicaGet>res.data;
@@ -333,7 +333,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
         if (willDelete.value) {
           this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;
           this.info_info_caracteristica.Ente = this.info_persona_id;
-          this.terceroMidService.put('personas/complementarios', this.info_info_caracteristica)
+          this.tercerosMidService.put('personas/complementarios', this.info_info_caracteristica)
             .subscribe(res => {
               this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar'));
               this.loadInfoCaracteristica();
@@ -370,7 +370,7 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
           const info_info_caracteristica_post = <any>infoCaracteristica;
           info_info_caracteristica_post.TipoRelacionUbicacionEnte = 1;
           info_info_caracteristica_post.Tercero = this.info_persona_id;
-          this.terceroMidService.post('personas/complementarios', info_info_caracteristica_post)
+          this.tercerosMidService.post('personas/complementarios', info_info_caracteristica_post)
             .subscribe(res => {
               if (res !== null) {
                 this.info_info_caracteristica = <InfoCaracteristica>infoCaracteristica;

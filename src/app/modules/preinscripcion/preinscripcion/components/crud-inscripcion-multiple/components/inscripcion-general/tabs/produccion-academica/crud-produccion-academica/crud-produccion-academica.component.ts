@@ -29,7 +29,7 @@ import { ProduccionAcademicaService } from 'src/app/services/produccion_academic
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 
 @Component({
   selector: 'ngx-crud-produccion-academica',
@@ -101,7 +101,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     private store: Store<IAppState>,
     private http: HttpClient,
     private newNuxeoService: NewNuxeoService,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private inscripcionMidService: InscripcionMidService,
     private utilidades: UtilidadesService,
     private snackBar: MatSnackBar) {
@@ -710,7 +710,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
           if (willMake.value) {
             infoTercero.Activo = false;
 
-            this.terceroMidService.post("personas/autores", infoTercero).subscribe((res:any) => {
+            this.tercerosMidService.post("personas/autores", infoTercero).subscribe((res:any) => {
               if (res.data !== null) {
                 this.snackBar.open(this.translate.instant('produccion_academia.autor_creado'), '', { duration: 3000, panelClass: ['success-snackbar'] }) 
                 resolve(res);

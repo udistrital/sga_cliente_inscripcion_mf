@@ -48,7 +48,6 @@ import { Overlay } from '@angular/cdk/overlay';
 import { LegalizacionMatriculaAspiranteComponent } from './modules/legalizacion/legalizacion-matricula-aspirante/legalizacion-matricula-aspirante.component';
 import { InscripcionMidService } from './services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from './services/sga_calendario_mid.service';
-import { TerceroMidService } from './services/sga_tercero_mid.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -67,7 +66,6 @@ import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete
 import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
-import { SgaMidService } from './services/sga_mid.service';
 import { LiquidacionMatriculaService } from './services/liquidacion_matricula.service';
 
 export function createTranslateLoader(http: HttpClient) {
@@ -140,7 +138,6 @@ export function createTranslateLoader(http: HttpClient) {
     PopUpManager,
     ProduccionAcademicaService,
     ProyectoAcademicoService,
-    TerceroMidService,
     TercerosMidService,
     TimeService,
     TranslateService,
@@ -148,7 +145,6 @@ export function createTranslateLoader(http: HttpClient) {
     UbicacionService,
     UserService,
     UtilidadesService,
-    SgaMidService,
     LiquidacionMatriculaService,
     { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MatDialogRef, useValue: {} },

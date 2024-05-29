@@ -8,7 +8,7 @@ import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
@@ -69,7 +69,7 @@ export class ViewInfoPersonaComponent implements OnInit {
     private sanitization: DomSanitizer,
     private translate: TranslateService,
     private userService: UserService,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private inscripcionMidService: InscripcionMidService,
     private newNuxeoService: NewNuxeoService,
     private popUpManager: PopUpManager,
@@ -103,7 +103,7 @@ export class ViewInfoPersonaComponent implements OnInit {
     this.infoCarga.nCargas = 5;
     const id = this.info_persona_id ? this.info_persona_id : this.userService.getPersonaId();
     if (id !== undefined && id !== 0 && id.toString() !== '') {
-      this.terceroMidService.get('personas/' + id)
+      this.tercerosMidService.get('personas/' + id)
         .subscribe((res:any) => {
           const r = <any>res;
           if (r !== null && r.Message !== 'error') {
@@ -114,7 +114,7 @@ export class ViewInfoPersonaComponent implements OnInit {
             sessionStorage.setItem('nameFolder', nombreCarpetaDocumental);
 
 
-            this.terceroMidService.get('personas/'+ this.info_persona_id +'/complementarios')
+            this.tercerosMidService.get('personas/'+ this.info_persona_id +'/complementarios')
             .subscribe( (res:any) => {
               if (res !== null && res.Status != '404') {
                 this.info_info_caracteristica = <InfoCaracteristica>res.Data;

@@ -21,7 +21,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { MatTableDataSource } from '@angular/material/table';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 
@@ -66,7 +66,7 @@ export class TransferenciaComponent implements OnInit {
     private projectService: ProyectoAcademicoService,
     private nuxeo: NewNuxeoService,
     private dialog: MatDialog,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private inscripcionMidService: InscripcionMidService,
     private calendarioMidService: CalendarioMidService,
     private popUpManager: PopUpManager,
@@ -128,7 +128,7 @@ export class TransferenciaComponent implements OnInit {
     this.uid = this.userService.getPersonaId();
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
-      this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
+      this.tercerosMidService.get('personas/' + this.uid).subscribe((res: any) => {
         if (res !== null) {
           const temp = <InfoPersona>res.Data;
           this.info_info_persona = temp;
@@ -391,7 +391,7 @@ export class TransferenciaComponent implements OnInit {
       async ok => {
         if (ok.value) {
           if (this.info_info_persona === undefined) {
-            this.terceroMidService.get('personas/' + this.uid)
+            this.tercerosMidService.get('personas/' + this.uid)
               .subscribe(async res => {
                 console.log(res)
                 if (res != null) {

@@ -4,6 +4,7 @@ import { SoporteParams } from 'src/app/models/forms/define-form-fields';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { TercerosService } from 'src/app/services/terceros.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { MODALS, ROLES } from 'src/app/models/informacion/diccionario';
@@ -13,7 +14,6 @@ import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service'
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { OikosService } from 'src/app/services/oikos.service';
 
 @Component({
@@ -34,7 +34,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private oikosService: OikosService,
     private usuarioService: UserService,
     private inscripcionService: InscripcionService,
-    private sgamidService: SgaMidService
+    private tercerosMidService: TercerosMidService
   ) {}
 
   isLinear = false;
@@ -180,11 +180,15 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   consultarTercero(personaId: any) {
     return new Promise((resolve, reject) => {
-      this.sgamidService
-        .get('persona/consultar_persona/' + personaId)
+      this.tercerosMidService
+        .get('personas/' + personaId)
         .subscribe(
           (res: any) => {
-            resolve(res);
+            if (res.Success) {
+              resolve(res.Data);
+            }else {
+              reject([]);
+            }
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(

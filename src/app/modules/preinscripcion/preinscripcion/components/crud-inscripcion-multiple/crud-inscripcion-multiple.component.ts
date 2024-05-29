@@ -23,7 +23,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { LinkDownloadComponent } from './components/link-download/link-download.component';
 import { ButtonPaymentComponent } from './components/button-payment/button-payment.component';
 import { MatTableDataSource } from '@angular/material/table';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
@@ -127,7 +127,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     private userService: UserService,
     private parametrosService: ParametrosService,
     private inscripcionService: InscripcionService,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private inscripcionMidService: InscripcionMidService,
     private calendarioMidService: CalendarioMidService,
     private eventoService: EventoService
@@ -191,7 +191,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   public async loadInfoPersona(): Promise<void> {
     try {
       if (this.info_persona_id !== null) {
-        this.terceroMidService
+        this.tercerosMidService
           .get('personas/' + this.info_persona_id)
           .subscribe(
             (res: any) => {
@@ -504,7 +504,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
             try {
               const res = await firstValueFrom(
-                this.terceroMidService.get('personas/' + this.info_persona_id)
+                this.tercerosMidService.get('personas/' + this.info_persona_id)
               );
               if (res !== null) {
                 const temp = <InfoPersona>res.data;

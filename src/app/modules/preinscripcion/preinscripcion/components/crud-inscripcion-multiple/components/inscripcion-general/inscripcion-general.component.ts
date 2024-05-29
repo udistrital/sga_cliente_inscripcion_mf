@@ -23,7 +23,7 @@ import { DialogoDocumentosComponent } from 'src/app/modules/components/dialogo-d
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
-import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
@@ -181,7 +181,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     private userService: UserService,
     private parametrosService: ParametrosService,
     private programaService: ProyectoAcademicoService,
-    private terceroMidService: TerceroMidService,
+    private tercerosMidService: TercerosMidService,
     private inscripcionMidService: InscripcionMidService,
     private calendarioMidService: CalendarioMidService,
     private dialog: MatDialog,
@@ -481,7 +481,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   loadPercentageInfoCaracteristica(factor: number) {
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
+      this.tercerosMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(res => {
           if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2));
@@ -507,7 +507,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   loadPercentageInfoFamiliar(factor: number) {
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/familiar')
+      this.tercerosMidService.get('personas/' + this.info_persona_id + '/familiar')
         .subscribe(res => {
           if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
             this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2)) + 0.01;
@@ -534,7 +534,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   loadPercentageFormacionAcademicaPregado(factor:any) {
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/formacion-pregrado')
+      this.tercerosMidService.get('personas/' + this.info_persona_id + '/formacion-pregrado')
         .subscribe(res => {
           if (res.Status == '200') {
             this.percentage_acad = this.percentage_acad + (100 / factor);

@@ -4,30 +4,39 @@ import { RequestManager } from '../managers/requestManager';
 @Injectable({
   providedIn: 'root',
 })
-
 export class TercerosMidService {
 
-  constructor(private requestManager: RequestManager) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+  private readonly servicePath: string = 'TERCEROS_MID_SERVICE';
+
+  constructor(private requestManager: RequestManager) {}
+
+  private setServicePath(){
+    this.requestManager.setPath(this.servicePath);
   }
 
-  get(endpoint: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+  public get(endpoint: any) {
+    this.setServicePath();
     return this.requestManager.get(endpoint);
   }
 
-  post(endpoint: any, element: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+  public post(endpoint: any, element: any) {
+    this.setServicePath();
     return this.requestManager.post(endpoint, element);
   }
 
-  put(endpoint: any, element: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+  public put(endpoint: any, element: any) {
+    this.setServicePath();
     return this.requestManager.put(endpoint, element);
   }
 
-  delete(endpoint: any, element: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+  public delete(endpoint: any, element: any) {
+    this.setServicePath();
     return this.requestManager.delete(endpoint, element.Id);
   }
+
+  public uploadFile(endpoint: any, element: any) {
+    this.setServicePath();
+    return this.requestManager.post_file(endpoint, element);
+  }
+
 }
