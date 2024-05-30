@@ -124,8 +124,8 @@ export class TransferenciaComponent implements OnInit {
     });
   }
 
-  public loadInfoPersona(): void {
-    this.uid = this.userService.getPersonaId();
+  public async loadInfoPersona() {
+    this.uid = await this.userService.getPersonaId();
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
       this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
