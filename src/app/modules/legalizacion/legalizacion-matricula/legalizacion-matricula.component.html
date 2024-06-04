@@ -1,11 +1,11 @@
 <div *ngIf="!formulario && estaAutorizado">
   <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
     <mat-step [stepControl]="firstFormGroup">
-      <ng-template matStepLabel>{{ 'legalizacion_matricula.liquidacion_recibos' | translate }}</ng-template>
+      <ng-template matStepLabel>{{ 'legalizacion_admision.liquidacion_recibos' | translate }}</ng-template>
 
       <mat-card>
         <mat-card-header>
-          <mat-card-title>{{ 'legalizacion_matricula.informacion_proyecto' | translate }}</mat-card-title>
+          <mat-card-title>{{ 'legalizacion_admision.informacion_proyecto' | translate }}</mat-card-title>
         </mat-card-header>
 
         <br><br>
@@ -13,9 +13,9 @@
         <mat-card-content>
           <form class="form-container">
             <div>
-              <mat-card-subtitle>{{ 'legalizacion_matricula.facultad' | translate }}</mat-card-subtitle>
+              <mat-card-subtitle>{{ 'legalizacion_admision.facultad' | translate }}</mat-card-subtitle>
               <mat-form-field [formGroup]="firstFormGroup">
-                <mat-label>{{ 'legalizacion_matricula.seleccion_facultad' | translate }}</mat-label>
+                <mat-label>{{ 'legalizacion_admision.seleccion_facultad' | translate }}</mat-label>
                 <mat-select formControlName="validatorFacultad" required (selectionChange)="onFacultadChange($event)">
                   <mat-option *ngFor="let facultad of facultades" [value]="facultad.Id">{{facultad.Nombre}}</mat-option>
                 </mat-select>
@@ -23,9 +23,9 @@
             </div>
 
             <div>
-              <mat-card-subtitle>{{ 'legalizacion_matricula.proyecto_curricular' | translate }}</mat-card-subtitle>
+              <mat-card-subtitle>{{ 'legalizacion_admision.proyecto_curricular' | translate }}</mat-card-subtitle>
               <mat-form-field [formGroup]="firstFormGroup">
-                <mat-label>{{ 'legalizacion_matricula.seleccion_proyecto' | translate }}</mat-label>
+                <mat-label>{{ 'legalizacion_admision.seleccion_proyecto' | translate }}</mat-label>
                 <mat-select formControlName="validatorProyecto" required>
                   <mat-option *ngFor="let proyecto of proyectosCurriculares" [value]="proyecto.Id">{{proyecto.Nombre}}</mat-option>
                 </mat-select>
@@ -33,9 +33,9 @@
             </div>
 
             <div>
-              <mat-card-subtitle>{{ 'legalizacion_matricula.anno' | translate }}</mat-card-subtitle>
+              <mat-card-subtitle>{{ 'legalizacion_admision.anno' | translate }}</mat-card-subtitle>
               <mat-form-field [formGroup]="firstFormGroup">
-                <mat-label>{{ 'legalizacion_matricula.seleccion_anno' | translate }}</mat-label>
+                <mat-label>{{ 'legalizacion_admision.seleccion_anno' | translate }}</mat-label>
                 <mat-select formControlName="validatorAño" required (selectionChange)="onAnioChange($event)">
                   <mat-option *ngFor="let anio of anios" [value]="anio.Id">{{anio.Nombre}}</mat-option>
                 </mat-select>
@@ -43,9 +43,9 @@
             </div>
 
             <div>
-              <mat-card-subtitle>{{ 'legalizacion_matricula.periodo' | translate }}</mat-card-subtitle>
+              <mat-card-subtitle>{{ 'legalizacion_admision.periodo' | translate }}</mat-card-subtitle>
               <mat-form-field [formGroup]="firstFormGroup">
-                <mat-label>{{ 'legalizacion_matricula.seleccion_periodo' | translate }}</mat-label>
+                <mat-label>{{ 'legalizacion_admision.seleccion_periodo' | translate }}</mat-label>
                 <mat-select formControlName="validatorPeriodo" required>
                   <mat-option *ngFor="let periodo of periodosAnio" [value]="periodo.Id">{{periodo.Nombre}}</mat-option>
                 </mat-select>
@@ -54,7 +54,7 @@
           </form>
 
         <div class="button-stepper">
-          <button mat-stroked-button matStepperNext class="boton-general btn boton-primary" (click)="generarBusqueda(stepper)" [disabled]="!firstFormGroup.valid" [ngClass]="{'button-disabled': !firstFormGroup.valid}">{{ 'legalizacion_matricula.consultar' | translate }}</button>
+          <button mat-stroked-button matStepperNext class="boton-general btn boton-primary" (click)="generarBusqueda(stepper)" [disabled]="!firstFormGroup.valid" [ngClass]="{'button-disabled': !firstFormGroup.valid}">{{ 'legalizacion_admision.consultar' | translate }}</button>
         </div>
 
         </mat-card-content>
@@ -62,7 +62,7 @@
 
     </mat-step>
     <mat-step [stepControl]="secondFormGroup">
-      <ng-template matStepLabel>{{ 'legalizacion_matricula.tabla_resumen' | translate }}</ng-template>
+      <ng-template matStepLabel>{{ 'legalizacion_admision.tabla_resumen' | translate }}</ng-template>
 
         <mat-card>
           <mat-card-content>
@@ -70,48 +70,48 @@
               <table mat-table [dataSource]="personaDataSource" class="mat-elevation-z8 scrollable-table">
 
                 <ng-container matColumnDef="Orden">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.orden' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.orden' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.orden}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Credencial">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.credencial' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.credencial' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.credencial}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Nombres">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.nombres' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.nombres' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.nombres}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Apellidos">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.apellidos' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.apellidos' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.apellidos}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="TipoDocumento">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.tipo_doc' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.tipo_doc' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.tipo_documento}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Documento">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.documento' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.documento' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.documento}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="EstadoAdmision">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado_admision' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.estado_admision' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.estado_admision | translate}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="EstadoRevision">
-                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado_revision' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.estado_revision' | translate }}</th>
                   <td mat-cell *matCellDef="let row"> {{row.estado_revision | translate}} </td>
                 </ng-container>
 
                 <!-- Acciones Column -->
                 <ng-container matColumnDef="Acciones">
-                  <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_matricula.acciones' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_admision.acciones' | translate }}</th>
                   <td mat-cell *matCellDef="let row" class="border-right ">
                     <div class="action-container">
                       <button class="boton-accion" mat-raised-button (click)="editar(row)">
@@ -134,7 +134,7 @@
 
             <div class="button-container">
               <div class="button-stepper">
-                <button mat-stroked-button class="boton-general btn boton-primary">{{ 'legalizacion_matricula.guardar' | translate }}</button>
+                <button mat-stroked-button class="boton-general btn boton-primary">{{ 'legalizacion_admision.guardar' | translate }}</button>
               </div>
             </div>
 
@@ -149,7 +149,7 @@
 <div *ngIf="formulario && estaAutorizado">
   <mat-card>
     <mat-card-header class="flex">
-      <mat-card-title>{{ 'legalizacion_matricula.legalizacion' | translate }}</mat-card-title>
+      <mat-card-title>{{ 'legalizacion_admision.legalizacion' | translate }}</mat-card-title>
       <div class="row">
         <div class="col-md-1" align="right">
           <button class="btn btn-danger btn-icon input-group-text btn-tn" (click)="cerrar()">X</button>
@@ -162,25 +162,25 @@
     <mat-card-content>
         <mat-card>
           <mat-card-header>
-            <mat-card-title>{{ 'legalizacion_matricula.Informacion_personal' | translate }}</mat-card-title>
+            <mat-card-title>{{ 'legalizacion_admision.Informacion_personal' | translate }}</mat-card-title>
           </mat-card-header>
           <br><br>
           <mat-card>
             <mat-card-header>
-              <mat-card-subtitle>{{ 'legalizacion_matricula.proyecto' | translate }}</mat-card-subtitle>
+              <mat-card-subtitle>{{ 'legalizacion_admision.proyecto' | translate }}</mat-card-subtitle>
             </mat-card-header>
             <br><br>
             <mat-card-content>
               <div class="flex-container">
                 <mat-card class="card-id">
                   <div class="flex-container">
-                    <p>{{ 'legalizacion_matricula.opcion' | translate }}</p>
+                    <p>{{ 'legalizacion_admision.opcion' | translate }}</p>
                     <p>{{proyecto.opcion}}</p>
                   </div>
                 </mat-card>
                 <mat-card class="card-nombre">
                   <div class="flex-container">
-                    <p>{{ 'legalizacion_matricula.nombre' | translate }}</p>
+                    <p>{{ 'legalizacion_admision.nombre' | translate }}</p>
                     <p>{{aspirante.proyecto_admitido}}</p>
                   </div>
                 </mat-card>
@@ -191,32 +191,32 @@
           <mat-card>
             <table mat-table [dataSource]="infoAspiranteDataSource">
               <ng-container matColumnDef="TipoIdentificacion">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.tipo_id' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.tipo_id' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.tipo_documento}} </td>
               </ng-container>
 
               <ng-container matColumnDef="NumeroIdentificacion">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.numero_id' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.numero_id' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.documento}} </td>
               </ng-container>
 
               <ng-container matColumnDef="PrimerNombre">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.primer_nombre' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.primer_nombre' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.primer_nombre}} </td>
               </ng-container>
 
               <ng-container matColumnDef="SegundoNombre">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.segundo_nombre' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.segundo_nombre' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.segundo_nombre}} </td>
               </ng-container>
 
               <ng-container matColumnDef="PrimerApellido">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.primer_apellido' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.primer_apellido' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.primer_apellido}} </td>
               </ng-container>
 
               <ng-container matColumnDef="SegundoApellido">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.segundo_apellido' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.segundo_apellido' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.segundo_apellido}} </td>
               </ng-container>
             
@@ -230,22 +230,22 @@
             <table mat-table [dataSource]="infoAspiranteDataSource">
 
               <ng-container matColumnDef="FechaNacimiento">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.fecha_nacimiento' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.fecha_nacimiento' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.fecha_nacimiento}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Numero">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.numero_cel' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.numero_cel' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.numero_celular}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Correo">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.correo' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.correo' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.correo}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Genero">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.genero' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.genero' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.genero}} </td>
               </ng-container>
 
@@ -260,29 +260,29 @@
         <br><br>
         <mat-card>
           <mat-card-header>
-            <mat-card-title>{{ 'legalizacion_matricula.informacion_socio' | translate }}</mat-card-title>
+            <mat-card-title>{{ 'legalizacion_admision.informacion_socio' | translate }}</mat-card-title>
           </mat-card-header>
           <br><br>
           <mat-card-content>
             <table mat-table [dataSource]="infoSocioEcopersonalDataSource">
 
               <ng-container matColumnDef="Orden">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.orden' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.orden' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Orden}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Concepto">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.concepto' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{ row.Concepto | translate }} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.informacion' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.informacion' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Informacion}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Soporte">
-                <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_matricula.soporte' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_admision.soporte' | translate }}</th>
                 <td mat-cell *matCellDef="let row" class="border-right ">
                   <div *ngIf="row.Soporte" class="action-container">
                     <button class="boton-accion" mat-raised-button (click)="openModal(row)">
@@ -293,7 +293,7 @@
               </ng-container>
 
               <ng-container matColumnDef="Estado">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.estado' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Estado | translate }} </td>
               </ng-container>
             
@@ -308,29 +308,29 @@
         <br><br>
         <mat-card>
           <mat-card-header>
-            <mat-card-title>{{ 'legalizacion_matricula.informacion_socio_cost' | translate }}</mat-card-title>
+            <mat-card-title>{{ 'legalizacion_admision.informacion_socio_cost' | translate }}</mat-card-title>
           </mat-card-header>
           <br><br>
           <mat-card-content>
             <table mat-table [dataSource]="infoSocioEcoCosteaDataSource">
 
               <ng-container matColumnDef="Orden">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.orden' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.orden' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Orden}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Concepto">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.concepto' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{ row.Concepto | translate }} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.informacion' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.informacion' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Informacion}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Soporte">
-                <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_matricula.soporte' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_admision.soporte' | translate }}</th>
                 <td mat-cell *matCellDef="let row" class="border-right ">
                   <div class="action-container">
                     <button class="boton-accion" mat-raised-button (click)="openModal(row)">
@@ -341,7 +341,7 @@
               </ng-container>
 
               <ng-container matColumnDef="Estado">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.estado' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Estado | translate}} </td>
               </ng-container>
             
@@ -356,29 +356,29 @@
         <br><br>
         <mat-card>
           <mat-card-header>
-            <mat-card-title>{{ 'legalizacion_matricula.resumen' | translate }}</mat-card-title>
+            <mat-card-title>{{ 'legalizacion_admision.resumen' | translate }}</mat-card-title>
           </mat-card-header>
           <br><br>
           <mat-card-content>
             <table mat-table [dataSource]="resumenGeneralDataSource">
 
               <ng-container matColumnDef="Orden">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.orden' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.orden' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Orden}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Concepto">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.concepto' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.concepto' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{ row.Concepto | translate }} </td>
               </ng-container>
 
               <ng-container matColumnDef="Informacion">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.informacion' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.informacion' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Informacion | translate}} </td>
               </ng-container>
 
               <ng-container matColumnDef="Soporte">
-                <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_matricula.soporte' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="border-right">{{ 'legalizacion_admision.soporte' | translate }}</th>
                 <td mat-cell *matCellDef="let row" class="border-right ">
                   <div class="action-container">
                     <button class="boton-accion" mat-raised-button (click)="openModal(row)">
@@ -389,7 +389,7 @@
               </ng-container>
 
               <ng-container matColumnDef="Estado">
-                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_matricula.estado' | translate }}</th>
+                <th mat-header-cell *matHeaderCellDef class="subHeaders">{{ 'legalizacion_admision.estado' | translate }}</th>
                 <td mat-cell *matCellDef="let row"> {{row.Estado | translate}} </td>
               </ng-container>
             
@@ -400,6 +400,12 @@
           </mat-card-content>
         </mat-card>
 
+        <div class="botones-contenedor">
+          <!-- <button mat-stroked-button matStepperNext class="boton-general btn boton-primary" (click)="generarBusqueda(stepper)" [disabled]="!firstFormGroup.valid" [ngClass]="{'button-disabled': !firstFormGroup.valid}">{{ 'legalizacion_admision.consultar' | translate }}</button> -->
+          <button mat-stroked-button matStepperNext class="btn boton-primary primario" [ngClass]="{'disabled': !puedeAprobar}" (click)="aprobarAspirante()">{{ 'legalizacion_admision.aprobar_aspirante' | translate }}</button>
+          <button mat-stroked-button matStepperNext class="btn boton-primary rechazado" [ngClass]="{'disabled': !puedeRechazar}" (click)="rechazarAspirante()">{{ 'legalizacion_admision.rechazar_aspirante' | translate }}</button>
+          <button mat-stroked-button matStepperNext class="btn boton-primary primario" [ngClass]="{'disabled': !puedePedirMod}" (click)="solicitarcambiosAspirante()">{{ 'legalizacion_admision.solicitar_modificaciones_aspirante' | translate }}</button>
+        </div>
     </mat-card-content>
   </mat-card>
 </div>

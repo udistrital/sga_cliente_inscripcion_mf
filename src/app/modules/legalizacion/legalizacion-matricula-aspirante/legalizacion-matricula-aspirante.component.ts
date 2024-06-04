@@ -166,7 +166,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
             console.log(error);
             reject([]);
           });
@@ -180,7 +180,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
             console.log(error);
             reject([]);
           });
@@ -210,7 +210,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.tercero_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
             console.log(error);
             reject([]);
           });
@@ -330,7 +330,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.localidad_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
             console.log(error);
             reject([]);
           });
@@ -345,7 +345,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.situaciones_laborales_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
             console.log(error);
             reject([]);
           });
@@ -360,7 +360,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.estratos_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.estratos_error'));
             console.log(error);
             reject([]);
           });
@@ -375,7 +375,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.nucleo_familiar_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.nucleo_familiar_error'));
             console.log(error);
             reject([]);
           });
@@ -390,7 +390,7 @@ import { OikosService } from 'src/app/services/oikos.service';
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.ubicaciones_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.ubicaciones_error'));
             console.log(error);
             reject([]);
           });
@@ -400,8 +400,8 @@ import { OikosService } from 'src/app/services/oikos.service';
   guardar() {
     if (this.validarFormulario()) {
       this.popUpManager.showPopUpGeneric(
-        this.translate.instant('legalizacion_matricula.titulo'),
-        this.translate.instant('legalizacion_matricula.crear_legalizacion'),
+        this.translate.instant('legalizacion_admision.titulo'),
+        this.translate.instant('legalizacion_admision.crear_legalizacion'),
         MODALS.INFO,
         true).then(
           (action) => {
@@ -410,7 +410,7 @@ import { OikosService } from 'src/app/services/oikos.service';
             }
           });
     } else {
-      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.formulario_error'));
+      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.formulario_error'));
     }
   }
 
@@ -494,13 +494,13 @@ import { OikosService } from 'src/app/services/oikos.service';
       this.inscripcionMidService.post('legalizacion/base', legalizacionBody)
         .subscribe((res: any) => {
           this.loading = false;
-          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_matricula.legalizacion_creacion_ok'));
+          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.legalizacion_creacion_ok'));
           resolve(res.data);
         },
           (error: HttpErrorResponse) => {
             this.loading = false;
             this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_matricula.legalizacion_creacion_error')
+              this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
             );
           });
     });
