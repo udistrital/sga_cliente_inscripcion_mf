@@ -4,10 +4,10 @@
     </div>
     <mat-card-header>
         <div class="contenedor-label titulo-principal color-primario mx-auto my-md">
-            {{ 'legalizacion_matricula.titulo' | translate }}
+            {{ 'legalizacion_admision.titulo' | translate }}
         </div>
         <div class="contenedor-label contenedor-informacion mx-auto my-md">
-            {{ 'legalizacion_matricula.contenido-informativo' | translate }}
+            {{ 'legalizacion_admision.contenido-informativo' | translate }}
         </div>
     </mat-card-header>
     <mat-card-content>
@@ -15,7 +15,7 @@
             {{ 'admision.credencial' | translate }}
         </div>
         <fieldset *ngIf="persona && inscripcion">
-            <legend>{{ 'legalizacion_matricula.proyecto_admitido' | translate }}</legend>
+            <legend>{{ 'legalizacion_admision.proyecto_admitido' | translate }}</legend>
             <div class="fila f-2">
                 <div class="column campo-label">
                     <p>{{ 'inscripcion.opcion' | translate }}: </p>
@@ -28,11 +28,11 @@
             </div>
             <mat-card class="info-personal">
                 <mat-card-header>
-                  <mat-card-title>{{ 'legalizacion_matricula.titulo_informacion_personal' | translate }}</mat-card-title>
+                  <mat-card-title>{{ 'legalizacion_admision.titulo_informacion_personal' | translate }}</mat-card-title>
                 </mat-card-header>
                 <mat-card-content>
                     <ul>
-                        <li><span>{{ 'legalizacion_matricula.tipo_identificacion' | translate }}: </span>{{ persona.TipoIdentificacion.Nombre }}</li>
+                        <li><span>{{ 'legalizacion_admision.tipo_identificacion' | translate }}: </span>{{ persona.TipoIdentificacion.Nombre }}</li>
                         <li><span>{{ 'GLOBAL.documento_identificacion' | translate }}: </span>{{ persona.NumeroIdentificacion }}</li>
                         <li><span>{{ 'GLOBAL.primer_nombre' | translate }}: </span>{{ persona.PrimerNombre }}</li>
                         <li><span>{{ 'GLOBAL.segundo_nombre' | translate }}: </span>{{ persona.SegundoNombre }}</li>
@@ -48,7 +48,7 @@
         </fieldset>
         <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
             <mat-step [stepControl]="formInfoSocioEconomicaPersonal">
-                <ng-template matStepLabel>{{ 'legalizacion_matricula.titulo_informacion_socioeconomica_personal' |
+                <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_informacion_socioeconomica_personal' |
                     translate }}</ng-template>
                 <form [formGroup]="formInfoSocioEconomicaPersonal" class="my-25">
                     <div class="info-socioeconomica">
@@ -71,7 +71,7 @@
                             <mat-form-field floatLabel="always">
                                 <input #documentoBachiller type="file" multiple (change)="onChangeSelectFiles('diplomaBachiller', $event)" style="display: none;"/>
                                 <input matInput formControlName="diploma_bachiller" [type]="'text'" style="display: none;">
-                                <mat-label>{{ 'legalizacion_matricula.diploma_bachiller' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.diploma_bachiller' | translate }}</mat-label>
                                 <div class="row">
                                     <div class="col-12 d-flex flex-wrap">
                                         <button class="my-button" #selectFiles type="button" mat-raised-button (click)="documentoBachiller.click()">{{'GLOBAL.seleccionar_archivo' | translate}}</button>
@@ -87,17 +87,17 @@
                         </div>
                         <div class="pension">
                             <mat-form-field>
-                                <mat-label>{{ 'legalizacion_matricula.valor_pension' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.valor_pension' | translate }}</mat-label>
                                 <input type="number" matInput formControlName="pension_valor" [(ngModel)]="valorPension" (ngModelChange)="onPensionValorChange()">
                             </mat-form-field>
                             <mat-form-field>
-                                <mat-label>{{ 'legalizacion_matricula.valor_sm' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
                                 <input type="number" matInput formControlName="pension_valor_smv" [(ngModel)]="valorPensionSML" [readonly]="true">
                             </mat-form-field>
                             <mat-form-field floatLabel="always">
                                 <input #documentoPension type="file" multiple (change)="onChangeSelectFiles('soportePension', $event)" style="display: none;"/>
                                 <input matInput formControlName="soporte_pension_valor" [type]="'text'" style="display: none;">
-                                <mat-label>{{ 'legalizacion_matricula.soporte_valor_pension' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.soporte_valor_pension' | translate }}</mat-label>
                                 <div class="row">
                                     <div class="col-12 d-flex flex-wrap">
                                         <button class="my-button" #selectFiles type="button" mat-raised-button (click)="documentoPension.click()">{{'GLOBAL.seleccionar_archivo' | translate}}</button>
@@ -114,7 +114,7 @@
                         <div class="familia-laboral">
                             <div>
                                 <mat-form-field>
-                                    <mat-label>{{ 'legalizacion_matricula.nucleo_familiar' | translate }}</mat-label>
+                                    <mat-label>{{ 'legalizacion_admision.nucleo_familiar' | translate }}</mat-label>
                                     <mat-select formControlName="nucleo_familiar">
                                         <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
                                         <mat-option *ngFor="let nucleo of nuceloFamiliar" value="{{ nucleo.Id }}">{{ nucleo.Nombre }}</mat-option>
@@ -123,7 +123,7 @@
                                 <mat-form-field floatLabel="always">
                                     <input #documentoNucleo type="file" multiple (change)="onChangeSelectFiles('soporteNucleo', $event)" style="display: none;"/>
                                     <input matInput formControlName="soporte_nucleo_familiar" [type]="'text'" style="display: none;">
-                                    <mat-label>{{ 'legalizacion_matricula.soporte_nucleo_familiar' | translate
+                                    <mat-label>{{ 'legalizacion_admision.soporte_nucleo_familiar' | translate
                                     }}</mat-label>
                                     <div class="row">
                                         <div class="col-12 d-flex flex-wrap">
@@ -140,7 +140,7 @@
                             </div>
                             <div>
                                 <mat-form-field>
-                                    <mat-label>{{ 'legalizacion_matricula.situacion_laboral' | translate }}</mat-label>
+                                    <mat-label>{{ 'legalizacion_admision.situacion_laboral' | translate }}</mat-label>
                                     <mat-select formControlName="situacion_laboral">
                                         <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
                                         <mat-option *ngFor="let situacion of situacionesLaboral" value="{{ situacion.Id }}">{{ situacion.Nombre }}</mat-option>
@@ -149,7 +149,7 @@
                                 <mat-form-field floatLabel="always">
                                     <input #documentoSituacionLaboral type="file" multiple (change)="onChangeSelectFiles('soporteSituacionLaboral', $event)" style="display: none;"/>
                                     <input matInput formControlName="soporte_situacion_laboral" [type]="'text'" style="display: none;">
-                                    <mat-label>{{ 'legalizacion_matricula.soporte_situacion_laboral' | translate
+                                    <mat-label>{{ 'legalizacion_admision.soporte_situacion_laboral' | translate
                                     }}</mat-label>
                                     <div class="row">
                                         <div class="col-12 d-flex flex-wrap">
@@ -181,7 +181,7 @@
                 </form>
             </mat-step>
             <mat-step [stepControl]="formInfoSocioEconomicaCosteara">
-                <ng-template matStepLabel>{{ 'legalizacion_matricula.titulo_informacion_socioeconomica_costeara' |
+                <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_informacion_socioeconomica_costeara' |
                     translate }}</ng-template>
                 <form [formGroup]="formInfoSocioEconomicaCosteara" class="my-25">
                     <div class="info-costea">
@@ -198,7 +198,7 @@
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field>
-                                <mat-label>{{ 'legalizacion_matricula.ubicacion_residencia' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.ubicacion_residencia' | translate }}</mat-label>
                                 <mat-select formControlName="ubicacion_residencia">
                                     <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
                                     <mat-option *ngFor="let ubicacion of ubicacionesResidencia" value="{{ ubicacion.Id }}">{{ ubicacion.Nombre }}</mat-option>
@@ -207,7 +207,7 @@
                             <mat-form-field floatLabel="always">
                                 <input #documentoEstrato type="file" multiple (change)="onChangeSelectFiles('soporteEstrato', $event)" style="display: none;"/>
                                 <input matInput formControlName="soporte_estrato" [type]="'text'" style="display: none;">
-                                <mat-label>{{ 'legalizacion_matricula.soporte_estrato' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.soporte_estrato' | translate }}</mat-label>
                                 <div class="row">
                                     <div class="col-12 d-flex flex-wrap contenedor-archivos-grid">
                                         <button class="my-button" #selectFiles type="button" mat-raised-button (click)="documentoEstrato.click()">{{'GLOBAL.seleccionar_archivo' | translate}}</button>
@@ -223,17 +223,17 @@
                         </div>
                         <div class="ingresos">
                             <mat-form-field class="span-2">
-                                <mat-label>{{ 'legalizacion_matricula.ingresos_costea' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.ingresos_costea' | translate }}</mat-label>
                                 <input type="number" matInput formControlName="ingresos_ano_anterior" [(ngModel)]="valorIngresos" (ngModelChange)="onIngresosValorChange()">
                             </mat-form-field>
                             <mat-form-field class="span-2">
-                                <mat-label>{{ 'legalizacion_matricula.valor_sm' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
                                 <input type="number" matInput formControlName="ingresos_ano_anterior_sm" [(ngModel)]="valorIngresosSML" [readonly]="true">
                             </mat-form-field>
                             <mat-form-field floatLabel="always">
                                 <input #documentoIngresos type="file" multiple (change)="onChangeSelectFiles('soporteIngresos', $event)" style="display: none;"/>
                                 <input matInput formControlName="soporte_ingresos_ano_anterior" [type]="'text'" style="display: none;">
-                                <mat-label>{{ 'legalizacion_matricula.soporte_ingresos_costea' | translate }}</mat-label>
+                                <mat-label>{{ 'legalizacion_admision.soporte_ingresos_costea' | translate }}</mat-label>
                                 <div class="row">
                                     <div class="col-12 d-flex flex-wrap contenedor-archivos-grid">
                                         <button class="my-button" #selectFiles type="button" mat-raised-button (click)="documentoIngresos.click()">{{'GLOBAL.seleccionar_archivo' | translate}}</button>
@@ -263,32 +263,32 @@
                 </form>
             </mat-step>
             <mat-step [stepControl]="formDocsGenerales">
-                <ng-template matStepLabel>{{ 'legalizacion_matricula.titulo_documentos' | translate }}</ng-template>
+                <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_documentos' | translate }}</ng-template>
                 <div class="my-25">
-                    <h6>{{ 'legalizacion_matricula.info_documentos' | translate }}</h6>
+                    <h6>{{ 'legalizacion_admision.info_documentos' | translate }}</h6>
                     <ol>
-                        <li>{{ 'legalizacion_matricula.comprobante_admision' | translate
+                        <li>{{ 'legalizacion_admision.comprobante_admision' | translate
                             }}</li>
-                        <li>{{ 'legalizacion_matricula.certificado_colegio' | translate
+                        <li>{{ 'legalizacion_admision.certificado_colegio' | translate
                             }}</li>
-                        <li>{{ 'legalizacion_matricula.certificado_estrato' | translate
+                        <li>{{ 'legalizacion_admision.certificado_estrato' | translate
                             }}</li>
-                        <li>{{ 'legalizacion_matricula.declaracion_renta' | translate
+                        <li>{{ 'legalizacion_admision.declaracion_renta' | translate
                             }}</li>
-                        <li>{{ 'legalizacion_matricula.fotocopia_documento' | translate
+                        <li>{{ 'legalizacion_admision.fotocopia_documento' | translate
                             }}</li>
-                        <li>{{ 'legalizacion_matricula.copia_examen' | translate
+                        <li>{{ 'legalizacion_admision.copia_examen' | translate
                             }}</li>
-                        <li>{{ 'legalizacion_matricula.copia_registro_civil' | translate
+                        <li>{{ 'legalizacion_admision.copia_registro_civil' | translate
                             }}</li>
-                        <li>{{ 'legalizacion_matricula.certificado_medico' | translate
+                        <li>{{ 'legalizacion_admision.certificado_medico' | translate
                             }}</li>
                     </ol>
                     <form [formGroup]="formDocsGenerales">
                         <mat-form-field floatLabel="always">
                             <input #documentoGeneral type="file" multiple (change)="onChangeSelectFiles('documentosGeneral', $event)" style="display: none;"/>
                             <input matInput formControlName="documentos" [type]="'text'" style="display: none;">
-                            <mat-label>{{ 'legalizacion_matricula.soporte_documento' | translate }}</mat-label>
+                            <mat-label>{{ 'legalizacion_admision.soporte_documento' | translate }}</mat-label>
                             <div class="row">
                                 <div class="col-12 d-flex flex-wrap">
                                     <button class="my-button" #selectFiles type="button" mat-raised-button (click)="documentoGeneral.click()">{{'GLOBAL.seleccionar_archivo' | translate}}</button>
