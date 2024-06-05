@@ -110,8 +110,8 @@ export class SolicitudTransferenciaComponent implements OnInit {
     return 0;
   }
 
-  loadInfoPersona(): void {
-    this.uid = this.userService.getPersonaId();
+  async loadInfoPersona() {
+    this.uid = await this.userService.getPersonaId();
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
       this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
