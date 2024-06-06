@@ -131,14 +131,12 @@ export class ViewExamenEstadoComponent {
   detallesExamenEstado() {
     this.evaluacionInscripcionService.get('detalle_evaluacion?limit=0&query=InscripcionId:574').subscribe(
       (response: any) => {
-        console.log(response);
         if (response === undefined || response === null) {
           this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
         } else {
           response.forEach((element: any) => {
             if (element.DetalleCalificacion.length > 0) {
               this.gridItems = JSON.parse(element.DetalleCalificacion);
-              console.log(this.gridItems);
             }
           });
         }
@@ -252,12 +250,8 @@ export class ViewExamenEstadoComponent {
           nombre: "soporte_documento_programa",
           file: this.info_documento_programa.Documento.file,
         }
-
-        console.log(this.info_documento_programa);
-        console.log(file);
         this.uploadFile(file).then(
           fileId => {
-            console.log("Entraaaaaaaaaaaaaaaaaaaaaaaaaaaa",fileId);
             const soporteDocumentoPrograma = new SoporteDocumentoPrograma();
             soporteDocumentoPrograma.DocumentoId = fileId;
             soporteDocumentoPrograma.DocumentoProgramaId = {
@@ -266,7 +260,6 @@ export class ViewExamenEstadoComponent {
               )[0].Id,
             };
             soporteDocumentoPrograma.InscripcionId = { Id: Number(this.inscripcion) };
-            console.log(soporteDocumentoPrograma);
             this.inscripcionService.post('soporte_documento_programa', soporteDocumentoPrograma).subscribe(
               (response:any) => {
                 this.loading = false;
