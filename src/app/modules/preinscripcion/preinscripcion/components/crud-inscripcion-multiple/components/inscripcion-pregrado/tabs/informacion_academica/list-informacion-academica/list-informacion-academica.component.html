@@ -1,0 +1,131 @@
+<div>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Informacion Colegio</mat-card-title>
+    </mat-card-header>
+
+
+    <mat-card-content>
+    
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="firstFormGroup">
+          <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>Localidad del colegio en donde culminó el grado once (11)</ng-template>
+            <mat-form-field>
+              <mat-label>Localidad del colegio</mat-label>
+              <mat-select formControlName="firstCtrl" required>
+                <mat-option *ngFor="let localidad of localidades" [value]="localidad.Id">
+                  {{localidad.Nombre}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup">
+          <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>Tipo de colegio en donde culminó el grado once (11)</ng-template>
+            <mat-form-field>
+              <mat-label>Tipo de colegio</mat-label>
+              <mat-select formControlName="secondCtrl" required>
+                <mat-option *ngFor="let colegio of tiposColegio" [value]="colegio.Id">
+                  {{colegio.Nombre}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="thirdFormGroup">
+          <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>¿Validó el bachillerato?</ng-template>
+            <mat-form-field>
+              <mat-label>Validó</mat-label>
+              <mat-select formControlName="thirdCtrl" required>
+                <mat-option *ngFor="let valido of validar" [value]="valido.Id">
+                  {{valido.Nombre}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="fourthFormGroup">
+          <form [formGroup]="fourthFormGroup">
+            <ng-template matStepLabel>Número de semestres transcurridos desde la terminación del grado once (11)</ng-template>
+            <mat-form-field>
+              <mat-label>Número de semestres</mat-label>
+              <mat-select formControlName="fourthCtrl" required>
+                <mat-option *ngFor="let semestre of semestres" [value]="semestre.Id">
+                  {{semestre.Nombre}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+
+    </mat-card-content>
+
+    <mat-card-header>
+      <mat-card-title>Información adicional</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+    
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="fifthFormGroup">
+          <form [formGroup]="fifthFormGroup">
+            <ng-template matStepLabel>Medio por el cual se enteró de la Universidad Distrital</ng-template>
+            <mat-form-field>
+              <mat-label>Medio</mat-label>
+              <mat-select formControlName="fifthCtrl" required>
+                <mat-option *ngFor="let medio of medios" [value]="medio.Id">
+                  {{medio.Nombre}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="sixthFormGroup">
+          <form [formGroup]="sixthFormGroup">
+            <ng-template matStepLabel>Oportunidades en las que se ha presentado a la Universidad Distrital</ng-template>
+            <mat-form-field>
+              <mat-label>Oportunidades</mat-label>
+              <mat-select formControlName="sixthCtrl" required>
+                <mat-option *ngFor="let oportunidad of oportunidades" [value]="oportunidad.Id">
+                  {{oportunidad.Nombre}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+    </mat-card-content>
+      
+
+    <mat-card-actions>
+      <button [disabled]="!firstFormGroup.valid || !secondFormGroup.valid || 
+      !thirdFormGroup.valid || !fourthFormGroup.valid || 
+      !fifthFormGroup.valid || !sixthFormGroup.valid"
+      (click)="submit()">Guardar</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
