@@ -54,6 +54,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   data: any[] = [];
   settings: any;
   pdfs: Blob[] = [];
+  periodosDoctorado: any[] = []; 
 
   @Input('inscripcion_id')
   set admision(inscripcion_id: number) {
@@ -288,10 +289,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   nivel_load() {
-    // Solo se cargan el nivel de posgrado
     this.projectService.get('nivel_formacion').subscribe(
       (response: NivelFormacion[]) => {
-        this.niveles = response; // .filter(nivel => nivel.NivelFormacionPadreId === null)
+        this.niveles = response;//.filter(nivel => nivel.NivelFormacionPadreId === null)
+        this.periodoDoctorado();
       },
       (error) => {
         this.popUpManager.showErrorToast(
@@ -407,16 +408,24 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         title: this.translate.instant('GLOBAL.info'),
         text: this.translate.instant('inscripcion.alerta_posgrado'),
       });
+
       this.projectService
         .get(
           'proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId'
         )
         .subscribe(
           (response: any) => {
-            this.projects = <any[]>(
-              response.filter((proyecto: any) => this.filtrarProyecto(proyecto))
-            );
+            this.projects = <any[]>response.filter((proyecto: any) => this.filtrarProyecto(proyecto));
             this.validateProject();
+
+            // Llamar a cargarPeriodo y luego a periodoDoctorado si es necesario
+            this.cargarPeriodo().then(() => {
+              if (this.niveles.some(nivel => nivel.Id === this.selectedLevel && (nivel.Id === 8 || nivel.Nombre === 'Doctorado'))) {
+                this.periodoDoctorado();
+              }
+            }).catch(error => {
+              this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+            });
           },
           (error: any) => {
             this.popUpManager.showErrorToast(
@@ -426,6 +435,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         );
     }
   }
+
 
   nuevaPreinscripcion() {
     this.showNew = true;
@@ -876,7 +886,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.parametrosService
         .get(
-          'periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=1'
+          'periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0'
         )
         .subscribe(
           (res: any) => {
@@ -898,6 +908,22 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             reject([]);
           }
         );
+    });
+  }
+
+  periodoDoctorado() {
+    return new Promise((resolve, reject) => {
+      this.projectService.get('periodo?query=Id__in:55|56&fields=Nombre').subscribe(
+        (response: any) => {
+          this.periodosDoctorado = response;
+          this.periodos = response; // Actualiza la lista de periodos con los periodos de doctorado
+          resolve(response);
+        },
+        (error: HttpErrorResponse) => {
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(error);
+        }
+      );
     });
   }
 
