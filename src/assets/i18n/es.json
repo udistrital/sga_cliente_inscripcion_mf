@@ -1747,5 +1747,41 @@
         "formulario_error": "El formulario no esta completo, por favor complete los campos antes de seguir",
         "legalizacion_creacion_ok": "Los datos de legalización se crearon correctamente",
         "legalizacion_creacion_error": "Ocurrio un error al crear los datos de legalización"
+    },
+    "informacion_acudientes": {
+        "titulo": "Datos de contacto del acudiente",
+        "nombre_acudiente": "Nombre del acudiente",
+        "nombre": "Nombre",
+        "parentesco": "Parentesco",
+        "correo_acudiente": "Correo del acudiente",
+        "correo": "Correo",
+        "direccion_acudiente": "Dirección del acudiente",
+        "direccion": "Dirección",
+        "telefono_acudiente": "Teléfono del acudiente",
+        "telefono": "Teléfono",
+        "titulo2": "Datos de contacto de otro familiar",
+        "nombre_familiar": "Nombre del familiar",
+        "siguiente": "Siguiente",
+        "anterior": "Anterior",
+        "guardar": "Guardar"
+    },
+    "informacion_academica": {
+        "titulo": "Información colegio",
+        "localidad_colegio": "Localidad del colegio en donde culminó el grado once (11)",
+        "localidad": "Localidad del colegio",
+        "tipo_colegio": "Tipo de colegio en donde culminó el grado once (11)",
+        "tipo": "Tipo de colegio",
+        "valido_bachillerato": "¿Validó el bachillerato?",
+        "valido": "Validó",
+        "numero_semestres": "Número de semestres transcurridos desde la terminación del grado once (11)",
+        "semestres": "Número de semestres",
+        "titulo2": "Información adicional",
+        "medio_informativo": "Medio por el cual se enteró de la oferta académica de la Universidad Distrital Francisco José de Caldas",
+        "medio": "Medio informativo",
+        "oportunidades": "Oportunidades en las que se ha presentado a la Universidad Distrital",
+        "oportunidad": "Oportunidades",
+        "siguiente": "Siguiente",
+        "anterior": "Anterior",
+        "guardar": "Guardar"
     }
 }

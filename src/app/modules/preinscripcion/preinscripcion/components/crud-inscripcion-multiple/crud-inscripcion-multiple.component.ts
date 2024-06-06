@@ -36,8 +36,14 @@ import { firstValueFrom } from 'rxjs';
 })
 export class CrudInscripcionMultipleComponent implements OnInit {
   displayedColumns: string[] = [
-    'recibo', 'inscripcion', 'estado_inscripcion', 'fecha', 'estado_recibo',
-    'descargar', 'opcion'
+    'recibo',
+    'inscripcion',
+    'programa',
+    'estado_inscripcion',
+    'fecha',
+    'estado_recibo',
+    'descargar',
+    'opcion',
   ];
   dataSource!: MatTableDataSource<any>;
 
@@ -302,9 +308,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
           this.niveles = response.filter((nivel: NivelFormacion) => nivel.Id === 2 || nivel.Id === 1);
         }
       },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-      },
     );
   }
 
@@ -413,17 +416,24 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         icon: 'info',
         title: this.translate.instant('GLOBAL.info'),
         text: this.translate.instant('inscripcion.alerta_posgrado'),
-      })
-      this.projectService.get('proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId').subscribe(
-        (response: any) => {
-          this.projects = <any[]>response.filter((proyecto: any) => this.filtrarProyecto(proyecto));
-          this.loadTipoInscripcion();
-          // this.validateProject();
-        },
-        (error: any) => {
-          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-        },
-      );
+      });
+      this.projectService
+        .get(
+          'proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId'
+        )
+        .subscribe(
+          (response: any) => {
+            this.projects = <any[]>(
+              response.filter((proyecto: any) => this.filtrarProyecto(proyecto))
+            );
+            this.validateProject();
+          },
+          (error: any) => {
+            this.popUpManager.showErrorToast(
+              this.translate.instant('ERROR.general')
+            );
+          }
+        );
     }
   }
 
@@ -617,6 +627,49 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         FechaPago: '',
       };
       let periodo = localStorage.getItem('IdPeriodo');
+      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
+        (response: any) => {
+          if (response !== null && response.length !== 0) {
+            this.inscripcionProjects = response.data;
+            console.log(response);
+            // this.inscripcionProjects.forEach(proyecto => {
+              // if (proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null) {
+                if (response.Data[0].Evento.FechaFinEvento != null) {
+                inscripcion.FechaPago = moment(response.Data[0].Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                // inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
+                  (response: any) => {
+                    console.log(response)
+                    if (response.status == '200') {
+                      this.showProyectoCurricular = false;
+                      this.showTipoInscripcion = false;
+                      this.showInfo = false;
+                      this.showNew = false;
+                      this.loadInfoInscripcion();
+                      resolve(response);
+                      this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
+                    } else if (response.status == '204') {
+                      reject([]);
+                      this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
+                    } else if (response.status == '400') {
+                      reject([]);
+                      this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
+                    }
+                  },
+                  (error: HttpErrorResponse) => {
+                    this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
+                  },
+                );
+              } else {
+                this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('inscripcion.no_fechas_inscripcion'))
+              }
+            // });
+          }
+        },
+        (error: any) => {
+          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
+        },
+      );
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +

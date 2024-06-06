@@ -77,7 +77,6 @@ import { SolicitudTransferenciaComponent } from '../transferencia/components/sol
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { MatButtonModule } from '@angular/material/button';
 import { InscripcionPregradoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/inscripcion-pregrado.component';
-import { CrudInformacionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_acudiente/crud-informacion/crud-informacion.component';
 import { ListInformacionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_acudiente/list-informacion/list-informacion.component';
 import { ListInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_academica/list-informacion-academica/list-informacion-academica.component';
 import { CrudInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_academica/crud-informacion-academica/crud-informacion-academica.component';
@@ -136,7 +135,6 @@ export function createTranslateLoader(http: HttpClient) {
     ViewInscripcionComponent,
     DownloadFileNuxeoComponent,
     InscripcionPregradoComponent,
-    CrudInformacionComponent,
     ListInformacionComponent,
     ListInformacionAcademicaComponent,
     CrudInformacionAcademicaComponent,

@@ -76,7 +76,6 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   @Input('inscripcion_id')
   set name(inscripcion_id: number) {
     this.inscripcion_id = inscripcion_id;
-    console.log(this.inscripcion_id)
     if (this.inscripcion_id === 0 || this.inscripcion_id.toString() === '0') {
       this.selectedValue = undefined;
       window.localStorage.setItem('programa', this.selectedValue);
@@ -92,7 +91,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   // @ViewChild('videoModal', { static: true }) videoModal: ElementRef;
 
   inscripcion_id!: number;
-  info_persona_id: number;
+  info_persona_id!: any;
   info_ente_id!: number;
   estado_inscripcion!: number;
   estado_inscripcion_nombre: string = "";
@@ -1381,7 +1380,6 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   revisarDocumento(doc: any) {
-      console.log(doc)
       const assignConfig = new MatDialogConfig();
       assignConfig.width = '1300px';
       assignConfig.height = '750px';
