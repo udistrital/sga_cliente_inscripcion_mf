@@ -17,7 +17,7 @@ export class CrudDocumentoProgramaComponent implements OnInit {
   documento_programa_id!: number;
   filesUp: any;
   Documento: any;
-  persona!: number;
+  persona!: number | null;
   programa!: number;
   periodo!: number;
   inscripcion!: number;
@@ -39,7 +39,7 @@ export class CrudDocumentoProgramaComponent implements OnInit {
   }
 
   @Input('persona_id')
-  set info(persona_id: number) {
+  set info(persona_id: number | null) {
     this.persona = persona_id;
   }
 

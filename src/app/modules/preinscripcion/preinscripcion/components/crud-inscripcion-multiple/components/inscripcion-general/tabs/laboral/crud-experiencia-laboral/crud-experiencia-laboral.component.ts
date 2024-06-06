@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { ListService } from 'src/app/services/list.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
@@ -38,8 +37,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   @Input('info_experiencia_laboral_id')
   set name(info_experiencia_laboral_id: number) {
     this.info_experiencia_laboral_id = info_experiencia_laboral_id;
-    console.log(this.info_experiencia_laboral_id)
-    // this.loadInfoExperienciaLaboral();
   }
 
   @Input('ente_id')
@@ -75,11 +72,10 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   temp: any;
   clean!: boolean;
   percentage!: number;
-  persona_id: number;
+  persona_id!: number | null;
   canEmit: boolean = false;
 
   constructor(
-    private autenticationService: ImplicitAutenticationService,
     private translate: TranslateService,
     private inscripcionMidService: InscripcionMidService,
     private store: Store<IAppState>,
@@ -91,7 +87,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     this.formInfoExperienciaLaboral = FORM_EXPERIENCIA_LABORAL;
     this.limpiarBuscadorDeInstitucion()
     this.construirForm();
-    this.persona_id = this.users.getPersonaId();
     this.loadLists();
     this.listService.findPais();
     this.listService.findTipoDedicacion();
@@ -337,7 +332,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   }
 
   searchOrganizacion(nit: string): void {
-    console.log(nit)
     if (nit != null) {
       nit = nit.trim();
       this.nit = nit.trim();
@@ -350,7 +344,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       const ipais = this.getIndexForm('Pais');
       this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?Id=' + nit)
         .subscribe((res: any) => {
-          console.log(res)
           res = res.data
           this.formInfoExperienciaLaboral.campos[init].valor = res.NumeroIdentificacion;
           this.formInfoExperienciaLaboral.campos[inombre].valor = (res.NombreCompleto &&
@@ -447,7 +440,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             if (this.info_experiencia_laboral.Experiencia.Soporte.file !== undefined) {
               files.push({
                 IdDocumento: 4,
-                nombre: this.autenticationService.getPayload().sub,
+                nombre: this.users.getPayload().sub,
                 file: this.info_experiencia_laboral.Experiencia.Soporte.file,
               });
             }
@@ -476,7 +469,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
           if (this.info_experiencia_laboral.Experiencia.Soporte.file !== undefined) {
             files.push({
               IdDocumento: 4,
-              nombre: this.autenticationService.getPayload().sub,
+              nombre: this.users.getPayload().sub,
               file: this.info_experiencia_laboral.Experiencia.Soporte.file,
             });
           }
@@ -493,9 +486,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             if (responseNux[0].Status == "200") {
               this.info_experiencia_laboral.Experiencia.DocumentoId = responseNux[0].res.Id;
               this.info_experiencia_laboral.Experiencia.EnlaceDocumento = responseNux[0].res.Enlace;
-              console.log(this.detalleExp)
-              console.log(this.indexSelect)
-              console.log(this.info_experiencia_laboral_id)
               if (this.detalleExp != null && this.info_experiencia_laboral_id != 0) {
                 this.info_experiencia_laboral.indexSelect = this.indexSelect;
                 this.info_experiencia_laboral.Id = this.info_id_experiencia;
@@ -581,8 +571,12 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         });
   }
 
-  ngOnInit() {
-    // this.loadInfoExperienciaLaboral();
+  async ngOnInit() {
+    try {
+      this.persona_id = await this.users.getPersonaId();
+    } catch (error) {
+      console.error('Error al obtener persona_id:', error);
+    }
   }
 
   setPercentage(event: any) {
