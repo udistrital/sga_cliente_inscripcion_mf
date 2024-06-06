@@ -35,14 +35,14 @@
                   <mat-cell *matCellDef="let row"> {{ row.Id }} </mat-cell>
                 </ng-container>
       
-                <!-- <ng-container matColumnDef="programa">
+                <ng-container matColumnDef="programa">
                   <mat-header-cell class="text-left" *matHeaderCellDef>
                     <b>{{ "inscripcion.programa" | translate }}</b>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     {{ row.ProgramaAcademicoId }}</mat-cell
                   >
-                </ng-container> -->
+                </ng-container>
       
                 <ng-container matColumnDef="estado_inscripcion">
                   <mat-header-cell class="text-left" *matHeaderCellDef>
@@ -134,7 +134,7 @@
         </mat-form-field>
 
         <!-- select proyecto academico -->
-        <!-- <mat-form-field style="width: 100%" *ngIf="showProyectoCurricular">
+        <mat-form-field style="width: 100%" *ngIf="showProyectoCurricular">
           <mat-select
             [formControl]="Campo1Control"
             [(ngModel)]="selectedProject"
@@ -152,7 +152,7 @@
           <mat-error *ngIf="Campo1Control.hasError('required')">
             {{ "inscripcion.erro_selec" | translate }}
           </mat-error>
-        </mat-form-field> -->
+        </mat-form-field>
 
         <!-- select periodo -->
         <mat-form-field style="width: 40%" *ngIf="showNew">

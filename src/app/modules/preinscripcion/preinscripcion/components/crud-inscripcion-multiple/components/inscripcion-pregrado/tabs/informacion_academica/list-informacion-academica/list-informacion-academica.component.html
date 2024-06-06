@@ -1,7 +1,7 @@
 <div>
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Informacion Colegio</mat-card-title>
+      <mat-card-title>{{ "informacion_academica.titulo" | translate }}</mat-card-title>
     </mat-card-header>
 
 
@@ -10,9 +10,9 @@
       <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
         <mat-step [stepControl]="firstFormGroup">
           <form [formGroup]="firstFormGroup">
-            <ng-template matStepLabel>Localidad del colegio en donde culminó el grado once (11)</ng-template>
+            <ng-template matStepLabel>{{ "informacion_academica.localidad_colegio" | translate }}</ng-template>
             <mat-form-field>
-              <mat-label>Localidad del colegio</mat-label>
+              <mat-label>{{ "informacion_academica.localidad" | translate }}</mat-label>
               <mat-select formControlName="firstCtrl" required>
                 <mat-option *ngFor="let localidad of localidades" [value]="localidad.Id">
                   {{localidad.Nombre}}
@@ -20,15 +20,15 @@
               </mat-select>
             </mat-form-field>
             <div>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-button matStepperNext>{{ "informacion_academica.siguiente" | translate }}</button>
             </div>
           </form>
         </mat-step>
         <mat-step [stepControl]="secondFormGroup">
           <form [formGroup]="secondFormGroup">
-            <ng-template matStepLabel>Tipo de colegio en donde culminó el grado once (11)</ng-template>
+            <ng-template matStepLabel>{{ "informacion_academica.tipo_colegio" | translate }}</ng-template>
             <mat-form-field>
-              <mat-label>Tipo de colegio</mat-label>
+              <mat-label>{{ "informacion_academica.tipo" | translate }}</mat-label>
               <mat-select formControlName="secondCtrl" required>
                 <mat-option *ngFor="let colegio of tiposColegio" [value]="colegio.Id">
                   {{colegio.Nombre}}
@@ -36,16 +36,16 @@
               </mat-select>
             </mat-form-field>
             <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-button matStepperPrevious>{{ "informacion_academica.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_academica.siguiente" | translate }}</button>
             </div>
           </form>
         </mat-step>
         <mat-step [stepControl]="thirdFormGroup">
           <form [formGroup]="thirdFormGroup">
-            <ng-template matStepLabel>¿Validó el bachillerato?</ng-template>
+            <ng-template matStepLabel>{{ "informacion_academica.valido_bachillerato" | translate }}</ng-template>
             <mat-form-field>
-              <mat-label>Validó</mat-label>
+              <mat-label>{{ "informacion_academica.valido" | translate }}</mat-label>
               <mat-select formControlName="thirdCtrl" required>
                 <mat-option *ngFor="let valido of validar" [value]="valido.Id">
                   {{valido.Nombre}}
@@ -53,16 +53,16 @@
               </mat-select>
             </mat-form-field>
             <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-button matStepperPrevious>{{ "informacion_academica.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_academica.siguiente" | translate }}</button>
             </div>
           </form>
         </mat-step>
         <mat-step [stepControl]="fourthFormGroup">
           <form [formGroup]="fourthFormGroup">
-            <ng-template matStepLabel>Número de semestres transcurridos desde la terminación del grado once (11)</ng-template>
+            <ng-template matStepLabel>{{ "informacion_academica.numero_semestres" | translate }}</ng-template>
             <mat-form-field>
-              <mat-label>Número de semestres</mat-label>
+              <mat-label>{{ "informacion_academica.semestres" | translate }}</mat-label>
               <mat-select formControlName="fourthCtrl" required>
                 <mat-option *ngFor="let semestre of semestres" [value]="semestre.Id">
                   {{semestre.Nombre}}
@@ -70,7 +70,7 @@
               </mat-select>
             </mat-form-field>
             <div>
-              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperPrevious>{{ "informacion_academica.anterior" | translate }}</button>
             </div>
           </form>
         </mat-step>
@@ -79,7 +79,7 @@
     </mat-card-content>
 
     <mat-card-header>
-      <mat-card-title>Información adicional</mat-card-title>
+      <mat-card-title>{{ "informacion_academica.titulo2" | translate }}</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
@@ -87,9 +87,9 @@
       <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
         <mat-step [stepControl]="fifthFormGroup">
           <form [formGroup]="fifthFormGroup">
-            <ng-template matStepLabel>Medio por el cual se enteró de la Universidad Distrital</ng-template>
+            <ng-template matStepLabel>{{ "informacion_academica.medio_informativo" | translate }}</ng-template>
             <mat-form-field>
-              <mat-label>Medio</mat-label>
+              <mat-label>{{ "informacion_academica.medio" | translate }}</mat-label>
               <mat-select formControlName="fifthCtrl" required>
                 <mat-option *ngFor="let medio of medios" [value]="medio.Id">
                   {{medio.Nombre}}
@@ -97,15 +97,15 @@
               </mat-select>
             </mat-form-field>
             <div>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-button matStepperNext>{{ "informacion_academica.siguiente" | translate }}</button>
             </div>
           </form>
         </mat-step>
         <mat-step [stepControl]="sixthFormGroup">
           <form [formGroup]="sixthFormGroup">
-            <ng-template matStepLabel>Oportunidades en las que se ha presentado a la Universidad Distrital</ng-template>
+            <ng-template matStepLabel>{{ "informacion_academica.oportunidades" | translate }}</ng-template>
             <mat-form-field>
-              <mat-label>Oportunidades</mat-label>
+              <mat-label>{{ "informacion_academica.oportunidad" | translate }}</mat-label>
               <mat-select formControlName="sixthCtrl" required>
                 <mat-option *ngFor="let oportunidad of oportunidades" [value]="oportunidad.Id">
                   {{oportunidad.Nombre}}
@@ -113,7 +113,7 @@
               </mat-select>
             </mat-form-field>
             <div>
-              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperPrevious>{{ "informacion_academica.anterior" | translate }}</button>
             </div>
           </form>
         </mat-step>

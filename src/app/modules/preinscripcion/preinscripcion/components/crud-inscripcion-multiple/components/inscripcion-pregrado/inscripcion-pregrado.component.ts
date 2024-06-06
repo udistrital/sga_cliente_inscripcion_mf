@@ -91,7 +91,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   // @ViewChild('videoModal', { static: true }) videoModal: ElementRef;
 
   inscripcion_id!: number;
-  info_persona_id: number;
+  info_persona_id!: any;
   info_ente_id!: number;
   estado_inscripcion!: number;
   estado_inscripcion_nombre: string = "";
