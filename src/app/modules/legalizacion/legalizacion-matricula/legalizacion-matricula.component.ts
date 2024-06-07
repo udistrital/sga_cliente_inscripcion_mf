@@ -22,6 +22,7 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { MODALS, ROLES } from 'src/app/models/diccionario/diccionario';
 import { LiquidacionMatriculaService } from 'src/app/services/liquidacion_matricula.service';
+import { EventoService } from 'src/app/services/evento.service';
 
 interface Proyecto {
   opcion: number;
@@ -41,6 +42,7 @@ export class LegalizacionMatriculaComponent {
     validatorPeriodo: ['', Validators.required],
     validatorAño: ['', Validators.required],
     validatorFacultad: ['', Validators.required],
+    validatorCiclos: ['', Validators.required],
   });
   secondFormGroup = this._formBuilder.group({
     secondCtrl: ['', Validators.required],
@@ -63,6 +65,7 @@ export class LegalizacionMatriculaComponent {
   puedeAprobar: boolean = false;
   puedeRechazar: boolean = true;
   puedePedirMod: boolean = false;
+  cicloActual: any;
 
   proyectosCurriculares!: any[]
   periodosAnio!: any[]
@@ -90,6 +93,7 @@ export class LegalizacionMatriculaComponent {
     private utilidades: UtilidadesService,
     private documentoService: DocumentoService,
     private autenticationService: ImplicitAutenticationService,
+    private eventosService: EventoService,
     private liquidacionMatriculaService: LiquidacionMatriculaService,
     private popUpManager: PopUpManager
   ) {
@@ -181,13 +185,14 @@ export class LegalizacionMatriculaComponent {
   async generarBusqueda(stepper: MatStepper) {
     const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
     const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
+    const tipoCiclos = this.firstFormGroup.get('validatorCiclos')?.value;
 
     this.inscritosData = [];
     this.inscripciones = [];
     let ordenCount = 0 ;
 
-    this.inscripciones = await this.buscarInscripciones(stepper, proyecto, periodo)
-
+    await this.recuperarCiclo(periodo);
+    this.inscripciones = await this.buscarInscripciones(stepper, proyecto, periodo, tipoCiclos)
     for (const inscripcion of this.inscripciones) {
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
       if (Array.isArray(persona) && persona.length === 0) {
@@ -216,7 +221,7 @@ export class LegalizacionMatriculaComponent {
         "apellidos": persona.PrimerApellido + " " + persona.SegundoApellido,
         "tipo_documento": persona.TipoIdentificacion.Nombre,
         "documento": persona.NumeroIdentificacion,
-        "estado_admision": inscripcion.EstadoInscripcionId.Nombre == "ADMITIDO" ? 'admision.estado_admitido' : 'admision.estado_admitido_legalizado',
+        "estado_admision": inscripcion.EstadoInscripcionId.Nombre == "ADMITIDO" || inscripcion.EstadoInscripcionId.Nombre === "ADMITIDO CON OBSERVACIÓN" ? 'admision.estado_admitido' : 'admision.estado_admitido_legalizado',
         "estado_revision": estadoRevision,
         "proyecto_admitido": proyecto.Nombre,
         "fecha_nacimiento": this.formatearFecha(persona.FechaNacimiento),
@@ -231,6 +236,65 @@ export class LegalizacionMatriculaComponent {
     }
 
     this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+  }
+
+  async recuperarCiclo(periodo: any) {
+    const fechaActual = new Date();
+    const responseCalendario: any = await this.buscarCalendariosPregradoPorPeriodo(periodo);
+    const calendarioId = responseCalendario.Id;
+    const responseEvento: any = await this.buscarEventosCiclosPorCalendario(calendarioId);
+    const tipoEventoId = responseEvento.Id
+    const responseCiclos: any = await this.buscarCiclosPorCalendario(tipoEventoId);
+
+    for (const ciclo of responseCiclos) {
+      const fechaInicio = new Date(ciclo.FechaInicio);
+      const fechaFin = new Date(ciclo.FechaFin);
+      if (fechaActual >= fechaInicio && fechaActual <= fechaFin) {
+        this.cicloActual = ciclo.Descripcion
+      }
+    } 
+  }
+
+  buscarCalendariosPregradoPorPeriodo(periodo: any) {
+    return new Promise((resolve, reject) => {
+      this.eventosService.get('calendario?query=PeriodoId:' + periodo + ',Nivel:1,Activo:true&sortby=Id&order=asc')
+        .subscribe((res: any) => {
+          resolve(res[0]);
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  buscarEventosCiclosPorCalendario(calendario: any) {
+    return new Promise((resolve, reject) => {
+      this.eventosService.get('tipo_evento?query=CalendarioID.Id:' + calendario + ',CodigoAbreviacion:CIAD,Activo:true&sortby=Id&order=asc')
+        .subscribe((res: any) => {
+          resolve(res[0]);
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  buscarCiclosPorCalendario(tipoEvento: any) {
+    return new Promise((resolve, reject) => {
+      this.eventosService.get('calendario_evento?query=TipoEventoId.Id:' + tipoEvento + ',Activo:true&sortby=Id&order=asc')
+        .subscribe((res: any) => {
+          resolve(res);
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
   }
 
   formatearFecha(fechaString: any) {
@@ -306,17 +370,24 @@ export class LegalizacionMatriculaComponent {
     }
   }
 
-  async buscarInscripciones(stepper: MatStepper, proyecto: any, periodo: any) {
-    const admitidos: any = await this.buscarInscripcionesAdmitidos(proyecto, periodo)
-    const admitidosLeg: any = await this.buscarInscripcionesAdmitidosLegalizados(proyecto, periodo)
-    const inscripciones = Object.keys(admitidosLeg[0]).length === 0 ? admitidos : admitidos.concat(admitidosLeg)
+  async buscarInscripciones(stepper: MatStepper, proyecto: any, periodo: any, tipoCiclo: any) {
+    const admitidos: any = await this.buscarInscripcionesAdmitidos(proyecto, periodo, tipoCiclo)
+    const admitidosLeg: any = await this.buscarInscripcionesAdmitidosLegalizados(proyecto, periodo, tipoCiclo)
+    const admitidosObs: any = await this.buscarInscripcionesAdmitidosObservacion(proyecto, periodo, tipoCiclo)
+    const inscripciones = Object.keys(admitidosLeg[0]).length === 0 ? Object.keys(admitidosObs[0]).length === 0 ? admitidos : admitidos.concat(admitidosObs) : Object.keys(admitidosObs[0]).length === 0 ? admitidos.concat(admitidosLeg) : admitidos.concat(admitidosLeg, admitidosObs)
     stepper.next();
     return inscripciones
   }
   
-  buscarInscripcionesAdmitidos(proyecto: any, periodo: any) {
+  buscarInscripcionesAdmitidos(proyecto: any, periodo: any, tipoCiclo: any) {
+    let query = ''
+    if (tipoCiclo == 1) {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',Opcion:' + this.cicloActual + ',EstadoInscripcionId.Id:2,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    } else {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:2,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    }
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:2,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc')
+      this.inscripcionService.get(query)
         .subscribe((res: any) => {
           resolve(res)
         },
@@ -328,9 +399,35 @@ export class LegalizacionMatriculaComponent {
     });
   }
 
-  buscarInscripcionesAdmitidosLegalizados(proyecto: any, periodo: any) {
+  buscarInscripcionesAdmitidosLegalizados(proyecto: any, periodo: any, tipoCiclo: any) {
+    let query = ''
+    if (tipoCiclo == 1) {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',Opcion:' + this.cicloActual + ',EstadoInscripcionId.Id:8,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    } else {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:8,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    }
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:8,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc')
+      this.inscripcionService.get(query)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  buscarInscripcionesAdmitidosObservacion(proyecto: any, periodo: any, tipoCiclo: any) {
+    let query = ''
+    if (tipoCiclo == 1) {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',Opcion:' + this.cicloActual + ',EstadoInscripcionId.Id:10,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    } else {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:10,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    }
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get(query)
         .subscribe((res: any) => {
           resolve(res)
         },
@@ -999,8 +1096,8 @@ export class LegalizacionMatriculaComponent {
 
   async rechazarAspirante() {
     this.popUpManager.showPopUpGeneric(
-      this.translate.instant('legalizacion_admision.titulo_aprobacion_aspirante'),
-      this.translate.instant('legalizacion_admision.aprobacion_aspirante'),
+      this.translate.instant('legalizacion_admision.titulo_rechazo_aspirante'),
+      this.translate.instant('legalizacion_admision.rechazo_aspirante'),
       MODALS.INFO,
       true).then(
         async (action) => {
@@ -1021,8 +1118,8 @@ export class LegalizacionMatriculaComponent {
 
   async solicitarcambiosAspirante() {
     this.popUpManager.showPopUpGeneric(
-      this.translate.instant('legalizacion_admision.titulo_aprobacion_aspirante'),
-      this.translate.instant('legalizacion_admision.aprobacion_aspirante'),
+      this.translate.instant('legalizacion_admision.titulo_modificaciones_aspirante'),
+      this.translate.instant('legalizacion_admision.modificaciones_aspirante'),
       MODALS.INFO,
       true).then(
         async (action) => {

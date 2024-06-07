@@ -1827,6 +1827,10 @@
         "titulo_rechazo_aspirante": "Reject current applicant",
         "rechazo_aspirante": "Are you sure to reject this applicant?",
         "titulo_modificaciones_aspirante": "Request modifications from the current applicant",
-        "modificaciones_aspirante": "Are you sure about requesting modifications from this candidate?"
+        "modificaciones_aspirante": "Are you sure about requesting modifications from this candidate?",
+        "ciclos": "cycles",
+        "ciclo_actual": "Current cycle",
+        "todos_ciclos": "All cycles",
+        "seleccion_ciclos": "Select a cycle type"
     }
 }

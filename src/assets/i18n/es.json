@@ -1825,6 +1825,10 @@
         "titulo_rechazo_aspirante": "Rechazar aspirante actual",
         "rechazo_aspirante": "¿Está seguro/a de rechazar a este aspirante?",
         "titulo_modificaciones_aspirante": "Solicitar modificaciones al aspirante actual",
-        "modificaciones_aspirante": "¿Está seguro/a de solicitar modificaciones a este aspirante?"
+        "modificaciones_aspirante": "¿Está seguro/a de solicitar modificaciones a este aspirante?",
+        "ciclos": "Ciclos",
+        "ciclo_actual": "Ciclo actual",
+        "todos_ciclos": "Todos los ciclos",
+        "seleccion_ciclos": "Selecciona un tipo de ciclo"
     }
 }
