@@ -54,6 +54,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   data: any[] = [];
   settings: any;
   pdfs: Blob[] = [];
+  //periodosDoctorado: any[] = []; 
+  nombresPeriodos!: string; 
 
   @Input('inscripcion_id')
   set admision(inscripcion_id: number) {
@@ -288,10 +290,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   nivel_load() {
-    // Solo se cargan el nivel de posgrado
-    this.projectService.get('nivel_formacion').subscribe(
+    this.projectService.get('nivel_formacion').subscribe(//?query=Id:2
       (response: NivelFormacion[]) => {
-        this.niveles = response; // .filter(nivel => nivel.NivelFormacionPadreId === null)
+        this.niveles = response;//.filter(nivel => nivel.NivelFormacionPadreId === null)
+        
       },
       (error) => {
         this.popUpManager.showErrorToast(
@@ -427,6 +429,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     }
   }
 
+
   nuevaPreinscripcion() {
     this.showNew = true;
   }
@@ -463,7 +466,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             r.Type !== 'error' &&
             r.length !== 0
           ) {
-            const inscripcionP = <Array<any>>response.data;
+            const inscripcionP = <Array<any>>response.Data;
             this.inscripcionProjects = inscripcionP;
             this.showProyectoCurricular = true;
             // this.loadTipoInscripcion();
@@ -626,7 +629,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         .subscribe(
           (response: any) => {
             if (response !== null && response.length !== 0) {
-              this.inscripcionProjects = response.data;
+              this.inscripcionProjects = response.Data;
               this.inscripcionProjects.forEach((proyecto) => {
                 if (
                   proyecto.ProyectoId === this.selectedProject &&
