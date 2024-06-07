@@ -135,7 +135,7 @@
         <!-- select periodo -->
         <mat-form-field style="width: 40%" *ngIf="showNew">
           <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
-          <mat-select [(ngModel)]="periodo" [disabled]="periodos.length === 0">
+          <mat-select [(ngModel)]="periodo" [disabled]="true">
             <mat-option>--Seleccionar--</mat-option>
             <mat-option *ngFor="let item of periodos" [value]="item">
               {{ item.Nombre }}
