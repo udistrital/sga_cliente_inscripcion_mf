@@ -411,7 +411,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       });
       this.projectService
         .get(
-          'proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId'
+          'proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId,Codigo'
         )
         .subscribe(
           (response: any) => {
@@ -613,6 +613,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         PeriodoId: this.periodo.Id,
         Nivel: parseInt(this.selectedLevel, 10),
         ProgramaAcademicoId: parseInt(this.selectedProject, 10),
+        ProgramaAcademicoCodigo: parseInt(this.projects.find(proyecto => proyecto.Id === this.selectedProject).Codigo, 10),
         TipoInscripcionId: parseInt(this.tipo_inscripcion_selected, 10),
         Year: this.periodo.Year,
         Periodo: parseInt(this.periodo.Ciclo, 10),
