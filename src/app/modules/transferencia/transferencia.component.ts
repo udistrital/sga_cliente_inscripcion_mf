@@ -163,6 +163,14 @@ export class TransferenciaComponent implements OnInit {
                 element.Programa = res.Nombre;
                 element.Periodo = this.periodo.Id;
 
+                //todo: revisar este flujo
+                if(element.EstadoSolicitud){
+                  element.Estado = element.EstadoSolicitud
+                }else{
+                  element.Estado = element.EstadoInscripcion
+                }
+                console.log(element.Estado)
+
                 if (element.EstadoRecibo === 'Pendiente pago') {
                   element.Opcion = {
                     icon: 'fa fa-arrow-circle-right fa-2x',
@@ -198,9 +206,9 @@ export class TransferenciaComponent implements OnInit {
                     icon: 'fa fa-download fa-2x',
                     label: 'Descargar',
                     class: 'btn btn-primary',
-                    documento: element.VerRespuesta.DocRespuesta
+                    documento: element.VerRespuesta.DocRespuesta,
+                    disabled: false
                   }
-                  delete element.Descargar.disabled;
                   element.Opcion.disabled = true;
                 } else {
                   element.Descargar.disabled = true;

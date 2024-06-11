@@ -277,7 +277,6 @@ export class CrudInfoPersonaComponent implements OnInit {
                       if (action.value) {
                         this.forzarCambioUsuario = true;
                       } else {
-                        console.log('LOGOUT');
                         // this.autenticationService.logout('from inscripcion');
                       }
                     });

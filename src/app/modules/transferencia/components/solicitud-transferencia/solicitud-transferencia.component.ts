@@ -76,11 +76,9 @@ export class SolicitudTransferenciaComponent implements OnInit {
       this.id = id
 
       this.loadSolicitud();
+      this.loadInfoPersona();
+      this.loadEstados();
 
-      if (this.process === 'all') {
-        this.loadInfoPersona();
-        this.loadEstados();
-      }
 
     })
   }
@@ -169,6 +167,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
           this.formTransferencia.campos[ultimo].claseGrid = 'col-sm-6 col-xs-6';
 
           if (this.tipo === 'Transferencia externa') {
+
             this.ocultarCampo(estudianteExterno, false);
             this.ocultarCampo(estudiante, true);
 
@@ -211,8 +210,9 @@ export class SolicitudTransferenciaComponent implements OnInit {
               this.formTransferencia.campos[origen].deshabilitar = true;
             }
           }
-
+          console.log(inscripcion)
           if (inscripcion.Data.SolicitudId) {
+            
             this.estado = inscripcion['Data']['Estado']['Nombre'];
             let data = {
               Cancelo: inscripcion['Data']['DatosInscripcion']['CanceloSemestre'],
@@ -240,8 +240,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
             this.documentoEstudiante = inscripcion['Data']['DatosEstudiante']['Identificacion'];
             this.codigoEstudiante = inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'];
             this.solicitudId = inscripcion['Data']['SolicitudId'];
-
-            if ((inscripcion['Data']['Estado']['Nombre'] !== 'Requiere modificación' && this.process === 'my') || this.process === 'all') {
+            if (inscripcion['Data']['Estado']['Nombre'] != 'Requiere modificación' && this.process === 'my') {
               this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = true;
               // this.formTransferencia.campos[origenExterno].ocultar = true;
               this.mostrarDocumento = true;
@@ -311,6 +310,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
             }
 
           } else {
+            this.mostrarDocumento = false;
             this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = false;
           }
 
@@ -436,6 +436,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
           key: 'Documento',
         }
         files = file;
+
       } else if (this.idFileDocumento) {
         files = this.idFileDocumento;
       }
@@ -455,12 +456,13 @@ export class SolicitudTransferenciaComponent implements OnInit {
         'Acuerdo': event.data.dataTransferencia.Acuerdo == true,
         'Cancelo': event.data.dataTransferencia.Cancelo == true,
         'Documento': files,
-        'SolicitanteId': this.userService.getPersonaId(),
+        'SolicitanteId': await this.userService.getPersonaId(),
         'FechaRadicacion': moment().format('YYYY-MM-DD hh:mm:ss'),
       }
-      console.log(data.SolicitanteId)
 
-      if (this.estado === 'Requiere modificación') {
+      //todo: cambiar el if
+      // if (this.estado === 'Requiere modificación') {
+      if (false) {
         this.inscripcionMidService.put('transferencia/' + this.solicitudId, data).subscribe(
           (res: any) => {
             const r = <any>res
