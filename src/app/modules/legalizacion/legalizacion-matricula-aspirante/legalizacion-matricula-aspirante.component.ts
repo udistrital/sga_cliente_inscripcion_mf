@@ -127,6 +127,7 @@ import { OikosService } from 'src/app/services/oikos.service';
   async ngOnInit() {
     this.initFormularios();
     this.cargarDatosFormularios();
+    // this.estaAutorizado = true;
 
     //RECUPERACIÓN DE PERSONA ID 1
     const email: any = this.autenticationService.getMail();
