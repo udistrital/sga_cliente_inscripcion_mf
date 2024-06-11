@@ -16,9 +16,7 @@ export const environment = {
   PROYECTO_ACADEMICO_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8116/v1/',
   SGA_MID_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8119/v1/',
   INSCRIPCION_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8208/v1/',
-  //todo: cambiar la variable de entorno
-  // UBICACION_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8085/v1/',
-  UBICACION_SERVICE: 'http://api.intranetoas.udistrital.edu.co:8085/v1/',
+  UBICACION_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8085/v1/',
   DOCUMENTO_PROGRAMA_SERVICE: '',
   EXPERIENCIA_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8101/v1/',
   IDIOMA_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8098/v1/',

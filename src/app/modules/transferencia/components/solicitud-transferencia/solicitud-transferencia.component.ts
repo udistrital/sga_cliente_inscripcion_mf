@@ -459,9 +459,7 @@ export class SolicitudTransferenciaComponent implements OnInit {
         'FechaRadicacion': moment().format('YYYY-MM-DD hh:mm:ss'),
       }
 
-      //todo: cambiar el if
-      // if (this.estado === 'Requiere modificación') {
-      if (false) {
+      if (this.estado != 'Inscripción solicitada') {
         this.inscripcionMidService.put('transferencia/' + this.solicitudId, data).subscribe(
           (res: any) => {
             const r = <any>res
