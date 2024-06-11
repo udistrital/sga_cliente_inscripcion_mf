@@ -210,7 +210,6 @@ export class SolicitudTransferenciaComponent implements OnInit {
               this.formTransferencia.campos[origen].deshabilitar = true;
             }
           }
-          console.log(inscripcion)
           if (inscripcion.Data.SolicitudId) {
             
             this.estado = inscripcion['Data']['Estado']['Nombre'];
