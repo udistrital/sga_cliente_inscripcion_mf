@@ -76,6 +76,11 @@ import { DownloadFileNuxeoComponent } from '../transferencia/components/solicitu
 import { SolicitudTransferenciaComponent } from '../transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { MatButtonModule } from '@angular/material/button';
+import { InscripcionPregradoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/inscripcion-pregrado.component';
+import { ListInformacionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_acudiente/list-informacion/list-informacion.component';
+import { ListInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_academica/list-informacion-academica/list-informacion-academica.component';
+import { CrudInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_academica/crud-informacion-academica/crud-informacion-academica.component';
+import { ViewExamenEstadoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/examen_estado/view-examen-estado/view-examen-estado.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -129,6 +134,11 @@ export function createTranslateLoader(http: HttpClient) {
     PerfilComponent,
     ViewInscripcionComponent,
     DownloadFileNuxeoComponent,
+    InscripcionPregradoComponent,
+    ListInformacionComponent,
+    ListInformacionAcademicaComponent,
+    CrudInformacionAcademicaComponent,
+    ViewExamenEstadoComponent,
   ],
   imports: [
     NgxDocViewerModule,

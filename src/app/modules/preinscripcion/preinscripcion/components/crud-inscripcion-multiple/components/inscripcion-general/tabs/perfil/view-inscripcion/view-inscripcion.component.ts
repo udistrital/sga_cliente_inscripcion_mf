@@ -14,7 +14,7 @@ import { UserService } from 'src/app/services/users.service';
 })
 export class ViewInscripcionComponent implements OnInit {
 
-  persona_id!: number;
+  persona_id!: number | null;
   periodo_id!: number;
   programa_id!: number;
   inscripcion_id!: number;
@@ -45,14 +45,18 @@ export class ViewInscripcionComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.infoCarga.status = "start";
     this.estadoCarga.emit(this.infoCarga);
     this.programa_id = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!);
-    this.persona_id = this.userService.getPersonaId();
     this.inscripcion_id = parseInt(sessionStorage.getItem('IdInscripcion')!);
     this.periodo_id = this.userService.getPeriodo();
-    this.loadInscripcion();
+    try {
+      this.persona_id = await this.userService.getPersonaId();
+      this.loadInscripcion();
+    } catch (error) {
+      console.error('Error al obtener persona_id:', error);
+    }
   }
 
   loadInscripcion() {

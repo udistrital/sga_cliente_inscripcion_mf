@@ -102,15 +102,12 @@ export class LegalizacionMatriculaComponent {
   }
 
   async ngOnInit() {
-    this.autenticationService.getRole().then(
-      (rol: any) => {
-        const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
-        const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
-        if (r1 || r2) {
-          this.estaAutorizado = true;
-        }
-      }
-    );
+    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
+    this.usuarioService.esAutorizado(rolesRequeridos).then(esAutorizado => {
+      if (esAutorizado) this.estaAutorizado = true;
+    }).catch( error => {
+      console.error('Error al validar autorización', error)
+    });
     validateLang(this.translate);
     await this.cargarSelects();
   }
@@ -135,7 +132,6 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.facultades_error'));
-            console.log(error);
             reject([]);
           });
     });
@@ -150,7 +146,6 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.anio_error'));
-            console.log(error);
             reject([]);
           });
     });
@@ -165,7 +160,6 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.periodo_error'));
-            console.log(error);
             reject([]);
           });
     });
@@ -458,7 +452,7 @@ export class LegalizacionMatriculaComponent {
       const response = await this.sgamidService.get('persona/consultar_persona/' + personaId).toPromise();
       return response;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return [];
     }
   }
@@ -953,7 +947,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            console.log(error);
+            console.error(error);
             this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
             reject([]);
           });
@@ -1019,9 +1013,8 @@ export class LegalizacionMatriculaComponent {
 
     this.newNuxeoService.getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
       .subscribe((res: any) => {
-        console.log(res);
       }, (error: any) => {
-        console.log(error);
+        console.error(error);
         this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
       })
   }

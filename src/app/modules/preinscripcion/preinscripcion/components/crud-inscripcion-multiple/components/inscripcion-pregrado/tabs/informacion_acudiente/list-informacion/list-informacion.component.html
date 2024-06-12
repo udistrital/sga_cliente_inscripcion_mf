@@ -1,0 +1,162 @@
+<div>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ "informacion_acudientes.titulo" | translate }}</mat-card-title>
+    </mat-card-header>
+
+
+    <mat-card-content>
+    
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="firstFormGroup">
+          <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.nombre_acudiente" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.nombre" | translate }}</mat-label>
+              <input matInput formControlName="firstCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup">
+          <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.parentesco" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.parentesco" | translate }}</mat-label>
+              <input matInput formControlName="secondCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="thirdFormGroup">
+          <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.correo_acudiente" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.correo" | translate }}</mat-label>
+              <input matInput formControlName="thirdCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="fourthFormGroup">
+          <form [formGroup]="fourthFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.direccion_acudiente" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.direccion" | translate }}</mat-label>
+              <input matInput formControlName="fourthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="fifthFormGroup">
+          <form [formGroup]="fifthFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.telefono_acudiente" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.telefono" | translate }}</mat-label>
+              <input matInput formControlName="fifthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+
+    </mat-card-content>
+
+    <mat-card-header>
+      <mat-card-title>{{ "informacion_acudientes.titulo2" | translate }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+    
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="sixthFormGroup">
+          <form [formGroup]="sixthFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.nombre_familiar" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.nombre" | translate }}</mat-label>
+              <input matInput formControlName="sixthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="seventhFormGroup">
+          <form [formGroup]="seventhFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.parentesco" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.parentesco" | translate }}</mat-label>
+              <input matInput formControlName="seventhCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="eighthFormGroup">
+          <form [formGroup]="eighthFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.correo" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.correo" | translate }}</mat-label>
+              <input matInput formControlName="eighthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="ninthFormGroup">
+          <form [formGroup]="ninthFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.direccion" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.direccion" | translate }}</mat-label>
+              <input matInput formControlName="ninthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+              <button mat-button matStepperNext>{{ "informacion_acudientes.siguiente" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="tenthFormGroup">
+          <form [formGroup]="tenthFormGroup">
+            <ng-template matStepLabel>{{ "informacion_acudientes.telefono" | translate }}</ng-template>
+            <mat-form-field>
+              <mat-label>{{ "informacion_acudientes.telefono" | translate }}</mat-label>
+              <input matInput formControlName="tenthCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>{{ "informacion_acudientes.anterior" | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+    </mat-card-content>
+      
+
+    <mat-card-actions>
+      <button [disabled]="!firstFormGroup.valid || !secondFormGroup.valid || 
+                          !thirdFormGroup.valid || !fourthFormGroup.valid || 
+                          !fifthFormGroup.valid || !sixthFormGroup.valid || 
+                          !seventhFormGroup.valid || !eighthFormGroup.valid || 
+                          !ninthFormGroup.valid || !tenthFormGroup.valid"
+      (click)="submit()">{{ "informacion_acudientes.guardar" | translate }}</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+

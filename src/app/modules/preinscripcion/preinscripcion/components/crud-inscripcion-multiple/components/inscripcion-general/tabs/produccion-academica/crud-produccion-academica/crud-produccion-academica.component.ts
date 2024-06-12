@@ -429,7 +429,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
-          console.log(this.info_produccion_academica)
           this.inscripcionMidService.put('academico/produccion', this.info_produccion_academica)
             .subscribe((res: any) => {
               if (res !== null) {
@@ -467,7 +466,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
       .then((willCreate: any) => {
         if (willCreate.value) {
           this.info_produccion_academica = <ProduccionAcademicaPost>ProduccionAcademica;
-          console.log(this.info_produccion_academica)
           this.inscripcionMidService.post('academico/produccion/', this.info_produccion_academica)
             .subscribe((res: any) => {
               if (res !== null) {
@@ -620,9 +618,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
         this.info_produccion_academica.Resumen.replace(multiespacio, ' ');
         const promises = [];
         if (event.data.ProduccionAcademica) {
-          // Subir archivos y verificar los
-          // console.log(event.data.ProduccionAcademica);
-          // const tempMetadatos = JSON.parse(JSON.stringify(event.data.ProduccionAcademica));
           const tempMetadatos = event.data.ProduccionAcademica;
           const keys = Object.keys(tempMetadatos);
           const metadatos = [];
@@ -650,8 +645,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
         this.info_produccion_academica.Autores = JSON.parse(JSON.stringify(this.source_authors));
         Promise.all(promises)
           .then(() => {
-            // console.log("promesas cumplidas subir produccion");
-            // console.log("metadatos", this.info_produccion_academica.Metadatos);
             if (this.produccion_academica_selected === undefined) {
               this.createProduccionAcademica(this.info_produccion_academica);
               //this.result.emit(event);
@@ -661,7 +654,6 @@ export class CrudProduccionAcademicaComponent implements OnInit {
             }
           })
           .catch(error => {
-            // console.log("error subiendo archivos", error);
             Swal.fire({
               icon: 'error',
               title: 'ERROR',

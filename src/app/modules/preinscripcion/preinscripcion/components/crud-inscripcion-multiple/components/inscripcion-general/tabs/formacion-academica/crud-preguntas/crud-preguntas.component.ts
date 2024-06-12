@@ -18,11 +18,11 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
   styleUrls: ['./crud-preguntas.component.scss']
 })
 export class CrudPreguntasComponent implements OnInit {
-  info_formacion_academica_id!: number;
-  persiona_id: number;
+  info_formacion_academica_id!: number | null;
+  persiona_id!: number | null;
 
   @Input('info_formacion_academica_id')
-  set name(info_formacion_academica_id: number) {
+  set name(info_formacion_academica_id: number | null) {
     this.info_formacion_academica_id = info_formacion_academica_id;
     // this.loadInfoFormacionAcademica();
   }
@@ -45,17 +45,12 @@ export class CrudPreguntasComponent implements OnInit {
     private listService: ListService,
     private snackBar: MatSnackBar) {
     this.formUniversidad = FORM_PREGUNTAS;
-    this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
 
-    this.persiona_id = this.users.getPersonaId();
 
-    this.listService.findMediosEnteroUniversidad();
-    this.listService.findSePresentaAUniversidadPor();
-    this.listService.findTipoInscripcionUniversidad();
-    this.loadLists();
+    
   }
 
   construirForm() {
@@ -93,8 +88,17 @@ export class CrudPreguntasComponent implements OnInit {
    );
  }
 
-  ngOnInit() {
-    // this.loadInfoFormacionAcademica();
+  async ngOnInit() {
+    try {
+      this.persiona_id = await this.users.getPersonaId();
+    } catch (error) {
+      console.error('Error al obtener persona_id:', error);
+    }
+    this.construirForm();
+    this.listService.findMediosEnteroUniversidad();
+    this.listService.findSePresentaAUniversidadPor();
+    this.listService.findTipoInscripcionUniversidad();
+    this.loadLists();
   }
 
   setPercentage(event:any) {

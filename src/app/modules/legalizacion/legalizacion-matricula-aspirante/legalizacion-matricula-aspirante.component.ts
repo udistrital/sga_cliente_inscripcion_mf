@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SoporteParams } from 'src/app/models/forms/define-form-fields';
@@ -12,19 +11,17 @@ import { LegalizacionMatricula } from 'src/app/models/legalizacion/legalizacion_
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { OikosService } from 'src/app/services/oikos.service';
 
 @Component({
-    selector: 'app-legalizacion-matricula-aspirante',
-    templateUrl: './legalizacion-matricula-aspirante.component.html',
-    styleUrls: ['./legalizacion-matricula-aspirante.component.scss']
-  })
-  export class LegalizacionMatriculaAspiranteComponent {
-
+  selector: 'app-legalizacion-matricula-aspirante',
+  templateUrl: './legalizacion-matricula-aspirante.component.html',
+  styleUrls: ['./legalizacion-matricula-aspirante.component.scss'],
+})
+export class LegalizacionMatriculaAspiranteComponent {
   constructor(
     private fb: FormBuilder,
     private ubicacionService: UbicacionService,
@@ -34,12 +31,11 @@ import { OikosService } from 'src/app/services/oikos.service';
     private translate: TranslateService,
     private gestorDocumentalService: NewNuxeoService,
     private inscripcionMidService: InscripcionMidService,
-    private autenticationService: ImplicitAutenticationService,
     private oikosService: OikosService,
-    private userService: UserService,
+    private usuarioService: UserService,
     private inscripcionService: InscripcionService,
-    private sgamidService: SgaMidService,
-  ) { }
+    private sgamidService: SgaMidService
+  ) {}
 
   isLinear = false;
   loading!: boolean;
@@ -60,62 +56,62 @@ import { OikosService } from 'src/app/services/oikos.service';
   formDocsGenerales!: FormGroup;
 
   infoSocioEconomicaPersonal = this.fb.group({
-    'direccion_residencia': ['', Validators.required],
-    'localidad': ['', Validators.required],
-    'colegio': ['', Validators.required],
-    'diploma_bachiller': [''],
-    'pension_valor': ['', Validators.required],
-    'pension_valor_smv': ['', Validators.required],
-    'soporte_pension_valor': [''],
-    'nucleo_familiar': ['', Validators.required],
-    'soporte_nucleo_familiar': [''],
-    'situacion_laboral': ['', Validators.required],
-    'soporte_situacion_laboral': [''],
-  })
+    direccion_residencia: ['', Validators.required],
+    localidad: ['', Validators.required],
+    colegio: ['', Validators.required],
+    diploma_bachiller: [''],
+    pension_valor: ['', Validators.required],
+    pension_valor_smv: ['', Validators.required],
+    soporte_pension_valor: [''],
+    nucleo_familiar: ['', Validators.required],
+    soporte_nucleo_familiar: [''],
+    situacion_laboral: ['', Validators.required],
+    soporte_situacion_laboral: [''],
+  });
 
   infoSocioEconomicaCosteara = this.fb.group({
-    'direccion_residencia_costeara': ['', Validators.required],
-    'estrato': ['', Validators.required],
-    'ubicacion_residencia': ['', Validators.required],
-    'soporte_estrato': [''],
-    'ingresos_ano_anterior': ['', Validators.required],
-    'ingresos_ano_anterior_sm': ['', Validators.required],
-    'soporte_ingresos_ano_anterior': [''],
-  })
+    direccion_residencia_costeara: ['', Validators.required],
+    estrato: ['', Validators.required],
+    ubicacion_residencia: ['', Validators.required],
+    soporte_estrato: [''],
+    ingresos_ano_anterior: ['', Validators.required],
+    ingresos_ano_anterior_sm: ['', Validators.required],
+    soporte_ingresos_ano_anterior: [''],
+  });
 
   docsGenerales = this.fb.group({
-    'documentos': ['']
-  })
+    documentos: [''],
+  });
 
   soportes: SoporteParams = {
-    "diplomaBachiller": {
+    diplomaBachiller: {
       archivosLocal: [],
-      archivosLinea: []
+      archivosLinea: [],
     },
-    "soportePension": {
+    soportePension: {
       archivosLocal: [],
-      archivosLinea: []
+      archivosLinea: [],
     },
-    "soporteNucleo": {
+    soporteNucleo: {
       archivosLocal: [],
-      archivosLinea: []
+      archivosLinea: [],
     },
-    "soporteSituacionLaboral": {
+    soporteSituacionLaboral: {
       archivosLocal: [],
-      archivosLinea: []
+      archivosLinea: [],
     },
-    "soporteEstrato": {
+    soporteEstrato: {
       archivosLocal: [],
-      archivosLinea: []
+      archivosLinea: [],
     },
-    "soporteIngresos": {
+    soporteIngresos: {
       archivosLocal: [],
-      archivosLinea: []
+      archivosLinea: [],
     },
-    "documentosGeneral": {
+    documentosGeneral: {
       archivosLocal: [],
-      archivosLinea: []
-    }
+      archivosLinea: [],
+    },
   };
 
   localidades!: any[];
@@ -154,50 +150,58 @@ import { OikosService } from 'src/app/services/oikos.service';
 
   esEstudianteAdmitido(estudiante: any) {
     if (Object.keys(estudiante[0]).length > 0) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   }
 
   buscarInscritoAdmitido() {
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion?query=PersonaId:' + this.info_persona_id + ',EstadoInscripcionId.Id:2&sortby=Id&order=asc')
-        .subscribe((res: any) => {
-          resolve(res)
-        },
+      this.inscripcionService
+        .get(
+          'inscripcion?query=PersonaId:' +
+            this.info_persona_id +
+            ',EstadoInscripcionId.Id:2&sortby=Id&order=asc'
+        )
+        .subscribe(
+          (res: any) => {
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
   consultarTercero(personaId: any) {
     return new Promise((resolve, reject) => {
-      this.sgamidService.get('persona/consultar_persona/' + personaId)
-        .subscribe((res: any) => {
-          resolve(res)
-        },
+      this.sgamidService
+        .get('persona/consultar_persona/' + personaId)
+        .subscribe(
+          (res: any) => {
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
-            console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
   async recuperarTerceroId(userEmail: any) {
     let persona: any = await this.recuperarTerceroByUsuario(userEmail);
-  
+
     if (Object.keys(persona[0]).length > 0) {
-      return persona[0].Id
+      return persona[0].Id;
     } else {
       let emailUser: string = userEmail.slice(0, userEmail.indexOf('@'));
       persona = await this.recuperarTerceroByUsuario(emailUser);
       if (Object.keys(persona[0]).length > 0) {
-        return persona[0].Id
+        return persona[0].Id;
       } else {
         return 0;
       }
@@ -206,29 +210,35 @@ import { OikosService } from 'src/app/services/oikos.service';
 
   recuperarTerceroByUsuario(usuario: any) {
     return new Promise((resolve, reject) => {
-      this.tercerosService.get('tercero?query=UsuarioWSO2:' + usuario)
-        .subscribe((res: any) => {
-          resolve(res)
-        },
+      this.tercerosService
+        .get('tercero?query=UsuarioWSO2:' + usuario)
+        .subscribe(
+          (res: any) => {
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
             console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
   recuperarProyectoPorId(proyectoId: any) {
     return new Promise((resolve, reject) => {
-      this.oikosService.get('dependencia/' + proyectoId)
-        .subscribe((res: any) => {
-          resolve(res.Nombre)
+      this.oikosService.get('dependencia/' + proyectoId).subscribe(
+        (res: any) => {
+          resolve(res.Nombre);
         },
-          (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('admision.facultades_error'));
-            console.log(error);
-            reject([]);
-          });
+        (error: any) => {
+          this.popUpManager.showErrorAlert(
+            this.translate.instant('admision.facultades_error')
+          );
+          console.error(error);
+          reject([]);
+        }
+      );
     });
   }
 
@@ -236,12 +246,20 @@ import { OikosService } from 'src/app/services/oikos.service';
 
   onChangeSelectFiles(label: string, event: any): void {
     const files = <File[]>Object.values(event.target.files);
-    const newFiles = files.map(f => {
-      return { file: f, urlTemp: URL.createObjectURL(f), err: false }
+    const newFiles = files.map((f) => {
+      return { file: f, urlTemp: URL.createObjectURL(f), err: false };
     });
-    this.soportes[label].archivosLocal = this.soportes[label].archivosLocal!.concat(newFiles);
-    const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
-    const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
+    this.soportes[label].archivosLocal =
+      this.soportes[label].archivosLocal!.concat(newFiles);
+    const nameFiles = this.passFilesToFormControl(
+      this.soportes[label].archivosLocal ?? [],
+      this.soportes[label].archivosLinea ?? []
+    );
+    const errs = this.validateFiles(
+      this.soportes[label].tipoArchivos ?? '',
+      this.soportes[label].tamMBArchivos ?? 0,
+      this.soportes[label].archivosLocal ?? []
+    );
     this.soportes[label].validaArchivos = errs;
   }
 
@@ -256,51 +274,84 @@ import { OikosService } from 'src/app/services/oikos.service';
     return nameFiles;
   }
 
-  validateFiles(tipoArchivos: string, tamMBArchivos: number, archivosLocal: any[]) {
+  validateFiles(
+    tipoArchivos: string,
+    tamMBArchivos: number,
+    archivosLocal: any[]
+  ) {
     let errTipo = false;
     let errTam = false;
-    archivosLocal.forEach(f => {
+    archivosLocal.forEach((f) => {
       if (tipoArchivos.indexOf(f.file.type.split('/')[1]) === -1) {
         f.err = true;
         errTipo = true;
-      } else if (f.file.size > (tamMBArchivos * 1024000)) {
+      } else if (f.file.size > tamMBArchivos * 1024000) {
         f.err = true;
         errTam = true;
       } else {
         f.err = false;
       }
     });
-    return { "errTipo": errTipo, "errTam": errTam }
+    return { errTipo: errTipo, errTam: errTam };
   }
 
   previewFile(url: string): void {
     const h = screen.height * 0.65;
-    const w = h * 3 / 4;
-    const left = (screen.width * 3 / 4) - (w / 2);
-    const top = (screen.height / 2) - (h / 2);
-    window.open(url, '', 'toolbar=no,' +
-      'location=no, directories=no, status=no, menubar=no,' +
-      'scrollbars=no, resizable=no, copyhistory=no, ' +
-      'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+    const w = (h * 3) / 4;
+    const left = (screen.width * 3) / 4 - w / 2;
+    const top = screen.height / 2 - h / 2;
+    window.open(
+      url,
+      '',
+      'toolbar=no,' +
+        'location=no, directories=no, status=no, menubar=no,' +
+        'scrollbars=no, resizable=no, copyhistory=no, ' +
+        'width=' +
+        w +
+        ', height=' +
+        h +
+        ', top=' +
+        top +
+        ', left=' +
+        left
+    );
   }
 
   deleteSelectedFile(label: string, fileName: string): void {
-    const idf = this.soportes[label].archivosLocal!.findIndex(f => f.file.name == fileName)
+    const idf = this.soportes[label].archivosLocal!.findIndex(
+      (f) => f.file.name == fileName
+    );
     if (idf != -1) {
       this.soportes[label].archivosLocal!.splice(idf, 1);
-      const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
-      const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
+      const nameFiles = this.passFilesToFormControl(
+        this.soportes[label].archivosLocal ?? [],
+        this.soportes[label].archivosLinea ?? []
+      );
+      const errs = this.validateFiles(
+        this.soportes[label].tipoArchivos ?? '',
+        this.soportes[label].tamMBArchivos ?? 0,
+        this.soportes[label].archivosLocal ?? []
+      );
       this.soportes[label].validaArchivos = errs;
     }
   }
 
   deleteSelectedFileLinea(label: string, idFile: number): void {
-    const idf = this.soportes[label].archivosLinea!.findIndex(f => f.Id == idFile);
+    const idf = this.soportes[label].archivosLinea!.findIndex(
+      (f) => f.Id == idFile
+    );
     if (idf != -1) {
       this.soportes[label].archivosLinea!.splice(idf, 1);
       this.soportes[label].archivosDelete!.push(idFile);
-      const nameFiles = this.passFilesToFormControl(this.soportes[label].archivosLocal ?? [], this.soportes[label].archivosLinea ?? []);
-      const errs = this.validateFiles(this.soportes[label].tipoArchivos ?? '', this.soportes[label].tamMBArchivos ?? 0, this.soportes[label].archivosLocal ?? []);
+      const nameFiles = this.passFilesToFormControl(
+        this.soportes[label].archivosLocal ?? [],
+        this.soportes[label].archivosLinea ?? []
+      );
+      const errs = this.validateFiles(
+        this.soportes[label].tipoArchivos ?? '',
+        this.soportes[label].tamMBArchivos ?? 0,
+        this.soportes[label].archivosLocal ?? []
+      );
       this.soportes[label].validaArchivos = errs;
     }
   }
@@ -325,76 +376,91 @@ import { OikosService } from 'src/app/services/oikos.service';
 
   cargarLocalidades() {
     return new Promise((resolve, reject) => {
-      this.ubicacionService.get('lugar?limit=0&query=TipoLugarId__Id:3')
-        .subscribe((res: any) => {
-          this.localidades = res;
-          resolve(res)
-        },
+      this.ubicacionService
+        .get('lugar?limit=0&query=TipoLugarId__Id:3')
+        .subscribe(
+          (res: any) => {
+            this.localidades = res;
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
             console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
   cargarSituacionesLaborales() {
     return new Promise((resolve, reject) => {
-      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A89')
-        .subscribe((res: any) => {
-          this.situacionesLaboral = res.Data;
-          resolve(res)
-        },
+      this.parametrosService
+        .get('parametro?limit=0&query=TipoParametroId%3A89')
+        .subscribe(
+          (res: any) => {
+            this.situacionesLaboral = res.Data;
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
             console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
   cargarEstratos() {
     return new Promise((resolve, reject) => {
-      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A90')
-        .subscribe((res: any) => {
-          this.estratos = res.Data;
-          resolve(res)
-        },
+      this.parametrosService
+        .get('parametro?limit=0&query=TipoParametroId%3A90')
+        .subscribe(
+          (res: any) => {
+            this.estratos = res.Data;
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.estratos_error'));
             console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
   cargarNucleoFamiliar() {
     return new Promise((resolve, reject) => {
-      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A91')
-        .subscribe((res: any) => {
-          this.nuceloFamiliar = res.Data;
-          resolve(res)
-        },
+      this.parametrosService
+        .get('parametro?limit=0&query=TipoParametroId%3A91')
+        .subscribe(
+          (res: any) => {
+            this.nuceloFamiliar = res.Data;
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.nucleo_familiar_error'));
             console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
   cargarUbicacionesResidencia() {
     return new Promise((resolve, reject) => {
-      this.parametrosService.get('parametro?limit=0&query=TipoParametroId%3A92')
-        .subscribe((res: any) => {
-          this.ubicacionesResidencia = res.Data;
-          resolve(res)
-        },
+      this.parametrosService
+        .get('parametro?limit=0&query=TipoParametroId%3A92')
+        .subscribe(
+          (res: any) => {
+            this.ubicacionesResidencia = res.Data;
+            resolve(res);
+          },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.ubicaciones_error'));
             console.log(error);
             reject([]);
-          });
+          }
+        );
     });
   }
 
@@ -417,13 +483,20 @@ import { OikosService } from 'src/app/services/oikos.service';
 
   validarArchivos() {
     let completos = true;
-    const situacion = this.situacionesLaboral.find((situacion: any) => situacion.Id == this.infoSocioEconomicaPersonal.get('situacion_laboral')!.value)
+    const situacion = this.situacionesLaboral.find(
+      (situacion: any) =>
+        situacion.Id ==
+        this.infoSocioEconomicaPersonal.get('situacion_laboral')!.value
+    );
 
     for (const soporte in this.soportes) {
       const item = this.soportes[soporte];
-      
+
       if (item.archivosLocal && !(item.archivosLocal.length > 0)) {
-        if (soporte == 'soporteSituacionLaboral' && situacion.Nombre == 'Desempleado') {
+        if (
+          soporte == 'soporteSituacionLaboral' &&
+          situacion.Nombre == 'Desempleado'
+        ) {
           continue;
         }
         completos = false;
@@ -435,7 +508,12 @@ import { OikosService } from 'src/app/services/oikos.service';
 
   validarFormulario() {
     this.marcarFormularios();
-    if (this.formInfoSocioEconomicaPersonal.valid && this.formInfoSocioEconomicaCosteara.valid && this.formDocsGenerales.valid && this.validarArchivos()) {
+    if (
+      this.formInfoSocioEconomicaPersonal.valid &&
+      this.formInfoSocioEconomicaCosteara.valid &&
+      this.formDocsGenerales.valid &&
+      this.validarArchivos()
+    ) {
       return true;
     } else {
       return false;
@@ -452,41 +530,95 @@ import { OikosService } from 'src/app/services/oikos.service';
     this.loading = true;
     let newLegalizacionMatricula = new LegalizacionMatricula();
     newLegalizacionMatricula.TerceroId = this.info_persona_id;
-    newLegalizacionMatricula.DireccionResidencia = this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
-    newLegalizacionMatricula.Localidad = this.localidades.find((localidad: any) => localidad.Id == this.formInfoSocioEconomicaPersonal.get('localidad')?.value).Nombre
-    newLegalizacionMatricula.ColegioGraduado = this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
-    newLegalizacionMatricula.PensionMensual11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor')?.value);
-    newLegalizacionMatricula.PensionMensualSM11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor_smv')?.value);
-    newLegalizacionMatricula.NucleoFamiliar = this.nuceloFamiliar.find((nucleo: any) => nucleo.Id == this.formInfoSocioEconomicaPersonal.get('nucleo_familiar')?.value).Nombre
-    newLegalizacionMatricula.SituacionLaboral = this.situacionesLaboral.find((situacion: any) => situacion.Id == this.formInfoSocioEconomicaPersonal.get('situacion_laboral')?.value).Nombre
-    newLegalizacionMatricula.DireccionResidenciaCostea = this.formInfoSocioEconomicaCosteara.get('direccion_residencia_costeara')?.value;
-    newLegalizacionMatricula.EstratoCostea = this.estratos.find((estrato: any) => estrato.Id == this.formInfoSocioEconomicaCosteara.get('estrato')?.value).Nombre
-    newLegalizacionMatricula.UbicacionResidenciaCostea = this.ubicacionesResidencia.find((ubicacion: any) => ubicacion.Id == this.formInfoSocioEconomicaCosteara.get('ubicacion_residencia')?.value).Nombre
-    newLegalizacionMatricula.IngresosCostea = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior')?.value;
-    newLegalizacionMatricula.IngresosCosteaSM = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior_sm')?.value;
+    newLegalizacionMatricula.DireccionResidencia =
+      this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
+    newLegalizacionMatricula.Localidad = this.localidades.find(
+      (localidad: any) =>
+        localidad.Id ==
+        this.formInfoSocioEconomicaPersonal.get('localidad')?.value
+    ).Nombre;
+    newLegalizacionMatricula.ColegioGraduado =
+      this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
+    newLegalizacionMatricula.PensionMensual11 = Number(
+      this.formInfoSocioEconomicaPersonal.get('pension_valor')?.value
+    );
+    newLegalizacionMatricula.PensionMensualSM11 = Number(
+      this.formInfoSocioEconomicaPersonal.get('pension_valor_smv')?.value
+    );
+    newLegalizacionMatricula.NucleoFamiliar = this.nuceloFamiliar.find(
+      (nucleo: any) =>
+        nucleo.Id ==
+        this.formInfoSocioEconomicaPersonal.get('nucleo_familiar')?.value
+    ).Nombre;
+    newLegalizacionMatricula.SituacionLaboral = this.situacionesLaboral.find(
+      (situacion: any) =>
+        situacion.Id ==
+        this.formInfoSocioEconomicaPersonal.get('situacion_laboral')?.value
+    ).Nombre;
+    newLegalizacionMatricula.DireccionResidenciaCostea =
+      this.formInfoSocioEconomicaCosteara.get(
+        'direccion_residencia_costeara'
+      )?.value;
+    newLegalizacionMatricula.EstratoCostea = this.estratos.find(
+      (estrato: any) =>
+        estrato.Id == this.formInfoSocioEconomicaCosteara.get('estrato')?.value
+    ).Nombre;
+    newLegalizacionMatricula.UbicacionResidenciaCostea =
+      this.ubicacionesResidencia.find(
+        (ubicacion: any) =>
+          ubicacion.Id ==
+          this.formInfoSocioEconomicaCosteara.get('ubicacion_residencia')?.value
+      ).Nombre;
+    newLegalizacionMatricula.IngresosCostea =
+      this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior')?.value;
+    newLegalizacionMatricula.IngresosCosteaSM =
+      this.formInfoSocioEconomicaCosteara.get(
+        'ingresos_ano_anterior_sm'
+      )?.value;
 
     const archivos: { [key: string]: any } = this.prepararArchivos();
     let idsArchivos: any = {};
     const propiedades = Object.keys(archivos);
 
-
     for (const propiedad of propiedades) {
       const carpetaArchivos = archivos[propiedad];
       let ids = await this.cargarArchivos(carpetaArchivos);
-      idsArchivos[propiedad] = ids
+      idsArchivos[propiedad] = ids;
     }
 
-    newLegalizacionMatricula.SoporteDiploma = this.prepareIds2Stringify(idsArchivos['diplomaBachiller'], 'diplomaBachiller');
-    newLegalizacionMatricula.SoportePension = this.prepareIds2Stringify(idsArchivos['soportePension'], 'soportePension');
-    newLegalizacionMatricula.SoporteNucleo = this.prepareIds2Stringify(idsArchivos['soporteNucleo'], 'soporteNucleo');
-    newLegalizacionMatricula.SoporteEstratoCostea = this.prepareIds2Stringify(idsArchivos['soporteEstrato'], 'soporteEstrato');
-    newLegalizacionMatricula.SoporteIngresosCostea = this.prepareIds2Stringify(idsArchivos['soporteIngresos'], 'soporteIngresos');
-    newLegalizacionMatricula.SoporteDocumental = this.prepareIds2Stringify(idsArchivos['documentosGeneral'], 'documentosGeneral');
+    newLegalizacionMatricula.SoporteDiploma = this.prepareIds2Stringify(
+      idsArchivos['diplomaBachiller'],
+      'diplomaBachiller'
+    );
+    newLegalizacionMatricula.SoportePension = this.prepareIds2Stringify(
+      idsArchivos['soportePension'],
+      'soportePension'
+    );
+    newLegalizacionMatricula.SoporteNucleo = this.prepareIds2Stringify(
+      idsArchivos['soporteNucleo'],
+      'soporteNucleo'
+    );
+    newLegalizacionMatricula.SoporteEstratoCostea = this.prepareIds2Stringify(
+      idsArchivos['soporteEstrato'],
+      'soporteEstrato'
+    );
+    newLegalizacionMatricula.SoporteIngresosCostea = this.prepareIds2Stringify(
+      idsArchivos['soporteIngresos'],
+      'soporteIngresos'
+    );
+    newLegalizacionMatricula.SoporteDocumental = this.prepareIds2Stringify(
+      idsArchivos['documentosGeneral'],
+      'documentosGeneral'
+    );
     if (idsArchivos['soporteSituacionLaboral']) {
-      newLegalizacionMatricula.SoporteSituacionLaboral = this.prepareIds2Stringify(idsArchivos['soporteSituacionLaboral'], 'soporteSituacionLaboral');
+      newLegalizacionMatricula.SoporteSituacionLaboral =
+        this.prepareIds2Stringify(
+          idsArchivos['soporteSituacionLaboral'],
+          'soporteSituacionLaboral'
+        );
     }
 
-    let res = await this.crearLegalizacionMatricula(newLegalizacionMatricula)
+    let res = await this.crearLegalizacionMatricula(newLegalizacionMatricula);
   }
 
   async crearLegalizacionMatricula(legalizacionBody: LegalizacionMatricula) {
@@ -503,47 +635,48 @@ import { OikosService } from 'src/app/services/oikos.service';
             this.popUpManager.showErrorAlert(
               this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
             );
-          });
+          }
+        );
     });
   }
 
   prepararArchivos(): any[] {
     const idTipoDocument = 72; // carpeta Nuxeo
-    let archivos: any = {}
+    let archivos: any = {};
     for (const soporte in this.soportes) {
       const archivosLoc = this.soportes[soporte].archivosLocal!;
       let newArchivosLoc: any = [];
-    
+
       for (const archivo of archivosLoc) {
         const newArchivo = {
           IdDocumento: idTipoDocument,
-          nombre: (archivo.file.name).split('.')[0],
-          descripcion: "Soporte Legalización de matricula",
-          file: archivo.file
-        }
+          nombre: archivo.file.name.split('.')[0],
+          descripcion: 'Soporte Legalización de matricula',
+          file: archivo.file,
+        };
         newArchivosLoc.push(newArchivo);
         archivos[soporte] = newArchivosLoc;
       }
     }
-    return archivos
+    return archivos;
   }
 
   cargarArchivos(archivos: any): Promise<number[]> {
     return new Promise<number[]>((resolve) => {
-      this.gestorDocumentalService.uploadFiles(archivos).subscribe(
-        (respuesta: any[]) => {
-          const listaIds = respuesta.map(f => {
+      this.gestorDocumentalService
+        .uploadFiles(archivos)
+        .subscribe((respuesta: any[]) => {
+          const listaIds = respuesta.map((f) => {
             return f.res.Id;
           });
           resolve(listaIds);
-        }
-      );
+        });
     });
   }
 
   prepareIds2Stringify(idsArchivos: number[], nameField: string): string {
-    let result: any = {}
-    result[nameField] = []
+    let result: any = {};
+    result[nameField] = [];
     if (idsArchivos) {
       result[nameField] = idsArchivos;
     }

@@ -31,7 +31,7 @@ const routes: Routes = [
     path: "legalizacion-matricula",
     component: LegalizacionMatriculaComponent
   },
-  { 
+  {
     path: "**",
     redirectTo: "preinscripcion"
   }

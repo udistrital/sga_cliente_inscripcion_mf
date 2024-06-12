@@ -1832,5 +1832,44 @@
         "ciclo_actual": "Current cycle",
         "todos_ciclos": "All cycles",
         "seleccion_ciclos": "Select a cycle type"
+        "legalizacion_creacion_error": "An error occurred while creating the legalization data"
+    },
+    "informacion_acudientes": {
+        "titulo": "Guardian's Contact Information",
+        "nombre_acudiente": "Guardian's Name",
+        "nombre": "Name",
+        "parentesco": "Relationship",
+        "correo_acudiente": "Guardian's Email",
+        "correo": "Email",
+        "direccion_acudiente": "Guardian's Address",
+        "direccion": "Address",
+        "telefono_acudiente": "Guardian's Phone",
+        "telefono": "Phone",
+        "titulo2": "Contact Information of Another Family Member",
+        "nombre_familiar": "Family Member's Name",
+        "siguiente": "Next",
+        "anterior": "Previous",
+        "guardar": "Save"
+    },
+    "informacion_academica": {
+        "titulo": "School Information",
+        "localidad_colegio": "Location of the school where the eleventh grade was completed",
+        "localidad": "School Location",
+        "tipo_colegio": "Type of school where the eleventh grade was completed",
+        "tipo": "Type of School",
+        "valido_bachillerato": "Did you validate your high school diploma?",
+        "valido": "Validated",
+        "numero_semestres": "Number of semesters elapsed since completing the eleventh grade",
+        "semestres": "Number of Semesters",
+        "titulo2": "Additional Information",
+        "medio_informativo": "Means by which you learned about the academic offer of the Universidad Distrital Francisco José de Caldas",
+        "medio": "Informative Means",
+        "oportunidades": "Number of times you have applied to the Universidad Distrital",
+        "oportunidad": "Opportunities",
+        "siguiente": "Next",
+        "anterior": "Previous",
+        "guardar": "Save"
     }
+
+
 }
