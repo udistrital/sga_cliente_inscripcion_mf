@@ -1,3 +1,210 @@
-<ngx-dinamicform [normalform]="formDocumentoPrograma" [modeloData]="info_documento_programa"
-    (result)="validarForm($event)" [clean]="clean">
-</ngx-dinamicform>
+<div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+      <!-- Orden Column -->
+      <ng-container matColumnDef="orden">
+        <th mat-header-cell *matHeaderCellDef>{{ "examen_estado.orden" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.orden}} </td>
+      </ng-container>
+    
+      <!-- Examen Column -->
+      <ng-container matColumnDef="examen">
+        <th mat-header-cell *matHeaderCellDef>{{ "examen_estado.examen" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.examen}} </td>
+      </ng-container>
+    
+      <!-- Tipo Examen Column -->
+      <ng-container matColumnDef="tipoExamen">
+        <th mat-header-cell *matHeaderCellDef>{{ "examen_estado.tipo" | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <mat-select [(value)]="element.tipoExamen">
+            <mat-option *ngFor="let tipo of tiposExamen" [value]="tipo">
+              {{tipo}}
+            </mat-option>
+          </mat-select>
+        </td>
+      </ng-container>
+    
+      <!-- SNP Column -->
+      <ng-container matColumnDef="snp">
+        <th mat-header-cell *matHeaderCellDef>{{ "examen_estado.snp" | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <input matInput [(ngModel)]="element.snp">
+        </td>
+      </ng-container>
+    
+      <!-- Confirmar SNP Column -->
+      <ng-container matColumnDef="confirmarSnp">
+        <th mat-header-cell *matHeaderCellDef>{{ "examen_estado.confirmar" | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <input matInput [(ngModel)]="element.confirmarSnp">
+        </td>
+      </ng-container>
+    
+      <!-- Año Presentacion Column -->
+      <ng-container matColumnDef="anoPresentacion">
+        <th mat-header-cell *matHeaderCellDef>{{ "examen_estado.anno" | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <input matInput [(ngModel)]="element.anoPresentacion">
+        </td>
+      </ng-container>
+    
+      <!-- Soporte Column -->
+      <ng-container matColumnDef="soporte">
+        <th mat-header-cell *matHeaderCellDef>{{ "examen_estado.soporte" | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <input type="file" (change)="onFileChange($event, element)">
+        </td>
+      </ng-container>
+    
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-card>
+        <mat-card-title>{{ "examen_estado.titulo" | translate }}</mat-card-title>
+        <mat-card-content>
+          <mat-card class="top-row">
+            <div class="grid-container">
+              <div class="grid-item blue">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.snp" | translate }}</div>
+                  <div>{{ gridItems.CODREGSNP }}</div>
+                </div>
+              </div>
+              <div class="grid-item blue">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.nombre" | translate }}</div>
+                  <div>{{ gridItems.NOMBRE }}</div>
+                </div>
+              </div>
+              <div class="grid-item blue">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.tipo_documento" | translate }}</div>
+                  <div>{{ gridItems.TIPODOCIDE }}</div>
+                </div>
+              </div>
+              <div class="grid-item blue">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.numero_documento" | translate }}</div>
+                  <div>{{ gridItems.NODOCIDENT }}</div>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+          <mat-card>
+            <div class="grid-container">
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.perpglob" | translate }}</div>
+                  <div>{{ gridItems.PERPGLOB }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.perpglobpe" | translate }}</div>
+                  <div>{{ gridItems.PERPGLOBPE }}</div>
+                </div>  
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.global" | translate }}</div>
+                  <div>{{ gridItems.GLOBAL }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.plc" | translate }}</div>
+                  <div>{{ gridItems.PLC }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.pma" | translate }}</div>
+                  <div>{{ gridItems.PMA }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.psc" | translate }}</div>
+                  <div>{{ gridItems.PSC }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.pcn" | translate }}</div>
+                  <div>{{ gridItems.PCN }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.pin" | translate }}</div>
+                  <div>{{ gridItems.PIN }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.perlc" | translate }}</div>
+                  <div>{{ gridItems.PERLC }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.perma" | translate }}</div>
+                  <div>{{ gridItems.PERMA }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.persc" | translate }}</div>
+                  <div>{{ gridItems.PERSC }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.percn" | translate }}</div>
+                  <div>{{ gridItems.PERCN }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.perin" | translate }}</div>
+                  <div>{{ gridItems.PERIN }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.nlc" | translate }}</div>
+                  <div>{{ gridItems.NLC }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.nma" | translate }}</div>
+                  <div>{{ gridItems.NMA }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.nsc" | translate }}</div>
+                  <div>{{ gridItems.NSC }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.ncn" | translate }}</div>
+                  <div>{{ gridItems.NCN }}</div>
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="grid-content">
+                  <div>{{ "examen_estado.nin" | translate }}</div>
+                  <div>{{ gridItems.NIN }}</div>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </mat-card-content>
+      </mat-card>
+</div>
+

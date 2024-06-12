@@ -1783,6 +1783,37 @@
         "siguiente": "Next",
         "anterior": "Previous",
         "guardar": "Save"
+    },
+    "examen_estado": {
+        "orden": "Order",
+        "examen": "State Exam",
+        "tipo": "Exam Type",
+        "snp": "SNP",
+        "confirmar": "Confirm SNP",
+        "anno": "Year of Presentation",
+        "soporte": "Support",
+        "titulo": "Detailed State Exam",
+        "nombre": "Name",
+        "tipo_documento": "Document Type",
+        "numero_documento": "Document Number",
+        "perpglob": "PERPGLOB",
+        "perpglobpe": "PERPGLOBPE",
+        "global": "GLOBAL",
+        "plc": "PLC",
+        "pma": "PMA",
+        "psc": "PSC",
+        "pcn": "PCN",
+        "pin": "PIN",
+        "perlc": "PERLC",
+        "perma": "PERMA",
+        "persc": "PERSC",
+        "percn": "PERCN",
+        "perin": "PERIN",
+        "nlc": "NLC",
+        "nma": "NMA",
+        "nsc": "NSC",
+        "ncn": "NCN",
+        "nin": "NIN"
     }
 
 
