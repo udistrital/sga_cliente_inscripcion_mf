@@ -19,10 +19,11 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
+import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service'; 
 import { MODALS, ROLES } from 'src/app/models/diccionario/diccionario';
 import { LiquidacionMatriculaService } from 'src/app/services/liquidacion_matricula.service';
 import { EventoService } from 'src/app/services/evento.service';
+import { UserService } from 'src/app/services/users.service';
 
 interface Proyecto {
   opcion: number;
@@ -93,6 +94,7 @@ export class LegalizacionMatriculaComponent {
     private utilidades: UtilidadesService,
     private documentoService: DocumentoService,
     private autenticationService: ImplicitAutenticationService,
+    private usuarioService: UserService,
     private eventosService: EventoService,
     private liquidacionMatriculaService: LiquidacionMatriculaService,
     private popUpManager: PopUpManager
@@ -103,9 +105,9 @@ export class LegalizacionMatriculaComponent {
 
   async ngOnInit() {
     const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
-    this.usuarioService.esAutorizado(rolesRequeridos).then(esAutorizado => {
+    this.usuarioService.esAutorizado(rolesRequeridos).then((esAutorizado: any) => {
       if (esAutorizado) this.estaAutorizado = true;
-    }).catch( error => {
+    }).catch( (error: any) => {
       console.error('Error al validar autorización', error)
     });
     validateLang(this.translate);

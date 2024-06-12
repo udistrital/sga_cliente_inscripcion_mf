@@ -15,6 +15,7 @@ import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { OikosService } from 'src/app/services/oikos.service';
+import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
@@ -31,6 +32,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private translate: TranslateService,
     private gestorDocumentalService: NewNuxeoService,
     private inscripcionMidService: InscripcionMidService,
+    private autenticationService: ImplicitAutenticationService,
     private oikosService: OikosService,
     private usuarioService: UserService,
     private inscripcionService: InscripcionService,
