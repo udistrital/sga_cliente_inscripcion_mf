@@ -202,11 +202,21 @@
   <!-- VALOR MODIFICADO !showInscription -->
   <br />
   <mat-card-content *ngIf="!showInscription">
+    <div *ngIf="nivelInscripcion">
+      <ngx-inscripcion-pregrado
+        (changeTab)="return()"
+        (ocultarBarra)="ocultarBarraExterna($event)"
+        [inscripcion_id]="inscripcion_id"
+      >
+      </ngx-inscripcion-pregrado>
+    </div>
+    <div *ngIf="!nivelInscripcion">
       <ngx-inscripcion-general
         (changeTab)="return()"
         (ocultarBarra)="ocultarBarraExterna($event)"
         [inscripcion_id]="inscripcion_id"
       >
       </ngx-inscripcion-general>
+    </div>
   </mat-card-content>
 </mat-card>
