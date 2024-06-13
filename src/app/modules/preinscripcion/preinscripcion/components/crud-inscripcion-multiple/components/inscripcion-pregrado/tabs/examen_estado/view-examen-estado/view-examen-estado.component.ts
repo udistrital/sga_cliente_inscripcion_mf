@@ -7,6 +7,18 @@ import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
 import { FORM_EXAMEN_ESTADO } from './examen-estado';
+import { MatTableDataSource } from '@angular/material/table';
+import { EvaluacionInscripcionService } from 'src/app/services/evaluacion_inscripcion.service';
+
+interface Examen {
+  orden: number;
+  examen: string;
+  tipoExamen: string;
+  snp: string;
+  confirmarSnp: string;
+  anoPresentacion: string;
+  soporte: File | null;
+}
 
 @Component({
   selector: 'ngx-view-examen-estado',
@@ -26,6 +38,22 @@ export class ViewExamenEstadoComponent {
   tipoInscripcion!: number;
   listed: number[] = [];
   isEdit: boolean = false;
+
+  displayedColumns: string[] = ['orden', 'examen', 'tipoExamen', 'snp', 'confirmarSnp', 'anoPresentacion', 'soporte'];
+  dataSource = new MatTableDataSource<Examen>([
+    { orden: 1, examen: 'Saber 11 (ICFES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null },
+    { orden: 2, examen: 'Saber TyT (ECAES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null }
+  ]);
+  tiposExamen: string[] = ['AC', 'VG'];
+
+  onFileChange(event: Event, element: Examen) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      element.soporte = input.files[0];
+    }
+  }
+
+  gridItems: any = {};
 
   
 
@@ -83,10 +111,11 @@ export class ViewExamenEstadoComponent {
     private popUpManager: PopUpManager,
     private userService: UserService,
     private newNuxeoService: NewNuxeoService,
+    private evaluacionInscripcionService: EvaluacionInscripcionService,
   ) {
     this.formDocumentoPrograma = FORM_EXAMEN_ESTADO;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
+      // this.construirForm();
     });
   }
 
@@ -95,63 +124,79 @@ export class ViewExamenEstadoComponent {
     this.periodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10) // this.userService.getPeriodo();
     this.tipoInscripcion = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10);
     this.sin_docs = false;
-    this.loadLists();
+    this.detallesExamenEstado();
+    // this.loadLists();
   }
 
-  public loadLists() {
-    this.tipo_documentos = [];
-    this.periodo = 9;
-    this.programa = 25;
-    console.log(this.periodo, this.programa, this.tipoInscripcion);
-    this.sin_docs = false;
-    // this.inscripcionService.get('documento_programa?query=Activo:true,PeriodoId:' + this.periodo + ',ProgramaId:' + this.programa + ',TipoInscripcionId:' + this.tipoInscripcion + '&limit=0').subscribe(
-      this.inscripcionService.get('documento_programa?query=Activo:true,PeriodoId:' + this.periodo + ',ProgramaId:' + this.programa + '&limit=0').subscribe(
-      (response: Object[]) => {
-        console.log(response);
-        if(response === undefined || response === null){
+  detallesExamenEstado() {
+    this.evaluacionInscripcionService.get('detalle_evaluacion?limit=0&query=InscripcionId:574').subscribe(
+      (response: any) => {
+        if (response === undefined || response === null) {
           this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+        } else {
+          response.forEach((element: any) => {
+            if (element.DetalleCalificacion.length > 0) {
+              this.gridItems = JSON.parse(element.DetalleCalificacion);
+            }
+          });
         }
-        else if (response.length == 1 && !response[0].hasOwnProperty('TipoDocumentoProgramaId')){
-          this.popUpManager.showErrorAlert(this.translate.instant('documento_programa.no_documentos'));
-          this.tipo_documentos = [{TipoDocumentoProgramaId: {Id: 1, Nombre: "-"}}];
-          this.sin_docs = true;
-        }
-        else{
-          this.tipo_documentos = <any[]>response;
-          this.sin_docs = false;
-        }
-          this.eventChange.emit(this.tipo_documentos.length);
-          this.construirForm();
-      },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-      },
-    );
+      });
   }
 
-  construirForm() {
-    if(this.sin_docs){
-      this.formDocumentoPrograma.btn = false;
-      this.formDocumentoPrograma.btnLimpiar = false;
-    }
-    else{
-      this.formDocumentoPrograma.btn = this.translate.instant('GLOBAL.guardar');
-      this.formDocumentoPrograma.btnLimpiar = this.translate.instant('GLOBAL.limpiar');
-    }
-    this.formDocumentoPrograma.campos.forEach((campo:any) => {
-      campo.label = this.translate.instant('GLOBAL.' + campo.label_i18n);
-      campo.placeholder = this.translate.instant('GLOBAL.placeholder_' + campo.label_i18n);
-      campo.deshabilitar = this.sin_docs;
-      if (campo.etiqueta === 'select') {
-        this.tipo_documentos.map(tipo => {
-          if (<boolean>tipo['Obligatorio'] == true){
-            tipo['TipoDocumentoProgramaId']["Nombre"] = tipo['TipoDocumentoProgramaId']["Nombre"]+" *"
-          }
-        })
-        campo.opciones = this.tipo_documentos.map(tipo => tipo['TipoDocumentoProgramaId']);
-      }
-    });
-  }
+  // public loadLists() {
+  //   this.tipo_documentos = [];
+  //   this.periodo = 9;
+  //   this.programa = 25;
+  //   console.log(this.periodo, this.programa, this.tipoInscripcion);
+  //   this.sin_docs = false;
+  //   // this.inscripcionService.get('documento_programa?query=Activo:true,PeriodoId:' + this.periodo + ',ProgramaId:' + this.programa + ',TipoInscripcionId:' + this.tipoInscripcion + '&limit=0').subscribe(
+  //     this.inscripcionService.get('documento_programa?query=Activo:true,PeriodoId:' + this.periodo + ',ProgramaId:' + this.programa + '&limit=0').subscribe(
+  //     (response: Object[]) => {
+  //       console.log(response);
+  //       if(response === undefined || response === null){
+  //         this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+  //       }
+  //       else if (response.length == 1 && !response[0].hasOwnProperty('TipoDocumentoProgramaId')){
+  //         this.popUpManager.showErrorAlert(this.translate.instant('documento_programa.no_documentos'));
+  //         this.tipo_documentos = [{TipoDocumentoProgramaId: {Id: 1, Nombre: "-"}}];
+  //         this.sin_docs = true;
+  //       }
+  //       else{
+  //         this.tipo_documentos = <any[]>response;
+  //         this.sin_docs = false;
+  //       }
+  //         this.eventChange.emit(this.tipo_documentos.length);
+  //         this.construirForm();
+  //     },
+  //     error => {
+  //       this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+  //     },
+  //   );
+  // }
+
+  // construirForm() {
+  //   if(this.sin_docs){
+  //     this.formDocumentoPrograma.btn = false;
+  //     this.formDocumentoPrograma.btnLimpiar = false;
+  //   }
+  //   else{
+  //     this.formDocumentoPrograma.btn = this.translate.instant('GLOBAL.guardar');
+  //     this.formDocumentoPrograma.btnLimpiar = this.translate.instant('GLOBAL.limpiar');
+  //   }
+  //   this.formDocumentoPrograma.campos.forEach((campo:any) => {
+  //     campo.label = this.translate.instant('GLOBAL.' + campo.label_i18n);
+  //     campo.placeholder = this.translate.instant('GLOBAL.placeholder_' + campo.label_i18n);
+  //     campo.deshabilitar = this.sin_docs;
+  //     if (campo.etiqueta === 'select') {
+  //       this.tipo_documentos.map(tipo => {
+  //         if (<boolean>tipo['Obligatorio'] == true){
+  //           tipo['TipoDocumentoProgramaId']["Nombre"] = tipo['TipoDocumentoProgramaId']["Nombre"]+" *"
+  //         }
+  //       })
+  //       campo.opciones = this.tipo_documentos.map(tipo => tipo['TipoDocumentoProgramaId']);
+  //     }
+  //   });
+  // }
 
   getIndexForm(nombre: String): number {
     for (let index = 0; index < this.formDocumentoPrograma.campos.length; index++) {
@@ -205,12 +250,8 @@ export class ViewExamenEstadoComponent {
           nombre: "soporte_documento_programa",
           file: this.info_documento_programa.Documento.file,
         }
-
-        console.log(this.info_documento_programa);
-        console.log(file);
         this.uploadFile(file).then(
           fileId => {
-            console.log("Entraaaaaaaaaaaaaaaaaaaaaaaaaaaa",fileId);
             const soporteDocumentoPrograma = new SoporteDocumentoPrograma();
             soporteDocumentoPrograma.DocumentoId = fileId;
             soporteDocumentoPrograma.DocumentoProgramaId = {
@@ -219,7 +260,6 @@ export class ViewExamenEstadoComponent {
               )[0].Id,
             };
             soporteDocumentoPrograma.InscripcionId = { Id: Number(this.inscripcion) };
-            console.log(soporteDocumentoPrograma);
             this.inscripcionService.post('soporte_documento_programa', soporteDocumentoPrograma).subscribe(
               (response:any) => {
                 this.loading = false;
