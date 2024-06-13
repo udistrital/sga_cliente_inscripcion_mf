@@ -193,6 +193,36 @@ mat-table {
   padding: 18px;
 }
 
+.botones-contenedor {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 50%;
+  margin: 20px auto 0;
+}
+
+.botones-contenedor button {
+  margin: 10px 0;
+}
+
+.botones-contenedor button.primario {
+  background-color: var(--primary);
+}
+
+.botones-contenedor button.rechazado {
+  background-color: var(--danger-main);
+}
+
+.botones-contenedor button.primario.disabled{
+  background-color: var(--color500);
+  cursor: not-allowed;
+}
+
+.botones-contenedor button.rechazado.disabled{
+  background-color: var(--danger-base);
+  cursor: not-allowed;
+}
+
 @media(width > 580px) {
   .form-container {
     grid-template-columns: repeat(2, 1fr);
@@ -202,5 +232,14 @@ mat-table {
 @media(width > 800px) {
   .form-container {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .botones-contenedor {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .botones-contenedor button {
+    margin: 0;
   }
 }
