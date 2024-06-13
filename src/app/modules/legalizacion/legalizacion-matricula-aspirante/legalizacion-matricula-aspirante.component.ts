@@ -16,6 +16,10 @@ import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { OikosService } from 'src/app/services/oikos.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
+import { DocumentoService } from 'src/app/services/documento.service';
+import { UtilidadesService } from 'src/app/services/utilidades.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
@@ -36,7 +40,10 @@ export class LegalizacionMatriculaAspiranteComponent {
     private oikosService: OikosService,
     private usuarioService: UserService,
     private inscripcionService: InscripcionService,
-    private sgamidService: SgaMidService
+    private sgamidService: SgaMidService,
+    private documentoService: DocumentoService,
+    private utilidadesService: UtilidadesService,
+    private dialog: MatDialog,
   ) {}
 
   isLinear = false;
@@ -145,7 +152,6 @@ export class LegalizacionMatriculaAspiranteComponent {
   async ngOnInit() {
     this.initFormularios();
     this.cargarDatosFormularios();
-    this.loading = true;
     //this.estaAutorizado = true;
 
     //RECUPERACIÓN DE PERSONA ID 1
@@ -169,12 +175,14 @@ export class LegalizacionMatriculaAspiranteComponent {
         const esEstudianteAdmitido = this.esEstudianteAdmitido(this.inscripcion)
         if (r1 || r2 || esEstudianteAdmitido) {
           this.estaAutorizado = true;
+          this.loading = true;
           this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
+          this.descargarArchivos(this.infoLegalizacionPersona)
           this.setearCamposFormularios(this.infoLegalizacionPersona);
+          this.loading = false;
         }
       }
     );
-    this.loading = true;
   }
 
   async getLegalizacionMatricula(personaId: any) {
@@ -760,7 +768,141 @@ export class LegalizacionMatriculaAspiranteComponent {
     this.valorIngresosSML = Number(this.valorIngresosSML.toFixed(2));
   }
 
-  openModal() {
-    
+  async openModal(soporte: string) {
+    if (this.infoLegalizacionPersona.hasOwnProperty(soporte)) {
+      const idDoc = this.recuperarIdDocumento(this.infoLegalizacionPersona[soporte]);
+      const nombreSoporteDoc = this.recuperarNombreSoporteDoc(this.infoLegalizacionPersona[soporte])
+      const documento: any = await this.cargarDocumento(idDoc);
+      let estadoDoc = this.utilidadesService.getEvaluacionDocumento(documento.Metadatos);
+      console.log(this.infoLegalizacionPersona[soporte], idDoc, nombreSoporteDoc, documento, estadoDoc);
+      const dataDoc: any = await this.abrirDocumento(idDoc);
+      const nombreDoc = this.seleccionarNombreDocumento(soporte)
+      
+      const documentoDialog = {
+        "tabName": documento.Descripcion,
+        "nombreDocumento": nombreDoc,
+        "DocumentoId": documento.Id,
+        "aprobado": estadoDoc.aprobado,
+        "estadoObservacion": estadoDoc.estadoObservacion,
+        "observacion": estadoDoc.observacion,
+        "carpeta": documento.Descripcion,
+        "nombreSoporte": nombreSoporteDoc,
+        "Documento": dataDoc ? dataDoc : {},
+        "observando": true,
+      }
+      const assignConfig = new MatDialogConfig();
+      assignConfig.width = '1600px';
+      assignConfig.height = '750px';
+      assignConfig.data = { documento: documentoDialog }
+      const dialogo = this.dialog.open(DialogoDocumentosComponent, assignConfig);
+
+      dialogo.afterClosed().subscribe(async (result) => {
+        console.log(result);
+      });
+    } else {
+      console.log(`La clave ${soporte} no existe en el objeto.`);
+    }
+  }
+
+  descargarArchivos(infoLegalizacion: any) { 
+    let idList: any[] = [];
+    const keys = Object.keys(infoLegalizacion)
+    const filteredList = keys.filter(item => item.startsWith('soporte'));
+
+    for (const key in infoLegalizacion) {
+      if (filteredList.includes(key)) {
+        const docId = this.recuperarIdDocumento(infoLegalizacion[key]);
+        idList.push(docId);
+      }
+    }
+
+    const limitQuery = idList.length;
+    let idsForQuery = "";
+    idList.forEach((f, i) => {
+      idsForQuery += f;
+      if (i < limitQuery - 1) idsForQuery += '|';
+    });
+
+    this.gestorDocumentalService.getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
+      .subscribe((res: any) => {
+      }, (error: any) => {
+        console.error(error);
+        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+      })
+  }
+
+  seleccionarNombreDocumento(nombreSoporte: any) {
+    let nombre
+    switch (nombreSoporte) {
+      case "soporteColegio":
+        nombre = 'legalizacion_admision.colegio_graduado';
+        break;
+      case "soportePensionGrado11":
+        nombre = 'legalizacion_admision.pension_mesual_11';
+        break;
+      case "soporteNucleoFamiliar":
+        nombre = 'legalizacion_admision.nucleo_familiar';
+        break;
+      case "soporteSituacionLaboral":
+        nombre = 'legalizacion_admision.situacion_laboral';
+        break;
+      case "soporteEstratoCostea":
+        nombre = 'GLOBAL.direccion_residencia';
+        break;
+      case "soporteIngresosCostea":
+        nombre = 'legalizacion_admision.ingresos_anio_anterior';
+        break;
+      case "soporteGeneral":
+        nombre = 'legalizacion_admision.soporte_general';
+        break;
+      default:
+        nombre = 'legalizacion_admision.soporte_general';
+    }
+    return nombre;
+  }
+
+  recuperarIdDocumento(objeto: any) {
+    const dataString: string = objeto;
+    const data2 = JSON.parse(dataString);
+    const keys = Object.keys(data2)
+    const id = data2[keys[0]][0]
+    return id
+  }
+
+  recuperarNombreSoporteDoc(objeto: any) {
+    const dataString: string = objeto;
+    const data2 = JSON.parse(dataString);
+    const keys = Object.keys(data2)
+    return keys[0]
+  }
+
+  cargarDocumento(documentoId:any) {
+    return new Promise((resolve, reject) => {
+      this.documentoService.get('documento/' + documentoId)
+        .subscribe((res: any) => {
+          console.log(res);
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.documento_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  abrirDocumento(documentoId: any) {
+    return new Promise((resolve, reject) => {
+      this.gestorDocumentalService.getByIdLocal(documentoId)
+        .subscribe((res: any) => {
+          console.log(res);
+          resolve(res)
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.sin_documento'));
+            reject([]);
+          });
+    });
   }
 }
