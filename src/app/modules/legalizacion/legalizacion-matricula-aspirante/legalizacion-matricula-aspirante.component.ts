@@ -48,7 +48,9 @@ export class LegalizacionMatriculaAspiranteComponent {
   valorIngresosSML = 0;
 
   estaAutorizado: boolean = true;
+  yaHizoProceso: boolean = true;
   info_persona_id: any;
+  infoLegalizacionPersona: any;
   persona: any;
   inscripcion: any;
   proyectoAcademico: any;
@@ -116,7 +118,25 @@ export class LegalizacionMatriculaAspiranteComponent {
     },
   };
 
-  localidades!: any[];
+  //localidades!: any[];
+  localidades: any[] = [
+    {
+      "Nombre": "Usme",
+      "Id": 464
+    },
+    {
+      "Nombre": "Suba",
+      "Id": 459
+    },
+    {
+      "Nombre": "Chapinero",
+      "Id": 448
+    },
+    {
+      "Nombre": "Engativá",
+      "Id": 450
+    }
+  ];
   situacionesLaboral!: any[];
   estratos!: any[];
   nuceloFamiliar!: any[];
@@ -125,16 +145,20 @@ export class LegalizacionMatriculaAspiranteComponent {
   async ngOnInit() {
     this.initFormularios();
     this.cargarDatosFormularios();
-    // this.estaAutorizado = true;
+    this.loading = true;
+    //this.estaAutorizado = true;
 
     //RECUPERACIÓN DE PERSONA ID 1
-    const email: any = this.autenticationService.getMail();
-    console.log("Email", email);
-    this.info_persona_id = await this.recuperarTerceroId(email.__zone_symbol__value)
+    // const email: any = this.autenticationService.getMail();
+    // console.log("Email", email);
+    // this.info_persona_id = await this.recuperarTerceroId(email.__zone_symbol__value)
 
     //RECUPERACIÓN DE PERSONA ID 2 
     //this.info_persona_id = await this.userService.getPersonaIdNew();
-    console.log("PERSONA ID", this.info_persona_id);
+
+    //RECUPERACIÓN DE PERSONA FICTICIA
+    this.info_persona_id = 9866
+    //console.log("PERSONA ID", this.info_persona_id);
     this.inscripcion = await this.buscarInscritoAdmitido()
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.inscripcion[0].ProgramaAcademicoId);
     this.persona = await this.consultarTercero(this.info_persona_id);
@@ -145,9 +169,50 @@ export class LegalizacionMatriculaAspiranteComponent {
         const esEstudianteAdmitido = this.esEstudianteAdmitido(this.inscripcion)
         if (r1 || r2 || esEstudianteAdmitido) {
           this.estaAutorizado = true;
+          this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
+          this.setearCamposFormularios(this.infoLegalizacionPersona);
         }
       }
     );
+    this.loading = true;
+  }
+
+  async getLegalizacionMatricula(personaId: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.get('legalizacion/informacion-legalizacion/' + personaId)
+        .subscribe((res: any) => {
+          console.log(res.Data);
+          resolve(res.Data);
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(
+              this.translate.instant('legalizacion_admision.legalizacion_error')
+            );
+          });
+    });
+  }
+
+  setearCamposFormularios(data: any) {
+    const infoPersonal = {
+      direccion_residencia: data["direccionResidencia"],
+      localidad: data["localidad"],
+      colegio: data["colegioGraduado"],
+      pension_valor: data["pensionGrado11"],
+      pension_valor_smv: data["pensionSM11"],
+      nucleo_familiar: data["nucleoFamiliar"],
+      situacion_laboral: data["situacionLaboral"]
+    };
+
+    const infoCosteara = {
+      direccion_residencia_costeara: data["direccionCostea"],
+      estrato: data["estratoCostea"],
+      ubicacion_residencia: data["ubicacionResidenciaCostea"],
+      ingresos_ano_anterior: data["ingresosCostea"],
+      ingresos_ano_anterior_sm: data["ingresosSMCostea"]
+    };
+
+    this.infoSocioEconomicaPersonal.patchValue(infoPersonal);
+    this.infoSocioEconomicaCosteara.patchValue(infoCosteara);
   }
 
   esEstudianteAdmitido(estudiante: any) {
@@ -368,7 +433,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   async cargarDatosFormularios() {
     this.loading = true;
-    await this.cargarLocalidades();
+    //await this.cargarLocalidades();
     await this.cargarSituacionesLaborales();
     await this.cargarEstratos();
     await this.cargarNucleoFamiliar();
@@ -693,5 +758,9 @@ export class LegalizacionMatriculaAspiranteComponent {
   onIngresosValorChange() {
     this.valorIngresosSML = this.valorIngresos / this.valorSML;
     this.valorIngresosSML = Number(this.valorIngresosSML.toFixed(2));
+  }
+
+  openModal() {
+    
   }
 }

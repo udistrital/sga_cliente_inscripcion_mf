@@ -15,6 +15,16 @@ mat-card-content {
     margin-bottom: 20px;
 }
 
+mat-form-field {
+    width: 100%;
+    min-height: 90px;
+}
+
+.archivo ::ng-deep .mat-mdc-form-field-flex {
+    max-height: 68px;
+    overflow-y: overlay;
+}
+
 li {
     margin: 5px 0;
 }
@@ -27,7 +37,7 @@ fieldset {
 }
 
 .color-primario {
-    background-color: #1ba1e2;
+    background-color: var(--md-primary-400) !important;
 }
 
 .mx-auto {
@@ -72,10 +82,11 @@ fieldset {
 
 .credencial {
     border: solid 1px #6c8ebf;
-    background-color: #dae8fc;
+    background-color: #dae8fc !important;
     width: 280px;
     padding: 20px;
     margin: 15px auto;
+
 }
 
 .f-2 .column {
@@ -116,7 +127,7 @@ fieldset {
 .contenedor-boton button {
     color: white;
     padding: 10px 60px;
-    border: solid 1px #006eaf;
+    border: solid 1px var(--md-primary-700);
 }
 
 .info-socioeconomica {
@@ -183,10 +194,10 @@ fieldset {
     background-color: #dddddd;
 }
 
-.button-disabled {
-    background-color: #ccc; /* Color de fondo grisáceo */
-    color: #999; /* Color de texto gris claro */
-    cursor: not-allowed; /* Cursor de no permitido */
+.contenedor-boton .button-disabled {
+    background-color: #ccc !important;
+    color: #999;
+    cursor: not-allowed !important; 
     border: black solid 1px !important;
 }
 
@@ -246,6 +257,16 @@ fieldset {
 .contenedor-archivos-grid {
     display: flex !important;
     flex-direction: column;
+}
+
+.b-center {
+    display: flex;
+    justify-content: center;
+}
+
+.boton-visualizar {
+    background-color: var(--md-primary-400) !important;
+    color: white !important;
 }
 
 @media (width > 650px) {
