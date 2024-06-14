@@ -19,7 +19,7 @@
             <div class="fila f-2">
                 <div class="column campo-label">
                     <p>{{ 'inscripcion.opcion' | translate }}: </p>
-                    <p class="campo-label ">1</p>
+                    <p class="campo-label ">{{ opcionPrograma }}</p>
                 </div>
                 <div class="column campo-label">
                     <p>{{ 'GLOBAL.nombre' | translate }}: </p>
@@ -48,7 +48,30 @@
                     </ul>
                 </mat-card-content>
             </mat-card>
-
+            <mat-card class="info-personal" *ngIf="yaHizoProceso">
+                <mat-card-header>
+                    <mat-card-title>{{ 'legalizacion_admision.titulo_estado_legalización' | translate
+                        }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 2">
+                        <p>{{ 'legalizacion_admision.estado_legalización_sin_revision' | translate }}</p>
+                        <mat-icon class="icono color-primary">pending_actions</mat-icon>
+                    </div>
+                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 4">
+                        <p>{{ 'legalizacion_admision.estado_legalización_rechazado' | translate }}</p>
+                        <mat-icon class="icono color-rojo">cancel</mat-icon>
+                    </div>
+                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 8">
+                        <p>{{ 'legalizacion_admision.estado_legalización_aprobado' | translate }}</p>
+                        <mat-icon class="icono color-verde">check_circle</mat-icon>
+                    </div>
+                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 10">
+                        <p>{{ 'legalizacion_admision.estado_legalización_requiere_cambio' | translate }}</p>
+                        <mat-icon class="icono color-primary">change_circle</mat-icon>
+                    </div>
+                </mat-card-content>
+            </mat-card>
         </fieldset>
         <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
             <mat-step [stepControl]="formInfoSocioEconomicaPersonal">

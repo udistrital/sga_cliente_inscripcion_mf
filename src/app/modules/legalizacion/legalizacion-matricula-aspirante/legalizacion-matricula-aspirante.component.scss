@@ -204,7 +204,7 @@ fieldset {
 .info-personal {
     width: 100%;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto 20px;
     text-align: center;
 }
 
@@ -267,6 +267,34 @@ fieldset {
 .boton-visualizar {
     background-color: var(--md-primary-400) !important;
     color: white !important;
+}
+
+.estado_inscripcion{
+    display: flex;
+}
+
+.estado_inscripcion p{
+    width: 85%;
+    margin: 0 10px;
+}
+
+.icono {
+    font-size: 2.75rem;
+    height: 100%;
+    width: 10%;
+    margin: auto;
+}
+
+.color-rojo {
+    color: var(--danger-main);
+}
+
+.color-verde {
+    color: var(--danger-main);
+}
+
+.color-primary {
+    color: var(--primary);
 }
 
 @media (width > 650px) {

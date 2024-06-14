@@ -61,6 +61,10 @@ export class LegalizacionMatriculaAspiranteComponent {
   persona: any;
   inscripcion: any;
   proyectoAcademico: any;
+  periodoId: any;
+  cicloActual: any;
+  estadoInscripcion: any;
+  opcionPrograma: any = 1;
 
   formInfoSocioEconomicaPersonal!: FormGroup;
   formInfoSocioEconomicaCosteara!: FormGroup;
@@ -164,10 +168,17 @@ export class LegalizacionMatriculaAspiranteComponent {
 
     //RECUPERACIÓN DE PERSONA FICTICIA
     this.info_persona_id = 9866
+    this.cicloActual = 2
+    this.periodoId = 40
     //console.log("PERSONA ID", this.info_persona_id);
-    this.inscripcion = await this.buscarInscritoAdmitido()
-    this.proyectoAcademico = await this.recuperarProyectoPorId(this.inscripcion[0].ProgramaAcademicoId);
+
+    this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.cicloActual, this.periodoId)
+    this.estadoInscripcion = this.inscripcion.EstadoInscripcionId.Id
+    this.opcionPrograma = this.inscripcion.Opcion
+    this.proyectoAcademico = await this.recuperarProyectoPorId(this.inscripcion.ProgramaAcademicoId);
     this.persona = await this.consultarTercero(this.info_persona_id);
+    this.persona.FechaNacimiento = this.formatearFecha(this.persona.FechaNacimiento);
+    console.log(this.inscripcion, this.persona);
     this.autenticationService.getRole().then(
       async (rol: any) => {
         const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
@@ -177,12 +188,27 @@ export class LegalizacionMatriculaAspiranteComponent {
           this.estaAutorizado = true;
           this.loading = true;
           this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
-          this.descargarArchivos(this.infoLegalizacionPersona)
-          this.setearCamposFormularios(this.infoLegalizacionPersona);
+          if ((this.infoLegalizacionPersona !== null && typeof this.infoLegalizacionPersona === 'object') && Object.keys(this.infoLegalizacionPersona).length > 0) {
+            this.descargarArchivos(this.infoLegalizacionPersona)
+            this.setearCamposFormularios(this.infoLegalizacionPersona);
+          } else{
+            console.log("NEL PERRO")
+          } 
           this.loading = false;
+        } else {
+          this.estaAutorizado = false;
         }
       }
     );
+  }
+
+  formatearFecha(fechaString: any) {
+    const date = new Date(fechaString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const year = date.getFullYear().toString();
+    const formattedDate = `${day}/${month}/${year}`;
+    return formattedDate;
   }
 
   async getLegalizacionMatricula(personaId: any) {
@@ -224,24 +250,20 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   esEstudianteAdmitido(estudiante: any) {
-    if (Object.keys(estudiante[0]).length > 0) {
+    if (Object.keys(estudiante).length > 0 && (this.estadoInscripcion == 2 || this.estadoInscripcion == 4 || this.estadoInscripcion == 8 || this.estadoInscripcion == 10)) {
       return true;
     } else {
       return false;
     }
   }
 
-  buscarInscritoAdmitido() {
+  buscarInscripcionAspirante(personaId: any, opcion: any, periodoId: any) {
     return new Promise((resolve, reject) => {
       this.inscripcionService
-        .get(
-          'inscripcion?query=PersonaId:' +
-            this.info_persona_id +
-            ',EstadoInscripcionId.Id:2&sortby=Id&order=asc'
-        )
+        .get('inscripcion?query=Activo:true,PersonaId:' + personaId + ',Opcion:' + opcion+ ',PeriodoId:' + periodoId + '&sortby=Id&order=asc')
         .subscribe(
           (res: any) => {
-            resolve(res);
+            resolve(res[0]);
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
@@ -880,7 +902,6 @@ export class LegalizacionMatriculaAspiranteComponent {
     return new Promise((resolve, reject) => {
       this.documentoService.get('documento/' + documentoId)
         .subscribe((res: any) => {
-          console.log(res);
           resolve(res)
         },
           (error: any) => {
@@ -895,7 +916,6 @@ export class LegalizacionMatriculaAspiranteComponent {
     return new Promise((resolve, reject) => {
       this.gestorDocumentalService.getByIdLocal(documentoId)
         .subscribe((res: any) => {
-          console.log(res);
           resolve(res)
         },
           (error: any) => {

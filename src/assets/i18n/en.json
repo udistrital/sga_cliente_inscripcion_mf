@@ -1849,7 +1849,12 @@
         "ciclo_actual": "Current cycle",
         "todos_ciclos": "All cycles",
         "seleccion_ciclos": "Select a cycle type",
-        "visualizar_documento": "View document"
+        "visualizar_documento": "View document",
+        "estado_legalización": "Status of the legalization process",
+        "estado_legalización_sin_revision": "Your legalization papers have been successfully submitted. Right now they are in a review process. The results will be returned to you very soon.",
+        "estado_legalización_rechazado": "Your legalization papers have been reviewed and unfortunately you have been rejected in this curricular project",
+        "estado_legalización_aprobado": "Your legalization papers have been reviewed and approved, you can continue with the process",
+        "estado_legalización_requiere_cambio": "Your legalization papers have been reviewed and there are some that have observations and require changes, please review them and submit them again as soon as possible"
     },
     "informacion_acudientes": {
         "titulo": "Guardian's Contact Information",

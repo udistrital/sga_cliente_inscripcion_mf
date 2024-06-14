@@ -1847,7 +1847,12 @@
         "ciclo_actual": "Ciclo actual",
         "todos_ciclos": "Todos los ciclos",
         "seleccion_ciclos": "Selecciona un tipo de ciclo",
-        "visualizar_documento": "Visualizar documento"
+        "visualizar_documento": "Visualizar documento",
+        "titulo_estado_legalización": "Estado del proceso de legalización",
+        "estado_legalización_sin_revision": "Sus papeles de legalización han sido enviados correctamente. Ahora mismo están en un proceso de revisión. Muy pronto se le retornaran los resultados",
+        "estado_legalización_rechazado": "Sus papeles de legalización han sido revisados y lamentablemente usted ha sido rechazado/a en este proyecto curricular",
+        "estado_legalización_aprobado": "Sus papeles de legalización han sido revisados y aprobados, puede continuar con el proceso",
+        "estado_legalización_requiere_cambio": "Sus papeles de legalización han sido revisados y hay algunos que tienen observaciones y requieren cambios, por favor, revíselos y envíelos nuevamente lo más pronto posible"
     },
     "informacion_acudientes": {
         "titulo": "Datos de contacto del acudiente",
