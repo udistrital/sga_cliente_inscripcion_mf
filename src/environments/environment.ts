@@ -100,6 +100,5 @@ export const environment = {
   //SGA_CALENDARIO_MID_SERVICE: 'http://localhost:8097/v1/',
   SGA_CALENDARIO_MID_SERVICE: 'http://pruebasapi2.intranetoas.udistrital.edu.co:8545/v1/',
   // SGA_INSCRIPCION_MID_SERVICE: 'http://pruebasapi3.intranetoas.udistrital.edu.co:8543/v1/',
-  SGA_INSCRIPCION_MID_SERVICE: 'http://localhost:8095/v1/',
   LIQUIDACION_MATRICULA_SERVICE: 'http://localhost:3000/',
 };
