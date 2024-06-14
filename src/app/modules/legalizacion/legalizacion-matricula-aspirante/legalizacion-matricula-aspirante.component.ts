@@ -55,7 +55,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   valorIngresosSML = 0;
 
   estaAutorizado: boolean = true;
-  yaHizoProceso: boolean = true;
+  yaHizoProceso: boolean = false;
   info_persona_id: any;
   infoLegalizacionPersona: any;
   persona: any;
@@ -167,8 +167,8 @@ export class LegalizacionMatriculaAspiranteComponent {
     //this.info_persona_id = await this.userService.getPersonaIdNew();
 
     //RECUPERACIÓN DE PERSONA FICTICIA
-    this.info_persona_id = 9866
-    this.cicloActual = 2
+    this.info_persona_id = 59847
+    this.cicloActual = 1
     this.periodoId = 40
     //console.log("PERSONA ID", this.info_persona_id);
 
@@ -189,10 +189,11 @@ export class LegalizacionMatriculaAspiranteComponent {
           this.loading = true;
           this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
           if ((this.infoLegalizacionPersona !== null && typeof this.infoLegalizacionPersona === 'object') && Object.keys(this.infoLegalizacionPersona).length > 0) {
+            this.yaHizoProceso = true;
             this.descargarArchivos(this.infoLegalizacionPersona)
             this.setearCamposFormularios(this.infoLegalizacionPersona);
-          } else{
-            console.log("NEL PERRO")
+          } else if (this.infoLegalizacionPersona == 'No existe legalizacion') {
+            this.yaHizoProceso = false;
           } 
           this.loading = false;
         } else {
@@ -227,6 +228,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   setearCamposFormularios(data: any) {
+    this.loading = true;
     const infoPersonal = {
       direccion_residencia: data["direccionResidencia"],
       localidad: data["localidad"],
@@ -247,6 +249,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
     this.infoSocioEconomicaPersonal.patchValue(infoPersonal);
     this.infoSocioEconomicaCosteara.patchValue(infoCosteara);
+    this.loading = false;
   }
 
   esEstudianteAdmitido(estudiante: any) {
@@ -715,7 +718,14 @@ export class LegalizacionMatriculaAspiranteComponent {
         );
     }
 
-    let res = await this.crearLegalizacionMatricula(newLegalizacionMatricula);
+    let res: any = await this.crearLegalizacionMatricula(newLegalizacionMatricula);
+    console.log(res);
+    if (res.Success && res.Status == 200) {
+      this.yaHizoProceso = true;
+      this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
+      this.descargarArchivos(this.infoLegalizacionPersona)
+      this.setearCamposFormularios(this.infoLegalizacionPersona);
+    }
   }
 
   async crearLegalizacionMatricula(legalizacionBody: LegalizacionMatricula) {
@@ -725,7 +735,7 @@ export class LegalizacionMatriculaAspiranteComponent {
         .subscribe((res: any) => {
           this.loading = false;
           this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.legalizacion_creacion_ok'));
-          resolve(res.data);
+          resolve(res);
         },
           (error: HttpErrorResponse) => {
             this.loading = false;
@@ -796,7 +806,6 @@ export class LegalizacionMatriculaAspiranteComponent {
       const nombreSoporteDoc = this.recuperarNombreSoporteDoc(this.infoLegalizacionPersona[soporte])
       const documento: any = await this.cargarDocumento(idDoc);
       let estadoDoc = this.utilidadesService.getEvaluacionDocumento(documento.Metadatos);
-      console.log(this.infoLegalizacionPersona[soporte], idDoc, nombreSoporteDoc, documento, estadoDoc);
       const dataDoc: any = await this.abrirDocumento(idDoc);
       const nombreDoc = this.seleccionarNombreDocumento(soporte)
       
