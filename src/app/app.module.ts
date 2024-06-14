@@ -69,6 +69,8 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
 import { SgaMidService } from './services/sga_mid.service';
 import { LiquidacionMatriculaService } from './services/liquidacion_matricula.service';
+import { CdkStepper } from '@angular/cdk/stepper';
+import { ImplicitAutenticationService } from './services/implicit_autentication.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -147,9 +149,11 @@ export function createTranslateLoader(http: HttpClient) {
     TranslateStore,
     UbicacionService,
     UserService,
+    CdkStepper,
     UtilidadesService,
     SgaMidService,
     LiquidacionMatriculaService,
+    ImplicitAutenticationService,
     { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
     { provide: MatDialogRef, useValue: {} },
     {
