@@ -19,6 +19,7 @@ export class DialogoDocumentosTransferenciasComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<DialogoDocumentosTransferenciasComponent>,
     @Inject(MAT_DIALOG_DATA) private data:any,
+    
     private translate: TranslateService,
     private builder: FormBuilder,
     private sanitizer: DomSanitizer
@@ -28,8 +29,8 @@ export class DialogoDocumentosTransferenciasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.documento = "blob:http://localhost:4200/3674d5ca-88a7-4264-bcd9-09351476eba4"
-    this.documento = this.sanitizer.bypassSecurityTrustResourceUrl(this.documento);
+    console.log(this.data)
+    this.documento = this.data.documento.url
     //this.documento = this.data.documento.Documento['changingThisBreaksApplicationSecurity'];
     this.pruebaEspecifica = this.data.documento.fecha == '';
     // const fecha = this.data.documento.fecha.substring(0, this.data.documento.fecha.length - 1);

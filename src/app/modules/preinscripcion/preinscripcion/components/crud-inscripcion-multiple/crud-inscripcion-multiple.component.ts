@@ -157,9 +157,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.nivel_load();
     // Llamar a la función asíncrona para manejar la lógica asíncrona
     this.initializeAsync();
-    if (localStorage.getItem('IdPeriodo') === undefined) {
-      this.loadInfoPersona();
-    }
+    this.loadInfoPersona();
+   
   }
 
   async initializeAsync() {
@@ -199,7 +198,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
           .subscribe(
             (res: any) => {
               if (res !== null) {
-                const temp = <InfoPersona>res.data;
+                const temp = <InfoPersona>res.Data;
                 this.info_info_persona = temp;
                 const files = [];
               }
@@ -328,17 +327,19 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         )
         .subscribe(
           (response: any) => {
-            if (response !== null && response.status == '400') {
+            console.log(response)
+            if (response !== null && response.Status == '400') {
               this.popUpManager.showErrorToast(
                 this.translate.instant('inscripcion.error')
               );
-            } else if (response != null && response.status == '404') {
+            } else if (response != null && response.Status == '404') {
               this.popUpManager.showAlert(
                 this.translate.instant('GLOBAL.info'),
                 this.translate.instant('inscripcion.no_inscripcion')
               );
             } else {
-              const data = <Array<any>>response.data.Inscripciones;
+              const data = <Array<any>>response.Data.Inscripciones;
+              console.log(data)
               const dataInfo = <Array<any>>[];
               this.recibos_pendientes = 0;
               data.forEach((element) => {
@@ -521,7 +522,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                 this.terceroMidService.get('personas/' + this.info_persona_id)
               );
               if (res !== null) {
-                const temp = <InfoPersona>res.data;
+                const temp = <InfoPersona>res.Data;
                 this.info_info_persona = temp;
                 const files = [];
                 await this.generar_inscripcion();
@@ -593,8 +594,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     };
     this.inscripcionService.post('recibov2/', recibo).subscribe(
       (response: any) => {
-        if (response.success && response.data) {
-          const byteArray = atob(response.data);
+        if (response.Success && response.Data) {
+          const byteArray = atob(response.Data);
           const byteNumbers = new Array(byteArray.length);
           for (let i = 0; i < byteArray.length; i++) {
             byteNumbers[i] = byteArray.charCodeAt(i);
@@ -697,7 +698,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                     .post('inscripciones/nueva', inscripcion)
                     .subscribe(
                       (response: any) => {
-                        if (response.status == '200') {
+                        if (response.Status == '200') {
                           this.showProyectoCurricular = false;
                           this.showTipoInscripcion = false;
                           this.showInfo = false;
@@ -707,14 +708,14 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                           this.popUpManager.showSuccessAlert(
                             this.translate.instant('recibo_pago.generado')
                           );
-                        } else if (response.status == '204') {
+                        } else if (response.Status == '204') {
                           reject([]);
                           this.popUpManager.showErrorAlert(
                             this.translate.instant(
                               'recibo_pago.recibo_duplicado'
                             )
                           );
-                        } else if (response.status == '400') {
+                        } else if (response.Status == '400') {
                           reject([]);
                           this.popUpManager.showErrorToast(
                             this.translate.instant('recibo_pago.no_generado')
@@ -786,7 +787,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         .subscribe(
           (response: any) => {
             if (response !== null && response.length !== 0) {
-              this.inscripcionProjects = response.data;
+              this.inscripcionProjects = response.Data;
               this.inscripcionProjects.forEach((proyecto) => {
                 if (
                   proyecto.ProyectoId === this.selectedProject &&
@@ -819,7 +820,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                       .subscribe(
                         (response: any) => {
                           const reciboData = new Uint8Array(
-                            atob(response['data'])
+                            atob(response['Data'])
                               .split('')
                               .map((char) => char.charCodeAt(0))
                           );
@@ -1011,7 +1012,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         )
         .subscribe(
           (res: any) => {
-            this.info_inscripcion = <Inscripcion>(<unknown>res.data);
+            this.info_inscripcion = <Inscripcion>(<unknown>res.Data);
             this.inscripcion_id = this.info_inscripcion.Id;
             this.eventChange.emit(true);
             Swal.fire({

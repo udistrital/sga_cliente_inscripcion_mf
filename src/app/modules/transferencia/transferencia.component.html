@@ -35,6 +35,13 @@
               <mat-cell *matCellDef="let row"> {{ row.Programa }} </mat-cell>
             </ng-container>
 
+            <ng-container matColumnDef="estadoInscripcion">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "inscripcion.estado" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.Estado }} </mat-cell>
+            </ng-container>
+
             <ng-container matColumnDef="fecha">
               <mat-header-cell *matHeaderCellDef
                 ><b>{{ "inscripcion.fecha_generacion" | translate }}</b>
@@ -44,11 +51,11 @@
               }}</mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="estado">
+            <ng-container matColumnDef="estadoRecibo">
               <mat-header-cell *matHeaderCellDef
-                ><b>{{ "inscripcion.estado" | translate }}</b>
+                ><b>{{ "inscripcion.estado_recibo" | translate }}</b>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.Estado }} </mat-cell>
+              <mat-cell *matCellDef="let row"> {{ row.EstadoRecibo }} </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="respuesta">
