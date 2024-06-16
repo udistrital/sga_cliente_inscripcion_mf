@@ -1854,7 +1854,17 @@
         "estado_legalización_sin_revision": "Your legalization papers have been successfully submitted. Right now they are in a review process. The results will be returned to you very soon.",
         "estado_legalización_rechazado": "Your legalization papers have been reviewed and unfortunately you have been rejected in this curricular project",
         "estado_legalización_aprobado": "Your legalization papers have been reviewed and approved, you can continue with the process",
-        "estado_legalización_requiere_cambio": "Your legalization papers have been reviewed and there are some that have observations and require changes, please review them and submit them again as soon as possible"
+        "estado_legalización_requiere_cambio": "Your legalization papers have been reviewed and there are some that have observations and require changes, please review them and submit them again as soon as possible",
+        "titulo_legalizacion_requiere_cambios": "Legalization requires changes",
+        "legalizacion_requiere_cambios": "Below are the documents that require changes, please review them as soon as possible",
+        "nombre_soporte": "Support name",
+        "ver_documento": "View document",
+        "subir_documento": "Upload document",
+        "documento_sin_subir": "You have not uploaded the new document yet",
+        "nuevo_documento": "New document",
+        "actualizar_legalizacion": "Update the registration legalization?",
+        "legalizacion_actualizacion_ok": "Legalization data was updated correctly",
+        "legalizacion_actualizacion_error": "An error occurred while updating the legalization data"
     },
     "informacion_acudientes": {
         "titulo": "Guardian's Contact Information",

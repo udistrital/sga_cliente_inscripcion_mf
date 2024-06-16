@@ -981,7 +981,6 @@ export class LegalizacionMatriculaComponent {
 
   editar = async (data: any) => {
     this.aspirante = data;
-    console.log(this.aspirante);
     this.aspiranteActualId = this.aspirante.personaId;
     this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
     const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspiranteActualId]

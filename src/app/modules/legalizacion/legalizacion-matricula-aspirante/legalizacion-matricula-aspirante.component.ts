@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SoporteParams } from 'src/app/models/forms/define-form-fields';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
@@ -20,6 +20,9 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
@@ -27,6 +30,17 @@ import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/
   styleUrls: ['./legalizacion-matricula-aspirante.component.scss'],
 })
 export class LegalizacionMatriculaAspiranteComponent {
+  displayedColumns: string[] = [
+    'Nombre',
+    'NuevoDcoumento',
+    'Acciones',
+  ];
+  nombresColumnas: any
+  dataSource!: MatTableDataSource<any>;
+
+  // @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
+  // @ViewChild(MatSort, { static: false }) sort: MatSort;
+  
   constructor(
     private fb: FormBuilder,
     private ubicacionService: UbicacionService,
@@ -48,7 +62,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   isLinear = false;
   loading!: boolean;
-  valorSML = 1300000;
+  valorSML = 0;
   valorPension = 0;
   valorPensionSML = 0;
   valorIngresos = 0;
@@ -61,8 +75,9 @@ export class LegalizacionMatriculaAspiranteComponent {
   persona: any;
   inscripcion: any;
   proyectoAcademico: any;
+  proyectoAcademicoId: any;
   periodoId: any;
-  cicloActual: any;
+  //cicloActual: any;
   estadoInscripcion: any;
   opcionPrograma: any = 1;
 
@@ -152,6 +167,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   estratos!: any[];
   nuceloFamiliar!: any[];
   ubicacionesResidencia!: any[];
+  documentosRechazados: any[] = [];
 
   async ngOnInit() {
     this.initFormularios();
@@ -166,16 +182,21 @@ export class LegalizacionMatriculaAspiranteComponent {
     //RECUPERACIÓN DE PERSONA ID 2 
     //this.info_persona_id = await this.userService.getPersonaIdNew();
 
+    //RECUPERACIÓN PERSONA ID ESTANDAR
+    // const idPersona = await this.usuarioService.getPersonaId();
+    // console.log(idPersona);
+
     //RECUPERACIÓN DE PERSONA FICTICIA
     this.info_persona_id = 59847
-    this.cicloActual = 1
+    this.proyectoAcademicoId = 28
     this.periodoId = 40
     //console.log("PERSONA ID", this.info_persona_id);
 
-    this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.cicloActual, this.periodoId)
+    await this.cargarSalarioMinimo(this.periodoId)
+    this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)
     this.estadoInscripcion = this.inscripcion.EstadoInscripcionId.Id
     this.opcionPrograma = this.inscripcion.Opcion
-    this.proyectoAcademico = await this.recuperarProyectoPorId(this.inscripcion.ProgramaAcademicoId);
+    this.proyectoAcademico = await this.recuperarProyectoPorId(this.proyectoAcademicoId);
     this.persona = await this.consultarTercero(this.info_persona_id);
     this.persona.FechaNacimiento = this.formatearFecha(this.persona.FechaNacimiento);
     console.log(this.inscripcion, this.persona);
@@ -192,6 +213,30 @@ export class LegalizacionMatriculaAspiranteComponent {
             this.yaHizoProceso = true;
             this.descargarArchivos(this.infoLegalizacionPersona)
             this.setearCamposFormularios(this.infoLegalizacionPersona);
+            if (this.estadoInscripcion == 10) {
+              // this.setearNombresColumnasDocsrechazados();
+              const estados = await this.retornasEstadosDocumentos(this.infoLegalizacionPersona);
+              const docsRechazados = this.obtenerSoportesRechazados(estados);
+              //console.log(estados, docsRechazados);
+              //let data = [];
+              for (const doc of docsRechazados) {
+                const soporte = this.seleccionarNombreSoporte(doc)
+                const nombreDoc = this.seleccionarNombreDocumento(soporte)
+                //console.log(doc, soporte, nombreDoc);
+                const item = {
+                  "SoporteDB": doc,
+                  "Soporte": soporte,
+                  "Nombre": nombreDoc,
+                  "HayNuevoDoc": false,
+                  "NuevoDoc": 'legalizacion_admision.documento_sin_subir'
+                }
+                this.documentosRechazados.push(item);
+              }
+              console.log(this.documentosRechazados);
+              this.dataSource = new MatTableDataSource(this.documentosRechazados);
+              // this.dataSource.paginator = this.paginator;
+              // this.dataSource.sort = this.sort;
+            }
           } else if (this.infoLegalizacionPersona == 'No existe legalizacion') {
             this.yaHizoProceso = false;
           } 
@@ -201,6 +246,76 @@ export class LegalizacionMatriculaAspiranteComponent {
         }
       }
     );
+  }
+
+  // setearNombresColumnasDocsrechazados() {
+  //   this.nombresColumnas['Nombre'] = 'legalizacion_admision.nombre_soporte';
+  //   this.nombresColumnas['Observacion'] = 'admision.observacion';
+  //   this.nombresColumnas['Acciones'] = 'GLOBAL.acciones';
+  // }
+
+  // formatValue(columna: string, valor: any): any {
+  //   let tipo = typeof valor;
+  //   let formatedValue: any;
+  //   switch (tipo) {
+  //     case 'boolean':
+  //       formatedValue =
+  //         valor == true
+  //           ? this.translate.instant('GLOBAL.activo')
+  //           : this.translate.instant('GLOBAL.inactivo');
+  //       break;
+
+  //     case 'string':
+  //       formatedValue = valor;
+  //       break;
+
+  //     default:
+  //       formatedValue = valor;
+  //       break;
+  //   }
+
+  //   return formatedValue;
+  // }
+
+  obtenerSoportesRechazados(estados: any) {
+    let documentosRechazados: any[] = [];
+    for (const key in estados) {
+      if (estados.hasOwnProperty(key)) {
+        if (estados[key] == 3) {
+          documentosRechazados.push(key)
+        }
+      }
+    }
+    return documentosRechazados;
+  }
+
+  async retornasEstadosDocumentos(infoLegalizacion: any) {
+    const keys = Object.keys(infoLegalizacion)
+    const filteredList = keys.filter(item => item.startsWith('soporte'));
+    let estados: any = {}
+
+    for (const key in infoLegalizacion) {
+      if (filteredList.includes(key)) {
+        const value = JSON.parse(infoLegalizacion[key]);
+        for (const key in value) {
+          const documentoId = value[key][0];
+          const documento: any = await this.cargarDocumento(documentoId);
+          const estadoDoc = this.utilidadesService.getEvaluacionDocumento(documento.Metadatos);
+          estados[key] = this.retornarEstadoObservacion(estadoDoc.estadoObservacion);
+        }
+      }
+    }
+    return estados;
+  }
+
+  retornarEstadoObservacion(estado: any) {
+    if (estado === "Por definir" || estado === "To be defined") {
+      return 1
+    } else if (estado === "No aprobado" || estado === "Not approved") {
+      return 3
+    } else {
+      return 2
+    }
   }
 
   formatearFecha(fechaString: any) {
@@ -260,10 +375,10 @@ export class LegalizacionMatriculaAspiranteComponent {
     }
   }
 
-  buscarInscripcionAspirante(personaId: any, opcion: any, periodoId: any) {
+  buscarInscripcionAspirante(personaId: any, programaId: any, periodoId: any) {
     return new Promise((resolve, reject) => {
       this.inscripcionService
-        .get('inscripcion?query=Activo:true,PersonaId:' + personaId + ',Opcion:' + opcion+ ',PeriodoId:' + periodoId + '&sortby=Id&order=asc')
+        .get('inscripcion?query=Activo:true,PersonaId:' + personaId + ',ProgramaAcademicoId:' + programaId+ ',PeriodoId:' + periodoId + '&sortby=Id&order=asc')
         .subscribe(
           (res: any) => {
             resolve(res[0]);
@@ -343,6 +458,137 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   // MANJEO ARCHIVOS //
+
+  async reEnviarDocumnetos() {
+    this.popUpManager.showPopUpGeneric(
+      this.translate.instant('legalizacion_admision.titulo'),
+      this.translate.instant('legalizacion_admision.actualizar_legalizacion'),
+      MODALS.INFO,
+      true).then(
+        async (action) => {
+          if (action.value) {
+            await this.prepararActualizacionSoportes();
+          }
+        });
+  }
+
+  async prepararActualizacionSoportes() {
+    const archivos: { [key: string]: any } = this.prepararArchivosCorregidos();
+    let idsArchivos: any = {};
+    const propiedades = Object.keys(archivos);
+    let bodyActualizacionSoportes: any = {
+      "terceroId": this.info_persona_id,
+    }
+    let soportesActualizar: any[] = []
+
+    for (const propiedad of propiedades) {
+      const carpetaArchivos = archivos[propiedad];
+      let ids = await this.cargarArchivos(carpetaArchivos);
+      idsArchivos[propiedad] = ids;
+    }
+
+    console.log(this.documentosRechazados, archivos, propiedades, idsArchivos);
+
+    for (const propiedad of propiedades) {
+      const item = {
+        "infoComplementariId": this.recuperarIdInfoComplementaria(propiedad),
+        "dato": this.prepareIds2Stringify(idsArchivos[propiedad], propiedad)
+      }
+      soportesActualizar.push(item);
+    }
+    bodyActualizacionSoportes["arvivosActualizar"] = soportesActualizar
+
+    console.log(bodyActualizacionSoportes);
+
+    let res: any = await this.actualizarSoportesLegalizacionMatricula(bodyActualizacionSoportes);
+    console.log(res);
+    if (res.Success && res.Status == 200) {
+      this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
+      this.descargarArchivos(this.infoLegalizacionPersona)
+      this.setearCamposFormularios(this.infoLegalizacionPersona);
+      this.inscripcion.EstadoInscripcionId.Id = 2;
+      this.estadoInscripcion = 2;
+      const resEstado: any = await this.actualizarEstadoInscripcion(this.inscripcion);
+    }
+  }
+
+  actualizarEstadoInscripcion(inscripcionData: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.put('inscripcion', inscripcionData)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  async actualizarSoportesLegalizacionMatricula(legalizacionBody: any) {
+    return new Promise((resolve, reject) => {
+      this.loading = true;
+      this.inscripcionMidService.put('legalizacion/actualizar-info-soportes-legalizacion', legalizacionBody)
+        .subscribe((res: any) => {
+          this.loading = false;
+          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.legalizacion_actualizacion_ok'));
+          resolve(res);
+        },
+          (error: HttpErrorResponse) => {
+            this.loading = false;
+            this.popUpManager.showErrorAlert(
+              this.translate.instant('legalizacion_admision.legalizacion_actualizacion_error')
+            );
+          }
+        );
+    });
+  }
+
+  recuperarIdInfoComplementaria(soporte: any) {
+    let id
+    switch (soporte) {
+      case "diplomaBachiller":
+        id = 591;
+        break;
+      case "soportePension":
+        id = 594;
+        break;
+      case "soporteNucleo":
+        id = 596;
+        break;
+      case "soporteSituacionLaboral":
+        id = 598;
+        break;
+      case "soporteEstrato":
+        id = 603;
+        break;
+      case "soporteIngresos":
+        id = 606;
+        break;
+      case "documentosGeneral":
+        id = 599;
+        break;
+      default:
+        id = 599;
+    }
+    return id;
+  }
+
+  onFileSelected(label: any, event: any) {
+    const files = <File[]>Object.values(event.target.files);
+    const newFiles = files.map((f) => {
+      return { file: f, urlTemp: URL.createObjectURL(f), err: false };
+    });
+    for (const soporte of this.documentosRechazados) {
+      if (soporte["Soporte"] == label ) {
+        soporte["DocumentoNuevo"] = newFiles
+        soporte["NuevoDoc"] = newFiles[0]["file"]["name"]
+        soporte["LinkNuevoDoc"] = newFiles[0]["urlTemp"]
+        soporte["HayNuevoDoc"] = true
+      }
+    }
+  }
 
   onChangeSelectFiles(label: string, event: any): void {
     const files = <File[]>Object.values(event.target.files);
@@ -472,6 +718,27 @@ export class LegalizacionMatriculaAspiranteComponent {
     await this.cargarNucleoFamiliar();
     await this.cargarUbicacionesResidencia();
     this.loading = false;
+  }
+
+  cargarSalarioMinimo(periodoId: any) {
+    return new Promise((resolve, reject) => {
+      this.parametrosService
+        .get('parametro_periodo?limit=0&query=Activo:true,ParametroId.Id:1,PeriodoId.Id:' + periodoId)
+        .subscribe(
+          (res: any) => {
+            const data = res.Data
+            const jsonObject = JSON.parse(data[0].Valor);
+            const valor: number = jsonObject.Valor;
+            this.valorSML = valor;
+            resolve(res);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
+            reject([]);
+          }
+        );
+    });
   }
 
   cargarLocalidades() {
@@ -768,6 +1035,42 @@ export class LegalizacionMatriculaAspiranteComponent {
     return archivos;
   }
 
+  prepararArchivosCorregidos(): any[] {
+    const idTipoDocument = 72; // carpeta Nuxeo
+    let archivos: any = {};
+    //this.documentosRechazados
+
+    for (const documento of this.documentosRechazados) {
+      let newArchivos: any = [];
+      for(const archivo of documento["DocumentoNuevo"]) {
+        const newArchivo = {
+          IdDocumento: idTipoDocument,
+          nombre: archivo.file.name.split('.')[0],
+          descripcion: 'Soporte Legalización de matricula',
+          file: archivo.file,
+        };
+        newArchivos.push(newArchivo);
+        archivos[documento["SoporteDB"]] = newArchivos;
+      }
+    }
+    // for (const soporte in this.soportes) {
+    //   const archivosLoc = this.soportes[soporte].archivosLocal!;
+    //   let newArchivosLoc: any = [];
+
+    //   for (const archivo of archivosLoc) {
+    //     const newArchivo = {
+    //       IdDocumento: idTipoDocument,
+    //       nombre: archivo.file.name.split('.')[0],
+    //       descripcion: 'Soporte Legalización de matricula',
+    //       file: archivo.file,
+    //     };
+    //     newArchivosLoc.push(newArchivo);
+    //     archivos[soporte] = newArchivosLoc;
+    //   }
+    // }
+    return archivos;
+  }
+
   cargarArchivos(archivos: any): Promise<number[]> {
     return new Promise<number[]>((resolve) => {
       this.gestorDocumentalService
@@ -862,28 +1165,64 @@ export class LegalizacionMatriculaAspiranteComponent {
       })
   }
 
+  seleccionarNombreSoporte(nombreDocumento: any) {
+    let nombre
+    switch (nombreDocumento) {
+      case "diplomaBachiller":
+        nombre = 'soporteColegio';
+        break;
+      case "soportePension":
+        nombre = 'soportePensionGrado11';
+        break;
+      case "soporteNucleo":
+        nombre = 'soporteNucleoFamiliar';
+        break;
+      case "soporteSituacionLaboral":
+        nombre = 'soporteSituacionLaboral';
+        break;
+      case "soporteEstrato":
+        nombre = 'soporteEstratoCostea';
+        break;
+      case "soporteIngresos":
+        nombre = 'soporteIngresosCostea';
+        break;
+      case "documentosGeneral":
+        nombre = 'soporteGeneral';
+        break;
+      default:
+        nombre = 'soporteGeneral';
+    }
+    return nombre;
+  }
+
   seleccionarNombreDocumento(nombreSoporte: any) {
     let nombre
     switch (nombreSoporte) {
       case "soporteColegio":
+      case "diplomaBachiller":
         nombre = 'legalizacion_admision.colegio_graduado';
         break;
       case "soportePensionGrado11":
+      case "soportePension":
         nombre = 'legalizacion_admision.pension_mesual_11';
         break;
       case "soporteNucleoFamiliar":
+      case "soporteNucleo":
         nombre = 'legalizacion_admision.nucleo_familiar';
         break;
       case "soporteSituacionLaboral":
         nombre = 'legalizacion_admision.situacion_laboral';
         break;
       case "soporteEstratoCostea":
+      case "soporteEstrato":
         nombre = 'GLOBAL.direccion_residencia';
         break;
       case "soporteIngresosCostea":
+      case "soporteIngresos":
         nombre = 'legalizacion_admision.ingresos_anio_anterior';
         break;
       case "soporteGeneral":
+      case "documentosGeneral":
         nombre = 'legalizacion_admision.soporte_general';
         break;
       default:

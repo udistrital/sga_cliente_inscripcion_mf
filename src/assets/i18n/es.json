@@ -1852,7 +1852,17 @@
         "estado_legalización_sin_revision": "Sus papeles de legalización han sido enviados correctamente. Ahora mismo están en un proceso de revisión. Muy pronto se le retornaran los resultados",
         "estado_legalización_rechazado": "Sus papeles de legalización han sido revisados y lamentablemente usted ha sido rechazado/a en este proyecto curricular",
         "estado_legalización_aprobado": "Sus papeles de legalización han sido revisados y aprobados, puede continuar con el proceso",
-        "estado_legalización_requiere_cambio": "Sus papeles de legalización han sido revisados y hay algunos que tienen observaciones y requieren cambios, por favor, revíselos y envíelos nuevamente lo más pronto posible"
+        "estado_legalización_requiere_cambio": "Sus papeles de legalización han sido revisados y hay algunos que tienen observaciones y requieren cambios, por favor, revíselos y envíelos nuevamente lo más pronto posible",
+        "titulo_legalizacion_requiere_cambios": "La legalización requiere cambios",
+        "legalizacion_requiere_cambios": "A continuación se muestran los documentos que requieren cambios, por favor reviselos lo más pronto posible",
+        "nombre_soporte": "Nombre del soporte",
+        "ver_documento": "Ver documento",
+        "subir_documento": "Subir documento",
+        "documento_sin_subir": "Aún no has subido el nuevo documento",
+        "nuevo_documento": "Nuevo documento",
+        "actualizar_legalizacion": "¿Actualizar la legalización de matricula?",
+        "legalizacion_actualizacion_ok": "Los datos de legalización se actualizaron correctamente",
+        "legalizacion_actualizacion_error": "Ocurrio un error al actualizar los datos de legalización"
     },
     "informacion_acudientes": {
         "titulo": "Datos de contacto del acudiente",

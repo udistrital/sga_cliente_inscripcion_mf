@@ -72,6 +72,60 @@
                     </div>
                 </mat-card-content>
             </mat-card>
+            <mat-card class="info-personal" *ngIf="yaHizoProceso && estadoInscripcion == 10">
+                <mat-card-header>
+                    <mat-card-title>{{ 'legalizacion_admision.titulo_legalizacion_requiere_cambios' | translate
+                        }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div>
+                        {{ 'legalizacion_admision.legalizacion_requiere_cambios' | translate
+                        }}
+                    </div>
+                    <div>
+                        <mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%">
+                            <ng-container matColumnDef="Nombre">
+                                <mat-header-cell *matHeaderCellDef> {{ 'legalizacion_admision.nombre_soporte' | translate }} </mat-header-cell>
+                                <mat-cell *matCellDef="let element; let i = index"> {{ element.Nombre | translate }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="NuevoDcoumento">
+                                <mat-header-cell *matHeaderCellDef> {{ 'legalizacion_admision.nuevo_documento' | translate }} </mat-header-cell>
+                                <mat-cell *matCellDef="let element; let i = index">
+                                    <span *ngIf="!element.HayNuevoDoc">{{ element.NuevoDoc | translate }}</span>
+                                    <span *ngIf="element.HayNuevoDoc" class="enlace-documento" (click)="previewFile(element.LinkNuevoDoc)"
+                                    title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}">{{ element.NuevoDoc }}</span>
+                                </mat-cell>
+                            </ng-container>
+                        
+                            <ng-container matColumnDef="Acciones" stickyEnd>
+                                <mat-header-cell *matHeaderCellDef> {{ 'GLOBAL.acciones' | translate }} </mat-header-cell>
+                                <mat-cell *matCellDef="let element; let i = index">
+                                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #menu="matMenu">
+                                        <button mat-menu-item (click)="openModal(element.Soporte)">
+                                            <mat-icon>visibility</mat-icon>
+                                            <span>{{ 'legalizacion_admision.ver_documento' | translate }}</span>
+                                        </button>
+                                        <button mat-menu-item (click)="fileInput.click()">
+                                            <mat-icon>cloud_upload</mat-icon>
+                                            <span>{{ 'legalizacion_admision.subir_documento' | translate }}</span>
+                                        </button>
+                                    </mat-menu>
+                                    <input type="file" #fileInput style="display: none;" (change)="onFileSelected(element.Soporte, $event)">
+                                </mat-cell>
+                            </ng-container>
+                        
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let fila; columns: displayedColumns"></mat-row>
+                        </mat-table>
+                        <!-- <mat-paginator [pageSize]="5" [pageSizeOptions]="[]" showFirstLastButtons></mat-paginator> -->
+                    </div>
+                    <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()">{{'GLOBAL.guardar' | translate }}</button>
+                </mat-card-content>
+            </mat-card>
         </fieldset>
         <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
             <mat-step [stepControl]="formInfoSocioEconomicaPersonal">
