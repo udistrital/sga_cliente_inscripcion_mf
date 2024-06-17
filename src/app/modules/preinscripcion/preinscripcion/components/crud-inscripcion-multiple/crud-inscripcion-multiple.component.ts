@@ -622,9 +622,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
           atob(localStorage.getItem('id_token')!.split('.')[1])
         ).email,
         PersonaId: Number(this.info_persona_id),
-        //PeriodoId: this.periodo.Id,
+        PeriodoId: this.periodo.Id,
         Nivel: parseInt(this.selectedLevel, 10),
-        //ProgramaAcademicoId: parseInt(this.selectedProject, 10),
+        ProgramaAcademicoId: parseInt(this.selectedProject, 10),
         TipoInscripcionId: parseInt(this.tipo_inscripcion_selected, 10),
         Year: this.periodo.Year,
         Periodo: parseInt(this.periodo.Ciclo, 10),
