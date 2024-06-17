@@ -15,6 +15,7 @@ import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { OikosService } from 'src/app/services/oikos.service';
+import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
@@ -31,6 +32,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private translate: TranslateService,
     private gestorDocumentalService: NewNuxeoService,
     private inscripcionMidService: InscripcionMidService,
+    private autenticationService: ImplicitAutenticationService,
     private oikosService: OikosService,
     private usuarioService: UserService,
     private inscripcionService: InscripcionService,
@@ -121,28 +123,31 @@ export class LegalizacionMatriculaAspiranteComponent {
   ubicacionesResidencia!: any[];
 
   async ngOnInit() {
-    try {
-      this.initFormularios();
-      this.cargarDatosFormularios();
+    this.initFormularios();
+    this.cargarDatosFormularios();
+    // this.estaAutorizado = true;
 
-      //RECUPERACIÓN DE PERSONA ID 1
-      const email: any = await this.usuarioService.getEmail();
-      this.info_persona_id = await this.recuperarTerceroId(
-        email.__zone_symbol__value
-      );
+    //RECUPERACIÓN DE PERSONA ID 1
+    const email: any = this.autenticationService.getMail();
+    console.log("Email", email);
+    this.info_persona_id = await this.recuperarTerceroId(email.__zone_symbol__value)
 
-      this.inscripcion = await this.buscarInscritoAdmitido();
-      this.proyectoAcademico = await this.recuperarProyectoPorId(
-        this.inscripcion[0].ProgramaAcademicoId
-      );
-      this.persona = await this.consultarTercero(this.info_persona_id);
-      const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES];
-      this.usuarioService.esAutorizado(rolesRequeridos).then((esAutorizado) => {
-        if (esAutorizado) this.estaAutorizado = true;
-      });
-    } catch (error) {
-      console.error('Error en ngOnInit legalizacion-matricula-aspirante', error);
-    }
+    //RECUPERACIÓN DE PERSONA ID 2 
+    //this.info_persona_id = await this.userService.getPersonaIdNew();
+    console.log("PERSONA ID", this.info_persona_id);
+    this.inscripcion = await this.buscarInscritoAdmitido()
+    this.proyectoAcademico = await this.recuperarProyectoPorId(this.inscripcion[0].ProgramaAcademicoId);
+    this.persona = await this.consultarTercero(this.info_persona_id);
+    this.autenticationService.getRole().then(
+      async (rol: any) => {
+        const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
+        const r2 = rol.find((role: string) => (role == ROLES.ASISTENTE_ADMISIONES));
+        const esEstudianteAdmitido = this.esEstudianteAdmitido(this.inscripcion)
+        if (r1 || r2 || esEstudianteAdmitido) {
+          this.estaAutorizado = true;
+        }
+      }
+    );
   }
 
   esEstudianteAdmitido(estudiante: any) {
@@ -166,12 +171,7 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant(
-                'legalizacion_matricula.inscripciones_error'
-              )
-            );
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
             reject([]);
           }
         );
@@ -187,9 +187,7 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_matricula.tercero_error')
-            );
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
             reject([]);
           }
         );
@@ -221,10 +219,8 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_matricula.tercero_error')
-            );
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+            console.log(error);
             reject([]);
           }
         );
@@ -390,10 +386,8 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_matricula.localidad_error')
-            );
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
+            console.log(error);
             reject([]);
           }
         );
@@ -410,12 +404,8 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant(
-                'legalizacion_matricula.situaciones_laborales_error'
-              )
-            );
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
+            console.log(error);
             reject([]);
           }
         );
@@ -432,10 +422,8 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_matricula.estratos_error')
-            );
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.estratos_error'));
+            console.log(error);
             reject([]);
           }
         );
@@ -452,12 +440,8 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant(
-                'legalizacion_matricula.nucleo_familiar_error'
-              )
-            );
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.nucleo_familiar_error'));
+            console.log(error);
             reject([]);
           }
         );
@@ -474,10 +458,8 @@ export class LegalizacionMatriculaAspiranteComponent {
             resolve(res);
           },
           (error: any) => {
-            this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_matricula.ubicaciones_error')
-            );
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.ubicaciones_error'));
+            console.log(error);
             reject([]);
           }
         );
@@ -486,22 +468,18 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   guardar() {
     if (this.validarFormulario()) {
-      this.popUpManager
-        .showPopUpGeneric(
-          this.translate.instant('legalizacion_matricula.titulo'),
-          this.translate.instant('legalizacion_matricula.crear_legalizacion'),
-          MODALS.INFO,
-          true
-        )
-        .then((action) => {
-          if (action.value) {
-            this.prepararCreacion();
-          }
-        });
+      this.popUpManager.showPopUpGeneric(
+        this.translate.instant('legalizacion_admision.titulo'),
+        this.translate.instant('legalizacion_admision.crear_legalizacion'),
+        MODALS.INFO,
+        true).then(
+          (action) => {
+            if (action.value) {
+              this.prepararCreacion();
+            }
+          });
     } else {
-      this.popUpManager.showErrorAlert(
-        this.translate.instant('legalizacion_matricula.formulario_error')
-      );
+      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.formulario_error'));
     }
   }
 
@@ -648,24 +626,16 @@ export class LegalizacionMatriculaAspiranteComponent {
   async crearLegalizacionMatricula(legalizacionBody: LegalizacionMatricula) {
     return new Promise((resolve, reject) => {
       this.loading = true;
-      this.inscripcionMidService
-        .post('legalizacion/base', legalizacionBody)
-        .subscribe(
-          (res: any) => {
-            this.loading = false;
-            this.popUpManager.showSuccessAlert(
-              this.translate.instant(
-                'legalizacion_matricula.legalizacion_creacion_ok'
-              )
-            );
-            resolve(res.data);
-          },
+      this.inscripcionMidService.post('legalizacion/base', legalizacionBody)
+        .subscribe((res: any) => {
+          this.loading = false;
+          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.legalizacion_creacion_ok'));
+          resolve(res.data);
+        },
           (error: HttpErrorResponse) => {
             this.loading = false;
             this.popUpManager.showErrorAlert(
-              this.translate.instant(
-                'legalizacion_matricula.legalizacion_creacion_error'
-              )
+              this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
             );
           }
         );

@@ -31,7 +31,7 @@
               <small>{{ c.label }}</small>
               <small
                 id="{{ c.nombre }}"
-                class="text-muted"
+                class="text-muted {{ c.ocultar ? 'no-mostrar' : '' }}"
                 [hidden]="!normalform.alertas"
               >
                 {{ c.alerta }}
@@ -172,14 +172,14 @@
     <!-- Botones de form con acción de botones -->
     <div align="center">
       <button
-        class="btn boton-primary btn-tiny"
+        class="btn boton-primary btn-tiny {{ !normalform.btn ? 'no-mostrar' : '' }}"
         (click)="validForm()"
         [hidden]="!normalform.btn"
       >
         {{ normalform.btn }}
       </button>
       <button
-        class="btn boton-primary btn-tiny"
+        class="btn boton-primary btn-tiny {{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
         (click)="clearForm()"
         [hidden]="!normalform.btnLimpiar"
       >
@@ -207,6 +207,7 @@
           <small
             id="{{ c.nombre }}"
             class="text-muted"
+            class="btn boton-primary btn-tiny {{ !normalform.alertas ? 'no-mostrar' : '' }}"
             [hidden]="!normalform.alertas"
           >
             {{ c.alerta }}
@@ -340,14 +341,14 @@
     <br />
     <div align="center">
       <button
-        class="btn boton-primary btn-tiny"
+        class="btn boton-primary btn-tiny {{ !normalform.btn ? 'no-mostrar' : '' }}"
         (click)="validForm()"
         [hidden]="!normalform.btn"
       >
         {{ normalform.btn }}
       </button>
       <button
-        class="btn boton-primary btn-tiny"
+        class="btn boton-primary btn-tiny {{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
         (click)="clearForm()"
         [hidden]="!normalform.btnLimpiar"
       >
@@ -371,7 +372,7 @@
             <small>{{ c.label }}</small>
             <small
               id="{{ c.nombre }}"
-              class="text-muted"
+              class="text-muted {{ !normalform.alertas ? 'no-mostrar' : '' }}"
               [hidden]="!normalform.alertas"
             >
               {{ c.alerta }}
@@ -515,14 +516,14 @@
     <!-- Botones de form con accaión de botones -->
     <div align="center">
       <button
-        class="btn boton-primary btn-tiny"
+      class="btn boton-primary btn-tiny {{ !normalform.btn ? 'no-mostrar' : '' }}"
         (click)="validForm()"
         [hidden]="!normalform.btn"
       >
         {{ normalform.btn }}
       </button>
       <button
-        class="btn boton-primary btn-tiny"
+      class="btn boton-primary btn-tiny {{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
         (click)="clearForm()"
         [hidden]="!normalform.btnLimpiar"
       >
@@ -629,7 +630,7 @@
             <!-- checkbox -->
             <div
               *ngSwitchCase="'checkbox'"
-              class="form-group validation-checkboxes mt-4"
+              class="form-group validation-checkboxes mt-4 {{ c.ocultar ? 'no-mostrar' : '' }}"
               [hidden]="c.ocultar"
             >
               <mat-checkbox
@@ -1048,6 +1049,7 @@
             mat-flat-button
             color="warn"
             (click)="clearForm()"
+            class="{{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
             [hidden]="!normalform.btnLimpiar"
           >
             {{ normalform.btnLimpiar }}
@@ -1056,6 +1058,7 @@
             mat-flat-button
             color="accent"
             (click)="validForm()"
+            class="{{ !normalform.btn ? 'no-mostrar' : '' }}"
             [hidden]="!normalform.btn"
           >
             {{ normalform.btn }}
@@ -1171,7 +1174,7 @@
                   <!-- checkbox -->
                   <div
                     *ngSwitchCase="'checkbox'"
-                    class="form-group validation-checkboxes"
+                    class="form-group validation-checkboxes {{ c.ocultar ? 'no-mostrar' : '' }}"
                     [hidden]="c.ocultar"
                   >
                     <mat-checkbox
@@ -1630,6 +1633,7 @@
             mat-flat-button
             color="warn"
             (click)="clearForm()"
+            class="{{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
             [hidden]="!normalform.btnLimpiar"
           >
             {{ normalform.btnLimpiar }}
@@ -1638,6 +1642,7 @@
             mat-flat-button
             color="accent"
             (click)="validForm()"
+            class="{{ !normalform.btn ? 'no-mostrar' : '' }}"
             [hidden]="!normalform.btn"
           >
             {{ normalform.btn }}
