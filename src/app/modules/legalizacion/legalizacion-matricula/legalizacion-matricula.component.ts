@@ -972,6 +972,8 @@ export class LegalizacionMatriculaComponent {
   }
 
   calcularEstadoBotones() {
+    this.puedeAprobar = false;
+    this.puedePedirMod = false;
     if (this.verificarEstadosAprobados()) {
       this.puedeAprobar = true; 
     } else if (!this.verificarEstadosSinRevisar()) {

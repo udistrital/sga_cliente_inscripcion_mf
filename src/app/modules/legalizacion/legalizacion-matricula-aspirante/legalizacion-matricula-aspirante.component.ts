@@ -21,8 +21,6 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
@@ -37,9 +35,6 @@ export class LegalizacionMatriculaAspiranteComponent {
   ];
   nombresColumnas: any
   dataSource!: MatTableDataSource<any>;
-
-  // @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
-  // @ViewChild(MatSort, { static: false }) sort: MatSort;
   
   constructor(
     private fb: FormBuilder,
@@ -67,6 +62,8 @@ export class LegalizacionMatriculaAspiranteComponent {
   valorPensionSML = 0;
   valorIngresos = 0;
   valorIngresosSML = 0;
+  numDocumentosRechazadosCargados = 0;
+  numDocumentosRechazados = 0;
 
   estaAutorizado: boolean = true;
   yaHizoProceso: boolean = false;
@@ -77,9 +74,9 @@ export class LegalizacionMatriculaAspiranteComponent {
   proyectoAcademico: any;
   proyectoAcademicoId: any;
   periodoId: any;
-  //cicloActual: any;
   estadoInscripcion: any;
   opcionPrograma: any = 1;
+  estadoLaboralAspiranteActual: any;
 
   formInfoSocioEconomicaPersonal!: FormGroup;
   formInfoSocioEconomicaCosteara!: FormGroup;
@@ -144,25 +141,25 @@ export class LegalizacionMatriculaAspiranteComponent {
     },
   };
 
-  //localidades!: any[];
-  localidades: any[] = [
-    {
-      "Nombre": "Usme",
-      "Id": 464
-    },
-    {
-      "Nombre": "Suba",
-      "Id": 459
-    },
-    {
-      "Nombre": "Chapinero",
-      "Id": 448
-    },
-    {
-      "Nombre": "Engativá",
-      "Id": 450
-    }
-  ];
+  localidades!: any[];
+  // localidades: any[] = [
+  //   {
+  //     "Nombre": "Usme",
+  //     "Id": 464
+  //   },
+  //   {
+  //     "Nombre": "Suba",
+  //     "Id": 459
+  //   },
+  //   {
+  //     "Nombre": "Chapinero",
+  //     "Id": 448
+  //   },
+  //   {
+  //     "Nombre": "Engativá",
+  //     "Id": 450
+  //   }
+  // ];
   situacionesLaboral!: any[];
   estratos!: any[];
   nuceloFamiliar!: any[];
@@ -172,25 +169,10 @@ export class LegalizacionMatriculaAspiranteComponent {
   async ngOnInit() {
     this.initFormularios();
     this.cargarDatosFormularios();
-    //this.estaAutorizado = true;
 
-    //RECUPERACIÓN DE PERSONA ID 1
-    // const email: any = this.autenticationService.getMail();
-    // console.log("Email", email);
-    // this.info_persona_id = await this.recuperarTerceroId(email.__zone_symbol__value)
-
-    //RECUPERACIÓN DE PERSONA ID 2 
-    //this.info_persona_id = await this.userService.getPersonaIdNew();
-
-    //RECUPERACIÓN PERSONA ID ESTANDAR
-    // const idPersona = await this.usuarioService.getPersonaId();
-    // console.log(idPersona);
-
-    //RECUPERACIÓN DE PERSONA FICTICIA
-    this.info_persona_id = 59847
-    this.proyectoAcademicoId = 28
+    this.info_persona_id = await this.usuarioService.getPersonaId();
+    this.proyectoAcademicoId = 26
     this.periodoId = 40
-    //console.log("PERSONA ID", this.info_persona_id);
 
     await this.cargarSalarioMinimo(this.periodoId)
     this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)
@@ -199,7 +181,6 @@ export class LegalizacionMatriculaAspiranteComponent {
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.proyectoAcademicoId);
     this.persona = await this.consultarTercero(this.info_persona_id);
     this.persona.FechaNacimiento = this.formatearFecha(this.persona.FechaNacimiento);
-    console.log(this.inscripcion, this.persona);
     this.autenticationService.getRole().then(
       async (rol: any) => {
         const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
@@ -209,20 +190,18 @@ export class LegalizacionMatriculaAspiranteComponent {
           this.estaAutorizado = true;
           this.loading = true;
           this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
+          this.estadoLaboralAspiranteActual = this.infoLegalizacionPersona["situacionLaboral"]
           if ((this.infoLegalizacionPersona !== null && typeof this.infoLegalizacionPersona === 'object') && Object.keys(this.infoLegalizacionPersona).length > 0) {
             this.yaHizoProceso = true;
             this.descargarArchivos(this.infoLegalizacionPersona)
             this.setearCamposFormularios(this.infoLegalizacionPersona);
             if (this.estadoInscripcion == 10) {
-              // this.setearNombresColumnasDocsrechazados();
               const estados = await this.retornasEstadosDocumentos(this.infoLegalizacionPersona);
               const docsRechazados = this.obtenerSoportesRechazados(estados);
-              //console.log(estados, docsRechazados);
-              //let data = [];
+              this.numDocumentosRechazados = docsRechazados.length;
               for (const doc of docsRechazados) {
                 const soporte = this.seleccionarNombreSoporte(doc)
                 const nombreDoc = this.seleccionarNombreDocumento(soporte)
-                //console.log(doc, soporte, nombreDoc);
                 const item = {
                   "SoporteDB": doc,
                   "Soporte": soporte,
@@ -232,10 +211,7 @@ export class LegalizacionMatriculaAspiranteComponent {
                 }
                 this.documentosRechazados.push(item);
               }
-              console.log(this.documentosRechazados);
               this.dataSource = new MatTableDataSource(this.documentosRechazados);
-              // this.dataSource.paginator = this.paginator;
-              // this.dataSource.sort = this.sort;
             }
           } else if (this.infoLegalizacionPersona == 'No existe legalizacion') {
             this.yaHizoProceso = false;
@@ -247,35 +223,6 @@ export class LegalizacionMatriculaAspiranteComponent {
       }
     );
   }
-
-  // setearNombresColumnasDocsrechazados() {
-  //   this.nombresColumnas['Nombre'] = 'legalizacion_admision.nombre_soporte';
-  //   this.nombresColumnas['Observacion'] = 'admision.observacion';
-  //   this.nombresColumnas['Acciones'] = 'GLOBAL.acciones';
-  // }
-
-  // formatValue(columna: string, valor: any): any {
-  //   let tipo = typeof valor;
-  //   let formatedValue: any;
-  //   switch (tipo) {
-  //     case 'boolean':
-  //       formatedValue =
-  //         valor == true
-  //           ? this.translate.instant('GLOBAL.activo')
-  //           : this.translate.instant('GLOBAL.inactivo');
-  //       break;
-
-  //     case 'string':
-  //       formatedValue = valor;
-  //       break;
-
-  //     default:
-  //       formatedValue = valor;
-  //       break;
-  //   }
-
-  //   return formatedValue;
-  // }
 
   obtenerSoportesRechazados(estados: any) {
     let documentosRechazados: any[] = [];
@@ -331,7 +278,6 @@ export class LegalizacionMatriculaAspiranteComponent {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('legalizacion/informacion-legalizacion/' + personaId)
         .subscribe((res: any) => {
-          console.log(res.Data);
           resolve(res.Data);
         },
           (error: any) => {
@@ -368,7 +314,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   esEstudianteAdmitido(estudiante: any) {
-    if (Object.keys(estudiante).length > 0 && (this.estadoInscripcion == 2 || this.estadoInscripcion == 4 || this.estadoInscripcion == 8 || this.estadoInscripcion == 10)) {
+    if (Object.keys(estudiante).length > 0 && (this.estadoInscripcion == 2 || this.estadoInscripcion == 8 || this.estadoInscripcion == 10)) {
       return true;
     } else {
       return false;
@@ -487,8 +433,6 @@ export class LegalizacionMatriculaAspiranteComponent {
       idsArchivos[propiedad] = ids;
     }
 
-    console.log(this.documentosRechazados, archivos, propiedades, idsArchivos);
-
     for (const propiedad of propiedades) {
       const item = {
         "infoComplementariId": this.recuperarIdInfoComplementaria(propiedad),
@@ -498,10 +442,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     }
     bodyActualizacionSoportes["arvivosActualizar"] = soportesActualizar
 
-    console.log(bodyActualizacionSoportes);
-
     let res: any = await this.actualizarSoportesLegalizacionMatricula(bodyActualizacionSoportes);
-    console.log(res);
     if (res.Success && res.Status == 200) {
       this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
       this.descargarArchivos(this.infoLegalizacionPersona)
@@ -586,6 +527,8 @@ export class LegalizacionMatriculaAspiranteComponent {
         soporte["NuevoDoc"] = newFiles[0]["file"]["name"]
         soporte["LinkNuevoDoc"] = newFiles[0]["urlTemp"]
         soporte["HayNuevoDoc"] = true
+
+        this.numDocumentosRechazadosCargados ++;
       }
     }
   }
@@ -986,7 +929,6 @@ export class LegalizacionMatriculaAspiranteComponent {
     }
 
     let res: any = await this.crearLegalizacionMatricula(newLegalizacionMatricula);
-    console.log(res);
     if (res.Success && res.Status == 200) {
       this.yaHizoProceso = true;
       this.infoLegalizacionPersona = await this.getLegalizacionMatricula(this.info_persona_id);
@@ -1272,5 +1214,14 @@ export class LegalizacionMatriculaAspiranteComponent {
             reject([]);
           });
     });
+  }
+
+  onSituacionLaboralChange(event: any) {
+    this.soportes["soporteSituacionLaboral"].archivosLocal = [];
+    if (event.value == '5959') {
+      this.estadoLaboralAspiranteActual = 'Desempleado'
+    } else {
+      this.estadoLaboralAspiranteActual = 'Empleado'
+    }
   }
 }

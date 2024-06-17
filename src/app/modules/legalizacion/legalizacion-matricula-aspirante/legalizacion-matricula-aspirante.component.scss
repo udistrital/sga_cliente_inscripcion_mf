@@ -194,13 +194,6 @@ fieldset {
     background-color: #dddddd;
 }
 
-.contenedor-boton .button-disabled {
-    background-color: #ccc !important;
-    color: #999;
-    cursor: not-allowed !important; 
-    border: black solid 1px !important;
-}
-
 .info-personal {
     width: 100%;
     max-width: 800px;
@@ -269,6 +262,13 @@ fieldset {
     color: white !important;
 }
 
+.button-disabled {
+    background-color: #ccc !important;
+    color: #999;
+    cursor: not-allowed !important; 
+    border: black solid 1px !important;
+}
+
 .estado_inscripcion{
     display: flex;
 }
@@ -295,6 +295,23 @@ fieldset {
 
 .color-primary {
     color: var(--primary);
+}
+
+.enlace-documento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0 0;
+    cursor: pointer;
+}
+
+.enlace-documento mat-icon {
+    color: var(--danger-main)
+}
+
+.contenedor-tabla {
+    width: 90%;
+    margin: 15px auto 0;
 }
 
 @media (width > 650px) {
