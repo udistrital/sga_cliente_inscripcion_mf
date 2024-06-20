@@ -55,7 +55,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   settings: any;
   pdfs: Blob[] = [];
   //periodosDoctorado: any[] = []; 
-  nombresPeriodos!: string; 
+  nombresPeriodos!: string;
 
   @Input('inscripcion_id')
   set admision(inscripcion_id: number) {
@@ -90,6 +90,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   showTipoInscripcion: boolean;
   showInfo: boolean;
   showNew: boolean;
+  showSublevel: boolean;
   showInscription: boolean;
   nivelInscripcion!: boolean;
   programa!: number;
@@ -101,7 +102,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   proyectos_preinscripcion!: any[];
   proyectos_preinscripcion_post: any;
   niveles!: NivelFormacion[];
+  subniveles!: any;
   selectedLevel: any;
+  selectedSubLevel: any;
   selectedProject: any;
   tipo_inscripcion_selected: any;
   projects!: any[];
@@ -122,6 +125,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   CampoControl = new FormControl('', [Validators.required]);
   Campo1Control = new FormControl('', [Validators.required]);
   Campo2Control = new FormControl('', [Validators.required]);
+  Campo3Control = new FormControl('', [Validators.required]);
 
   constructor(
     private projectService: ProyectoAcademicoService,
@@ -139,9 +143,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showTipoInscripcion = false;
     this.showInfo = false;
     this.showNew = false;
+    this.showSublevel = false;
     this.showInscription = true;
 
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {});
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
   }
 
   async ngOnInit() {
@@ -158,7 +163,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     // Llamar a la función asíncrona para manejar la lógica asíncrona
     this.initializeAsync();
     this.loadInfoPersona();
-   
+
   }
 
   async initializeAsync() {
@@ -173,8 +178,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       if (error instanceof Error) {
         this.popUpManager.showErrorAlert(
           this.translate.instant('inscripcion.error_cargar_informacion') +
-            ': ' +
-            error.message
+          ': ' +
+          error.message
         );
       } else {
         this.popUpManager.showErrorAlert(
@@ -228,8 +233,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       if (error instanceof Error) {
         this.popUpManager.showErrorAlert(
           this.translate.instant('inscripcion.error_cargar_informacion') +
-            ': ' +
-            error.message
+          ': ' +
+          error.message
         );
       } else {
         this.popUpManager.showErrorAlert(
@@ -280,7 +285,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             this.nivelInscripcion = true;
             this.loadInscriptionModule();
           }
-        }else{
+        } else {
           console.log("Posgrado")
           sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
           sessionStorage.setItem('IdPeriodo', response.PeriodoId);
@@ -321,9 +326,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       await this.inscripcionMidService
         .get(
           'inscripciones/estado-recibos?persona-id=' +
-            this.info_persona_id +
-            '&id-periodo=' +
-            PeriodoActual
+          this.info_persona_id +
+          '&id-periodo=' +
+          PeriodoActual
         )
         .subscribe(
           (response: any) => {
@@ -347,7 +352,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                   this.projectService
                     .get(
                       'proyecto_academico_institucion?query=Id:' +
-                        element.ProgramaAcademicoId
+                      element.ProgramaAcademicoId
                     )
                     .subscribe(
                       (res) => {
@@ -426,10 +431,29 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         )
         .subscribe(
           (response: any) => {
-            this.projects = <any[]>(
-              response.filter((proyecto: any) => this.filtrarProyecto(proyecto))
-            );
-            this.validateProject();
+            if (response && Array.isArray(response)) {
+              const res = response.map((item: any) => ({
+                IdNivel: item.NivelFormacionId ? item.NivelFormacionId.Id : null,
+                Nombre: item.NivelFormacionId ? item.NivelFormacionId.Nombre : null
+              }));
+              //Filtro de subniveles 
+              const resLimpia = [];
+              const repetidos = new Set();
+              for (const item of res) {
+                if (item.Nombre && !repetidos.has(item.Nombre)) {
+                  repetidos.add(item.Nombre);
+                  resLimpia.push(item);
+                }
+              }
+              this.showSublevel = true;
+              this.subniveles = resLimpia;
+              console.log(this.subniveles);
+              console.log(this.selectedLevel);
+            } else {
+              this.popUpManager.showErrorToast(
+                this.translate.instant('ERROR.general')
+              );
+            }
           },
           (error: any) => {
             this.popUpManager.showErrorToast(
@@ -437,6 +461,17 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             );
           }
         );
+    }
+  }
+
+  onSelectSubLevel() {
+    if (this.selectedSubLevel === undefined) {
+      this.popUpManager.showInfoToast(
+        this.translate.instant('inscripcion.erro_selec_nivel')
+      );
+    } else {
+      console.log(this.subniveles);
+      console.log(this.selectedSubLevel);
     }
   }
 
@@ -465,9 +500,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.calendarioMidService
       .get(
         'calendario-proyecto/calendario/proyecto?id-nivel=' +
-          this.selectedLevel +
-          '&id-periodo=' +
-          periodo
+        this.selectedLevel +
+        '&id-periodo=' +
+        periodo
       )
       .subscribe(
         (response: any) => {
@@ -554,8 +589,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             if (error instanceof HttpErrorResponse) {
               this.popUpManager.showErrorAlert(
                 this.translate.instant('inscripcion.error_cargar_informacion') +
-                  ': ' +
-                  error.message
+                ': ' +
+                error.message
               );
             } else {
               this.popUpManager.showErrorAlert(
@@ -637,36 +672,36 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             this.inscripcionProjects = response.data;
             console.log(response);
             // this.inscripcionProjects.forEach(proyecto => {
-              // if (proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null) {
-                if (response.Data[0].Evento.FechaFinEvento != null) {
-                inscripcion.FechaPago = moment(response.Data[0].Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                // inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
-                  (response: any) => {
-                    console.log(response)
-                    if (response.status == '200') {
-                      this.showProyectoCurricular = false;
-                      this.showTipoInscripcion = false;
-                      this.showInfo = false;
-                      this.showNew = false;
-                      this.loadInfoInscripcion();
-                      resolve(response);
-                      this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
-                    } else if (response.status == '204') {
-                      reject([]);
-                      this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
-                    } else if (response.status == '400') {
-                      reject([]);
-                      this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
-                    }
-                  },
-                  (error: HttpErrorResponse) => {
-                    this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
-                  },
-                );
-              } else {
-                this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('inscripcion.no_fechas_inscripcion'))
-              }
+            // if (proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null) {
+            if (response.Data[0].Evento.FechaFinEvento != null) {
+              inscripcion.FechaPago = moment(response.Data[0].Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
+              // inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
+              this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
+                (response: any) => {
+                  console.log(response)
+                  if (response.status == '200') {
+                    this.showProyectoCurricular = false;
+                    this.showTipoInscripcion = false;
+                    this.showInfo = false;
+                    this.showNew = false;
+                    this.loadInfoInscripcion();
+                    resolve(response);
+                    this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
+                  } else if (response.status == '204') {
+                    reject([]);
+                    this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
+                  } else if (response.status == '400') {
+                    reject([]);
+                    this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
+                  }
+                },
+                (error: HttpErrorResponse) => {
+                  this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
+                },
+              );
+            } else {
+              this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('inscripcion.no_fechas_inscripcion'))
+            }
             // });
           }
         },
@@ -677,9 +712,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +
-            this.selectedLevel +
-            '&id-periodo=' +
-            periodo
+          this.selectedLevel +
+          '&id-periodo=' +
+          periodo
         )
         .subscribe(
           (response: any) => {
@@ -780,9 +815,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +
-            this.selectedLevel +
-            '&id-periodo=' +
-            periodo
+          this.selectedLevel +
+          '&id-periodo=' +
+          periodo
         )
         .subscribe(
           (response: any) => {
@@ -802,11 +837,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
               this.parametrosService
                 .get(
                   'parametro_periodo?query=ParametroId.TipoParametroId.Id:2,' +
-                    'ParametroId.CodigoAbreviacion:' +
-                    this.parametro +
-                    ',PeriodoId.Year:' +
-                    this.periodo.Year +
-                    ',PeriodoId.CodigoAbreviacion:VG'
+                  'ParametroId.CodigoAbreviacion:' +
+                  this.parametro +
+                  ',PeriodoId.Year:' +
+                  this.periodo.Year +
+                  ',PeriodoId.CodigoAbreviacion:VG'
                 )
                 .subscribe(
                   (response: any) => {
@@ -881,8 +916,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.inscripcionService
       .get(
         'tipo_inscripcion?query=NivelId:' +
-          Number(this.selectedLevel) +
-          ',Activo:true&sortby=NumeroOrden&order=asc'
+        Number(this.selectedLevel) +
+        ',Activo:true&sortby=NumeroOrden&order=asc'
       )
       .subscribe(
         (res) => {
@@ -1138,8 +1173,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       if (error instanceof Error) {
         this.popUpManager.showErrorAlert(
           this.translate.instant('inscripcion.error_cargar_informacion') +
-            ': ' +
-            error.message
+          ': ' +
+          error.message
         );
       } else {
         this.popUpManager.showErrorAlert(

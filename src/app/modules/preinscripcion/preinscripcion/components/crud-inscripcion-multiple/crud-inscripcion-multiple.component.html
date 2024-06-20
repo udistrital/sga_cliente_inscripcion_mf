@@ -117,15 +117,15 @@
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field style="width: 100%" *ngIf="showNew">
-          <mat-select [formControl]="CampoControl" [(ngModel)]="selectedLevel"
-            placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectLevel()">
+        <mat-form-field style="width: 100%" *ngIf="showSublevel">
+          <mat-select [formControl]="Campo3Control" [(ngModel)]="selectedSubLevel"
+            placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectSubLevel()">
             <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">
-              {{ nivel.Nombre }}
+            <mat-option *ngFor="let subnivel of subniveles" [value]="subnivel.IdNivel">
+              {{ subnivel.Nombre }}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="CampoControl.hasError('required')">
+          <mat-error *ngIf="Campo3Control.hasError('required')">
             {{ "inscripcion.erro_selec_nivel" | translate }}
           </mat-error>
         </mat-form-field>
