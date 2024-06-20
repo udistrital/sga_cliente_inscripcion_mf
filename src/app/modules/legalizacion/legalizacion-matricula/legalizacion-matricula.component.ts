@@ -19,8 +19,10 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { DocumentoService } from 'src/app/services/documento.service';
 import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
-import { ROLES } from 'src/app/models/diccionario/diccionario';
+import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service'; 
+import { MODALS, ROLES } from 'src/app/models/diccionario/diccionario';
 import { LiquidacionMatriculaService } from 'src/app/services/liquidacion_matricula.service';
+import { EventoService } from 'src/app/services/evento.service';
 import { UserService } from 'src/app/services/users.service';
 
 interface Proyecto {
@@ -41,6 +43,7 @@ export class LegalizacionMatriculaComponent {
     validatorPeriodo: ['', Validators.required],
     validatorAño: ['', Validators.required],
     validatorFacultad: ['', Validators.required],
+    validatorCiclos: ['', Validators.required],
   });
   secondFormGroup = this._formBuilder.group({
     secondCtrl: ['', Validators.required],
@@ -60,6 +63,10 @@ export class LegalizacionMatriculaComponent {
 
   aspirante: any
   estaAutorizado: boolean = false;
+  puedeAprobar: boolean = false;
+  puedeRechazar: boolean = true;
+  puedePedirMod: boolean = false;
+  cicloActual: any;
 
   proyectosCurriculares!: any[]
   periodosAnio!: any[]
@@ -86,7 +93,9 @@ export class LegalizacionMatriculaComponent {
     private newNuxeoService: NewNuxeoService,
     private utilidades: UtilidadesService,
     private documentoService: DocumentoService,
+    private autenticationService: ImplicitAutenticationService,
     private usuarioService: UserService,
+    private eventosService: EventoService,
     private liquidacionMatriculaService: LiquidacionMatriculaService,
     private popUpManager: PopUpManager
   ) {
@@ -96,9 +105,9 @@ export class LegalizacionMatriculaComponent {
 
   async ngOnInit() {
     const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
-    this.usuarioService.esAutorizado(rolesRequeridos).then(esAutorizado => {
+    this.usuarioService.esAutorizado(rolesRequeridos).then((esAutorizado: any) => {
       if (esAutorizado) this.estaAutorizado = true;
-    }).catch( error => {
+    }).catch( (error: any) => {
       console.error('Error al validar autorización', error)
     });
     validateLang(this.translate);
@@ -124,7 +133,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.facultades_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.facultades_error'));
             reject([]);
           });
     });
@@ -138,8 +147,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.anio_error'));
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.anio_error'));
             reject([]);
           });
     });
@@ -153,8 +161,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.periodo_error'));
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.periodo_error'));
             reject([]);
           });
     });
@@ -174,13 +181,14 @@ export class LegalizacionMatriculaComponent {
   async generarBusqueda(stepper: MatStepper) {
     const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
     const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
+    const tipoCiclos = this.firstFormGroup.get('validatorCiclos')?.value;
 
     this.inscritosData = [];
     this.inscripciones = [];
     let ordenCount = 0 ;
 
-    this.inscripciones = await this.buscarInscripciones(stepper, proyecto, periodo)
-
+    await this.recuperarCiclo(periodo);
+    this.inscripciones = await this.buscarInscripciones(stepper, proyecto, periodo, tipoCiclos)
     for (const inscripcion of this.inscripciones) {
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
       if (Array.isArray(persona) && persona.length === 0) {
@@ -209,7 +217,7 @@ export class LegalizacionMatriculaComponent {
         "apellidos": persona.PrimerApellido + " " + persona.SegundoApellido,
         "tipo_documento": persona.TipoIdentificacion.Nombre,
         "documento": persona.NumeroIdentificacion,
-        "estado_admision": inscripcion.EstadoInscripcionId.Nombre == "ADMITIDO" ? 'admision.estado_admitido' : 'admision.estado_admitido_legalizado',
+        "estado_admision": inscripcion.EstadoInscripcionId.Nombre == "ADMITIDO" || inscripcion.EstadoInscripcionId.Nombre === "ADMITIDO CON OBSERVACIÓN" ? 'admision.estado_admitido' : 'admision.estado_admitido_legalizado',
         "estado_revision": estadoRevision,
         "proyecto_admitido": proyecto.Nombre,
         "fecha_nacimiento": this.formatearFecha(persona.FechaNacimiento),
@@ -220,10 +228,69 @@ export class LegalizacionMatriculaComponent {
       this.inscritosData.push(personaData);
     }
     if (this.inscritosData.length == 0) {
-      this.popUpManager.showAlert(this.translate.instant('legalizacion_matricula.titulo_sin_data_tabla'), this.translate.instant('legalizacion_matricula.sin_data_tabla'));
+      this.popUpManager.showAlert(this.translate.instant('legalizacion_admision.titulo_sin_data_tabla'), this.translate.instant('legalizacion_admision.sin_data_tabla'));
     }
 
     this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+  }
+
+  async recuperarCiclo(periodo: any) {
+    const fechaActual = new Date();
+    const responseCalendario: any = await this.buscarCalendariosPregradoPorPeriodo(periodo);
+    const calendarioId = responseCalendario.Id;
+    const responseEvento: any = await this.buscarEventosCiclosPorCalendario(calendarioId);
+    const tipoEventoId = responseEvento.Id
+    const responseCiclos: any = await this.buscarCiclosPorCalendario(tipoEventoId);
+
+    for (const ciclo of responseCiclos) {
+      const fechaInicio = new Date(ciclo.FechaInicio);
+      const fechaFin = new Date(ciclo.FechaFin);
+      if (fechaActual >= fechaInicio && fechaActual <= fechaFin) {
+        this.cicloActual = ciclo.Descripcion
+      }
+    } 
+  }
+
+  buscarCalendariosPregradoPorPeriodo(periodo: any) {
+    return new Promise((resolve, reject) => {
+      this.eventosService.get('calendario?query=PeriodoId:' + periodo + ',Nivel:1,Activo:true&sortby=Id&order=asc')
+        .subscribe((res: any) => {
+          resolve(res[0]);
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  buscarEventosCiclosPorCalendario(calendario: any) {
+    return new Promise((resolve, reject) => {
+      this.eventosService.get('tipo_evento?query=CalendarioID.Id:' + calendario + ',CodigoAbreviacion:CIAD,Activo:true&sortby=Id&order=asc')
+        .subscribe((res: any) => {
+          resolve(res[0]);
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  buscarCiclosPorCalendario(tipoEvento: any) {
+    return new Promise((resolve, reject) => {
+      this.eventosService.get('calendario_evento?query=TipoEventoId.Id:' + tipoEvento + ',Activo:true&sortby=Id&order=asc')
+        .subscribe((res: any) => {
+          resolve(res);
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
   }
 
   formatearFecha(fechaString: any) {
@@ -236,7 +303,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   revisarEstadosRevision(estados: any) {
-    let estado = "legalizacion_matricula.estado_sin_revisar"
+    let estado = "legalizacion_admision.estado_sin_revisar"
     let puedeAprobar = true;
     let hayEstado = false;
     for (const key in estados) {
@@ -245,7 +312,7 @@ export class LegalizacionMatriculaComponent {
           estado = "GLOBAL.estado_aprobado"
           hayEstado = true
         } else if (estados[key] == 3) {
-          estado = "legalizacion_matricula.estado_revisado_observaciones"
+          estado = "legalizacion_admision.estado_revisado_observaciones"
           puedeAprobar = false
           hayEstado = true
           break;
@@ -253,7 +320,7 @@ export class LegalizacionMatriculaComponent {
       } else if (puedeAprobar) {
         puedeAprobar = false
         if (hayEstado) {
-          estado = "legalizacion_matricula.estado_revisado_observaciones"
+          estado = "legalizacion_admision.estado_revisado_observaciones"
         }
       }
     }
@@ -291,7 +358,7 @@ export class LegalizacionMatriculaComponent {
 
   retornarEstadoPorId(id: any) {
     if (id == 1) {
-      return 'legalizacion_matricula.estado_sin_revisar'
+      return 'legalizacion_admision.estado_sin_revisar'
     } else if (id == 2) {
       return 'GLOBAL.estado_aprobado'
     } else {
@@ -299,37 +366,70 @@ export class LegalizacionMatriculaComponent {
     }
   }
 
-  async buscarInscripciones(stepper: MatStepper, proyecto: any, periodo: any) {
-    const admitidos: any = await this.buscarInscripcionesAdmitidos(proyecto, periodo)
-    const admitidosLeg: any = await this.buscarInscripcionesAdmitidosLegalizados(proyecto, periodo)
-    const inscripciones = Object.keys(admitidosLeg[0]).length === 0 ? admitidos : admitidos.concat(admitidosLeg)
+  async buscarInscripciones(stepper: MatStepper, proyecto: any, periodo: any, tipoCiclo: any) {
+    const admitidos: any = await this.buscarInscripcionesAdmitidos(proyecto, periodo, tipoCiclo)
+    const admitidosLeg: any = await this.buscarInscripcionesAdmitidosLegalizados(proyecto, periodo, tipoCiclo)
+    const admitidosObs: any = await this.buscarInscripcionesAdmitidosObservacion(proyecto, periodo, tipoCiclo)
+    const inscripciones = Object.keys(admitidosLeg[0]).length === 0 ? Object.keys(admitidosObs[0]).length === 0 ? admitidos : admitidos.concat(admitidosObs) : Object.keys(admitidosObs[0]).length === 0 ? admitidos.concat(admitidosLeg) : admitidos.concat(admitidosLeg, admitidosObs)
     stepper.next();
     return inscripciones
   }
   
-  buscarInscripcionesAdmitidos(proyecto: any, periodo: any) {
+  buscarInscripcionesAdmitidos(proyecto: any, periodo: any, tipoCiclo: any) {
+    let query = ''
+    if (tipoCiclo == 1) {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',Opcion:' + this.cicloActual + ',EstadoInscripcionId.Id:2,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    } else {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:2,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    }
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:2&sortby=Id&order=asc')
+      this.inscripcionService.get(query)
         .subscribe((res: any) => {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
             reject([]);
           });
     });
   }
 
-  buscarInscripcionesAdmitidosLegalizados(proyecto: any, periodo: any) {
+  buscarInscripcionesAdmitidosLegalizados(proyecto: any, periodo: any, tipoCiclo: any) {
+    let query = ''
+    if (tipoCiclo == 1) {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',Opcion:' + this.cicloActual + ',EstadoInscripcionId.Id:8,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    } else {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:8,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    }
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:8&sortby=Id&order=asc')
+      this.inscripcionService.get(query)
         .subscribe((res: any) => {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
+
+  buscarInscripcionesAdmitidosObservacion(proyecto: any, periodo: any, tipoCiclo: any) {
+    let query = ''
+    if (tipoCiclo == 1) {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',Opcion:' + this.cicloActual + ',EstadoInscripcionId.Id:10,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    } else {
+      query = 'inscripcion?query=ProgramaAcademicoId:' + proyecto + ',PeriodoId:' + periodo + ',EstadoInscripcionId.Id:10,Activo:true,TipoInscripcionId.Id:13&sortby=Id&order=asc'
+    }
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get(query)
+        .subscribe((res: any) => {
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
             reject([]);
           });
     });
@@ -342,8 +442,8 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.inscripciones_error'));
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
             reject([]);
           });
     });
@@ -395,42 +495,28 @@ export class LegalizacionMatriculaComponent {
       const res = await this.actualizarDocumento(documento);
       
       this.estadoDocumentosAspirantes[this.aspiranteActualId][result["nombreSoporte"]] = this.retornarEstadoObservacion(metadatosDocumento["estadoObservacion"])
-      await this.cambioEstadoRevisionAspirante();
+      console.log(documento, this.estadoDocumentosAspirantes)
+      this.cambioEstadoRevisionAspirante();
+      this.calcularEstadoBotones();
 
       this.cargarInfoTablasSocioeconomicas(this.infoLegalizacionAspirantes[this.aspiranteActualId]);
     });
   }
 
-  async cambioEstadoRevisionAspirante() {
+  cambioEstadoRevisionAspirante() {
     const aspirante = this.inscritosData.find((inscrito: any) => inscrito.personaId === this.aspiranteActualId);
     let estadoRev
     let cambioEstado = false;
 
-    if (aspirante.estado_revision == 'legalizacion_matricula.estado_sin_revisar' && !this.verificarEstadosSinRevisar()) {
+    if (aspirante.estado_revision == 'legalizacion_admision.estado_sin_revisar' && !this.verificarEstadosSinRevisar()) {
       cambioEstado = true;
-      estadoRev = 'legalizacion_matricula.estado_revisado_observaciones'
-    } else if (aspirante.estado_revision == 'legalizacion_matricula.estado_revisado_observaciones' && this.verificarEstadosAprobados()) {
-      cambioEstado = true;
-      estadoRev = 'GLOBAL.estado_aprobado'
+      estadoRev = 'legalizacion_admision.estado_revisado_observaciones'
     }
 
     if (cambioEstado) {
       for (const inscrito of this.inscritosData) {
         if (inscrito.personaId == this.aspiranteActualId) {
           inscrito.estado_revision = estadoRev;
-          if (estadoRev == 'GLOBAL.estado_aprobado') {
-            inscrito.estado_admision = 'admision.estado_admitido_legalizado';
-            const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
-            inscripcion.EstadoInscripcionId.Id = 8;
-            const resEstado: any = await this.actualizarEstadoInscripcion(inscripcion);
-            const resLiquidacion = await this.generarLiquidacionmatricula()
-            if(Object.keys(resEstado).length == 0 || !resLiquidacion) {
-              this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.cambio_estado_legalizado_error'));
-            } else {
-              this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_matricula.cambio_estado_legalizado_ok'));
-            }
-            console.log("INFO AL ACTUALIZAR ESTADO GENERAL:", resEstado, resLiquidacion);
-          }
         }
       }
       this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
@@ -474,7 +560,7 @@ export class LegalizacionMatriculaComponent {
           }
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.liquidacion_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.liquidacion_error'));
             console.log(error);
             reject([]);
           });
@@ -492,7 +578,7 @@ export class LegalizacionMatriculaComponent {
           }
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.liquidacion_detalle_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.liquidacion_detalle_error'));
             console.log(error);
             reject([]);
           });
@@ -528,7 +614,7 @@ export class LegalizacionMatriculaComponent {
           resolve(res.Data)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.conceptos_error'));
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.conceptos_error'));
             console.log(error);
             reject([]);
           });
@@ -835,8 +921,8 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.documento_error'));
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.documento_error'));
+            console.log(error);
             reject([]);
           });
     });
@@ -849,8 +935,8 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_matricula.actualizar_documento_error'));
-            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.actualizar_documento_error'));
+            console.log(error);
             reject([]);
           });
     });
@@ -885,6 +971,16 @@ export class LegalizacionMatriculaComponent {
     return keys[0]
   }
 
+  calcularEstadoBotones() {
+    this.puedeAprobar = false;
+    this.puedePedirMod = false;
+    if (this.verificarEstadosAprobados()) {
+      this.puedeAprobar = true; 
+    } else if (!this.verificarEstadosSinRevisar()) {
+      this.puedePedirMod = true;
+    }
+  }
+
   editar = async (data: any) => {
     this.aspirante = data;
     this.aspiranteActualId = this.aspirante.personaId;
@@ -895,6 +991,7 @@ export class LegalizacionMatriculaComponent {
       this.docsDescargados.push(this.aspiranteActualId)
       this.descargarArchivos(infoLegalizacion);
     }
+    this.calcularEstadoBotones();
     this.formulario = true;
   }
 
@@ -929,11 +1026,11 @@ export class LegalizacionMatriculaComponent {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('legalizacion/informacion-legalizacion/' + personaId)
         .subscribe((res: any) => {
-          resolve(res.data);
+          resolve(res.Data);
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(
-              this.translate.instant('legalizacion_matricula.legalizacion_error')
+              this.translate.instant('legalizacion_admision.legalizacion_error')
             );
           });
     });
@@ -944,23 +1041,97 @@ export class LegalizacionMatriculaComponent {
 
     const infoSocioEcoPersonal: any[] = [
       {Orden: 1, Concepto: 'GLOBAL.direccion_residencia', Informacion: infoLegalizacion.direccionResidencia, Estado: '', Soporte: false},
-      {Orden: 2, Concepto: 'legalizacion_matricula.colegio_graduado', Informacion: infoLegalizacion.colegioGraduado, Estado: this.retornarEstadoPorId(estados["diplomaBachiller"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteColegio},
-      {Orden: 3, Concepto: 'legalizacion_matricula.pension_mesual_11', Informacion: infoLegalizacion.pensionGrado11, Estado: this.retornarEstadoPorId(estados["soportePension"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soportePensionGrado11},
-      {Orden: 4, Concepto: 'legalizacion_matricula.nucleo_familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: this.retornarEstadoPorId(estados["soporteNucleo"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteNucleoFamiliar},
-      {Orden: 5, Concepto: 'legalizacion_matricula.situacion_laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"] ? this.retornarEstadoPorId(estados["soporteSituacionLaboral"]) : "", Soporte: estados["soporteSituacionLaboral"] ? true : false, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
+      {Orden: 2, Concepto: 'legalizacion_admision.colegio_graduado', Informacion: infoLegalizacion.colegioGraduado, Estado: this.retornarEstadoPorId(estados["diplomaBachiller"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteColegio},
+      {Orden: 3, Concepto: 'legalizacion_admision.pension_mesual_11', Informacion: infoLegalizacion.pensionGrado11, Estado: this.retornarEstadoPorId(estados["soportePension"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soportePensionGrado11},
+      {Orden: 4, Concepto: 'legalizacion_admision.nucleo_familiar', Informacion: infoLegalizacion.nucleoFamiliar, Estado: this.retornarEstadoPorId(estados["soporteNucleo"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteNucleoFamiliar},
+      {Orden: 5, Concepto: 'legalizacion_admision.situacion_laboral', Informacion: infoLegalizacion.situacionLaboral, Estado: estados["soporteSituacionLaboral"] ? this.retornarEstadoPorId(estados["soporteSituacionLaboral"]) : "", Soporte: estados["soporteSituacionLaboral"] ? true : false, DocumentoSoporte: infoLegalizacion.soporteSituacionLaboral},
     ];
     this.infoSocioEcopersonalDataSource = new MatTableDataSource<any>(infoSocioEcoPersonal);
 
     const infoSocioEcoCosteo: any[] = [
       {Orden: 1, Concepto: 'GLOBAL.direccion_residencia', Informacion: infoLegalizacion.direccionCostea, Estado: this.retornarEstadoPorId(estados["soporteEstrato"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteEstratoCostea},
-      {Orden: 2, Concepto: 'legalizacion_matricula.ingresos_anio_anterior', Informacion: infoLegalizacion.ingresosCostea, Estado: this.retornarEstadoPorId(estados["soporteIngresos"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteIngresosCostea},
+      {Orden: 2, Concepto: 'legalizacion_admision.ingresos_anio_anterior', Informacion: infoLegalizacion.ingresosCostea, Estado: this.retornarEstadoPorId(estados["soporteIngresos"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteIngresosCostea},
     ];
     this.infoSocioEcoCosteaDataSource = new MatTableDataSource<any>(infoSocioEcoCosteo);
 
     const resumenGeneral: any[] = [
-      {Orden: 1, Concepto: 'legalizacion_matricula.soporte_general', Informacion: 'legalizacion_matricula.sin_informacion', Estado: this.retornarEstadoPorId(estados["documentosGeneral"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteGeneral},
+      {Orden: 1, Concepto: 'legalizacion_admision.soporte_general', Informacion: 'legalizacion_admision.sin_informacion', Estado: this.retornarEstadoPorId(estados["documentosGeneral"]), Soporte: true, DocumentoSoporte: infoLegalizacion.soporteGeneral},
     ];
     this.resumenGeneralDataSource = new MatTableDataSource<any>(resumenGeneral);
+  }
+
+  async aprobarAspirante() {
+    this.popUpManager.showPopUpGeneric(
+      this.translate.instant('legalizacion_admision.titulo_aprobacion_aspirante'),
+      this.translate.instant('legalizacion_admision.aprobacion_aspirante'),
+      MODALS.INFO,
+      true).then(
+        async (action) => {
+          if (action.value) {
+            for (const inscrito of this.inscritosData) {
+              if (inscrito.personaId == this.aspiranteActualId) {
+                inscrito.estado_revision = 'GLOBAL.estado_aprobado';
+                inscrito.estado_admision = 'admision.estado_admitido_legalizado';
+                const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
+                // Cambio de estado de la inscripción a admitido legalizado
+                inscripcion.EstadoInscripcionId.Id = 8;
+                const resEstado: any = await this.actualizarEstadoInscripcion(inscripcion);
+                const resLiquidacion = await this.generarLiquidacionmatricula()
+                if (Object.keys(resEstado).length == 0 || !resLiquidacion) {
+                  this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_legalizado_error'));
+                } else {
+                  this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_legalizado_ok'));
+                }
+                console.log("INFO AL ACTUALIZAR ESTADO GENERAL:", resEstado, resLiquidacion);
+              }
+            }
+            this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+          }
+        });
+  }
+
+  async rechazarAspirante() {
+    this.popUpManager.showPopUpGeneric(
+      this.translate.instant('legalizacion_admision.titulo_rechazo_aspirante'),
+      this.translate.instant('legalizacion_admision.rechazo_aspirante'),
+      MODALS.INFO,
+      true).then(
+        async (action) => {
+          if (action.value) {
+            const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
+            // Cambio de estado de la inscripción a no admitido
+            inscripcion.EstadoInscripcionId.Id = 4;
+            const resEstado: any = await this.actualizarEstadoInscripcion(inscripcion);
+            if (Object.keys(resEstado).length == 0) {
+              this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_no_admitido_error'));
+            } else {
+              this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_no_admitido_ok'));
+            }
+            this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+          }
+        });
+  }
+
+  async solicitarcambiosAspirante() {
+    this.popUpManager.showPopUpGeneric(
+      this.translate.instant('legalizacion_admision.titulo_modificaciones_aspirante'),
+      this.translate.instant('legalizacion_admision.modificaciones_aspirante'),
+      MODALS.INFO,
+      true).then(
+        async (action) => {
+          if (action.value) {
+            const inscripcion = this.inscripciones.find((item: any) => item.PersonaId === this.aspiranteActualId);
+            // Cambio de estado de la inscripción a admitido con observaciones
+            inscripcion.EstadoInscripcionId.Id = 10;
+            const resEstado: any = await this.actualizarEstadoInscripcion(inscripcion);
+            if (Object.keys(resEstado).length == 0) {
+              this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_error'));
+            } else {
+              this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
+            }
+            this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+          }
+        });
   }
 
   cerrar = () => {

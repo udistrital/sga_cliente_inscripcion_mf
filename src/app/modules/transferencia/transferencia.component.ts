@@ -48,7 +48,7 @@ export class TransferenciaComponent implements OnInit {
   periodo!: Periodo;
   periodos: any[] = [];
 
-  displayedColumns = ['recibo', 'concepto', 'programa', 'fecha', 'estado', 'respuesta', 'solicitar'];
+  displayedColumns = ['recibo', 'concepto', 'programa', 'estadoInscripcion', 'fecha', 'estadoRecibo', 'respuesta', 'solicitar'];
   dataSource!: MatTableDataSource<any>;
 
   dataTransferencia: TransferenciaInterna = {
@@ -124,8 +124,8 @@ export class TransferenciaComponent implements OnInit {
     });
   }
 
-  public loadInfoPersona(): void {
-    this.uid = this.userService.getPersonaId();
+  public async loadInfoPersona() {
+    this.uid = await this.userService.getPersonaId();
     if (this.uid !== undefined && this.uid !== 0 &&
       this.uid.toString() !== '' && this.uid.toString() !== '0') {
       this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
@@ -144,7 +144,8 @@ export class TransferenciaComponent implements OnInit {
     await this.cargarPeriodo(); 
     this.inscripcionMidService.get('transferencia/estado-recibos/' + this.uid)
       .subscribe(response => {
-        if (response !== null && response.Status === '400') {
+        console.log(response)
+        if (response !== null && response.Status == '400') {
           this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
         } else if ((response != null && response.Status == '404') || response.Data.length == 0) {
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
@@ -162,42 +163,52 @@ export class TransferenciaComponent implements OnInit {
                 element.Programa = res.Nombre;
                 element.Periodo = this.periodo.Id;
 
+                //todo: revisar este flujo
+                if(element.EstadoSolicitud){
+                  element.Estado = element.EstadoSolicitud
+                }else{
+                  element.Estado = element.EstadoInscripcion
+                }
+                console.log(element.Estado)
+
+                if (element.EstadoRecibo === 'Pendiente pago') {
+                  element.Opcion = {
+                    icon: 'fa fa-arrow-circle-right fa-2x',
+                    label: 'Pagar',
+                    class: "btn btn-primary",
+                    disabled: false
+                  }
+                } else if (element.EstadoRecibo === 'Pago') {
+                  element.Opcion = {
+                    icon: 'fa fa-pencil fa-2x',
+                    label: 'Inscribirme',
+                    class: "btn btn-primary",
+                    disabled: false
+                  }
+                } else {
+                  element.Opcion = {
+                    icon: 'fa fa-pencil fa-2x',
+                    label: 'Inscribirme',
+                    class: "btn btn-primary",
+                    disabled: true
+                  }
+                }
+                
                 element.Descargar = {
                   icon: 'fa fa-download fa-2x',
                   label: 'Descargar',
                   class: 'btn btn-primary',
                   documento: ''
                 }
-
-                if (element.Estado === 'Pendiente pago') {
-                  element.Opcion = {
-                    icon: 'fa fa-arrow-circle-right fa-2x',
-                    label: 'Pagar',
-                    class: "btn btn-primary"
-                  }
-                } else {
-                  element.Opcion = {
-                    icon: 'fa fa-pencil fa-2x',
-                    label: 'Inscribirme',
-                    class: "btn btn-primary"
-                  }
-
-                }
-
-                element.Opcion.disabled = false;
-                if (element.Estado === 'Solicitado') {
-                  element.Opcion.disabled = true;
-                }
-
                 
                 if (element.SolicitudFinalizada) {
                   element.Descargar = {
                     icon: 'fa fa-download fa-2x',
                     label: 'Descargar',
                     class: 'btn btn-primary',
-                    documento: element.VerRespuesta.DocRespuesta
+                    documento: element.VerRespuesta.DocRespuesta,
+                    disabled: false
                   }
-                  delete element.Descargar.disabled;
                   element.Opcion.disabled = true;
                 } else {
                   element.Descargar.disabled = true;
@@ -393,7 +404,6 @@ export class TransferenciaComponent implements OnInit {
           if (this.info_info_persona === undefined) {
             this.terceroMidService.get('personas/' + this.uid)
               .subscribe(async res => {
-                console.log(res)
                 if (res != null) {
                   const temp = <InfoPersona>res.Data;
                   this.info_info_persona = temp;
@@ -429,6 +439,7 @@ export class TransferenciaComponent implements OnInit {
         PeriodoId: this.dataTransferencia.Periodo!.Id,
         Nivel: this.dataTransferencia.TipoInscripcion!.NivelId,
         ProgramaAcademicoId: this.dataTransferencia.ProyectoCurricular!.Id,
+        ProgramaAcademicoCodigo:   parseInt(this.dataTransferencia.ProyectoCurricular!.Codigo, 10),
         TipoInscripcionId: this.dataTransferencia.TipoInscripcion!.Id,
         Year: this.dataTransferencia.Periodo!.Year,
         Periodo: parseInt(this.dataTransferencia.Periodo!.Ciclo, 10),
@@ -442,13 +453,12 @@ export class TransferenciaComponent implements OnInit {
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.dataTransferencia.TipoInscripcion!.NivelId + '&id-periodo=' + periodo).subscribe(
         (response: any) => {
           if (response !== null && response.Success == true) {
-            this.inscripcionProjects = response.Data;
-            console.log(this.inscripcionProjects)
-            console.log(this.dataTransferencia)
-            
+            this.inscripcionProjects = response.Data;  
+            console.log(this.inscripcionProjects)          
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                console.log(inscripcion.FechaPago)
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
                     if (response.Status == '200') {
@@ -523,7 +533,7 @@ export class TransferenciaComponent implements OnInit {
   }
 
   solicitar(data:any){
-    if (data.Estado == 'Pendiente pago') {
+    if (data.EstadoRecibo == 'Pendiente pago') {
       this.abrirPago(data)
     } else {
       const idInscripcion = data['Id'];
