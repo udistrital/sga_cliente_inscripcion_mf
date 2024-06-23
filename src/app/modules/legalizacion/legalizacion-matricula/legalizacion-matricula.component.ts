@@ -972,6 +972,8 @@ export class LegalizacionMatriculaComponent {
   }
 
   calcularEstadoBotones() {
+    this.puedeAprobar = false;
+    this.puedePedirMod = false;
     if (this.verificarEstadosAprobados()) {
       this.puedeAprobar = true; 
     } else if (!this.verificarEstadosSinRevisar()) {
@@ -981,7 +983,6 @@ export class LegalizacionMatriculaComponent {
 
   editar = async (data: any) => {
     this.aspirante = data;
-    console.log(this.aspirante);
     this.aspiranteActualId = this.aspirante.personaId;
     this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
     const infoLegalizacion = this.infoLegalizacionAspirantes[this.aspiranteActualId]

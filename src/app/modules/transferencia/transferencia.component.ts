@@ -439,6 +439,7 @@ export class TransferenciaComponent implements OnInit {
         PeriodoId: this.dataTransferencia.Periodo!.Id,
         Nivel: this.dataTransferencia.TipoInscripcion!.NivelId,
         ProgramaAcademicoId: this.dataTransferencia.ProyectoCurricular!.Id,
+        ProgramaAcademicoCodigo:   parseInt(this.dataTransferencia.ProyectoCurricular!.Codigo, 10),
         TipoInscripcionId: this.dataTransferencia.TipoInscripcion!.Id,
         Year: this.dataTransferencia.Periodo!.Year,
         Periodo: parseInt(this.dataTransferencia.Periodo!.Ciclo, 10),
