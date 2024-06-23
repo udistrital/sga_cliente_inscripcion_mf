@@ -400,14 +400,12 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   filtrarProyecto(proyecto: any) {
-    if (this.selectedLevel === proyecto['NivelFormacionId']['Id']) {
-      return true;
-    }
+
     if (proyecto['NivelFormacionId']['NivelFormacionPadreId'] !== null) {
-      if (
-        proyecto['NivelFormacionId']['NivelFormacionPadreId']['Id'] ===
-        this.selectedLevel
+      if (proyecto['NivelFormacionId']['Id'] === this.selectedSubLevel
       ) {
+        console.log(this.selectedSubLevel+"okSL")
+        console.log(proyecto['NivelFormacionId']['NivelFormacionPadreId']['Id']+"ok")
         return true;
       }
     }
@@ -434,7 +432,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             if (response && Array.isArray(response)) {
               const res = response.map((item: any) => ({
                 IdNivel: item.NivelFormacionId ? item.NivelFormacionId.Id : null,
-                Nombre: item.NivelFormacionId ? item.NivelFormacionId.Nombre : null
+                Nombre: item.NivelFormacionId ? item.NivelFormacionId.Nombre : null,
+                IdNivelPadre: item.NivelFormacionId?.NivelFormacionPadreId?.Id ?? null
               }));
               //Filtro de subniveles 
               const resLimpia = [];
@@ -445,10 +444,15 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                   resLimpia.push(item);
                 }
               }
-              this.showSublevel = true;
-              this.subniveles = resLimpia;
-              console.log(this.subniveles);
-              console.log(this.selectedLevel);
+              if (this.selectedLevel === 1) {
+                this.showSublevel = true;
+                this.subniveles = resLimpia.filter(item => item.IdNivelPadre !== 2 && item.IdNivel !== 2);
+              }
+              if (this.selectedLevel === 2) {
+                this.showSublevel = true;
+                this.subniveles = resLimpia.filter(item => item.IdNivelPadre !== 1 && item.IdNivel !== 1);
+              }
+              
             } else {
               this.popUpManager.showErrorToast(
                 this.translate.instant('ERROR.general')
@@ -472,6 +476,23 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     } else {
       console.log(this.subniveles);
       console.log(this.selectedSubLevel);
+      this.projectService
+        .get(
+          'proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId,Codigo'
+        )
+        .subscribe(
+          (response: any) => {
+            this.projects = <any[]>(
+              response.filter((proyecto: any) => this.filtrarProyecto(proyecto))
+            );
+            this.validateProject();
+          },
+          (error: any) => {
+            this.popUpManager.showErrorToast(
+              this.translate.instant('ERROR.general')
+            );
+          }
+        );
     }
   }
 
@@ -497,10 +518,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showTipoInscripcion = false;
     this.showInfo = false;
     let periodo = localStorage.getItem('IdPeriodo');
+    console.log(this.selectedSubLevel+"calendario");
     this.calendarioMidService
       .get(
         'calendario-proyecto/calendario/proyecto?id-nivel=' +
-        this.selectedLevel +
+        this.selectedSubLevel +
         '&id-periodo=' +
         periodo
       )
@@ -515,6 +537,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
           ) {
             const inscripcionP = <Array<any>>response.Data;
             this.inscripcionProjects = inscripcionP;
+            console.log(this.projects);
+            console.log(this.inscripcionProjects);
             this.showProyectoCurricular = true;
             // this.loadTipoInscripcion();
           } else {
@@ -658,7 +682,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         ).email,
         PersonaId: Number(this.info_persona_id),
         PeriodoId: this.periodo.Id,
-        Nivel: parseInt(this.selectedLevel, 10),
+        Nivel: parseInt(this.selectedSubLevel, 10),
         ProgramaAcademicoId: parseInt(this.selectedProject, 10),
         TipoInscripcionId: parseInt(this.tipo_inscripcion_selected, 10),
         Year: this.periodo.Year,
@@ -666,7 +690,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         FechaPago: '',
       };
       let periodo = localStorage.getItem('IdPeriodo');
-      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
+      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedSubLevel + '&id-periodo=' + periodo).subscribe(
         (response: any) => {
           if (response !== null && response.length !== 0) {
             this.inscripcionProjects = response.data;
@@ -712,7 +736,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +
-          this.selectedLevel +
+          this.selectedSubLevel +
           '&id-periodo=' +
           periodo
         )
@@ -784,8 +808,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   descargarReciboPago(data: any) {
     this.itemSelect({ data: data });
-    if (this.selectedLevel === undefined) {
-      this.selectedLevel = parseInt(data.NivelPP, 10);
+    if (this.selectedSubLevel === undefined) {
+      this.selectedSubLevel = parseInt(data.NivelPP, 10);
     }
     if (this.info_info_persona != null && data.Estado != 'Vencido') {
       this.selectedProject = parseInt(
@@ -815,7 +839,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +
-          this.selectedLevel +
+          this.selectedSubLevel +
           '&id-periodo=' +
           periodo
         )
@@ -912,11 +936,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   loadTipoInscripcion() {
     this.tipo_inscripciones = new Array();
-    window.localStorage.setItem('IdNivel', String(this.selectedLevel));
+    window.localStorage.setItem('IdNivel', String(this.selectedSubLevel));
     this.inscripcionService
       .get(
         'tipo_inscripcion?query=NivelId:' +
-        Number(this.selectedLevel) +
+        Number(this.selectedSubLevel) +
         ',Activo:true&sortby=NumeroOrden&order=asc'
       )
       .subscribe(
