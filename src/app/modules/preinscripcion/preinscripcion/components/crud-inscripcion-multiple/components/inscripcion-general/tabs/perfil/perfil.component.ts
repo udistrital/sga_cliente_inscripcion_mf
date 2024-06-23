@@ -156,11 +156,15 @@ export class PerfilComponent implements OnInit {
     this.inscripcionService.get('inscripcion/' + this.info_inscripcion_id)
       .subscribe((resG: any) => {
         resG.EstadoInscripcionId.Id = 5; // id inscrito.
-        this.inscripcionService.put('inscripcion', resG)
-          .subscribe(res => {
-            sessionStorage.setItem('IdEstadoInscripcion', "");
-            this.editar("", 'salir_preinscripcion');
-            this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.cambio_estado_ok'));
+        this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', resG)
+          .subscribe((res: any) => {
+            if (res !== null && res.Status != '400') {
+              sessionStorage.setItem('IdEstadoInscripcion', "");
+              this.editar("", 'salir_preinscripcion');
+              this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.cambio_estado_ok'));
+            } else {
+              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
+            }
           }, err => {
             this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
           })
