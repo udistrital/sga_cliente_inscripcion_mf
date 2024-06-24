@@ -176,7 +176,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     return 0;
   }
 
-  public loadDescuentoAcademico(): void {
+  public async loadDescuentoAcademico(): Promise<void> {
     this.temp = {};
     this.SoporteDescuento = [];
     this.info_descuento_academico = {};
@@ -184,7 +184,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     if (this.descuento_academico_id !== undefined &&
       this.descuento_academico_id !== 0 &&
       this.descuento_academico_id.toString() !== '') {
-      const id = decrypt(window.localStorage.getItem('persona_id'));
+      const id = await this.userService.getPersonaId();
         this.inscripcionMidService.get('academico/descuento/?PersonaId=' + id + '&SolicitudId=' + this.descuento_academico_id)
           .subscribe(solicitud => {
             if (solicitud !== null) {
@@ -330,11 +330,11 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
     };
     Swal.fire(opt)
-      .then((willDelete:any) => {
+      .then(async (willDelete:any) => {
         if (willDelete.value) {
           const files = [];
           this.info_descuento_academico = <SolicitudDescuento>DescuentoAcademico;
-          const id = decrypt(window.localStorage.getItem('persona_id'));
+          const id = await this.userService.getPersonaId();
           this.info_descuento_academico.PersonaId = Number(id);
           // this.info_descuento_academico.PeriodoId = this.periodo;
           this.info_descuento_academico.PeriodoId = Number(window.sessionStorage.getItem('IdPeriodo'));

@@ -602,8 +602,8 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
           });
   }
 
-  loadPercentageDescuentos() {
-    const id = decrypt(window.localStorage.getItem('persona_id'));
+  async loadPercentageDescuentos() {
+    const id = await this.userService.getPersonaId();
       this.inscripcionMidService.get('academico/descuento/detalle?' + 'PersonaId=' +
         id + '&DependenciaId=' +
         Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))

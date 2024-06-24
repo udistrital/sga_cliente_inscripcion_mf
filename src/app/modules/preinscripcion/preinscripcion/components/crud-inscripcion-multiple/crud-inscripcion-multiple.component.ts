@@ -1085,9 +1085,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     //this.source_emphasys.load(this.arr_proyecto);
   }
 
-  preinscripcion() {
+  async preinscripcion() {
     this.proyectos_preinscripcion = [];
-    const id = decrypt(localStorage.getItem('persona_id'));
+    const id = await this.userService.getPersonaId();
     this.arr_proyecto.forEach((proyecto: any) => {
       Number(localStorage.getItem('IdNivel'));
       this.proyectos_preinscripcion.push({

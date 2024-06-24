@@ -12,6 +12,7 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 // @ts-ignore
@@ -62,6 +63,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
     private newNuxeoService: NewNuxeoService,
+    private userService: UserService,
     private descuentoAcademicoService: DescuentoAcademicoService) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
@@ -74,8 +76,8 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     this.translate.use(language);
   }
 
-  loadData(): void {
-    const id = decrypt(window.localStorage.getItem('persona_id'));
+  async loadData(): Promise<void> {
+    const id = await this.userService.getPersonaId();
     this.inscripcionMidService.get('academico/descuento/detalle?' +
       'PersonaId=' + Number(id) + '&DependenciaId=' +
       Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
