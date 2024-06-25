@@ -454,6 +454,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   actualizarEstadoInscripcion(inscripcionData: any) {
+    inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
         .subscribe((res: any) => {

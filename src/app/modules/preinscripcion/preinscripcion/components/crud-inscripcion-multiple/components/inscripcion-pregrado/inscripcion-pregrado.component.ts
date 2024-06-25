@@ -817,6 +817,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
             (response: any) => {
               const estadoInscripcio: any = response[0];
               inscripcionPut.EstadoInscripcionId = estadoInscripcio;
+              inscripcionPut.TerceroId = this.info_persona_id;
 
               this.inscripcionMidService.post('inscripcion/actualizar-inscripcion', inscripcionPut)
                 .subscribe(res_ins => {

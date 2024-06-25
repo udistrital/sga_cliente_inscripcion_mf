@@ -156,6 +156,7 @@ export class PerfilComponent implements OnInit {
     this.inscripcionService.get('inscripcion/' + this.info_inscripcion_id)
       .subscribe((resG: any) => {
         resG.EstadoInscripcionId.Id = 5; // id inscrito.
+        resG.TerceroId = this.info_persona_id;
         this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', resG)
           .subscribe((res: any) => {
             if (res !== null && res.Status != '400') {

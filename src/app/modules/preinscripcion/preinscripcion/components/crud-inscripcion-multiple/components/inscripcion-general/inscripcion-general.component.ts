@@ -776,6 +776,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             (response: any) => {
               const estadoInscripcio: any = response[0];
               inscripcionPut.EstadoInscripcionId = estadoInscripcio;
+              inscripcionPut.TerceroId = this.info_persona_id;
 
               this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionPut)
                 .subscribe(res_ins => {

@@ -67,6 +67,7 @@ export class LegalizacionMatriculaComponent {
   puedeRechazar: boolean = true;
   puedePedirMod: boolean = false;
   cicloActual: any;
+  info_persona_id: any;
 
   proyectosCurriculares!: any[]
   periodosAnio!: any[]
@@ -104,7 +105,8 @@ export class LegalizacionMatriculaComponent {
   }
 
   async ngOnInit() {
-    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
+    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES];
+    this.info_persona_id = await this.usuarioService.getPersonaId();
     this.usuarioService.esAutorizado(rolesRequeridos).then((esAutorizado: any) => {
       if (esAutorizado) this.estaAutorizado = true;
     }).catch( (error: any) => {
@@ -436,6 +438,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   actualizarEstadoInscripcion(inscripcionData: any) {
+    inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
         .subscribe((res: any) => {
