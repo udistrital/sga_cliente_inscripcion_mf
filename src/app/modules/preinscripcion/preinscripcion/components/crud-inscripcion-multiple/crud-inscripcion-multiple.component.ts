@@ -682,7 +682,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         ).email,
         PersonaId: Number(this.info_persona_id),
         PeriodoId: this.periodo.Id,
-        Nivel: parseInt(this.selectedSubLevel, 10),
+        Nivel: parseInt(this.selectedLevel, 10),
         ProgramaAcademicoId: parseInt(this.selectedProject, 10),
         ProgramaAcademicoCodigo: parseInt(this.projects.find(proyecto => proyecto.Id === this.selectedProject).Codigo, 10),
         TipoInscripcionId: parseInt(this.tipo_inscripcion_selected, 10),
@@ -691,7 +691,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         FechaPago: '',
       };
       let periodo = localStorage.getItem('IdPeriodo');
-      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedSubLevel + '&id-periodo=' + periodo).subscribe(
+      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
         (response: any) => {
           if (response !== null && response.length !== 0) {
             this.inscripcionProjects = response.data;
@@ -737,7 +737,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +
-          this.selectedSubLevel +
+          this.selectedLevel +
           '&id-periodo=' +
           periodo
         )
@@ -809,8 +809,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   descargarReciboPago(data: any) {
     this.itemSelect({ data: data });
-    if (this.selectedSubLevel === undefined) {
-      this.selectedSubLevel = parseInt(data.NivelPP, 10);
+    if (this.selectedLevel === undefined) {
+      this.selectedLevel = parseInt(data.NivelPP, 10);
     }
     if (this.info_info_persona != null && data.Estado != 'Vencido') {
       this.selectedProject = parseInt(
@@ -840,7 +840,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +
-          this.selectedSubLevel +
+          this.selectedLevel +
           '&id-periodo=' +
           periodo
         )
@@ -937,11 +937,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   loadTipoInscripcion() {
     this.tipo_inscripciones = new Array();
-    window.localStorage.setItem('IdNivel', String(this.selectedSubLevel));
+    window.localStorage.setItem('IdNivel', String(this.selectedLevel));
     this.inscripcionService
       .get(
         'tipo_inscripcion?query=NivelId:' +
-        Number(this.selectedSubLevel) +
+        Number(this.selectedLevel) +
         ',Activo:true&sortby=NumeroOrden&order=asc'
       )
       .subscribe(
