@@ -15,6 +15,16 @@ mat-card-content {
     margin-bottom: 20px;
 }
 
+mat-form-field {
+    width: 100%;
+    min-height: 90px;
+}
+
+.archivo ::ng-deep .mat-mdc-form-field-flex {
+    max-height: 68px;
+    overflow-y: overlay;
+}
+
 li {
     margin: 5px 0;
 }
@@ -27,7 +37,7 @@ fieldset {
 }
 
 .color-primario {
-    background-color: #1ba1e2;
+    background-color: var(--md-primary-400) !important;
 }
 
 .mx-auto {
@@ -72,10 +82,11 @@ fieldset {
 
 .credencial {
     border: solid 1px #6c8ebf;
-    background-color: #dae8fc;
+    background-color: #dae8fc !important;
     width: 280px;
     padding: 20px;
     margin: 15px auto;
+
 }
 
 .f-2 .column {
@@ -116,7 +127,7 @@ fieldset {
 .contenedor-boton button {
     color: white;
     padding: 10px 60px;
-    border: solid 1px #006eaf;
+    border: solid 1px var(--md-primary-700);
 }
 
 .info-socioeconomica {
@@ -183,17 +194,10 @@ fieldset {
     background-color: #dddddd;
 }
 
-.button-disabled {
-    background-color: #ccc; /* Color de fondo grisáceo */
-    color: #999; /* Color de texto gris claro */
-    cursor: not-allowed; /* Cursor de no permitido */
-    border: black solid 1px !important;
-}
-
 .info-personal {
     width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 800px;
+    margin: 0 auto 20px;
     text-align: center;
 }
 
@@ -246,6 +250,68 @@ fieldset {
 .contenedor-archivos-grid {
     display: flex !important;
     flex-direction: column;
+}
+
+.b-center {
+    display: flex;
+    justify-content: center;
+}
+
+.boton-visualizar {
+    background-color: var(--md-primary-400) !important;
+    color: white !important;
+}
+
+.button-disabled {
+    background-color: #ccc !important;
+    color: #999;
+    cursor: not-allowed !important; 
+    border: black solid 1px !important;
+}
+
+.estado_inscripcion{
+    display: flex;
+}
+
+.estado_inscripcion p{
+    width: 85%;
+    margin: 0 10px;
+}
+
+.icono {
+    font-size: 2.75rem;
+    height: 100%;
+    width: 10%;
+    margin: auto;
+}
+
+.color-rojo {
+    color: var(--danger-main);
+}
+
+.color-verde {
+    color: var(--danger-main);
+}
+
+.color-primary {
+    color: var(--primary);
+}
+
+.enlace-documento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0 0;
+    cursor: pointer;
+}
+
+.enlace-documento mat-icon {
+    color: var(--danger-main)
+}
+
+.contenedor-tabla {
+    width: 90%;
+    margin: 15px auto 0;
 }
 
 @media (width > 650px) {

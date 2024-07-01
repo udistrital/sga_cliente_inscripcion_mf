@@ -1246,6 +1246,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     return new Promise((resolve) => {
     this.evaluacionInscripcionService.get('tags_por_dependencia?query=Activo:true,PeriodoId:'+periodo+',DependenciaId:'+proyecto+',TipoInscripcionId:'+tipoInscrip)
         .subscribe((response: any) => {
+          console.log(response)
           if (response != null && response.Status == '200') {
             if (Object.keys(response.Data[0]).length > 0) {
               this.tagsObject = JSON.parse(response.Data[0].ListaTags);
