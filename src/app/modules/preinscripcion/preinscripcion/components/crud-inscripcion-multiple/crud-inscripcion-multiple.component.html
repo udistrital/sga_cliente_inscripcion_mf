@@ -105,9 +105,13 @@
 
         <!-- select Nivel -->
         <mat-form-field style="width: 100%" *ngIf="showNew">
-          <mat-select [formControl]="CampoControl" [(ngModel)]="selectedLevel"
-            placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectLevel()">
-            <mat-option>--Seleccionar--</mat-option>
+          <mat-select
+            [formControl]="CampoControl"
+            [(ngModel)]="selectedLevel"
+            placeholder="{{ 'calendario.para' | translate }}"
+            (selectionChange)="onSelectLevel()"
+          >
+            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
             <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">
               {{ nivel.Nombre }}
             </mat-option>
@@ -131,7 +135,7 @@
         </mat-form-field>
 
         <!-- select periodo -->
-        <mat-form-field style="width: 40%" *ngIf="showNew">
+        <!-- <mat-form-field style="width: 40%" *ngIf="showNew">
           <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
           <mat-select [(ngModel)]="periodo" [disabled]="true">
             <mat-option>--Seleccionar--</mat-option>
@@ -139,14 +143,21 @@
               {{ item.Nombre }}
             </mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
 
         <!-- select proyecto academico -->
         <mat-form-field style="width: 100%" *ngIf="showProyectoCurricular">
-          <mat-select [formControl]="Campo1Control" [(ngModel)]="selectedProject"
-            placeholder="{{ 'oferta.proyecto' | translate }}" (selectionChange)="onSelectProyecto()">
-            <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let project of inscripcionProjects" [value]="project.ProyectoId">
+          <mat-select
+            [formControl]="Campo1Control"
+            [(ngModel)]="selectedProject"
+            placeholder="{{ 'oferta.proyecto' | translate }}"
+            (selectionChange)="onSelectProyecto()"
+          >
+            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
+            <mat-option
+              *ngFor="let project of inscripcionProjects"
+              [value]="project.ProyectoId"
+            >
               {{ project.NombreProyecto }}
             </mat-option>
           </mat-select>
@@ -159,9 +170,13 @@
         <mat-form-field style="width: 100%" *ngIf="showTipoInscripcion">
           <mat-select [formControl]="Campo2Control" [(ngModel)]="tipo_inscripcion_selected"
             placeholder="{{ 'inscripcion.aviso_tipo' | translate }}"
-            (selectionChange)="onSelectTipoInscripcion($event)">
-            <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let item of tipo_inscripciones" [value]="item.Id">
+            (selectionChange)="onSelectTipoInscripcion($event)"
+          >
+            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
+            <mat-option
+              *ngFor="let item of tipo_inscripciones"
+              [value]="item.Id"
+            >
               {{ item.Nombre }}
             </mat-option>
           </mat-select>
