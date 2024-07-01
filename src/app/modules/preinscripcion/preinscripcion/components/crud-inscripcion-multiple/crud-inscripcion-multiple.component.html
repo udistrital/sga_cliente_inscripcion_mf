@@ -18,91 +18,80 @@
       </mat-card-header>
       <mat-card-content>
         <div class="table">
-            <mat-table mat-table [dataSource]="dataSource" class="demo-table">
-                <ng-container matColumnDef="recibo">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.numero_recibo" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    {{ row.ReciboInscripcion }}
-                  </mat-cell>
-                </ng-container>
-      
-                <ng-container matColumnDef="inscripcion">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.inscripcion" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row"> {{ row.Id }} </mat-cell>
-                </ng-container>
-      
-                <ng-container matColumnDef="programa">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.programa" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    {{ row.ProgramaAcademicoId }}</mat-cell
-                  >
-                </ng-container>
-      
-                <ng-container matColumnDef="estado_inscripcion">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.estado_inscripcion" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    {{ row.EstadoInscripcion }}
-                  </mat-cell>
-                </ng-container>
-      
-                <ng-container matColumnDef="fecha">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.fecha_generacion" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row"> {{ row.FechaCreacion }} </mat-cell>
-                </ng-container>
-      
-                <ng-container matColumnDef="estado_recibo">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.estado_recibo" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row"> {{ row.Estado }} </mat-cell>
-                </ng-container>
-      
-                <ng-container matColumnDef="descargar">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.descargar" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    <app-link-download
-                      (click)="descargarReciboPago(row)"
-                      [rowData]="row"
-                    ></app-link-download>
-                  </mat-cell>
-                </ng-container>
-      
-                <ng-container matColumnDef="opcion">
-                  <mat-header-cell class="text-left" *matHeaderCellDef>
-                    <b>{{ "inscripcion.opcion" | translate }}</b>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" class="center" style="min-width: 5em;">
-                    <app-button-payment
-                      (save)="onRenderButtonPaymentComponent($event)"
-                      [rowData]="row"
-                    ></app-button-payment>
-                  </mat-cell>
-                </ng-container>
-      
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-              </mat-table>
+          <mat-table mat-table [dataSource]="dataSource" class="demo-table">
+            <ng-container matColumnDef="recibo">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.numero_recibo" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.ReciboInscripcion }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="inscripcion">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.inscripcion" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.Id }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="programa">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.programa" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.ProgramaAcademicoId }}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="estado_inscripcion">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.estado_inscripcion" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.EstadoInscripcion }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="fecha">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.fecha_generacion" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.FechaCreacion }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="estado_recibo">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.estado_recibo" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.Estado }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="descargar">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.descargar" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <app-link-download (click)="descargarReciboPago(row)" [rowData]="row"></app-link-download>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="opcion">
+              <mat-header-cell class="text-left" *matHeaderCellDef>
+                <b>{{ "inscripcion.opcion" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="center" style="min-width: 5em;">
+                <app-button-payment (save)="onRenderButtonPaymentComponent($event)"
+                  [rowData]="row"></app-button-payment>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
         </div>
-        
+
         <div class="text-center">
-          <button
-            mat-flat-button
-            color="accent"
-            type="button"
-            (click)="nuevaPreinscripcion()"
-          >
+          <button mat-flat-button color="accent" type="button" (click)="nuevaPreinscripcion()">
             {{ "inscripcion.nueva" | translate }}
           </button>
         </div>
@@ -128,6 +117,19 @@
             </mat-option>
           </mat-select>
           <mat-error *ngIf="CampoControl.hasError('required')">
+            {{ "inscripcion.erro_selec_nivel" | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field style="width: 100%" *ngIf="showSublevel">
+          <mat-select [formControl]="Campo3Control" [(ngModel)]="selectedSubLevel"
+            placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectSubLevel()">
+            <mat-option>--Seleccionar--</mat-option>
+            <mat-option *ngFor="let subnivel of subniveles" [value]="subnivel.IdNivel">
+              {{ subnivel.Nombre }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="Campo3Control.hasError('required')">
             {{ "inscripcion.erro_selec_nivel" | translate }}
           </mat-error>
         </mat-form-field>
@@ -164,22 +166,9 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- select periodo -->
-        <mat-form-field style="width: 40%" *ngIf="showNew">
-          <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
-          <mat-select [(ngModel)]="periodo" [disabled]="true">
-            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
-            <mat-option *ngFor="let item of periodos" [value]="item">
-              {{ item.Nombre }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <!-- select tipo de inscripcion -->
         <mat-form-field style="width: 100%" *ngIf="showTipoInscripcion">
-          <mat-select
-            [formControl]="Campo2Control"
-            [(ngModel)]="tipo_inscripcion_selected"
+          <mat-select [formControl]="Campo2Control" [(ngModel)]="tipo_inscripcion_selected"
             placeholder="{{ 'inscripcion.aviso_tipo' | translate }}"
             (selectionChange)="onSelectTipoInscripcion($event)"
           >
@@ -196,13 +185,7 @@
           </mat-error>
         </mat-form-field>
 
-        <button
-          *ngIf="showInfo"
-          mat-flat-button
-          color="accent"
-          style="display: grid"
-          (click)="generarRecibo()"
-        >
+        <button *ngIf="showInfo" mat-flat-button color="accent" style="display: grid" (click)="generarRecibo()">
           {{ "inscripcion.generar_recibo" | translate }}
           <i class="fa fa-barcode fa-5x"></i>
         </button>
@@ -214,19 +197,13 @@
   <br />
   <mat-card-content *ngIf="!showInscription">
     <div *ngIf="nivelInscripcion">
-      <ngx-inscripcion-pregrado
-        (changeTab)="return()"
-        (ocultarBarra)="ocultarBarraExterna($event)"
-        [inscripcion_id]="inscripcion_id"
-      >
+      <ngx-inscripcion-pregrado (changeTab)="return()" (ocultarBarra)="ocultarBarraExterna($event)"
+        [inscripcion_id]="inscripcion_id">
       </ngx-inscripcion-pregrado>
     </div>
     <div *ngIf="!nivelInscripcion">
-      <ngx-inscripcion-general
-        (changeTab)="return()"
-        (ocultarBarra)="ocultarBarraExterna($event)"
-        [inscripcion_id]="inscripcion_id"
-      >
+      <ngx-inscripcion-general (changeTab)="return()" (ocultarBarra)="ocultarBarraExterna($event)"
+        [inscripcion_id]="inscripcion_id">
       </ngx-inscripcion-general>
     </div>
   </mat-card-content>
