@@ -122,7 +122,7 @@
             placeholder="{{ 'calendario.para' | translate }}"
             (selectionChange)="onSelectLevel()"
           >
-            <mat-option>--Seleccionar--</mat-option>
+            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
             <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">
               {{ nivel.Nombre }}
             </mat-option>
@@ -133,7 +133,7 @@
         </mat-form-field>
 
         <!-- select periodo -->
-        <mat-form-field style="width: 40%" *ngIf="showNew">
+        <!-- <mat-form-field style="width: 40%" *ngIf="showNew">
           <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
           <mat-select [(ngModel)]="periodo" [disabled]="true">
             <mat-option>--Seleccionar--</mat-option>
@@ -141,7 +141,7 @@
               {{ item.Nombre }}
             </mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
 
         <!-- select proyecto academico -->
         <mat-form-field style="width: 100%" *ngIf="showProyectoCurricular">
@@ -151,7 +151,7 @@
             placeholder="{{ 'oferta.proyecto' | translate }}"
             (selectionChange)="onSelectProyecto()"
           >
-            <mat-option>--Seleccionar--</mat-option>
+            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
             <mat-option
               *ngFor="let project of inscripcionProjects"
               [value]="project.ProyectoId"
@@ -163,7 +163,18 @@
             {{ "inscripcion.erro_selec" | translate }}
           </mat-error>
         </mat-form-field>
-        
+
+        <!-- select periodo -->
+        <mat-form-field style="width: 40%" *ngIf="showNew">
+          <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
+          <mat-select [(ngModel)]="periodo" [disabled]="true">
+            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
+            <mat-option *ngFor="let item of periodos" [value]="item">
+              {{ item.Nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <!-- select tipo de inscripcion -->
         <mat-form-field style="width: 100%" *ngIf="showTipoInscripcion">
           <mat-select
@@ -172,7 +183,7 @@
             placeholder="{{ 'inscripcion.aviso_tipo' | translate }}"
             (selectionChange)="onSelectTipoInscripcion($event)"
           >
-            <mat-option>--Seleccionar--</mat-option>
+            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
             <mat-option
               *ngFor="let item of tipo_inscripciones"
               [value]="item.Id"
