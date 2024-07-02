@@ -3,6 +3,7 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Subject, Subscription } from 'rxjs';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
+import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { PivotDocument } from 'src/app/services/pivot_document.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
@@ -85,7 +86,8 @@ export class PerfilComponent implements OnInit {
     private popUpManager: PopUpManager,
     private sgaMidService: SgaMidService,
     private gestorDocumentalService: NewNuxeoService,
-    private inscripcionService: InscripcionService,) {
+    private inscripcionService: InscripcionService,
+    private inscripcionMidService: InscripcionMidService) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.loading = false;
@@ -158,11 +160,16 @@ export class PerfilComponent implements OnInit {
     this.inscripcionService.get('inscripcion/' + this.info_inscripcion_id)
       .subscribe((resG: any) => {
         resG.EstadoInscripcionId.Id = 5; // id inscrito.
-        this.inscripcionService.put('inscripcion', resG)
-          .subscribe(res => {
-            sessionStorage.setItem('IdEstadoInscripcion', "");
-            this.editar("", 'salir_preinscripcion');
-            this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.cambio_estado_ok'));
+        resG.TerceroId = this.info_persona_id;
+        this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', resG)
+          .subscribe((res: any) => {
+            if (res !== null && res.Status != '400') {
+              sessionStorage.setItem('IdEstadoInscripcion', "");
+              this.editar("", 'salir_preinscripcion');
+              this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.cambio_estado_ok'));
+            } else {
+              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
+            }
           }, err => {
             this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
           })

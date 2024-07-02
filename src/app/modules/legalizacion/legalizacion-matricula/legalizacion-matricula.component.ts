@@ -67,6 +67,7 @@ export class LegalizacionMatriculaComponent {
   puedeRechazar: boolean = true;
   puedePedirMod: boolean = false;
   cicloActual: any;
+  info_persona_id: any;
 
   proyectosCurriculares!: any[]
   periodosAnio!: any[]
@@ -104,7 +105,8 @@ export class LegalizacionMatriculaComponent {
   }
 
   async ngOnInit() {
-    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
+    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES];
+    this.info_persona_id = await this.usuarioService.getPersonaId();
     this.usuarioService.esAutorizado(rolesRequeridos).then((esAutorizado: any) => {
       if (esAutorizado) this.estaAutorizado = true;
     }).catch( (error: any) => {
@@ -436,10 +438,17 @@ export class LegalizacionMatriculaComponent {
   }
 
   actualizarEstadoInscripcion(inscripcionData: any) {
+    inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
-      this.inscripcionService.put('inscripcion', inscripcionData)
+      this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
         .subscribe((res: any) => {
-          resolve(res)
+          if (res !== null && res.Status != '400') {
+            resolve(res.Data)
+          } else {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(res.Message);
+            reject([]);
+          }
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));

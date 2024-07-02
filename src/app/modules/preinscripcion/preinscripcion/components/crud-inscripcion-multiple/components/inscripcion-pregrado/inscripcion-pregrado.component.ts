@@ -817,11 +817,12 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
             (response: any) => {
               const estadoInscripcio: any = response[0];
               inscripcionPut.EstadoInscripcionId = estadoInscripcio;
+              inscripcionPut.TerceroId = this.info_persona_id;
 
-              this.inscripcionService.put('inscripcion/', inscripcionPut)
+              this.inscripcionMidService.post('inscripcion/actualizar-inscripcion', inscripcionPut)
                 .subscribe(res_ins => {
                   const r_ins = <any>res_ins;
-                  if (res_ins !== null && r_ins.Type !== 'error') {
+                  if (res_ins !== null && r_ins.Status !== '400') {
                     this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar'));
                     this.imprimir = true;
                     localStorage.setItem("goToEdit", String(false));

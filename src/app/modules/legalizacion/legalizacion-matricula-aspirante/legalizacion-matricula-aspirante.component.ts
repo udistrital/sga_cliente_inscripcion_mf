@@ -454,10 +454,17 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   actualizarEstadoInscripcion(inscripcionData: any) {
+    inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
-      this.inscripcionService.put('inscripcion', inscripcionData)
+      this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
         .subscribe((res: any) => {
-          resolve(res)
+          if (res !== null && res.Status != '400') {
+            resolve(res.Data)
+          } else {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(res.Message);
+            reject([]);
+          }
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
