@@ -5,30 +5,37 @@ import { TransferenciaComponent } from './modules/transferencia/transferencia.co
 import { SolicitudTransferenciaComponent } from './modules/transferencia/components/solicitud-transferencia/solicitud-transferencia.component';
 import { LegalizacionMatriculaComponent } from './modules/legalizacion/legalizacion-matricula/legalizacion-matricula.component';
 import { LegalizacionMatriculaAspiranteComponent } from './modules/legalizacion/legalizacion-matricula-aspirante/legalizacion-matricula-aspirante.component';
+import { AuthGuard } from 'src/_guards/auth.guard';
 
 const routes: Routes = [
   { 
     path: "",
+    canActivate: [AuthGuard],
     loadChildren: () => import ('./modules/preinscripcion/preinscripcion.module').then(m => m.PreinscripcionModule),
   },
   { 
     path: "preinscripcion",
+    canActivate: [AuthGuard],
     loadChildren: () => import ('./modules/preinscripcion/preinscripcion.module').then(m => m.PreinscripcionModule),
   },
   { 
     path: "transferencia",
+    canActivate: [AuthGuard],
     component: TransferenciaComponent
   },
   {
     path: 'solicitud-transferencia/:id/:process',
+    canActivate: [AuthGuard],
     component: SolicitudTransferenciaComponent,
   },
   {
     path: 'legalizacion-matricula-aspirante',
+    canActivate: [AuthGuard],
     component: LegalizacionMatriculaAspiranteComponent,
   },
   { 
     path: "legalizacion-matricula",
+    canActivate: [AuthGuard],
     component: LegalizacionMatriculaComponent
   },
   {
