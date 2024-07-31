@@ -474,6 +474,15 @@ export class TransferenciaComponent implements OnInit {
                     } else if (response.Status == '400') {
                       this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
                     }
+
+                    const resEstado: any = this.actualizarEstadoInscripcion(inscripcion);
+                    if (Object.keys(resEstado).length == 0) {
+                      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_error'));
+                    } else {
+                      this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
+                    }
+
+
                   },
                   (error: HttpErrorResponse) => {
                     this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
@@ -549,6 +558,27 @@ export class TransferenciaComponent implements OnInit {
     }
   }
 
+
+  actualizarEstadoInscripcion(inscripcionData: any) {
+    inscripcionData.TerceroId = this.uid;
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
+        .subscribe((res: any) => {
+          if (res !== null && res.Status != '400') {
+            resolve(res.Data)
+          } else {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(res.Message);
+            reject([]);
+          }
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.log(error);
+            reject([]);
+          });
+    });
+  }
 
 
 }
