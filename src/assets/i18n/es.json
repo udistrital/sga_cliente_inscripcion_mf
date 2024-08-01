@@ -576,7 +576,8 @@
         "formacion_actual": "Formación actual",
         "experiencia_actual": "Trabajo actual",
         "paso": "Paso",
-        "ayuda": "Ayuda"
+        "ayuda": "Ayuda",
+        "filtro": "Filtro"
     },
     "inscripcion": {
         "cambiar_tab": "¡Atención! Recuerde llenar la información de contacto que se encuentra en esta misma pestaña",
@@ -1669,12 +1670,7 @@
         "estado_revision": "Estado revisión",
         "acciones": "Acciones",
         "guardar": "Guardar",
-<<<<<<< HEAD
-
         "legalizacion": "Legalización admisión",
-=======
-        "legalizacion": "Legalizacion admision",
->>>>>>> develop
         "Informacion_personal": "Información personal",
         "proyecto": "Proyecto curricular al que fue admitida(o)",
         "opcion": "Opción:",

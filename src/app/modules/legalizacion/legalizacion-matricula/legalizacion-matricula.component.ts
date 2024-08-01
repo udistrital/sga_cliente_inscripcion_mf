@@ -24,6 +24,7 @@ import { MODALS, ROLES } from 'src/app/models/diccionario/diccionario';
 import { LiquidacionMatriculaService } from 'src/app/services/liquidacion_matricula.service';
 import { EventoService } from 'src/app/services/evento.service';
 import { UserService } from 'src/app/services/users.service';
+import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
 
 interface Proyecto {
   opcion: number;
@@ -67,7 +68,6 @@ export class LegalizacionMatriculaComponent {
   puedeRechazar: boolean = true;
   puedePedirMod: boolean = false;
   cicloActual: any;
-  info_persona_id: any;
 
   proyectosCurriculares!: any[]
   periodosAnio!: any[]
@@ -81,6 +81,7 @@ export class LegalizacionMatriculaComponent {
   inscritosData: any[] = [];
   inscripciones: any[] = [];
   docsDescargados: any[] = [];
+  proyectosPregrado!: any[];
 
   constructor(
     private _formBuilder: FormBuilder, 
@@ -98,6 +99,7 @@ export class LegalizacionMatriculaComponent {
     private usuarioService: UserService,
     private eventosService: EventoService,
     private liquidacionMatriculaService: LiquidacionMatriculaService,
+    private projectService: ProyectoAcademicoService,
     private popUpManager: PopUpManager
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -105,8 +107,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   async ngOnInit() {
-    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES];
-    this.info_persona_id = await this.usuarioService.getPersonaId();
+    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
     this.usuarioService.esAutorizado(rolesRequeridos).then((esAutorizado: any) => {
       if (esAutorizado) this.estaAutorizado = true;
     }).catch( (error: any) => {
@@ -125,6 +126,7 @@ export class LegalizacionMatriculaComponent {
     await this.cargarAnios();
     await this.cargarPeriodos();
     await this.cargarFacultades();
+    await this.cargarProyectosPregrado();
   }
 
   cargarFacultades() {
@@ -163,15 +165,33 @@ export class LegalizacionMatriculaComponent {
           resolve(res)
         },
           (error: any) => {
+            console.error(error);
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.periodo_error'));
             reject([]);
           });
     });
   }
 
+  cargarProyectosPregrado() {
+    return new Promise((resolve, reject) => {
+      this.projectService.get('proyecto_academico_institucion?query=Activo:true,NivelFormacionId:1&sortby=Id&order=asc&limit=0')
+        .subscribe((res: any) => {
+          this.proyectosPregrado = res;
+          resolve(res)
+        },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.facultades_error'));
+            console.error(error);
+            reject([]);
+          });
+    });
+  }
+
   onFacultadChange(event: any) {
-    const facultad = this.facultades.find((facultad: any) => facultad.Id === event.value);
-    this.proyectosCurriculares = facultad.Opciones;
+    // const facultad = this.facultades.find((facultad: any) => facultad.Id === event.value);
+    // this.proyectosCurriculares = facultad.Opciones;
+    const programas = this.proyectosPregrado.filter((item: any) => item.FacultadId == event.value);
+    this.proyectosCurriculares = programas;
   }
 
   onAnioChange(event: any) {
@@ -438,17 +458,10 @@ export class LegalizacionMatriculaComponent {
   }
 
   actualizarEstadoInscripcion(inscripcionData: any) {
-    inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
+      this.inscripcionService.put('inscripcion', inscripcionData)
         .subscribe((res: any) => {
-          if (res !== null && res.Status != '400') {
-            resolve(res.Data)
-          } else {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(res.Message);
-            reject([]);
-          }
+          resolve(res)
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));

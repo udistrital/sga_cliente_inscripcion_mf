@@ -5,8 +5,8 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content *ngIf="showInscription">
-    <div class="info" style="margin-top: 1em">
-      <mat-icon>info</mat-icon> &nbsp;
+    <div class="info panel">
+      <mat-icon>info</mat-icon>
       {{ "inscripcion.warning_info" | translate }}
     </div>
 
@@ -17,80 +17,70 @@
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="table">
-          <mat-table mat-table [dataSource]="dataSource" class="demo-table">
+        <mat-form-field class="filtro">
+          <mat-label>{{"GLOBAL.filtro" | translate}}</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+        </mat-form-field>
+
+        <div class="mat-elevation-z8 contenedor-tabla">
+          <table mat-table [dataSource]="dataSource" matSort>
+        
             <ng-container matColumnDef="recibo">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.numero_recibo" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.ReciboInscripcion }}
-              </mat-cell>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.numero_recibo" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> {{row.ReciboInscripcion}} </td>
             </ng-container>
-
+        
             <ng-container matColumnDef="inscripcion">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.inscripcion" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.Id }} </mat-cell>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.inscripcion" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> {{row.Id}} </td>
             </ng-container>
-
+        
             <ng-container matColumnDef="programa">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.programa" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.ProgramaAcademicoId }}</mat-cell>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.programa" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> {{row.ProgramaAcademicoId}} </td>
             </ng-container>
 
             <ng-container matColumnDef="estado_inscripcion">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.estado_inscripcion" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.EstadoInscripcion }}
-              </mat-cell>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.estado_inscripcion" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> {{row.EstadoInscripcion}} </td>
             </ng-container>
 
             <ng-container matColumnDef="fecha">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.fecha_generacion" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.FechaCreacion }} </mat-cell>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.fecha_generacion" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> {{row.FechaCreacion}} </td>
             </ng-container>
 
             <ng-container matColumnDef="estado_recibo">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.estado_recibo" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.Estado }} </mat-cell>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.estado_recibo" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> {{row.Estado}} </td>
             </ng-container>
 
             <ng-container matColumnDef="descargar">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.descargar" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.descargar" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> 
                 <app-link-download (click)="descargarReciboPago(row)" [rowData]="row"></app-link-download>
-              </mat-cell>
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="opcion">
-              <mat-header-cell class="text-left" *matHeaderCellDef>
-                <b>{{ "inscripcion.opcion" | translate }}</b>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row" class="center" style="min-width: 5em;">
-                <app-button-payment (save)="onRenderButtonPaymentComponent($event)"
-                  [rowData]="row"></app-button-payment>
-              </mat-cell>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.opcion" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> 
+                <app-button-payment (save)="onRenderButtonPaymentComponent($event)" [rowData]="row"></app-button-payment>
+              </td>
             </ng-container>
-
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-          </mat-table>
+        
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="8">{{"admision.no_data" | translate}}</td>
+            </tr>
+          </table>
+        
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
         </div>
 
-        <div class="text-center">
+        <div class="contenedor-boton">
           <button mat-flat-button color="accent" type="button" (click)="nuevaPreinscripcion()">
             {{ "inscripcion.nueva" | translate }}
           </button>
