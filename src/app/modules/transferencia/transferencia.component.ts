@@ -419,7 +419,6 @@ export class TransferenciaComponent implements OnInit {
             });
             resolve(response.Data)
           } else {
-
             Swal.fire({
               icon: 'warning',
               title: this.translate.instant('GLOBAL.info'),
@@ -429,10 +428,12 @@ export class TransferenciaComponent implements OnInit {
 
             this.clean();
             this.listadoSolicitudes = true;
+            reject(false);
           }
-          reject();
+          
         },
         error => {
+          console.error(error);
           this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
           reject(error);
         },

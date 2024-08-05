@@ -1,8 +1,6 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>
-      <b>{{ "inscripcion.listado" | translate }}</b>
-    </mat-card-title>
+    <mat-card-title><b>{{ "inscripcion.listado" | translate }}</b></mat-card-title>
   </mat-card-header>
   <mat-card-content *ngIf="showInscription">
     <div class="info panel">
@@ -12,9 +10,7 @@
 
     <mat-card>
       <mat-card-header>
-        <mat-card-title>
-          {{ "inscripcion.recibos_generados" | translate }}
-        </mat-card-title>
+        <mat-card-title>{{ "inscripcion.recibos_generados" | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-form-field class="filtro">
@@ -55,6 +51,20 @@
               <td mat-cell *matCellDef="let row"> {{row.Estado}} </td>
             </ng-container>
 
+            <ng-container matColumnDef="activo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ "calendario.estado" | translate }} </th>
+              <td mat-cell *matCellDef="let row">
+                <div class="status-indicator" [ngClass]="{active: row.Activo, inactive: !row.Activo}">
+                  <div *ngIf="row.Activo">
+                    {{ "GLOBAL.activo" | translate }}
+                  </div>
+                  <div *ngIf="!row.Activo">
+                    {{ "GLOBAL.inactivo" | translate }}
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="descargar">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.descargar" | translate}} </th>
               <td mat-cell *matCellDef="let row"> 
@@ -92,87 +102,49 @@
 
     <mat-card *ngIf="showNew">
       <mat-card-content>
-
         <!-- select Nivel -->
-        <mat-form-field style="width: 100%" *ngIf="showNew">
-          <mat-select
-            [formControl]="CampoControl"
-            [(ngModel)]="selectedLevel"
-            placeholder="{{ 'calendario.para' | translate }}"
-            (selectionChange)="onSelectLevel()"
-          >
+        <mat-form-field *ngIf="showNew">
+          <mat-select [formControl]="CampoControl" [(ngModel)]="selectedLevel" placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectLevel()">
             <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
-            <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">
-              {{ nivel.Nombre }}
-            </mat-option>
+            <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">{{ nivel.Nombre }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="CampoControl.hasError('required')">
-            {{ "inscripcion.erro_selec_nivel" | translate }}
-          </mat-error>
+          <mat-error *ngIf="CampoControl.hasError('required')">{{ "inscripcion.erro_selec_nivel" | translate }}</mat-error>
         </mat-form-field>
 
-        <mat-form-field style="width: 100%" *ngIf="showSublevel">
-          <mat-select [formControl]="Campo3Control" [(ngModel)]="selectedSubLevel"
-            placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectSubLevel()">
+        <mat-form-field *ngIf="showSublevel">
+          <mat-select [formControl]="Campo3Control" [(ngModel)]="selectedSubLevel" placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectSubLevel()">
             <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let subnivel of subniveles" [value]="subnivel.IdNivel">
-              {{ subnivel.Nombre }}
-            </mat-option>
+            <mat-option *ngFor="let subnivel of subniveles" [value]="subnivel.IdNivel">{{ subnivel.Nombre }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="Campo3Control.hasError('required')">
-            {{ "inscripcion.erro_selec_nivel" | translate }}
-          </mat-error>
+          <mat-error *ngIf="Campo3Control.hasError('required')">{{ "inscripcion.erro_selec_nivel" | translate }}</mat-error>
         </mat-form-field>
 
         <!-- select periodo -->
-        <!-- <mat-form-field style="width: 40%" *ngIf="showNew">
-          <mat-label>{{ "inscripcion.aviso_periodo" | translate }}:</mat-label>
-          <mat-select [(ngModel)]="periodo" [disabled]="true">
+        <mat-form-field *ngIf="showPeriodo">
+          <mat-select [(ngModel)]="periodoId" placeholder="{{ 'inscripcion.aviso_periodo' | translate }}">
             <mat-option>--Seleccionar--</mat-option>
             <mat-option *ngFor="let item of periodos" [value]="item">
               {{ item.Nombre }}
             </mat-option>
           </mat-select>
-        </mat-form-field> -->
+        </mat-form-field>
 
         <!-- select proyecto academico -->
-        <mat-form-field style="width: 100%" *ngIf="showProyectoCurricular">
-          <mat-select
-            [formControl]="Campo1Control"
-            [(ngModel)]="selectedProject"
-            placeholder="{{ 'oferta.proyecto' | translate }}"
-            (selectionChange)="onSelectProyecto()"
-          >
+        <mat-form-field *ngIf="showProyectoCurricular">
+          <mat-select [formControl]="Campo1Control" [(ngModel)]="selectedProject" placeholder="{{ 'oferta.proyecto' | translate }}" (selectionChange)="onSelectProyecto()">
             <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
-            <mat-option
-              *ngFor="let project of inscripcionProjects"
-              [value]="project.ProyectoId"
-            >
-              {{ project.NombreProyecto }}
-            </mat-option>
+            <mat-option *ngFor="let project of inscripcionProjects" [value]="project.ProyectoId">{{ project.NombreProyecto }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="Campo1Control.hasError('required')">
-            {{ "inscripcion.erro_selec" | translate }}
-          </mat-error>
+          <mat-error *ngIf="Campo1Control.hasError('required')">{{ "inscripcion.erro_selec" | translate }}</mat-error>
         </mat-form-field>
 
         <!-- select tipo de inscripcion -->
-        <mat-form-field style="width: 100%" *ngIf="showTipoInscripcion">
-          <mat-select [formControl]="Campo2Control" [(ngModel)]="tipo_inscripcion_selected"
-            placeholder="{{ 'inscripcion.aviso_tipo' | translate }}"
-            (selectionChange)="onSelectTipoInscripcion($event)"
-          >
+        <mat-form-field *ngIf="showTipoInscripcion">
+          <mat-select [formControl]="Campo2Control" [(ngModel)]="tipo_inscripcion_selected" placeholder="{{ 'inscripcion.aviso_tipo' | translate }}" (selectionChange)="onSelectTipoInscripcion($event)">
             <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
-            <mat-option
-              *ngFor="let item of tipo_inscripciones"
-              [value]="item.Id"
-            >
-              {{ item.Nombre }}
-            </mat-option>
+            <mat-option *ngFor="let item of tipo_inscripciones" [value]="item.Id">{{ item.Nombre }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="Campo2Control.hasError('required')">
-            {{ "inscripcion.aviso_tipo" | translate }}
-          </mat-error>
+          <mat-error *ngIf="Campo2Control.hasError('required')">{{ "inscripcion.aviso_tipo" | translate }}</mat-error>
         </mat-form-field>
 
         <button *ngIf="showInfo" mat-flat-button color="accent" style="display: grid" (click)="generarRecibo()">

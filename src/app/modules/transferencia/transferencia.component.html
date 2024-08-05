@@ -67,20 +67,6 @@
               </td>
             </ng-container>
           
-            <!-- <ng-container matColumnDef="respuesta">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"derechos_pecuniarios.ver_respuesta" | translate}} </th>
-                        <td mat-cell *matCellDef="let row">
-                          <ngx-customize-button class="" [value]="row.Descargar" [rowData]="row" (save)="descargarArchivo($event)"></ngx-customize-button>
-                        </td>
-                      </ng-container>
-          
-                      <ng-container matColumnDef="solicitar">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"derechos_pecuniarios.solicitar" | translate}} </th>
-                        <td mat-cell *matCellDef="let row">
-                          <ngx-customize-button class="" [value]="row.Opcion" [rowData]="row" (save)="solicitar($event)"></ngx-customize-button>
-                        </td>
-                      </ng-container> -->
-          
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           
@@ -91,87 +77,6 @@
       
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
         </div>
-        <!-- <div class="table mat-elevation-z8 margin-y">
-                <mat-table [dataSource]="dataSource">
-
-                  <ng-container matColumnDef="recibo">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "inscripcion.recibo" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{ row.Recibo }} </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="concepto">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "inscripcion.concepto" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{ row.Concepto }} </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="programa">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "inscripcion.programa" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{ row.Programa }} </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="estadoInscripcion">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "inscripcion.estado" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{ row.Estado }} </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="fecha">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "inscripcion.fecha_generacion" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{
-                      row.FechaGeneracion
-                    }}</mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="estadoRecibo">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "inscripcion.estado_recibo" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{ row.EstadoRecibo }} </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="respuesta">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "derechos_pecuniarios.ver_respuesta" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <ngx-customize-button
-                        class=""
-                        [value]="row.Descargar"
-                        [rowData]="row"
-                        (save)="descargarArchivo($event)"
-                      ></ngx-customize-button>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="solicitar">
-                    <mat-header-cell *matHeaderCellDef
-                      ><b>{{ "derechos_pecuniarios.solicitar" | translate }}</b>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <ngx-customize-button
-                        class=""
-                        [value]="row.Opcion"
-                        [rowData]="row"
-                        (save)="solicitar($event)"
-                      ></ngx-customize-button>
-                    </mat-cell>
-                  </ng-container>
-                  <mat-header-row
-                    *matHeaderRowDef="displayedColumns"
-                    class="encabezado"
-                  ></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-                </mat-table>
-              </div> -->
       </mat-card-content>
       <mat-card-actions>
         <button mat-flat-button color="accent" *ngIf="listadoSolicitudes" type="button" (click)="descargarNormativa()"> {{ "inscripcion.btn_descargar_normativa" | translate }} </button>
@@ -180,19 +85,9 @@
     </mat-card>
 
     <!-- (eventChange)="onChange($event)" -->
-    <ngx-crud-info-persona
-      *ngIf="!listadoSolicitudes"
-      [info_persona_id]="uid"
-      (success)="loadInfoPersona()"
-    >
+    <ngx-crud-info-persona *ngIf="!listadoSolicitudes" [info_persona_id]="uid" (success)="loadInfoPersona()">
     </ngx-crud-info-persona>
-    <ngx-dinamicform
-      *ngIf="!listadoSolicitudes"
-      [modeloData]="dataTransferencia"
-      [normalform]="formTransferencia"
-      (interlaced)="seleccion($event)"
-      (result)="validarForm($event)"
-    >
+    <ngx-dinamicform *ngIf="!listadoSolicitudes" [modeloData]="dataTransferencia" [normalform]="formTransferencia" (interlaced)="seleccion($event)" (result)="validarForm($event)">
     </ngx-dinamicform>
 
     <div class="margin-y" *ngIf="!listadoSolicitudes" style="display: flex; flex-wrap: wrap; gap: 1rem;">
