@@ -14,118 +14,132 @@
         <div class="contenedor-label credencial color-primario mx-auto my-md">
             {{ 'admision.credencial' | translate }}
         </div>
-        <fieldset *ngIf="persona && inscripcion">
-            <legend>{{ 'legalizacion_admision.proyecto_admitido' | translate }}</legend>
-            <div class="fila f-2">
-                <div class="column campo-label">
-                    <p>{{ 'inscripcion.opcion' | translate }}: </p>
-                    <p class="campo-label ">{{ opcionPrograma }}</p>
-                </div>
-                <div class="column campo-label">
-                    <p>{{ 'GLOBAL.nombre' | translate }}: </p>
-                    <p class="campo-label">{{ proyectoAcademico }}</p>
-                </div>
-            </div>
-            <mat-card class="info-personal">
-                <mat-card-header>
-                    <mat-card-title>{{ 'legalizacion_admision.titulo_informacion_personal' | translate
-                        }}</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <ul>
-                        <li><span>{{ 'legalizacion_admision.tipo_identificacion' | translate }}: </span>{{
-                            persona.TipoIdentificacion.Nombre }}</li>
-                        <li><span>{{ 'GLOBAL.documento_identificacion' | translate }}: </span>{{
-                            persona.NumeroIdentificacion }}</li>
-                        <li><span>{{ 'GLOBAL.primer_nombre' | translate }}: </span>{{ persona.PrimerNombre }}</li>
-                        <li><span>{{ 'GLOBAL.segundo_nombre' | translate }}: </span>{{ persona.SegundoNombre }}</li>
-                        <li><span>{{ 'GLOBAL.primer_apellido' | translate }}: </span>{{ persona.PrimerApellido }}</li>
-                        <li><span>{{ 'GLOBAL.segundo_apellido' | translate }}: </span>{{ persona.SegundoApellido }}</li>
-                        <li><span>{{ 'GLOBAL.fecha_nacimiento' | translate }}: </span>{{ persona.FechaNacimiento }}</li>
-                        <li><span>{{ 'GLOBAL.telefono' | translate }}: </span>{{ persona.Telefono }}</li>
-                        <li><span>{{ 'GLOBAL.correo_principal' | translate }}: </span>{{ persona.UsuarioWSO2 }}</li>
-                        <li><span>{{ 'GLOBAL.genero' | translate }}: </span>{{ persona.Genero.Nombre }}</li>
-                    </ul>
-                </mat-card-content>
-            </mat-card>
-            <mat-card class="info-personal" *ngIf="yaHizoProceso">
-                <mat-card-header>
-                    <mat-card-title>{{ 'legalizacion_admision.titulo_estado_legalización' | translate
-                        }}</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 2">
-                        <p>{{ 'legalizacion_admision.estado_legalización_sin_revision' | translate }}</p>
-                        <mat-icon class="icono color-primary">pending_actions</mat-icon>
-                    </div>
-                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 4">
-                        <p>{{ 'legalizacion_admision.estado_legalización_rechazado' | translate }}</p>
-                        <mat-icon class="icono color-rojo">cancel</mat-icon>
-                    </div>
-                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 8">
-                        <p>{{ 'legalizacion_admision.estado_legalización_aprobado' | translate }}</p>
-                        <mat-icon class="icono color-verde">check_circle</mat-icon>
-                    </div>
-                    <div class="estado_inscripcion" *ngIf="estadoInscripcion == 10">
-                        <p>{{ 'legalizacion_admision.estado_legalización_requiere_cambio' | translate }}</p>
-                        <mat-icon class="icono color-primary">change_circle</mat-icon>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-            <mat-card class="info-personal" *ngIf="yaHizoProceso && estadoInscripcion == 10">
-                <mat-card-header>
-                    <mat-card-title>{{ 'legalizacion_admision.titulo_legalizacion_requiere_cambios' | translate
-                        }}</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <div>
-                        {{ 'legalizacion_admision.legalizacion_requiere_cambios' | translate
-                        }}
-                    </div>
-                    <div class="contenedor-tabla">
-                        <mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%">
-                            <ng-container matColumnDef="Nombre">
-                                <mat-header-cell *matHeaderCellDef> {{ 'legalizacion_admision.nombre_soporte' | translate }} </mat-header-cell>
-                                <mat-cell *matCellDef="let element; let i = index"> {{ element.Nombre | translate }} </mat-cell>
-                            </ng-container>
-
-                            <ng-container matColumnDef="NuevoDcoumento">
-                                <mat-header-cell *matHeaderCellDef> {{ 'legalizacion_admision.nuevo_documento' | translate }} </mat-header-cell>
-                                <mat-cell *matCellDef="let element; let i = index">
-                                    <span *ngIf="!element.HayNuevoDoc">{{ element.NuevoDoc | translate }}</span>
-                                    <span *ngIf="element.HayNuevoDoc" class="enlace-documento" (click)="previewFile(element.LinkNuevoDoc)"
-                                    title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}">{{ element.NuevoDoc }}</span>
-                                </mat-cell>
-                            </ng-container>
+        <mat-card *ngIf="persona && inscripcion">
+            <mat-card-content>
+                <mat-card class="info-personal">
+                    <mat-card-header>
+                        <mat-card-title>{{ 'legalizacion_admision.proyecto_admitido' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content class="parametros-proyecto">
+                        <div>
+                            <b>{{ 'inscripcion.opcion' | translate }}:</b> {{ opcionPrograma }}
+                        </div>
+                        <div>
+                            <b>{{ 'GLOBAL.nombre' | translate }}:</b> {{ proyectoAcademico }}
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+                <mat-card class="info-personal">
+                    <mat-card-header>
+                        <mat-card-title>{{ 'legalizacion_admision.titulo_informacion_personal' | translate }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <ul>
+                            <li><span>{{ 'legalizacion_admision.tipo_identificacion' | translate }}: </span>{{ persona.TipoIdentificacion.Nombre }}</li>
+                            <li><span>{{ 'GLOBAL.documento_identificacion' | translate }}: </span>{{ persona.NumeroIdentificacion }}</li>
+                            <li><span>{{ 'GLOBAL.primer_nombre' | translate }}: </span>{{ persona.PrimerNombre }}</li>
+                            <li><span>{{ 'GLOBAL.segundo_nombre' | translate }}: </span>{{ persona.SegundoNombre }}</li>
+                            <li><span>{{ 'GLOBAL.primer_apellido' | translate }}: </span>{{ persona.PrimerApellido }}</li>
+                            <li><span>{{ 'GLOBAL.segundo_apellido' | translate }}: </span>{{ persona.SegundoApellido }}</li>
+                            <li><span>{{ 'GLOBAL.fecha_nacimiento' | translate }}: </span>{{ persona.FechaNacimiento }}</li>
+                            <li><span>{{ 'GLOBAL.telefono' | translate }}: </span>{{ persona.Telefono }}</li>
+                            <li><span>{{ 'GLOBAL.correo_principal' | translate }}: </span>{{ persona.UsuarioWSO2 }}</li>
+                            <li><span>{{ 'GLOBAL.genero' | translate }}: </span>{{ persona.Genero.Nombre }}</li>
+                        </ul>
+                    </mat-card-content>
+                </mat-card>
+                <mat-card class="info-personal" *ngIf="yaHizoProceso">
+                    <mat-card-header>
+                        <mat-card-title>{{ 'legalizacion_admision.titulo_estado_legalizacion' | translate
+                            }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 2">
+                            <p>{{ 'legalizacion_admision.estado_legalización_sin_revision' | translate }}</p>
+                            <mat-icon class="icono color-primary">pending_actions</mat-icon>
+                        </div>
+                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 4">
+                            <p>{{ 'legalizacion_admision.estado_legalización_rechazado' | translate }}</p>
+                            <mat-icon class="icono color-rojo">cancel</mat-icon>
+                        </div>
+                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 8">
+                            <p>{{ 'legalizacion_admision.estado_legalización_aprobado' | translate }}</p>
+                            <mat-icon class="icono color-verde">check_circle</mat-icon>
+                        </div>
+                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 10">
+                            <p>{{ 'legalizacion_admision.estado_legalización_requiere_cambio' | translate }}</p>
+                            <mat-icon class="icono color-primary">change_circle</mat-icon>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+                <mat-card class="info-personal" *ngIf="yaHizoProceso && estadoInscripcion == 10">
+                    <mat-card-header>
+                        <mat-card-title>{{ 'legalizacion_admision.titulo_legalizacion_requiere_cambios' | translate
+                            }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div> {{ 'legalizacion_admision.legalizacion_requiere_cambios' | translate}} </div>
                         
-                            <ng-container matColumnDef="Acciones" stickyEnd>
-                                <mat-header-cell *matHeaderCellDef> {{ 'GLOBAL.acciones' | translate }} </mat-header-cell>
-                                <mat-cell *matCellDef="let element; let i = index">
-                                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                                        <mat-icon>more_vert</mat-icon>
-                                    </button>
-                                    <mat-menu #menu="matMenu">
-                                        <button mat-menu-item (click)="openModal(element.Soporte)">
-                                            <mat-icon>visibility</mat-icon>
-                                            <span>{{ 'legalizacion_admision.ver_documento' | translate }}</span>
-                                        </button>
-                                        <button mat-menu-item (click)="fileInput.click()">
-                                            <mat-icon>cloud_upload</mat-icon>
-                                            <span>{{ 'legalizacion_admision.subir_documento' | translate }}</span>
-                                        </button>
-                                    </mat-menu>
-                                    <input type="file" #fileInput style="display: none;" (change)="onFileSelected(element.Soporte, $event)">
-                                </mat-cell>
-                            </ng-container>
+                        <mat-form-field class="filtro">
+                            <mat-label>{{"GLOBAL.filtro" | translate}}</mat-label>
+                            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                        </mat-form-field>
+                
+                        <div class="contenedor-tabla">
+                            <table mat-table [dataSource]="dataSource" matSort>
+                
+                                <ng-container matColumnDef="Nombre">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"legalizacion_admision.nombre_soporte" | translate}} </th>
+                                    <td mat-cell *matCellDef="let row"> {{row.Nombre | translate}} </td>
+                                </ng-container>
+                
+                                <ng-container matColumnDef="NuevoDcoumento">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"legalizacion_admision.nuevo_documento" | translate}} </th>
+                                    <td mat-cell *matCellDef="let row">
+                                        <span *ngIf="!row.HayNuevoDoc">{{ row.NuevoDoc | translate }}</span>
+                                        <span *ngIf="row.HayNuevoDoc" class="enlace-documento" (click)="previewFile(row.LinkNuevoDoc)" title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}">{{ row.NuevoDoc }}</span>
+                                    </td>
+                                </ng-container>
+                
+                                <ng-container matColumnDef="Acciones" stickyEnd>
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"GLOBAL.acciones" | translate}} </th>
+                                    <td mat-cell *matCellDef="let row">
+                                        <div class="contenedor-acciones">
+                                            <button mat-icon-button [matMenuTriggerFor]="menu" class="boton-acciones" aria-label="Example icon-button with a menu">
+                                                <mat-icon>more_vert</mat-icon>
+                                            </button>
+                                            <mat-menu #menu="matMenu">
+                                                <button mat-menu-item (click)="openModal(row.Soporte)">
+                                                    <mat-icon>visibility</mat-icon>
+                                                    <span>{{ 'legalizacion_admision.ver_documento' | translate }}</span>
+                                                </button>
+                                                <button mat-menu-item (click)="fileInput.click()">
+                                                    <mat-icon>cloud_upload</mat-icon>
+                                                    <span>{{ 'legalizacion_admision.subir_documento' | translate }}</span>
+                                                </button>
+                                            </mat-menu>
+                                            <input type="file" #fileInput style="display: none;" (change)="onFileSelected(row.Soporte, $event)">
+                                        </div>
+                                    </td>
+                                </ng-container>
+                
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                
+                                <tr class="mat-row" *matNoDataRow>
+                                    <td class="mat-cell" colspan="3">No data matching the filter "{{input.value}}"</td>
+                                </tr>
+                            </table>
+                
+                            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+                        </div>
                         
-                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                            <mat-row *matRowDef="let fila; columns: displayedColumns"></mat-row>
-                        </mat-table>
-                    </div>
-                    <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados}">{{'GLOBAL.guardar' | translate }}</button>
-                </mat-card-content>
-            </mat-card>
-        </fieldset>
+                        <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados}">{{'GLOBAL.guardar' | translate }}</button>
+                    </mat-card-content>
+                </mat-card>
+            </mat-card-content>
+        </mat-card>
+        
         <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
             <mat-step [stepControl]="formInfoSocioEconomicaPersonal">
                 <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_informacion_socioeconomica_personal' |
