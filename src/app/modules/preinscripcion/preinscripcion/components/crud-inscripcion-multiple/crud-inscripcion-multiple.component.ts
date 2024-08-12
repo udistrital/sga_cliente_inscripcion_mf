@@ -410,11 +410,13 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     if (this.selectedLevel === undefined) {
       this.popUpManager.showInfoToast(this.translate.instant('inscripcion.erro_selec_nivel'));
     } else {
-      Swal.fire({
-        icon: 'info',
-        title: this.translate.instant('GLOBAL.info'),
-        text: this.translate.instant('inscripcion.alerta_posgrado'),
-      });
+      if (this.selectedLevel === 2) {
+        Swal.fire({
+          icon: 'info',
+          title: this.translate.instant('GLOBAL.info'),
+          text: this.translate.instant('inscripcion.alerta_posgrado'),
+        });
+      }
       const proyectos: any = await this.recuperarProyectosAcademicosInstitucion();
       const res = proyectos.map((item: any) => ({
         IdNivel: item.NivelFormacionId ? item.NivelFormacionId.Id : null,
