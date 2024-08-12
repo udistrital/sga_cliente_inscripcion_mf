@@ -21,6 +21,7 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 import { MatTableDataSource } from '@angular/material/table';
+import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
 
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
@@ -53,6 +54,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private documentoService: DocumentoService,
     private utilidadesService: UtilidadesService,
     private dialog: MatDialog,
+    private projectService: ProyectoAcademicoService,
   ) {}
 
   isLinear = false;
@@ -141,25 +143,25 @@ export class LegalizacionMatriculaAspiranteComponent {
     },
   };
 
-  localidades!: any[];
-  // localidades: any[] = [
-  //   {
-  //     "Nombre": "Usme",
-  //     "Id": 464
-  //   },
-  //   {
-  //     "Nombre": "Suba",
-  //     "Id": 459
-  //   },
-  //   {
-  //     "Nombre": "Chapinero",
-  //     "Id": 448
-  //   },
-  //   {
-  //     "Nombre": "Engativá",
-  //     "Id": 450
-  //   }
-  // ];
+  //localidades!: any[];
+  localidades: any[] = [
+    {
+      "Nombre": "Usme",
+      "Id": 464
+    },
+    {
+      "Nombre": "Suba",
+      "Id": 459
+    },
+    {
+      "Nombre": "Chapinero",
+      "Id": 448
+    },
+    {
+      "Nombre": "Engativá",
+      "Id": 450
+    }
+  ];
   situacionesLaboral!: any[];
   estratos!: any[];
   nuceloFamiliar!: any[];
@@ -170,12 +172,14 @@ export class LegalizacionMatriculaAspiranteComponent {
     this.initFormularios();
     this.cargarDatosFormularios();
 
-    this.info_persona_id = await this.usuarioService.getPersonaId();
-    this.proyectoAcademicoId = 26
+    //this.info_persona_id = await this.usuarioService.getPersonaId();
+    this.info_persona_id = 59787
+    this.proyectoAcademicoId = 83
     this.periodoId = 40
 
     await this.cargarSalarioMinimo(this.periodoId)
     this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)
+    console.log(this.inscripcion)
     this.estadoInscripcion = this.inscripcion.EstadoInscripcionId.Id
     this.opcionPrograma = this.inscripcion.Opcion
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.proyectoAcademicoId);
@@ -388,7 +392,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   recuperarProyectoPorId(proyectoId: any) {
     return new Promise((resolve, reject) => {
-      this.oikosService.get('dependencia/' + proyectoId).subscribe(
+      this.projectService.get('proyecto_academico_institucion/' + proyectoId).subscribe(
         (res: any) => {
           resolve(res.Nombre);
         },
@@ -454,17 +458,10 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   actualizarEstadoInscripcion(inscripcionData: any) {
-    inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
+      this.inscripcionService.put('inscripcion', inscripcionData)
         .subscribe((res: any) => {
-          if (res !== null && res.Status != '400') {
-            resolve(res.Data)
-          } else {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(res.Message);
-            reject([]);
-          }
+          resolve(res)
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));

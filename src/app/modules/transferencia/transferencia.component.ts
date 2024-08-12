@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -24,6 +24,8 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-transferencia',
@@ -31,6 +33,8 @@ import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/compon
   styleUrls: ['./transferencia.component.scss']
 })
 export class TransferenciaComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   formTransferencia: any = null;
   listadoSolicitudes: boolean = true;
@@ -48,7 +52,7 @@ export class TransferenciaComponent implements OnInit {
   periodo!: Periodo;
   periodos: any[] = [];
 
-  displayedColumns = ['recibo', 'concepto', 'programa', 'estadoInscripcion', 'fecha', 'estadoRecibo', 'respuesta', 'solicitar'];
+  displayedColumns = ['recibo', 'concepto', 'programa', 'estadoInscripcion', 'fecha', 'estadoRecibo', 'acciones'];
   dataSource!: MatTableDataSource<any>;
 
   dataTransferencia: TransferenciaInterna = {
@@ -101,14 +105,14 @@ export class TransferenciaComponent implements OnInit {
     return 0;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.parametros_pago = {
       recibo: '',
       REFERENCIA: '',
       NUM_DOC_IDEN: '',
       TIPO_DOC_IDEN: '',
     };
-    this.loadInfoPersona();
+    await this.loadInfoPersona();
 
     this.dataSource = new MatTableDataSource()
     this.sub = this._Activatedroute.paramMap.subscribe(async (params: any) => {
@@ -126,109 +130,247 @@ export class TransferenciaComponent implements OnInit {
 
   public async loadInfoPersona() {
     this.uid = await this.userService.getPersonaId();
-    if (this.uid !== undefined && this.uid !== 0 &&
-      this.uid.toString() !== '' && this.uid.toString() !== '0') {
-      this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
-        if (res !== null) {
-          const temp = <InfoPersona>res.Data;
-          this.info_info_persona = temp;
-          const files = [];
-        }
-      });
+    if (this.uid !== undefined && this.uid !== 0 && this.uid.toString() !== '' && this.uid.toString() !== '0') {
+      const persona: any = await this.recuperarInfoPersona(this.uid)
+      const temp = <InfoPersona>persona;
+      this.info_info_persona = temp;
+      const files = [];
+      
+      // this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
+      //   if (res !== null) {
+      //     const temp = <InfoPersona>res.Data;
+      //     this.info_info_persona = temp;
+      //     const files = [];
+      //   }
+      // });
     } else {
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
   }
 
+  recuperarInfoPersona(idPersona: any) {
+    return new Promise((resolve, reject) => {
+      this.terceroMidService.get('personas/' + idPersona).subscribe(
+          (res: any) => {
+            console.log(res);
+            resolve(res.Data);
+          },
+          (error: any) => {
+            console.error(error);
+            Swal.fire({
+              icon: 'info',
+              title: this.translate.instant('GLOBAL.info_persona'),
+              text: this.translate.instant('GLOBAL.no_info_persona'),
+              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+            });
+            reject([]);
+          }
+        );
+    });
+  }
+
   async loadDataTercero(process: any) {
-    await this.cargarPeriodo(); 
-    this.inscripcionMidService.get('transferencia/estado-recibos/' + this.uid)
-      .subscribe(response => {
+    await this.cargarPeriodo();
+    const estadoRecibo: any = await this.recuperarEstadoRecibos(this.uid);
+    const inscripciones = <Array<any>>estadoRecibo;
+    const dataInfo = <Array<any>>[];
+
+    for (const inscripcion of inscripciones) {
+      if (inscripcion.Programa > 0) {
+        const proyecto: any = await this.recuperarProyectoAcademicoInstitucion(inscripcion.Programa);
+        const auxRecibo = inscripcion.Recibo;
+        const NumRecibo = auxRecibo.split('/', 1);
+        inscripcion.Recibo = NumRecibo[0];
+        inscripcion.FechaGeneracion = moment(inscripcion.FechaGeneracion, 'YYYY-MM-DD').format('DD/MM/YYYY');
+        inscripcion.IdPrograma = inscripcion.Programa;
+        inscripcion.Programa = proyecto.Nombre;
+        inscripcion.Periodo = this.periodo.Id;
+
+        //todo: revisar este flujo
+        if (inscripcion.EstadoSolicitud) {
+          inscripcion.Estado = inscripcion.EstadoSolicitud
+        } else {
+          inscripcion.Estado = inscripcion.EstadoInscripcion
+        }
+        console.log(inscripcion.Estado)
+
+        if (inscripcion.EstadoRecibo === 'Pendiente pago') {
+          inscripcion.Opcion = {
+            icon: 'fa fa-arrow-circle-right fa-2x',
+            label: 'Pagar',
+            class: "btn btn-primary",
+            disabled: false
+          }
+        } else if (inscripcion.EstadoRecibo === 'Pago') {
+          inscripcion.Opcion = {
+            icon: 'fa fa-pencil fa-2x',
+            label: 'Inscribirme',
+            class: "btn btn-primary",
+            disabled: false
+          }
+        } else {
+          inscripcion.Opcion = {
+            icon: 'fa fa-pencil fa-2x',
+            label: 'Inscribirme',
+            class: "btn btn-primary",
+            disabled: true
+          }
+        }
+
+        inscripcion.Descargar = {
+          icon: 'fa fa-download fa-2x',
+          label: 'Descargar',
+          class: 'btn btn-primary',
+          documento: ''
+        }
+
+        if (inscripcion.SolicitudFinalizada) {
+          inscripcion.Descargar = {
+            icon: 'fa fa-download fa-2x',
+            label: 'Descargar',
+            class: 'btn btn-primary',
+            documento: inscripcion.VerRespuesta.DocRespuesta,
+            disabled: false
+          }
+          inscripcion.Opcion.disabled = true;
+        } else {
+          inscripcion.Descargar.disabled = true;
+        }
+
+        dataInfo.push(inscripcion);
+      }
+    }
+    console.log(dataInfo)
+    this.dataSource = new MatTableDataSource(dataInfo);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  recuperarEstadoRecibos(id: number) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.get('transferencia/estado-recibos/' + id).subscribe((response: any) => {
         console.log(response)
         if (response !== null && response.Status == '400') {
           this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
+          reject(false);
         } else if ((response != null && response.Status == '404') || response.Data.length == 0) {
           this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
+          reject(false);
         } else {
-          const inscripciones = <Array<any>>response.Data;
-          const dataInfo = <Array<any>>[];
-          inscripciones.forEach(element => {
-            this.projectService.get('proyecto_academico_institucion/' + element.Programa).subscribe(
-              res => {
-                const auxRecibo = element.Recibo;
-                const NumRecibo = auxRecibo.split('/', 1);
-                element.Recibo = NumRecibo[0];
-                element.FechaGeneracion = moment(element.FechaGeneracion, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                element.IdPrograma = element.Programa;
-                element.Programa = res.Nombre;
-                element.Periodo = this.periodo.Id;
-
-                //todo: revisar este flujo
-                if(element.EstadoSolicitud){
-                  element.Estado = element.EstadoSolicitud
-                }else{
-                  element.Estado = element.EstadoInscripcion
-                }
-                console.log(element.Estado)
-
-                if (element.EstadoRecibo === 'Pendiente pago') {
-                  element.Opcion = {
-                    icon: 'fa fa-arrow-circle-right fa-2x',
-                    label: 'Pagar',
-                    class: "btn btn-primary",
-                    disabled: false
-                  }
-                } else if (element.EstadoRecibo === 'Pago') {
-                  element.Opcion = {
-                    icon: 'fa fa-pencil fa-2x',
-                    label: 'Inscribirme',
-                    class: "btn btn-primary",
-                    disabled: false
-                  }
-                } else {
-                  element.Opcion = {
-                    icon: 'fa fa-pencil fa-2x',
-                    label: 'Inscribirme',
-                    class: "btn btn-primary",
-                    disabled: true
-                  }
-                }
-                
-                element.Descargar = {
-                  icon: 'fa fa-download fa-2x',
-                  label: 'Descargar',
-                  class: 'btn btn-primary',
-                  documento: ''
-                }
-                
-                if (element.SolicitudFinalizada) {
-                  element.Descargar = {
-                    icon: 'fa fa-download fa-2x',
-                    label: 'Descargar',
-                    class: 'btn btn-primary',
-                    documento: element.VerRespuesta.DocRespuesta,
-                    disabled: false
-                  }
-                  element.Opcion.disabled = true;
-                } else {
-                  element.Descargar.disabled = true;
-                }
-
-                dataInfo.push(element);
-                this.dataSource = new MatTableDataSource(dataInfo)
-                // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
-              },
-              error => {
-                this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-              },
-            );
-          });
+          resolve(response.Data)
         }
       },
-        (error: HttpErrorResponse) => {
-          this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
         });
+    });
   }
+
+  recuperarProyectoAcademicoInstitucion(idProyecto: number) {
+    return new Promise((resolve, reject) => {
+      this.projectService.get('proyecto_academico_institucion/' + idProyecto).subscribe((response: any) => {
+        resolve(response)
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        });
+    });
+  }
+
+  // async loadDataTercero(process: any) {
+  //   await this.cargarPeriodo(); 
+
+  //   this.inscripcionMidService.get('transferencia/estado-recibos/' + this.uid)
+  //     .subscribe(response => {
+  //       console.log(response)
+  //       if (response !== null && response.Status == '400') {
+  //         this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
+  //       } else if ((response != null && response.Status == '404') || response.Data.length == 0) {
+  //         this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
+  //       } else {
+  //         const inscripciones = <Array<any>>response.Data;
+  //         const dataInfo = <Array<any>>[];
+  //         inscripciones.forEach(element => {
+  //           this.projectService.get('proyecto_academico_institucion/' + element.Programa).subscribe(
+  //             res => {
+  //               const auxRecibo = element.Recibo;
+  //               const NumRecibo = auxRecibo.split('/', 1);
+  //               element.Recibo = NumRecibo[0];
+  //               element.FechaGeneracion = moment(element.FechaGeneracion, 'YYYY-MM-DD').format('DD/MM/YYYY');
+  //               element.IdPrograma = element.Programa;
+  //               element.Programa = res.Nombre;
+  //               element.Periodo = this.periodo.Id;
+
+  //               //todo: revisar este flujo
+  //               if(element.EstadoSolicitud){
+  //                 element.Estado = element.EstadoSolicitud
+  //               }else{
+  //                 element.Estado = element.EstadoInscripcion
+  //               }
+  //               console.log(element.Estado)
+
+  //               if (element.EstadoRecibo === 'Pendiente pago') {
+  //                 element.Opcion = {
+  //                   icon: 'fa fa-arrow-circle-right fa-2x',
+  //                   label: 'Pagar',
+  //                   class: "btn btn-primary",
+  //                   disabled: false
+  //                 }
+  //               } else if (element.EstadoRecibo === 'Pago') {
+  //                 element.Opcion = {
+  //                   icon: 'fa fa-pencil fa-2x',
+  //                   label: 'Inscribirme',
+  //                   class: "btn btn-primary",
+  //                   disabled: false
+  //                 }
+  //               } else {
+  //                 element.Opcion = {
+  //                   icon: 'fa fa-pencil fa-2x',
+  //                   label: 'Inscribirme',
+  //                   class: "btn btn-primary",
+  //                   disabled: true
+  //                 }
+  //               }
+                
+  //               element.Descargar = {
+  //                 icon: 'fa fa-download fa-2x',
+  //                 label: 'Descargar',
+  //                 class: 'btn btn-primary',
+  //                 documento: ''
+  //               }
+                
+  //               if (element.SolicitudFinalizada) {
+  //                 element.Descargar = {
+  //                   icon: 'fa fa-download fa-2x',
+  //                   label: 'Descargar',
+  //                   class: 'btn btn-primary',
+  //                   documento: element.VerRespuesta.DocRespuesta,
+  //                   disabled: false
+  //                 }
+  //                 element.Opcion.disabled = true;
+  //               } else {
+  //                 element.Descargar.disabled = true;
+  //               }
+
+  //               dataInfo.push(element);
+  //               this.dataSource = new MatTableDataSource(dataInfo)
+  //               // this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
+  //             },
+  //             error => {
+  //               this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+  //             },
+  //           );
+  //         });
+  //       }
+  //     },
+  //       (error: HttpErrorResponse) => {
+  //         this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
+  //       });
+  // }
 
   descargarNormativa() {
     window.open('https://www.udistrital.edu.co/admisiones-pregrado', '_blank');
@@ -256,6 +398,7 @@ export class TransferenciaComponent implements OnInit {
           }
         },
           (error: HttpErrorResponse) => {
+            console.error(error);
             reject([]);
           });
     });
@@ -276,7 +419,6 @@ export class TransferenciaComponent implements OnInit {
             });
             resolve(response.Data)
           } else {
-
             Swal.fire({
               icon: 'warning',
               title: this.translate.instant('GLOBAL.info'),
@@ -286,10 +428,12 @@ export class TransferenciaComponent implements OnInit {
 
             this.clean();
             this.listadoSolicitudes = true;
+            reject(false);
           }
-          reject();
+          
         },
         error => {
+          console.error(error);
           this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
           reject(error);
         },
@@ -558,7 +702,14 @@ export class TransferenciaComponent implements OnInit {
     }
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
 
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
   actualizarEstadoInscripcion(inscripcionData: any) {
     inscripcionData.TerceroId = this.uid;
     return new Promise((resolve, reject) => {

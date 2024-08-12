@@ -576,7 +576,8 @@
         "formacion_actual": "Current formation",
         "experiencia_actual": "Current work",
         "paso": "Step",
-        "ayuda": "Help"
+        "ayuda": "Help",
+        "filtro": "Filter"
     },
     "inscripcion": {
         "cambiar_tab": "Attention! Remember to fill in the contact information found in this same tab",

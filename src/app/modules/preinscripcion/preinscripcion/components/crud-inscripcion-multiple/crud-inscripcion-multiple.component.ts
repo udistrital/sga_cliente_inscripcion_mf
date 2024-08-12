@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
@@ -28,6 +28,8 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 import { firstValueFrom } from 'rxjs';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'ngx-crud-inscripcion-multiple',
@@ -35,6 +37,9 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./crud-inscripcion-multiple.component.scss'],
 })
 export class CrudInscripcionMultipleComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  
   displayedColumns: string[] = [
     'recibo',
     'inscripcion',
@@ -42,6 +47,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     'estado_inscripcion',
     'fecha',
     'estado_recibo',
+    'activo',
     'descargar',
     'opcion',
   ];
@@ -50,11 +56,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   info_persona_id!: number | null;
   persona_id!: number;
   inscripcion_id!: number;
-  //dataSource: LocalDataSource;
   data: any[] = [];
   settings: any;
-  pdfs: Blob[] = [];
-  //periodosDoctorado: any[] = []; 
+  pdfs: Blob[] = []; 
   nombresPeriodos!: string;
 
   @Input('inscripcion_id')
@@ -76,8 +80,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   @Output() eventChange = new EventEmitter();
   @Output('result') result: EventEmitter<any> = new EventEmitter(true);
-  @Output('ocultarBarra') ocultarBarra: EventEmitter<boolean> =
-    new EventEmitter();
+  @Output('ocultarBarra') ocultarBarra: EventEmitter<boolean> = new EventEmitter();
 
   info_info_persona: InfoPersona = new InfoPersona();
   recibo_pago: ReciboPago = new ReciboPago();
@@ -91,11 +94,13 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   showInfo: boolean;
   showNew: boolean;
   showSublevel: boolean;
+  showPeriodo: boolean = false;
   showInscription: boolean;
   nivelInscripcion!: boolean;
   programa!: number;
   aspirante!: number;
   periodo: Periodo = new Periodo();
+  periodoId: any;
   periodos: any = [];
   selectednivel: any;
   tipo_inscripciones: any = [];
@@ -158,28 +163,19 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       NUM_DOC_IDEN: '',
       TIPO_DOC_IDEN: '',
     };
-    this.cargarPeriodo();
-    this.nivel_load();
-    // Llamar a la función asíncrona para manejar la lógica asíncrona
-    this.initializeAsync();
-    this.loadInfoPersona();
-
+    await this.initializeAsync();
   }
 
   async initializeAsync() {
     try {
-      this.cargarPeriodo();
-      this.nivel_load();
       this.info_persona_id = await this.userService.getPersonaId();
-      if (localStorage.getItem('IdPeriodo') === undefined) {
-        this.loadInfoPersona();
-      }
+      await this.cargarPeriodo();
+      await this.nivel_load();
+      await this.loadInfoPersona();
     } catch (error) {
       if (error instanceof Error) {
         this.popUpManager.showErrorAlert(
-          this.translate.instant('inscripcion.error_cargar_informacion') +
-          ': ' +
-          error.message
+          this.translate.instant('inscripcion.error_cargar_informacion') + ': ' + error.message
         );
       } else {
         this.popUpManager.showErrorAlert(
@@ -198,57 +194,58 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   public async loadInfoPersona(): Promise<void> {
     try {
       if (this.info_persona_id !== null) {
-        this.terceroMidService
-          .get('personas/' + this.info_persona_id)
-          .subscribe(
-            (res: any) => {
-              if (res !== null) {
-                const temp = <InfoPersona>res.Data;
-                this.info_info_persona = temp;
-                const files = [];
-              }
-              this.loadInfoInscripcion();
-            },
-            (error: HttpErrorResponse) => {
-              Swal.fire({
-                icon: 'info',
-                title: this.translate.instant('GLOBAL.info_persona'),
-                text: this.translate.instant('GLOBAL.no_info_persona'),
-                footer:
-                  this.translate.instant('GLOBAL.cargar') +
-                  '-' +
-                  this.translate.instant('GLOBAL.info_persona'),
-                confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-              });
-            }
-          );
+        const persona = await this.recuperarInfoPersona(this.info_persona_id)
+        if (persona !== undefined && persona !== null) {
+          const temp = <InfoPersona>persona;
+          this.info_info_persona = temp;
+          const files = [];
+        }
+        await this.loadInfoInscripcion();
       } else {
         this.clean = !this.clean;
-        this.popUpManager.showAlert(
-          this.translate.instant('GLOBAL.info'),
-          this.translate.instant('GLOBAL.no_info_persona')
-        );
+        this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        this.popUpManager.showErrorAlert(
-          this.translate.instant('inscripcion.error_cargar_informacion') +
-          ': ' +
-          error.message
-        );
+        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_cargar_informacion') + ': ' + error.message);
       } else {
-        this.popUpManager.showErrorAlert(
-          this.translate.instant('inscripcion.error_cargar_informacion')
-        );
+        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_cargar_informacion'));
       }
     }
   }
 
+  recuperarInfoPersona(personaId: any) {
+    return new Promise((resolve, reject) => {
+      this.terceroMidService.get('personas/' + personaId).subscribe((res: any) => {
+        if (res !== null) {
+          resolve(res.Data);
+        } else {
+          Swal.fire({
+            icon: 'info',
+            title: this.translate.instant('GLOBAL.info_persona'),
+            text: this.translate.instant('GLOBAL.no_info_persona'),
+            footer: this.translate.instant('GLOBAL.cargar') + '-' + this.translate.instant('GLOBAL.info_persona'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+          reject(false);
+        }
+      },
+        (error: any) => {
+          console.error(error);
+          Swal.fire({
+            icon: 'info',
+            title: this.translate.instant('GLOBAL.info_persona'),
+            text: this.translate.instant('GLOBAL.no_info_persona'),
+            footer: this.translate.instant('GLOBAL.cargar') + '-' + this.translate.instant('GLOBAL.info_persona'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+          reject(false);
+        });
+    });
+  }
+
   loadInscriptionModule() {
-    this.inscripcion_id = parseInt(
-      sessionStorage.getItem('IdInscripcion')!,
-      10
-    );
+    this.inscripcion_id = parseInt(sessionStorage.getItem('IdInscripcion')!, 10);
     this.showInscription = false;
   }
 
@@ -259,10 +256,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     if (data.estado === false || data.estado === 'false') {
       this.abrirPago(data.data);
     } else if (data.estado === true || data.estado === 'true') {
-      sessionStorage.setItem(
-        'IdEstadoInscripcion',
-        data.data.EstadoInscripcion
-      );
+      sessionStorage.setItem('IdEstadoInscripcion', data.data.EstadoInscripcion);
       this.itemSelect({ data: data.data });
     }
   }
@@ -307,195 +301,175 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   nivel_load() {
-    // Solo se cargan el nivel de posgrado y pregrado
-    this.projectService.get('nivel_formacion').subscribe(
-      (response: NivelFormacion[]) => {
-        if (response !== null) {
-          this.niveles = response.filter((nivel: NivelFormacion) => nivel.Id === 2 || nivel.Id === 1);
-        }
-      },
-    );
+    return new Promise((resolve, reject) => {
+      this.projectService.get('nivel_formacion').subscribe((response: NivelFormacion[]) => {
+          if (response !== null) {
+            this.niveles = response.filter((nivel: NivelFormacion) => nivel.Id === 2 || nivel.Id === 1);
+          }
+          resolve(response)
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.periodo_error'));
+            reject([]);
+          });
+    });
   }
 
   async loadInfoInscripcion() {
-    // Función del MID que retorna el estado del recibo
     await this.cargarPeriodo();
-    const PeriodoActual = localStorage.getItem('IdPeriodo');
+    const PeriodoActual: any = localStorage.getItem('IdPeriodo');
+    //const PeriodoActual = 40
     if (this.info_persona_id != null && PeriodoActual != null) {
-      // if (this.persona_id != null){
-      await this.inscripcionMidService
-        .get(
-          'inscripciones/estado-recibos?persona-id=' +
-          this.info_persona_id +
-          '&id-periodo=' +
-          PeriodoActual
-        )
-        .subscribe(
-          (response: any) => {
-            console.log(response)
-            if (response !== null && response.Status == '400') {
-              this.popUpManager.showErrorToast(
-                this.translate.instant('inscripcion.error')
-              );
-            } else if (response != null && response.Status == '404') {
-              this.popUpManager.showAlert(
-                this.translate.instant('GLOBAL.info'),
-                this.translate.instant('inscripcion.no_inscripcion')
-              );
-            } else {
-              const data = <Array<any>>response.Data.Inscripciones;
-              console.log(data)
-              const dataInfo = <Array<any>>[];
-              this.recibos_pendientes = 0;
-              data.forEach((element) => {
-                if (element != null) {
-                  this.projectService
-                    .get(
-                      'proyecto_academico_institucion?query=Id:' +
-                      element.ProgramaAcademicoId
-                    )
-                    .subscribe(
-                      (res) => {
-                        const auxRecibo = element.ReciboInscripcion;
-                        const NumRecibo = auxRecibo.split('/', 1);
-                        element.ReciboInscripcion = NumRecibo;
-                        element.FechaCreacion = momentTimezone
-                          .tz(element.FechaCreacion, 'America/Bogota')
-                          .format('DD-MM-YYYY hh:mm:ss');
-                        element.ProgramaAcademicoId = res[0].Nombre;
-                        let level =
-                          res[0].NivelFormacionId.NivelFormacionPadreId;
-                        if (level == null || level == undefined) {
-                          level = res[0].NivelFormacionId.Id;
-                        } else {
-                          level =
-                            res[0].NivelFormacionId.NivelFormacionPadreId.Id;
-                        }
-                        element.NivelPP = level;
-                        if (element.Estado === 'Pendiente pago') {
-                          this.recibos_pendientes++;
-                        }
-                        this.result.emit(1);
-                        dataInfo.push(element);
-                        this.dataSource = new MatTableDataSource(dataInfo);
-                        //this.dataSource.setSort([{ field: 'Id', direction: 'desc' }]);
-                      },
-                      (error: any) => {
-                        this.popUpManager.showErrorToast(
-                          this.translate.instant('ERROR.general')
-                        );
-                      }
-                    );
-                }
-              });
-            }
-          },
-          (error: any) => {
-            this.popUpManager.showErrorToast(
-              this.translate.instant('ERROR.general')
-            );
+      const inscripciones: any = await this.recuperarEstadosReciboInscripciones(this.info_persona_id, PeriodoActual)
+      const dataInfo = <Array<any>>[];
+      this.recibos_pendientes = 0;
+      for (const inscripcion of inscripciones) {
+        if (inscripcion != null) {
+          const proyecto: any = await this.recuperarProyectoAcademico(inscripcion.ProgramaAcademicoId)
+          const auxRecibo = inscripcion.ReciboInscripcion;
+          const NumRecibo = auxRecibo.split('/', 1);
+          inscripcion.ReciboInscripcion = NumRecibo;
+          inscripcion.FechaCreacion = momentTimezone.tz(inscripcion.FechaCreacion, 'America/Bogota').format('DD-MM-YYYY hh:mm:ss');
+          inscripcion.ProgramaAcademicoId = proyecto.Nombre;
+          let level = proyecto.NivelFormacionId.NivelFormacionPadreId;
+          if (level == null || level == undefined) {
+            level = proyecto.NivelFormacionId.Id;
+          } else {
+            level = proyecto.NivelFormacionId.NivelFormacionPadreId.Id;
           }
-        );
+          inscripcion.NivelPP = level;
+          if (inscripcion.Estado === 'Pendiente pago') {
+            this.recibos_pendientes++;
+          }
+          this.result.emit(1);
+          dataInfo.push(inscripcion);
+        }
+      }
+      console.log(dataInfo);
+      this.dataSource = new MatTableDataSource(dataInfo);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     }
+  }
+
+  recuperarEstadosReciboInscripciones(idPersona: number, idPeriodo: number) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.get('inscripciones/estado-recibos?persona-id=' + idPersona + '&id-periodo=' + idPeriodo).subscribe((response: any) => {
+        if (response != null && response.Status == '400') {
+          this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
+          reject(false);
+        } else if (response != null && response.Status == '404') {
+          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('inscripcion.no_inscripcion'));
+          reject(false);
+        } else {
+          const data = <Array<any>>response.Data.Inscripciones;
+          resolve(data)
+        }
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        });
+    });
+  }
+
+  recuperarProyectoAcademico(idProyecto: number) {
+    return new Promise((resolve, reject) => {
+      this.projectService.get('proyecto_academico_institucion?query=Id:' + idProyecto).subscribe((response: any) => {
+        resolve(response[0])
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        });
+    });
   }
 
   filtrarProyecto(proyecto: any) {
+    // if (proyecto['NivelFormacionId']['NivelFormacionPadreId'] !== null) {
+    //   if (proyecto['NivelFormacionId']['Id'] === this.selectedSubLevel
+    //   ) {
+    //     console.log(this.selectedSubLevel+"okSL")
+    //     console.log(proyecto['NivelFormacionId']['NivelFormacionPadreId']['Id']+"ok")
+    //     return true;
+    //   }
+    // }
+    // return false;
 
-    if (proyecto['NivelFormacionId']['NivelFormacionPadreId'] !== null) {
-      if (proyecto['NivelFormacionId']['Id'] === this.selectedSubLevel
-      ) {
-        console.log(this.selectedSubLevel+"okSL")
-        console.log(proyecto['NivelFormacionId']['NivelFormacionPadreId']['Id']+"ok")
-        return true;
+    if (proyecto['NivelFormacionId']['Id'] === this.selectedSubLevel) {
+      return true;
+    } else {
+      return false
+    }
+  }
+
+  async onSelectLevel() {
+    if (this.selectedLevel === undefined) {
+      this.popUpManager.showInfoToast(this.translate.instant('inscripcion.erro_selec_nivel'));
+    } else {
+      if (this.selectedLevel === 2) {
+        Swal.fire({
+          icon: 'info',
+          title: this.translate.instant('GLOBAL.info'),
+          text: this.translate.instant('inscripcion.alerta_posgrado'),
+        });
+      }
+      const proyectos: any = await this.recuperarProyectosAcademicosInstitucion();
+      const res = proyectos.map((item: any) => ({
+        IdNivel: item.NivelFormacionId ? item.NivelFormacionId.Id : null,
+        Nombre: item.NivelFormacionId ? item.NivelFormacionId.Nombre : null,
+        IdNivelPadre: item.NivelFormacionId?.NivelFormacionPadreId?.Id ?? null
+      }));
+      //Filtro de subniveles 
+      const resLimpia = [];
+      const repetidos = new Set();
+      for (const item of res) {
+        if (item.Nombre && !repetidos.has(item.Nombre)) {
+          repetidos.add(item.Nombre);
+          resLimpia.push(item);
+        }
+      }
+      if (this.selectedLevel === 1) {
+        this.showSublevel = true;
+        this.subniveles = resLimpia.filter(item => item.IdNivelPadre !== 2 && item.IdNivel !== 2);
+      }
+      if (this.selectedLevel === 2) {
+        this.showSublevel = true;
+        this.subniveles = resLimpia.filter(item => item.IdNivelPadre !== 1 && item.IdNivel !== 1);
       }
     }
-    return false;
   }
 
-  onSelectLevel() {
-    if (this.selectedLevel === undefined) {
-      this.popUpManager.showInfoToast(
-        this.translate.instant('inscripcion.erro_selec_nivel')
-      );
-    } else {
-      Swal.fire({
-        icon: 'info',
-        title: this.translate.instant('GLOBAL.info'),
-        text: this.translate.instant('inscripcion.alerta_posgrado'),
-      });
-      this.projectService
-        .get(
-          'proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId,Codigo'
-        )
-        .subscribe(
-          (response: any) => {
-            if (response && Array.isArray(response)) {
-              const res = response.map((item: any) => ({
-                IdNivel: item.NivelFormacionId ? item.NivelFormacionId.Id : null,
-                Nombre: item.NivelFormacionId ? item.NivelFormacionId.Nombre : null,
-                IdNivelPadre: item.NivelFormacionId?.NivelFormacionPadreId?.Id ?? null
-              }));
-              //Filtro de subniveles 
-              const resLimpia = [];
-              const repetidos = new Set();
-              for (const item of res) {
-                if (item.Nombre && !repetidos.has(item.Nombre)) {
-                  repetidos.add(item.Nombre);
-                  resLimpia.push(item);
-                }
-              }
-              if (this.selectedLevel === 1) {
-                this.showSublevel = true;
-                this.subniveles = resLimpia.filter(item => item.IdNivelPadre !== 2 && item.IdNivel !== 2);
-              }
-              if (this.selectedLevel === 2) {
-                this.showSublevel = true;
-                this.subniveles = resLimpia.filter(item => item.IdNivelPadre !== 1 && item.IdNivel !== 1);
-              }
-              
-            } else {
-              this.popUpManager.showErrorToast(
-                this.translate.instant('ERROR.general')
-              );
-            }
-          },
-          (error: any) => {
-            this.popUpManager.showErrorToast(
-              this.translate.instant('ERROR.general')
-            );
-          }
-        );
-    }
+  recuperarProyectosAcademicosInstitucion() {
+    return new Promise((resolve, reject) => {
+      this.projectService.get('proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId,Codigo').subscribe((response: any) => {
+        if (response && Array.isArray(response))  {
+          resolve(response)
+        } else {
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        }
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        });
+    });
   }
 
-  onSelectSubLevel() {
+  async onSelectSubLevel() {
     if (this.selectedSubLevel === undefined) {
-      this.popUpManager.showInfoToast(
-        this.translate.instant('inscripcion.erro_selec_nivel')
-      );
+      this.popUpManager.showInfoToast(this.translate.instant('inscripcion.erro_selec_nivel'));
     } else {
-      console.log(this.subniveles);
-      console.log(this.selectedSubLevel);
-      this.projectService
-        .get(
-          'proyecto_academico_institucion?limit=0&fields=Id,Nombre,NivelFormacionId,Codigo'
-        )
-        .subscribe(
-          (response: any) => {
-            this.projects = <any[]>(
-              response.filter((proyecto: any) => this.filtrarProyecto(proyecto))
-            );
-            this.validateProject();
-          },
-          (error: any) => {
-            this.popUpManager.showErrorToast(
-              this.translate.instant('ERROR.general')
-            );
-          }
-        );
+      const proyectos: any = await this.recuperarProyectosAcademicosInstitucion();
+      this.projects = <any[]>(proyectos.filter((proyecto: any) => this.filtrarProyecto(proyecto)));
+      await this.validateProject();
     }
   }
-
 
   nuevaPreinscripcion() {
     this.showNew = true;
@@ -512,62 +486,50 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     // }
   }
 
-  validateProject() {
+  async validateProject() {
     this.inscripcionProjects = new Array();
     this.showProyectoCurricular = false;
+    this.showPeriodo = true;
     this.showTipoInscripcion = false;
     this.showInfo = false;
-    let periodo = localStorage.getItem('IdPeriodo');
-    console.log(this.selectedSubLevel+"calendario");
-    this.calendarioMidService
-      .get(
-        'calendario-proyecto/calendario/proyecto?id-nivel=' +
-        this.selectedSubLevel +
-        '&id-periodo=' +
-        periodo
-      )
-      .subscribe(
-        (response: any) => {
-          const r = <any>response;
-          if (
-            response !== null &&
-            response !== '{}' &&
-            r.Type !== 'error' &&
-            r.length !== 0
-          ) {
-            const inscripcionP = <Array<any>>response.Data;
-            this.inscripcionProjects = inscripcionP;
-            console.log(this.projects);
-            console.log(this.inscripcionProjects);
-            this.showProyectoCurricular = true;
-            // this.loadTipoInscripcion();
-          } else {
-            this.popUpManager.showAlert(
-              '',
-              this.translate.instant('calendario.sin_proyecto_curricular')
-            );
-            this.showProyectoCurricular = false;
-            this.showTipoInscripcion = false;
-            this.showInfo = false;
-          }
-        },
-        (error: any) => {
-          this.popUpManager.showErrorToast(
-            this.translate.instant('ERROR.general')
-          );
+    let periodo: any = localStorage.getItem('IdPeriodo');
+    //let periodo = 40
+    const resCalendario: any = await this.recuperarCalendarioProyecto(this.selectedSubLevel, periodo);
+    this.inscripcionProjects = resCalendario;
+    console.log(this.projects);
+    console.log(this.inscripcionProjects);
+    this.showProyectoCurricular = true;
+    this.showPeriodo = true;
+    // this.loadTipoInscripcion();
+  } 
+  
+  recuperarCalendarioProyecto(idNivel: number, idPeriodo: number) {
+    return new Promise((resolve, reject) => {
+      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + idNivel + '&id-periodo=' + idPeriodo).subscribe((response: any) => {
+        const r = <any>response;
+        if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
+          resolve(<Array<any>>response.Data)
+        } else {
+          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
+          this.showProyectoCurricular = false;
+          this.showPeriodo = false;
+          this.showTipoInscripcion = false;
+          this.showInfo = false;
         }
-      );
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
+          reject(false);
+        });
+    });
   }
 
   async generarRecibo() {
     if (this.recibos_pendientes >= 3) {
-      this.popUpManager.showErrorAlert(
-        this.translate.instant('recibo_pago.maximo_recibos')
-      );
+      this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.maximo_recibos'));
     } else {
-      const ok = await this.popUpManager.showConfirmAlert(
-        this.translate.instant('inscripcion.seguro_inscribirse')
-      );
+      const ok = await this.popUpManager.showConfirmAlert(this.translate.instant('inscripcion.seguro_inscribirse'));
 
       if (ok.value) {
         if (this.info_info_persona === undefined) {
@@ -577,49 +539,34 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             }
 
             try {
-              const res = await firstValueFrom(
-                this.terceroMidService.get('personas/' + this.info_persona_id)
-              );
-              if (res !== null) {
-                const temp = <InfoPersona>res.Data;
-                this.info_info_persona = temp;
-                const files = [];
-                await this.generar_inscripcion();
-              }
+              const persona = await this.recuperarInfoPersona(this.info_persona_id)
+              const temp = <InfoPersona>persona;
+              this.info_info_persona = temp;
+              const files = [];
+              await this.generar_inscripcion();
             } catch (error) {
               if (error instanceof HttpErrorResponse) {
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
                   text: this.translate.instant('ERROR.' + error.status),
-                  footer:
-                    this.translate.instant('GLOBAL.cargar') +
-                    '-' +
-                    this.translate.instant('GLOBAL.info_persona'),
+                  footer: this.translate.instant('GLOBAL.cargar') + '-' + this.translate.instant('GLOBAL.info_persona'),
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               } else {
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',
-                  text: this.translate.instant(
-                    'inscripcion.error_cargar_informacion'
-                  ),
+                  text: this.translate.instant('inscripcion.error_cargar_informacion'),
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               }
             }
           } catch (error) {
             if (error instanceof HttpErrorResponse) {
-              this.popUpManager.showErrorAlert(
-                this.translate.instant('inscripcion.error_cargar_informacion') +
-                ': ' +
-                error.message
-              );
+              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_cargar_informacion') + ': ' + error.message);
             } else {
-              this.popUpManager.showErrorAlert(
-                this.translate.instant('inscripcion.error_cargar_informacion')
-              );
+              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_cargar_informacion'));
             }
           }
         } else {
@@ -671,147 +618,72 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     );
   }
 
-  generar_inscripcion() {
-    return new Promise((resolve, reject) => {
-      const inscripcion = {
-        Id: parseInt(this.info_info_persona.NumeroIdentificacion, 10),
-        Nombre: `${this.info_info_persona.PrimerNombre} ${this.info_info_persona.SegundoNombre}`,
-        Apellido: `${this.info_info_persona.PrimerApellido} ${this.info_info_persona.SegundoApellido}`,
-        Correo: JSON.parse(
-          atob(localStorage.getItem('id_token')!.split('.')[1])
-        ).email,
-        PersonaId: Number(this.info_persona_id),
-        PeriodoId: this.periodo.Id,
-        Nivel: parseInt(this.selectedLevel, 10),
-        ProgramaAcademicoId: parseInt(this.selectedProject, 10),
-        ProgramaAcademicoCodigo: parseInt(this.projects.find(proyecto => proyecto.Id === this.selectedProject).Codigo, 10),
-        TipoInscripcionId: parseInt(this.tipo_inscripcion_selected, 10),
-        Year: this.periodo.Year,
-        Periodo: parseInt(this.periodo.Ciclo, 10),
-        FechaPago: '',
-      };
-      let periodo = localStorage.getItem('IdPeriodo');
-      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.selectedLevel + '&id-periodo=' + periodo).subscribe(
-        (response: any) => {
-          if (response !== null && response.length !== 0) {
-            this.inscripcionProjects = response.data;
-            console.log(response);
-            // this.inscripcionProjects.forEach(proyecto => {
-            // if (proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null) {
-            if (response.Data[0].Evento.FechaFinEvento != null) {
-              inscripcion.FechaPago = moment(response.Data[0].Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-              // inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-              this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
-                (response: any) => {
-                  console.log(response)
-                  if (response.status == '200') {
-                    this.showProyectoCurricular = false;
-                    this.showTipoInscripcion = false;
-                    this.showInfo = false;
-                    this.showNew = false;
-                    this.loadInfoInscripcion();
-                    resolve(response);
+  async generar_inscripcion() {
+    console.log(this.selectedLevel, this.periodoId)
+    if (this.selectedLevel == 1) {
+      this.periodo = this.periodoId
+    }
+    
+    const inscripcion = {
+      Id: parseInt(this.info_info_persona.NumeroIdentificacion, 10),
+      Nombre: `${this.info_info_persona.PrimerNombre} ${this.info_info_persona.SegundoNombre}`,
+      Apellido: `${this.info_info_persona.PrimerApellido} ${this.info_info_persona.SegundoApellido}`,
+      Correo: JSON.parse(atob(localStorage.getItem('id_token')!.split('.')[1])).email,
+      PersonaId: Number(this.info_persona_id),
+      PeriodoId: this.periodo.Id,
+      Nivel: parseInt(this.selectedLevel, 10),
+      ProgramaAcademicoId: parseInt(this.selectedProject, 10),
+      ProgramaAcademicoCodigo: parseInt(this.projects.find((proyecto: any) => proyecto.Id === this.selectedProject).Codigo, 10),
+      TipoInscripcionId: parseInt(this.tipo_inscripcion_selected, 10),
+      Year: this.periodo.Year,
+      Periodo: parseInt(this.periodo.Ciclo, 10),
+      FechaPago: '',
+    };
+    console.log(inscripcion)
 
-                    const resEstado: any = this.actualizarEstadoInscripcion(inscripcion);
-                    if (Object.keys(resEstado).length == 0) {
-                      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_error'));
-                    } else {
-                      this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
-                    }
-                    
-                    this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
-                  } else if (response.status == '204') {
-                    reject([]);
-                    this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
-                  } else if (response.status == '400') {
-                    reject([]);
-                    this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
-                  }
-                },
-                (error: HttpErrorResponse) => {
-                  this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
-                },
-              );
-            } else {
-              this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('inscripcion.no_fechas_inscripcion'))
-            }
-            // });
-          }
-        },
+    let periodo: any = localStorage.getItem('IdPeriodo');
+    //let periodo = 40
+
+    const resCalendario: any = await this.recuperarCalendarioProyecto(this.selectedSubLevel, periodo);
+    this.inscripcionProjects = resCalendario;
+
+    for (const proyecto of this.inscripcionProjects) {
+      if (proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null) {
+        inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
+        const resInscripcion: any = await this.inscripcionNuevaPost(inscripcion);
+        if (resInscripcion) {
+          this.showProyectoCurricular = false;
+          this.showPeriodo = false;
+          this.showTipoInscripcion = false;
+          this.showInfo = false;
+          this.showNew = false;
+          this.loadInfoInscripcion();
+        }
+      } else {
+        this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('inscripcion.no_fechas_inscripcion'));
+      }
+    }
+  }
+
+  inscripcionNuevaPost(body: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.post('inscripciones/nueva', body).subscribe((response: any) => {
+        if (response.status == '200') {
+          this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
+          resolve(true);
+        } else if (response.status == '204') {
+          this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
+          reject(false);
+        } else if (response.status == '400') {
+          this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
+          reject(false);
+        }
+      },
         (error: any) => {
-          this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('calendario.sin_proyecto_curricular'));
-        },
-      );
-      this.calendarioMidService
-        .get(
-          'calendario-proyecto/calendario/proyecto?id-nivel=' +
-          this.selectedLevel +
-          '&id-periodo=' +
-          periodo
-        )
-        .subscribe(
-          (response: any) => {
-            if (response !== null && response.length !== 0) {
-              this.inscripcionProjects = response.Data;
-              this.inscripcionProjects.forEach((proyecto) => {
-                if (
-                  proyecto.ProyectoId === this.selectedProject &&
-                  proyecto.Evento != null
-                ) {
-                  inscripcion.FechaPago = moment(
-                    proyecto.Evento.FechaFinEvento,
-                    'YYYY-MM-DD'
-                  ).format('DD/MM/YYYY');
-                  this.inscripcionMidService
-                    .post('inscripciones/nueva', inscripcion)
-                    .subscribe(
-                      (response: any) => {
-                        if (response.Status == '200') {
-                          this.showProyectoCurricular = false;
-                          this.showTipoInscripcion = false;
-                          this.showInfo = false;
-                          this.showNew = false;
-                          this.loadInfoInscripcion();
-                          resolve(response);
-                          this.popUpManager.showSuccessAlert(
-                            this.translate.instant('recibo_pago.generado')
-                          );
-                        } else if (response.Status == '204') {
-                          reject([]);
-                          this.popUpManager.showErrorAlert(
-                            this.translate.instant(
-                              'recibo_pago.recibo_duplicado'
-                            )
-                          );
-                        } else if (response.Status == '400') {
-                          reject([]);
-                          this.popUpManager.showErrorToast(
-                            this.translate.instant('recibo_pago.no_generado')
-                          );
-                        }
-                      },
-                      (error: HttpErrorResponse) => {
-                        this.popUpManager.showErrorToast(
-                          this.translate.instant(`ERROR.${error.status}`)
-                        );
-                      }
-                    );
-                } else {
-                  this.popUpManager.showAlert(
-                    this.translate.instant('inscripcion.preinscripcion'),
-                    this.translate.instant('inscripcion.no_fechas_inscripcion')
-                  );
-                }
-              });
-            }
-          },
-          (error: any) => {
-            this.popUpManager.showAlert(
-              this.translate.instant('GLOBAL.info'),
-              this.translate.instant('calendario.sin_proyecto_curricular')
-            );
-          }
-        );
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
+          reject(false);
+        });
     });
   }
 
@@ -943,76 +815,72 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     }, 5000);
   }
 
-  loadTipoInscripcion() {
+  async loadTipoInscripcion() {
     this.tipo_inscripciones = new Array();
+    let tiposInscripciones
+    const tiposInscripcion: any = await this.recuperarTipoInscripcionNivel(this.selectedLevel);
     window.localStorage.setItem('IdNivel', String(this.selectedLevel));
-    this.inscripcionService
-      .get(
-        'tipo_inscripcion?query=NivelId:' +
-        Number(this.selectedLevel) +
-        ',Activo:true&sortby=NumeroOrden&order=asc'
-      )
-      .subscribe(
-        (res) => {
-          const r = <any>res;
-          if (res !== null && r.message !== 'error') {
-            let tiposInscripciones = <Array<any>>res;
 
-            tiposInscripciones = tiposInscripciones.filter(function (e) {
-              if (
-                e['Nombre'] === 'Transferencia interna' ||
-                e['Nombre'] === 'Transferencia externa' ||
-                e['Nombre'] === 'Reingreso'
-              )
-                return false;
-              return true;
-            });
+    if (this.selectedLevel == 1) {
+      tiposInscripciones = <Array<any>>tiposInscripcion;
+    } else {
+      tiposInscripciones = <Array<any>>tiposInscripcion;
+      tiposInscripciones = tiposInscripciones.filter(function (e) {
+        if (e['Nombre'] === 'Transferencia interna' || e['Nombre'] === 'Transferencia externa' || e['Nombre'] ===  'Reingreso') {
+          return false;
+        } else {
+          return true;
+        }
+      });
+    }
 
-            this.tipo_inscripciones = tiposInscripciones;
-            // this.cargaproyectosacademicos();
-            if (this.tipo_inscripciones.length === 0) {
-              this.popUpManager.showAlert(
-                '',
-                this.translate.instant('calendario.sin_tipo_inscripcion')
-              );
-              this.showTipoInscripcion = false;
-              this.showProyectoCurricular = false;
-              this.showInfo = false;
-            } else {
-              this.showTipoInscripcion = true;
-            }
-          }
-        },
-        (error: HttpErrorResponse) => {
+    this.tipo_inscripciones = tiposInscripciones;
+    // this.cargaproyectosacademicos();
+    if (this.tipo_inscripciones.length === 0) {
+      this.popUpManager.showAlert('', this.translate.instant('calendario.sin_tipo_inscripcion'));
+      this.showTipoInscripcion = false;
+      this.showProyectoCurricular = false;
+      this.showPeriodo = false;
+      this.showInfo = false;
+    } else {
+      this.showTipoInscripcion = true;
+    }
+  }
+
+  recuperarTipoInscripcionNivel(idNivel: number) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get('tipo_inscripcion?query=NivelId:' + idNivel + ',Activo:true&sortby=NumeroOrden&order=asc&limit=0').subscribe((response: any) => {
+        const r = <any>response;
+        if (response !== null && r.message !== 'error') {
+          resolve(response)
+        } else {
+          reject(false);
+        }
+      },
+        (error: any) => {
+          console.error(error);
           Swal.fire({
             icon: 'error',
             title: error.status + '',
             text: this.translate.instant('ERROR.' + error.status),
-            footer:
-              this.translate.instant('GLOBAL.cargar') +
-              '-' +
-              this.translate.instant('GLOBAL.programa_academico'),
+            footer: this.translate.instant('GLOBAL.cargar') + '-' + this.translate.instant('GLOBAL.programa_academico'),
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
-        }
-      );
+          reject(false);
+        });
+    });
   }
 
   cargarPeriodo() {
     return new Promise((resolve, reject) => {
-      this.parametrosService
-        .get(
-          'periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=1'
-        )
+      this.parametrosService.get('periodo?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
         .subscribe(
           (res: any) => {
+            console.log(res);
             const r = <any>res;
             if (res !== null && r.Status == '200') {
               this.periodo = <any>res['Data'][0];
-              window.localStorage.setItem(
-                'IdPeriodo',
-                String(this.periodo['Id'])
-              );
+              window.localStorage.setItem('IdPeriodo', String(this.periodo['Id']));
               resolve(this.periodo);
               const periodos = <any[]>res['Data'];
               periodos.forEach((element) => {
@@ -1021,6 +889,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             }
           },
           (error: HttpErrorResponse) => {
+            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.periodo_error'));
             reject([]);
           }
         );
@@ -1217,6 +1087,13 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     }
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   actualizarEstadoInscripcion(inscripcionData: any) {
     inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
