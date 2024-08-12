@@ -25,6 +25,7 @@ import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.se
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
+
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
   templateUrl: './legalizacion-matricula-aspirante.component.html',
@@ -149,6 +150,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   };
 
   localidades!: any[];
+
   situacionesLaboral!: any[];
   estratos!: any[];
   nuceloFamiliar!: any[];
@@ -167,6 +169,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
     await this.cargarSalarioMinimo(this.periodoId)
     this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)
+    console.log(this.inscripcion)
     this.estadoInscripcion = this.inscripcion.EstadoInscripcionId.Id
     this.opcionPrograma = this.inscripcion.Opcion
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.proyectoAcademicoId);

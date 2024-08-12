@@ -193,6 +193,9 @@ export class LegalizacionMatriculaComponent {
   }
 
   onFacultadChange(event: any) {
+
+    // const facultad = this.facultades.find((facultad: any) => facultad.Id === event.value);
+    // this.proyectosCurriculares = facultad.Opciones;
     const programas = this.proyectosPregrado.filter((item: any) => item.FacultadId == event.value);
     this.proyectosCurriculares = programas;
   }

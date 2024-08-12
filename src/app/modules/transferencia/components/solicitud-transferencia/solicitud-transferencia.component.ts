@@ -70,16 +70,14 @@ export class SolicitudTransferenciaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.sub = this._Activatedroute.paramMap.subscribe((params: any) => {
+    this.sub = this._Activatedroute.paramMap.subscribe(async (params: any) => {
       const { id, process } = params.params;
       this.process = atob(process);
       this.id = id
 
-      this.loadSolicitud();
-      this.loadInfoPersona();
-      this.loadEstados();
-
-
+      await this.loadSolicitud();
+      await this.loadInfoPersona();
+      await this.loadEstados();
     })
   }
 
@@ -110,243 +108,299 @@ export class SolicitudTransferenciaComponent implements OnInit {
 
   async loadInfoPersona() {
     this.uid = await this.userService.getPersonaId();
-    if (this.uid !== undefined && this.uid !== 0 &&
-      this.uid.toString() !== '' && this.uid.toString() !== '0') {
-      this.terceroMidService.get('personas/' + this.uid).subscribe((res: any) => {
-        if (res !== null) {
-          this.nombreCordinador = res.NombreCompleto;
-        }
-      },
-        (error: HttpErrorResponse) => {
-          Swal.fire({
-            icon: 'error',
-            title: error.status + '',
-            text: this.translate.instant('ERROR.' + error.status),
-            footer: this.translate.instant('GLOBAL.cargar') + '-' +
-              this.translate.instant('GLOBAL.info_persona'),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-          });
-        });
+    if (this.uid !== undefined && this.uid !== 0 && this.uid.toString() !== '' && this.uid.toString() !== '0') {
+      const persona: any = await this.recuperarPersona(this.uid)
+      this.nombreCordinador = persona.NombreCompleto;
     } else {
       this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'), this.translate.instant('GLOBAL.no_info_persona'));
     }
   }
 
-  loadSolicitud() {
-    this.inscripcionMidService.get('transferencia/inscripcion/' + this.id).subscribe(inscripcion => {
-      if (inscripcion !== null) {
-        if (inscripcion.Success) {
-          this.periodo = inscripcion['Data']['Periodo']['Nombre'];
-          this.nivelNombre = inscripcion['Data']['Nivel']['Nombre'];
-          this.nivel = inscripcion['Data']['Nivel']['Id'];
-          this.tipo = inscripcion['Data']['TipoInscripcion']['Nombre'];
-
-          this.formTransferencia.campos.forEach((campo: any) => {
-            delete campo.deshabilitar;
+  recuperarPersona(id: number) {
+    return new Promise((resolve, reject) => {
+      this.terceroMidService.get('personas/' + id).subscribe((response: any) => {
+        if (response != null) {
+          resolve(response)
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: '',
+            text: this.translate.instant('ERROR.'),
+            footer: this.translate.instant('GLOBAL.cargar') + '-' + this.translate.instant('GLOBAL.info_persona'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
-          this.formTransferencia.btn = 'Guardar';
-
-          const origen = this.getIndexFormTrans('ProgramaOrigen');
-          const origenExterno = this.getIndexFormTrans('ProgramaOrigenInput');
-          const estudiante = this.getIndexFormTrans('CodigoEstudiante');
-          const estudianteExterno = this.getIndexFormTrans('CodigoEstudianteExterno');
-          const destino = this.getIndexFormTrans('ProgramaDestino');
-          const universidad = this.getIndexFormTrans('UniversidadOrigen');
-          const cancelo = this.getIndexFormTrans('Cancelo');
-          const acuerdo = this.getIndexFormTrans('Acuerdo');
-          const creditos = this.getIndexFormTrans('CantidadCreditos');
-          const ultimo = this.getIndexFormTrans('UltimoSemestre');
-
-          //todo: no existe programaDestino
-          this.formTransferencia.campos[destino].valor = inscripcion['Data']['ProgramaDestino'];
-          this.formTransferencia.campos[destino].deshabilitar = true;
-
-          this.ocultarCampo(acuerdo, true);
-          this.formTransferencia.campos[cancelo].ocultar = true;
-          this.formTransferencia.campos[creditos].claseGrid = 'col-sm-6 col-xs-6';
-          this.formTransferencia.campos[ultimo].claseGrid = 'col-sm-6 col-xs-6';
-
-          if (this.tipo === 'Transferencia externa') {
-
-            this.ocultarCampo(estudianteExterno, false);
-            this.ocultarCampo(estudiante, true);
-
-            this.ocultarCampo(origenExterno, false);
-            this.ocultarCampo(origen, true);
-
-            this.formTransferencia.campos[universidad].deshabilitar = false;
-            this.solicitudCreada = true;
-          } else {
-            this.ocultarCampo(estudianteExterno, true);
-            this.ocultarCampo(estudiante, false);
-
-            this.ocultarCampo(origenExterno, true);
-            this.ocultarCampo(origen, false);
-
-            this.solicitudCreada = false;
-
-            this.formTransferencia.campos[universidad].deshabilitar = true;
-            this.formTransferencia.campos[universidad].valor = 'Universidad Distrital Francisco José de Caldas'
-
-            this.formTransferencia.campos[estudiante].deshabilitar = false;
-            this.formTransferencia.campos[estudiante].opciones = inscripcion['Data']['CodigoEstudiante'];
-
-            this.formTransferencia.campos[origen].deshabilitar = false;
-            this.formTransferencia.campos[origen].opciones = inscripcion['Data']['ProyectoCurricular'];
-            this.formTransferencia.campos[origen].opciones = inscripcion['Data']['ProyectoCodigo'];
-
-            if (this.tipo === 'Reingreso') {
-              this.ocultarCampo(acuerdo, false);
-              this.formTransferencia.campos[cancelo].ocultar = false;
-              inscripcion['Data']['CodigoEstudiante'].forEach((codigo: any) => {
-
-                if (codigo.IdProyecto === inscripcion['Data']['ProgramaDestino']['Id']) {
-                  this.formTransferencia.campos[estudiante].valor = codigo;
-                  this.formTransferencia.campos[estudiante].deshabilitar = true;
-                }
-              });
-
-              this.formTransferencia.campos[origen].valor = inscripcion['Data']['ProgramaDestino'];
-              this.formTransferencia.campos[origen].deshabilitar = true;
-            }
-          }
-          if (inscripcion.Data.SolicitudId) {
-            
-            this.estado = inscripcion['Data']['Estado']['Nombre'];
-            let data = {
-              Cancelo: inscripcion['Data']['DatosInscripcion']['CanceloSemestre'],
-              Acuerdo: inscripcion['Data']['DatosInscripcion']['SolicitudAcuerdo'],
-              CantidadCreditos: inscripcion['Data']['DatosInscripcion']['CantidadCreditos'],
-              CodigoEstudiante: inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'],
-              CodigoEstudianteExterno: inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'],
-              SoporteDocumento: inscripcion['Data']['DatosInscripcion']['DocumentoId'],
-              MotivoCambio: inscripcion['Data']['DatosInscripcion']['MotivoRetiro'],
-              UltimoSemestre: inscripcion['Data']['DatosInscripcion']['UltimoSemestreCursado'],
-              ProgramaOrigen: inscripcion['Data']['DatosInscripcion']['ProyectoCurricularProviene'],
-              ProgramaOrigenInput: inscripcion['Data']['DatosInscripcion']['ProyectoCurricularProviene'],
-              UniversidadOrigen: inscripcion['Data']['DatosInscripcion']['UniversidadProviene'],
-              ProgramaDestino: inscripcion['Data']['ProgramaDestino'],
-            }
-            if (!(this.tipo === 'Transferencia externa')) {
-              data.UniversidadOrigen = 'Universidad Distrital Francisco José de Caldas';
-              if (this.tipo === 'Reingreso') {
-                data.ProgramaOrigen = data.ProgramaDestino;
-              }
-            }
-            this.dataTransferencia = data;
-
-            this.nombreEstudiante = inscripcion['Data']['DatosEstudiante']['Nombre'];
-            this.documentoEstudiante = inscripcion['Data']['DatosEstudiante']['Identificacion'];
-            this.codigoEstudiante = inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'];
-            this.solicitudId = inscripcion['Data']['SolicitudId'];
-            if (inscripcion['Data']['Estado']['Nombre'] != 'Requiere modificación' && this.process === 'my') {
-              this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = true;
-              // this.formTransferencia.campos[origenExterno].ocultar = true;
-              this.mostrarDocumento = true;
-              this.formTransferencia.campos.forEach((campo: any) => {
-                campo.deshabilitar = true;
-              });
-              this.formTransferencia.btn = '';
-
-              this.file = {
-                id: inscripcion['Data']['DatosInscripcion']['DocumentoId'],
-                label: this.translate.instant('inscripcion.' + 'placeholder_soportes_documentos')
-              }
-            } else {
-              this.formTransferencia.campos[origen].deshabilitar = true;
-              this.formTransferencia.campos[origenExterno].deshabilitar = true;
-              this.mostrarDocumento = false;
-              this.comentario = inscripcion['Data']['DatosRespuesta']['Observacion'];
-
-              this.inscriptionSettings = this.nivelNombre === 'Pregrado' ? {
-                basic_info_button: true,
-                hide_header_labels: true,
-                formacion_academica_button: true,
-                documentos_programa_button: true,
-                select_tipo: this.tipo,
-                nivel: this.nivelNombre,
-                detalle_inscripcion: true,
-                es_transferencia: true,
-              } : {
-                basic_info_button: true,
-                hide_header_labels: true,
-                formacion_academica_button: true,
-                documentos_programa_button: true,
-                select_tipo: this.tipo,
-                nivel: this.nivelNombre,
-                detalle_inscripcion: true,
-                experiencia_laboral: true,
-                produccion_academica: true,
-                es_transferencia: true,
-              }
-
-              const SoporteDocumento = this.getIndexFormTrans('SoporteDocumento');
-
-              this.formTransferencia.campos[SoporteDocumento].ocultar = false;
-              this.idFileDocumento = inscripcion['Data']['DatosInscripcion']['DocumentoId'];
-              this.nuxeo.get([{ 'Id': this.idFileDocumento }]).subscribe(file => {
-                this.formTransferencia.campos[SoporteDocumento].urlTemp = (file[0] as any).url + '';
-                this.formTransferencia.campos[SoporteDocumento].valor = (file[0] as any).url + '';
-              })
-            }
-
-            if (inscripcion.Data.DatosRespuesta) {
-              const EstadoId = this.getIndexFormRes('EstadoId');
-              const FechaEspecifica = this.getIndexFormRes('FechaEspecifica');
-              const Observacion = this.getIndexFormRes('Observacion');
-              const SoporteRespuesta = this.getIndexFormRes('SoporteRespuesta');
-
-              if (inscripcion.Data.Estado.Nombre != "Pago" || inscripcion.Data.Estado.Nombre != "Solicitado") {
-                this.formRespuesta.campos[EstadoId].valor = inscripcion.Data.Estado;
-              }
-              this.formRespuesta.campos[FechaEspecifica].valor = inscripcion.Data.DatosRespuesta.FechaEvaluacion.slice(0, -4);
-              this.formRespuesta.campos[Observacion].valor = inscripcion.Data.DatosRespuesta.Observacion;
-              this.idFileDocumento = inscripcion.Data.DatosRespuesta.DocRespuesta
-              this.nuxeo.get([{ 'Id': this.idFileDocumento }]).subscribe(file => {
-                this.formRespuesta.campos[SoporteRespuesta].urlTemp = (file[0] as any).url + '';
-                this.formRespuesta.campos[SoporteRespuesta].valor = (file[0] as any).url + '';
-              })
-            }
-
-          } else {
-            this.mostrarDocumento = false;
-            this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = false;
-          }
-
-          this.inscriptionSettings = this.nivelNombre === 'Pregrado' ? {
-            basic_info_button: true,
-            hide_header_labels: true,
-            formacion_academica_button: true,
-            documentos_programa_button: true,
-            select_tipo: this.tipo,
-            nivel: this.nivelNombre,
-            detalle_inscripcion: true,
-            es_transferencia: true,
-          } : {
-            basic_info_button: true,
-            hide_header_labels: true,
-            formacion_academica_button: true,
-            documentos_programa_button: true,
-            select_tipo: this.tipo,
-            nivel: this.nivelNombre,
-            detalle_inscripcion: true,
-            experiencia_laboral: true,
-            produccion_academica: true,
-            es_transferencia: true,
-          }
+          reject(false);
         }
-      }
+      },
+        (error: any) => {
+          console.error(error);
+          Swal.fire({
+            icon: 'error',
+            title: error.status + '',
+            text: this.translate.instant('ERROR.' + error.status),
+            footer: this.translate.instant('GLOBAL.cargar') + '-' + this.translate.instant('GLOBAL.info_persona'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+          reject(false);
+        });
     });
   }
 
-  loadEstados() {
-    this.inscripcionMidService.get('transferencia/estados').subscribe(estados => {
-      if (estados !== null) {
-        if (estados.success) {
-          const respuesta = this.getIndexFormRes('Respuesta');
-          this.formRespuesta.campos[respuesta].opciones = estados['Data'].filter((estado: any) => estado.Nombre != 'Radicada' && estado.Nombre != 'Solicitado');
+  async loadSolicitud() {
+    const inscripcion: any = await this.recuperarTransferenciaInscripcion(this.id);
+
+    this.periodo = inscripcion['Data']['Periodo']['Nombre'];
+    this.nivelNombre = inscripcion['Data']['Nivel']['Nombre'];
+    this.nivel = inscripcion['Data']['Nivel']['Id'];
+    this.tipo = inscripcion['Data']['TipoInscripcion']['Nombre'];
+
+    this.formTransferencia.campos.forEach((campo: any) => {
+      delete campo.deshabilitar;
+    });
+    this.formTransferencia.btn = 'Guardar';
+
+    const origen = this.getIndexFormTrans('ProgramaOrigen');
+    const origenExterno = this.getIndexFormTrans('ProgramaOrigenInput');
+    const estudiante = this.getIndexFormTrans('CodigoEstudiante');
+    const estudianteExterno = this.getIndexFormTrans('CodigoEstudianteExterno');
+    const destino = this.getIndexFormTrans('ProgramaDestino');
+    const universidad = this.getIndexFormTrans('UniversidadOrigen');
+    const cancelo = this.getIndexFormTrans('Cancelo');
+    const acuerdo = this.getIndexFormTrans('Acuerdo');
+    const creditos = this.getIndexFormTrans('CantidadCreditos');
+    const ultimo = this.getIndexFormTrans('UltimoSemestre');
+
+    this.formTransferencia.campos[destino].valor = inscripcion['Data']['ProgramaDestino'];
+    this.formTransferencia.campos[destino].deshabilitar = true;
+
+    this.ocultarCampo(acuerdo, true);
+    this.formTransferencia.campos[cancelo].ocultar = true;
+    this.formTransferencia.campos[creditos].claseGrid = 'col-sm-6 col-xs-6';
+    this.formTransferencia.campos[ultimo].claseGrid = 'col-sm-6 col-xs-6';
+
+    if (this.tipo === 'Transferencia externa') {
+
+      this.ocultarCampo(estudianteExterno, false);
+      this.ocultarCampo(estudiante, true);
+
+      this.ocultarCampo(origenExterno, false);
+      this.ocultarCampo(origen, true);
+
+      this.formTransferencia.campos[universidad].deshabilitar = false;
+      this.solicitudCreada = true;
+    } else {
+      this.ocultarCampo(estudianteExterno, true);
+      this.ocultarCampo(estudiante, false);
+
+      this.ocultarCampo(origenExterno, true);
+      this.ocultarCampo(origen, false);
+
+      this.solicitudCreada = false;
+
+      this.formTransferencia.campos[universidad].deshabilitar = true;
+      this.formTransferencia.campos[universidad].valor = 'Universidad Distrital Francisco José de Caldas'
+
+      this.formTransferencia.campos[estudiante].deshabilitar = false;
+      this.formTransferencia.campos[estudiante].opciones = inscripcion['Data']['CodigoEstudiante'];
+
+      this.formTransferencia.campos[origen].deshabilitar = false;
+      this.formTransferencia.campos[origen].opciones = inscripcion['Data']['ProyectoCurricular'];
+      this.formTransferencia.campos[origen].opciones = inscripcion['Data']['ProyectoCodigo'];
+
+      if (this.tipo === 'Reingreso') {
+        this.ocultarCampo(acuerdo, false);
+        this.formTransferencia.campos[cancelo].ocultar = false;
+        inscripcion['Data']['CodigoEstudiante'].forEach((codigo: any) => {
+
+          if (codigo.IdProyecto === inscripcion['Data']['ProgramaDestino']['Id']) {
+            this.formTransferencia.campos[estudiante].valor = codigo;
+            this.formTransferencia.campos[estudiante].deshabilitar = true;
+          }
+        });
+
+        this.formTransferencia.campos[origen].valor = inscripcion['Data']['ProgramaDestino'];
+        this.formTransferencia.campos[origen].deshabilitar = true;
+      }
+    }
+
+    if (inscripcion.Data.SolicitudId) {
+      this.estado = inscripcion['Data']['Estado']['Nombre'];
+      let data = {
+        Cancelo: inscripcion['Data']['DatosInscripcion']['CanceloSemestre'],
+        Acuerdo: inscripcion['Data']['DatosInscripcion']['SolicitudAcuerdo'],
+        CantidadCreditos: inscripcion['Data']['DatosInscripcion']['CantidadCreditos'],
+        CodigoEstudiante: inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'],
+        CodigoEstudianteExterno: inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'],
+        SoporteDocumento: inscripcion['Data']['DatosInscripcion']['DocumentoId'],
+        MotivoCambio: inscripcion['Data']['DatosInscripcion']['MotivoRetiro'],
+        UltimoSemestre: inscripcion['Data']['DatosInscripcion']['UltimoSemestreCursado'],
+        ProgramaOrigen: inscripcion['Data']['DatosInscripcion']['ProyectoCurricularProviene'],
+        ProgramaOrigenInput: inscripcion['Data']['DatosInscripcion']['ProyectoCurricularProviene'],
+        UniversidadOrigen: inscripcion['Data']['DatosInscripcion']['UniversidadProviene'],
+        ProgramaDestino: inscripcion['Data']['ProgramaDestino'],
+      }
+      if (!(this.tipo === 'Transferencia externa')) {
+        data.UniversidadOrigen = 'Universidad Distrital Francisco José de Caldas';
+        if (this.tipo === 'Reingreso') {
+          data.ProgramaOrigen = data.ProgramaDestino;
         }
       }
+      this.dataTransferencia = data;
+
+      this.nombreEstudiante = inscripcion['Data']['DatosEstudiante']['Nombre'];
+      this.documentoEstudiante = inscripcion['Data']['DatosEstudiante']['Identificacion'];
+      this.codigoEstudiante = inscripcion['Data']['DatosInscripcion']['CodigoEstudiante'];
+      this.solicitudId = inscripcion['Data']['SolicitudId'];
+
+      if (inscripcion['Data']['Estado']['Nombre'] != 'Requiere modificación' && this.process === 'my') {
+        this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = true;
+        // this.formTransferencia.campos[origenExterno].ocultar = true;
+        this.mostrarDocumento = true;
+        this.formTransferencia.campos.forEach((campo: any) => {
+          campo.deshabilitar = true;
+        });
+        this.formTransferencia.btn = '';
+
+        this.file = {
+          id: inscripcion['Data']['DatosInscripcion']['DocumentoId'],
+          label: this.translate.instant('inscripcion.' + 'placeholder_soportes_documentos')
+        }
+      } else {
+        this.formTransferencia.campos[origen].deshabilitar = true;
+        this.formTransferencia.campos[origenExterno].deshabilitar = true;
+        this.mostrarDocumento = false;
+        this.comentario = inscripcion['Data']['DatosRespuesta']['Observacion'];
+
+        this.inscriptionSettings = this.nivelNombre === 'Pregrado' ? {
+          basic_info_button: true,
+          hide_header_labels: true,
+          formacion_academica_button: true,
+          documentos_programa_button: true,
+          select_tipo: this.tipo,
+          nivel: this.nivelNombre,
+          detalle_inscripcion: true,
+          es_transferencia: true,
+        } : {
+          basic_info_button: true,
+          hide_header_labels: true,
+          formacion_academica_button: true,
+          documentos_programa_button: true,
+          select_tipo: this.tipo,
+          nivel: this.nivelNombre,
+          detalle_inscripcion: true,
+          experiencia_laboral: true,
+          produccion_academica: true,
+          es_transferencia: true,
+        }
+
+        const SoporteDocumento = this.getIndexFormTrans('SoporteDocumento');
+
+        this.formTransferencia.campos[SoporteDocumento].ocultar = false;
+        this.idFileDocumento = inscripcion['Data']['DatosInscripcion']['DocumentoId'];
+
+        const file: any = await this.recuperarDomucmento(this.idFileDocumento);
+        this.formTransferencia.campos[SoporteDocumento].urlTemp = (file[0] as any).url + '';
+        this.formTransferencia.campos[SoporteDocumento].valor = (file[0] as any).url + '';
+      }
+      
+      if (inscripcion.Data.DatosRespuesta) {
+        const EstadoId = this.getIndexFormRes('EstadoId');
+        const FechaEspecifica = this.getIndexFormRes('FechaEspecifica');
+        const Observacion = this.getIndexFormRes('Observacion');
+        const SoporteRespuesta = this.getIndexFormRes('SoporteRespuesta');
+
+        if (inscripcion.Data.Estado.Nombre != "Pago" || inscripcion.Data.Estado.Nombre != "Solicitado") {
+          this.formRespuesta.campos[EstadoId].valor = inscripcion.Data.Estado;
+        }
+        this.formRespuesta.campos[FechaEspecifica].valor = inscripcion.Data.DatosRespuesta.FechaEvaluacion.slice(0, -4);
+        this.formRespuesta.campos[Observacion].valor = inscripcion.Data.DatosRespuesta.Observacion;
+        this.idFileDocumento = inscripcion.Data.DatosRespuesta.DocRespuesta
+
+        const file: any = await this.recuperarDomucmento(this.idFileDocumento);
+        this.formRespuesta.campos[SoporteRespuesta].urlTemp = (file[0] as any).url + '';
+        this.formRespuesta.campos[SoporteRespuesta].valor = (file[0] as any).url + '';
+
+      }
+    } else {
+      this.mostrarDocumento = false;
+      this.formTransferencia.campos[this.getIndexFormTrans('SoporteDocumento')].ocultar = false;
+    }
+
+    this.inscriptionSettings = this.nivelNombre === 'Pregrado' ? {
+      basic_info_button: true,
+      hide_header_labels: true,
+      formacion_academica_button: true,
+      documentos_programa_button: true,
+      select_tipo: this.tipo,
+      nivel: this.nivelNombre,
+      detalle_inscripcion: true,
+      es_transferencia: true,
+    } : {
+      basic_info_button: true,
+      hide_header_labels: true,
+      formacion_academica_button: true,
+      documentos_programa_button: true,
+      select_tipo: this.tipo,
+      nivel: this.nivelNombre,
+      detalle_inscripcion: true,
+      experiencia_laboral: true,
+      produccion_academica: true,
+      es_transferencia: true,
+    }
+  }
+
+  recuperarTransferenciaInscripcion(id: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.get('transferencia/inscripcion/' + id).subscribe((response: any) => {
+        if (response!= null && response.Success) {
+          resolve(response)
+        } else {
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        }
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        });
+    });
+  }
+
+  recuperarDomucmento(idDoc: any) {
+    return new Promise((resolve, reject) => {
+      this.nuxeo.get([{ 'Id': idDoc }]).subscribe((response: any) => {
+        resolve(response)
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        });
+    });
+  }
+
+  async loadEstados() {
+    const estados: any = await this.recuperarTransferenciaEstados()
+    const respuesta = this.getIndexFormRes('Respuesta');
+    this.formRespuesta.campos[respuesta].opciones = estados.filter((estado: any) => estado.Nombre != 'Radicada' && estado.Nombre != 'Solicitado');
+  }
+
+  recuperarTransferenciaEstados() {
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.get('transferencia/estados').subscribe((response: any) => {
+        if (response != null && response.Success) {
+          resolve(response.Data)
+        } else {
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        }
+      },
+        (error: any) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          reject(false);
+        });
     });
   }
 
