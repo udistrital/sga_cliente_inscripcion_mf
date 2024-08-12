@@ -1865,7 +1865,8 @@
         "nuevo_documento": "New document",
         "actualizar_legalizacion": "Update the registration legalization?",
         "legalizacion_actualizacion_ok": "Legalization data was updated correctly",
-        "legalizacion_actualizacion_error": "An error occurred while updating the legalization data"
+        "legalizacion_actualizacion_error": "An error occurred while updating the legalization data",
+        "titulo_estado_legalizacion": "Status of the legalization process"
     },
     "informacion_acudientes": {
         "titulo": "Guardian's Contact Information",

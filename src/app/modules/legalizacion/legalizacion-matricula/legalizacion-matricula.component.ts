@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
@@ -25,6 +25,8 @@ import { LiquidacionMatriculaService } from 'src/app/services/liquidacion_matric
 import { EventoService } from 'src/app/services/evento.service';
 import { UserService } from 'src/app/services/users.service';
 import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 interface Proyecto {
   opcion: number;
@@ -37,6 +39,9 @@ interface Proyecto {
   styleUrls: ['./legalizacion-matricula.component.scss']
 })
 export class LegalizacionMatriculaComponent {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  
   formulario: boolean = false;
 
   firstFormGroup = this._formBuilder.group({
@@ -60,7 +65,7 @@ export class LegalizacionMatriculaComponent {
   personaColums: string [] = ['Orden', 'Credencial', 'Nombres', 'Apellidos', 'TipoDocumento', 'Documento', 'EstadoAdmision', 'EstadoRevision', 'Acciones'];
   infoPersonal1: string [] = ['TipoIdentificacion', 'NumeroIdentificacion', 'PrimerNombre', 'SegundoNombre', 'PrimerApellido', 'SegundoApellido'];
   infoPersonal2: string [] = ['FechaNacimiento', 'Numero', 'Correo', 'Genero'];
-  infoSocioEconomicacolumns: string [] = ['Orden', 'Concepto', 'Informacion', 'Soporte', 'Estado'];
+  infoSocioEconomicacolumns: string [] = ['Orden', 'Concepto', 'Informacion', 'Estado', 'Soporte'];
 
   aspirante: any
   estaAutorizado: boolean = false;
@@ -188,6 +193,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   onFacultadChange(event: any) {
+
     // const facultad = this.facultades.find((facultad: any) => facultad.Id === event.value);
     // this.proyectosCurriculares = facultad.Opciones;
     const programas = this.proyectosPregrado.filter((item: any) => item.FacultadId == event.value);
@@ -245,7 +251,7 @@ export class LegalizacionMatriculaComponent {
         "fecha_nacimiento": this.formatearFecha(persona.FechaNacimiento),
         "numero_celular": persona.Telefono,
         "correo": persona.UsuarioWSO2,
-        "genero": persona.Genero.Nombre
+        "genero": persona.Genero ? persona.Genero.Nombre : "No especificado"
       }
       this.inscritosData.push(personaData);
     }
@@ -254,6 +260,8 @@ export class LegalizacionMatriculaComponent {
     }
 
     this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+    this.personaDataSource.paginator = this.paginator;
+    this.personaDataSource.sort = this.sort;
   }
 
   async recuperarCiclo(periodo: any) {
@@ -281,7 +289,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -295,7 +303,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -309,7 +317,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -411,7 +419,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -431,7 +439,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -451,7 +459,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -465,7 +473,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -517,7 +525,6 @@ export class LegalizacionMatriculaComponent {
       const res = await this.actualizarDocumento(documento);
       
       this.estadoDocumentosAspirantes[this.aspiranteActualId][result["nombreSoporte"]] = this.retornarEstadoObservacion(metadatosDocumento["estadoObservacion"])
-      console.log(documento, this.estadoDocumentosAspirantes)
       this.cambioEstadoRevisionAspirante();
       this.calcularEstadoBotones();
 
@@ -542,6 +549,8 @@ export class LegalizacionMatriculaComponent {
         }
       }
       this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+      this.personaDataSource.paginator = this.paginator;
+      this.personaDataSource.sort = this.sort;
     }
   }
 
@@ -583,7 +592,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.liquidacion_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -601,7 +610,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.liquidacion_detalle_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -637,7 +646,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.conceptos_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -666,14 +675,12 @@ export class LegalizacionMatriculaComponent {
       "5992": valorB1,
       "5993": valorPBM,
     }
-    console.log("INFO DE LEGALIZACION:", infoLegalizacion, valores);
 
     return valores;
   }
 
   calcularValorEstratoA1(estratoId: any) {
     let valor = 0;
-    console.log("DATA CALCULO VALORES A1:", estratoId)
 
     switch (estratoId) {
       case "1":
@@ -714,7 +721,6 @@ export class LegalizacionMatriculaComponent {
 
   calcularValorMatriculaSecundariaA2(valorSM: any) {
     let valor = 0;
-    console.log("DATA CALCULO VALORES A2:", valorSM)
 
     switch (true) {
       case valorSM <= 0.004:
@@ -758,7 +764,6 @@ export class LegalizacionMatriculaComponent {
 
   calcularValorIngresosA3(valorSM: any) {
     let valor = 0;
-    console.log("DATA CALCULO VALORES A3:", valorSM)
 
     switch (true) {
       case valorSM <= 2:
@@ -818,7 +823,6 @@ export class LegalizacionMatriculaComponent {
 
   calcularValorLugarResidenciaB1(lugar: any) {
     let valor = 0;
-    console.log("DATA CALCULO VALORES B1:", lugar)
 
     switch (lugar) {
       case "1":
@@ -859,7 +863,6 @@ export class LegalizacionMatriculaComponent {
 
   calcularValorLugarResB2(lugar: any) {
     let valor = 0;
-    console.log("DATA CALCULO VALORES B2:", lugar)
 
     switch (lugar) {
       case "Fuera del perimetro urbano":
@@ -877,7 +880,6 @@ export class LegalizacionMatriculaComponent {
 
   calcularValorNucleoFamB3(nucleo: any) {
     let valor = 0;
-    console.log("DATA CALCULO VALORES B3:", nucleo)
 
     switch (nucleo) {
       case "Vive solo":
@@ -898,7 +900,6 @@ export class LegalizacionMatriculaComponent {
 
   calcularValorSituacionLabB4(situacion: any) {
     let valor = 0;
-    console.log("DATA CALCULO VALORES B4:", situacion)
 
     switch (situacion) {
       case "Empleado":
@@ -944,7 +945,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.documento_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -958,7 +959,7 @@ export class LegalizacionMatriculaComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.actualizar_documento_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -1104,10 +1105,11 @@ export class LegalizacionMatriculaComponent {
                 } else {
                   this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_legalizado_ok'));
                 }
-                console.log("INFO AL ACTUALIZAR ESTADO GENERAL:", resEstado, resLiquidacion);
               }
             }
             this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+            this.personaDataSource.paginator = this.paginator;
+            this.personaDataSource.sort = this.sort;
           }
         });
   }
@@ -1130,6 +1132,8 @@ export class LegalizacionMatriculaComponent {
               this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_no_admitido_ok'));
             }
             this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+            this.personaDataSource.paginator = this.paginator;
+            this.personaDataSource.sort = this.sort;
           }
         });
   }
@@ -1152,8 +1156,19 @@ export class LegalizacionMatriculaComponent {
               this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
             }
             this.personaDataSource = new MatTableDataSource<any>(this.inscritosData);
+            this.personaDataSource.paginator = this.paginator;
+            this.personaDataSource.sort = this.sort;
           }
         });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.personaDataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.personaDataSource.paginator) {
+      this.personaDataSource.paginator.firstPage();
+    }
   }
 
   cerrar = () => {
