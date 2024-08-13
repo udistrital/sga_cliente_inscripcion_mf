@@ -1094,6 +1094,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+
+  }
   actualizarEstadoInscripcion(inscripcionData: any) {
     inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
