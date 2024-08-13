@@ -83,6 +83,8 @@ import { CrudInformacionAcademicaComponent } from './preinscripcion/components/c
 import { ViewExamenEstadoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/examen_estado/view-examen-estado/view-examen-estado.component';
 import { AuthGuard } from 'src/_guards/auth.guard';
 
+import { MatPaginatorModule } from '@angular/material/paginator';
+
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
 }
@@ -145,6 +147,7 @@ export function createTranslateLoader(http: HttpClient) {
     NgxDocViewerModule,
     NgxExtendedPdfViewerModule,
     MatMenuModule, 
+    MatPaginatorModule,
     PdfViewerModule,
     MatExpansionModule,
     MatTooltipModule,

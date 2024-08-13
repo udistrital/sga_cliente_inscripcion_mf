@@ -106,9 +106,7 @@ export class PreinscripcionComponent implements OnInit {
     try {
       this.info_persona_id = await this.userService.getPersonaId();
     } catch (error) {
-      this.popUpManager.showErrorAlert(
-        this.translate.instant('inscripcion.error_cargar_informacion' + error)
-      );
+      this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.error_cargar_informacion' + error));
     } finally {
       this.isLoading = false;
     }
@@ -116,9 +114,7 @@ export class PreinscripcionComponent implements OnInit {
 
   setPercentage_info(number: any, tab: any) {
     this.percentage_tab_info[tab] = (number * 100) / 2;
-    this.percentage_info = Math.round(
-      UtilidadesService.getSumArray(this.percentage_tab_info)
-    );
+    this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info));
     if (number === 1) {
       this.habilitar_inscripcion = false;
     }
@@ -127,21 +123,15 @@ export class PreinscripcionComponent implements OnInit {
 
   setPercentage_acad(number: any, tab: any) {
     this.percentage_tab_acad[tab] = (number * 100) / 2;
-    this.percentage_acad = Math.round(
-      UtilidadesService.getSumArray(this.percentage_tab_acad)
-    );
+    this.percentage_acad = Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad));
     this.setPercentage_total();
   }
 
   setPercentage_total() {
-    this.percentage_total =
-      Math.round(UtilidadesService.getSumArray(this.percentage_tab_info)) / 2;
-    this.percentage_total +=
-      Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad)) / 4;
-    this.percentage_total +=
-      Math.round(UtilidadesService.getSumArray(this.percentage_tab_docu)) / 4;
-    this.percentage_total +=
-      Math.round(UtilidadesService.getSumArray(this.percentage_tab_proy)) / 4;
+    this.percentage_total = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info)) / 2;
+    this.percentage_total += Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad)) / 4;
+    this.percentage_total += Math.round(UtilidadesService.getSumArray(this.percentage_tab_docu)) / 4;
+    this.percentage_total += Math.round(UtilidadesService.getSumArray(this.percentage_tab_proy)) / 4;
     if (this.info_inscripcion !== undefined) {
       if (this.info_inscripcion.EstadoInscripcionId.Id > 1) {
         this.percentage_total = 100;

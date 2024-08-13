@@ -92,7 +92,7 @@ export class NewNuxeoService {
         const documentsSubject = new Subject<any>();
         const documents$ = documentsSubject.asObservable();
         
-        this.anyService.getp(environment.NUXEO_SERVICE, '/document' + query).subscribe(
+        this.anyService.getp(environment.NUXEO_SERVICE, 'document' + query).subscribe(
             async (response: any) => {
                 if (response.type === HttpEventType.DownloadProgress) {
                     const downloadProgress = 100 * response.loaded / response.total;

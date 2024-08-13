@@ -21,6 +21,10 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogoDocumentosComponent } from '../../components/dialogo-documentos/dialogo-documentos.component';
 import { MatTableDataSource } from '@angular/material/table';
+import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+
 
 @Component({
   selector: 'app-legalizacion-matricula-aspirante',
@@ -28,6 +32,9 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./legalizacion-matricula-aspirante.component.scss'],
 })
 export class LegalizacionMatriculaAspiranteComponent {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  
   displayedColumns: string[] = [
     'Nombre',
     'NuevoDcoumento',
@@ -53,6 +60,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private documentoService: DocumentoService,
     private utilidadesService: UtilidadesService,
     private dialog: MatDialog,
+    private projectService: ProyectoAcademicoService,
   ) {}
 
   isLinear = false;
@@ -142,24 +150,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   };
 
   localidades!: any[];
-  // localidades: any[] = [
-  //   {
-  //     "Nombre": "Usme",
-  //     "Id": 464
-  //   },
-  //   {
-  //     "Nombre": "Suba",
-  //     "Id": 459
-  //   },
-  //   {
-  //     "Nombre": "Chapinero",
-  //     "Id": 448
-  //   },
-  //   {
-  //     "Nombre": "Engativá",
-  //     "Id": 450
-  //   }
-  // ];
+
   situacionesLaboral!: any[];
   estratos!: any[];
   nuceloFamiliar!: any[];
@@ -170,17 +161,20 @@ export class LegalizacionMatriculaAspiranteComponent {
     this.initFormularios();
     this.cargarDatosFormularios();
 
-    this.info_persona_id = await this.usuarioService.getPersonaId();
-    this.proyectoAcademicoId = 26
+    // ESTAS VARIABLES CREO QUE PUEDEN LLEGAR COMO INPUTS O ALGO ASÍ, TAL VEZ COMO PARAMS EN LA RUTA 
+    //this.info_persona_id = await this.usuarioService.getPersonaId();
+    this.info_persona_id = 59802
+    this.proyectoAcademicoId = 83
     this.periodoId = 40
 
     await this.cargarSalarioMinimo(this.periodoId)
     this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)
+    console.log(this.inscripcion)
     this.estadoInscripcion = this.inscripcion.EstadoInscripcionId.Id
     this.opcionPrograma = this.inscripcion.Opcion
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.proyectoAcademicoId);
     this.persona = await this.consultarTercero(this.info_persona_id);
-    this.persona.FechaNacimiento = this.formatearFecha(this.persona.FechaNacimiento);
+    this.persona = this.formatoPersona(this.persona);
     this.autenticationService.getRole().then(
       async (rol: any) => {
         const r1 = rol.find((role: string) => (role == ROLES.ADMIN_SGA));
@@ -212,6 +206,8 @@ export class LegalizacionMatriculaAspiranteComponent {
                 this.documentosRechazados.push(item);
               }
               this.dataSource = new MatTableDataSource(this.documentosRechazados);
+              this.dataSource.paginator = this.paginator;
+              this.dataSource.sort = this.sort;
             }
           } else if (this.infoLegalizacionPersona == 'No existe legalizacion') {
             this.yaHizoProceso = false;
@@ -222,6 +218,17 @@ export class LegalizacionMatriculaAspiranteComponent {
         }
       }
     );
+  }
+
+  formatoPersona(persona: any) {
+    persona.FechaNacimiento = this.formatearFecha(persona.FechaNacimiento);
+    if (!persona.Genero) {
+      persona.Genero = {
+        "Nombre": "No especificado"
+      };
+    }
+
+    return persona;
   }
 
   obtenerSoportesRechazados(estados: any) {
@@ -379,7 +386,7 @@ export class LegalizacionMatriculaAspiranteComponent {
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
@@ -388,7 +395,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   recuperarProyectoPorId(proyectoId: any) {
     return new Promise((resolve, reject) => {
-      this.oikosService.get('dependencia/' + proyectoId).subscribe(
+      this.projectService.get('proyecto_academico_institucion/' + proyectoId).subscribe(
         (res: any) => {
           resolve(res.Nombre);
         },
@@ -454,21 +461,14 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   actualizarEstadoInscripcion(inscripcionData: any) {
-    inscripcionData.TerceroId = this.info_persona_id;
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionData)
+      this.inscripcionService.put('inscripcion', inscripcionData)
         .subscribe((res: any) => {
-          if (res !== null && res.Status != '400') {
-            resolve(res.Data)
-          } else {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(res.Message);
-            reject([]);
-          }
+          resolve(res)
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -662,7 +662,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   async cargarDatosFormularios() {
     this.loading = true;
-    //await this.cargarLocalidades();
+    await this.cargarLocalidades();
     await this.cargarSituacionesLaborales();
     await this.cargarEstratos();
     await this.cargarNucleoFamiliar();
@@ -684,7 +684,7 @@ export class LegalizacionMatriculaAspiranteComponent {
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
@@ -702,7 +702,7 @@ export class LegalizacionMatriculaAspiranteComponent {
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.localidad_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
@@ -720,7 +720,7 @@ export class LegalizacionMatriculaAspiranteComponent {
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.situaciones_laborales_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
@@ -738,7 +738,7 @@ export class LegalizacionMatriculaAspiranteComponent {
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.estratos_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
@@ -756,7 +756,7 @@ export class LegalizacionMatriculaAspiranteComponent {
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.nucleo_familiar_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
@@ -774,7 +774,7 @@ export class LegalizacionMatriculaAspiranteComponent {
           },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.ubicaciones_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
@@ -847,51 +847,18 @@ export class LegalizacionMatriculaAspiranteComponent {
     this.loading = true;
     let newLegalizacionMatricula = new LegalizacionMatricula();
     newLegalizacionMatricula.TerceroId = this.info_persona_id;
-    newLegalizacionMatricula.DireccionResidencia =
-      this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
-    newLegalizacionMatricula.Localidad = this.localidades.find(
-      (localidad: any) =>
-        localidad.Id ==
-        this.formInfoSocioEconomicaPersonal.get('localidad')?.value
-    ).Nombre;
-    newLegalizacionMatricula.ColegioGraduado =
-      this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
-    newLegalizacionMatricula.PensionMensual11 = Number(
-      this.formInfoSocioEconomicaPersonal.get('pension_valor')?.value
-    );
-    newLegalizacionMatricula.PensionMensualSM11 = Number(
-      this.formInfoSocioEconomicaPersonal.get('pension_valor_smv')?.value
-    );
-    newLegalizacionMatricula.NucleoFamiliar = this.nuceloFamiliar.find(
-      (nucleo: any) =>
-        nucleo.Id ==
-        this.formInfoSocioEconomicaPersonal.get('nucleo_familiar')?.value
-    ).Nombre;
-    newLegalizacionMatricula.SituacionLaboral = this.situacionesLaboral.find(
-      (situacion: any) =>
-        situacion.Id ==
-        this.formInfoSocioEconomicaPersonal.get('situacion_laboral')?.value
-    ).Nombre;
-    newLegalizacionMatricula.DireccionResidenciaCostea =
-      this.formInfoSocioEconomicaCosteara.get(
-        'direccion_residencia_costeara'
-      )?.value;
-    newLegalizacionMatricula.EstratoCostea = this.estratos.find(
-      (estrato: any) =>
-        estrato.Id == this.formInfoSocioEconomicaCosteara.get('estrato')?.value
-    ).Nombre;
-    newLegalizacionMatricula.UbicacionResidenciaCostea =
-      this.ubicacionesResidencia.find(
-        (ubicacion: any) =>
-          ubicacion.Id ==
-          this.formInfoSocioEconomicaCosteara.get('ubicacion_residencia')?.value
-      ).Nombre;
-    newLegalizacionMatricula.IngresosCostea =
-      this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior')?.value;
-    newLegalizacionMatricula.IngresosCosteaSM =
-      this.formInfoSocioEconomicaCosteara.get(
-        'ingresos_ano_anterior_sm'
-      )?.value;
+    newLegalizacionMatricula.DireccionResidencia = this.formInfoSocioEconomicaPersonal.get('direccion_residencia')?.value;
+    newLegalizacionMatricula.Localidad = this.localidades.find((localidad: any) => localidad.Id == this.formInfoSocioEconomicaPersonal.get('localidad')?.value).Nombre;
+    newLegalizacionMatricula.ColegioGraduado = this.formInfoSocioEconomicaPersonal.get('colegio')?.value;
+    newLegalizacionMatricula.PensionMensual11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor')?.value);
+    newLegalizacionMatricula.PensionMensualSM11 = Number(this.formInfoSocioEconomicaPersonal.get('pension_valor_smv')?.value);
+    newLegalizacionMatricula.NucleoFamiliar = this.nuceloFamiliar.find((nucleo: any) => nucleo.Id == this.formInfoSocioEconomicaPersonal.get('nucleo_familiar')?.value).Nombre;
+    newLegalizacionMatricula.SituacionLaboral = this.situacionesLaboral.find((situacion: any) => situacion.Id == this.formInfoSocioEconomicaPersonal.get('situacion_laboral')?.value).Nombre;
+    newLegalizacionMatricula.DireccionResidenciaCostea = this.formInfoSocioEconomicaCosteara.get('direccion_residencia_costeara')?.value;
+    newLegalizacionMatricula.EstratoCostea = this.estratos.find((estrato: any) => estrato.Id == this.formInfoSocioEconomicaCosteara.get('estrato')?.value).Nombre;
+    newLegalizacionMatricula.UbicacionResidenciaCostea = this.ubicacionesResidencia.find((ubicacion: any) => ubicacion.Id == this.formInfoSocioEconomicaCosteara.get('ubicacion_residencia')?.value).Nombre;
+    newLegalizacionMatricula.IngresosCostea = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior')?.value;
+    newLegalizacionMatricula.IngresosCosteaSM = this.formInfoSocioEconomicaCosteara.get('ingresos_ano_anterior_sm')?.value;
 
     const archivos: { [key: string]: any } = this.prepararArchivos();
     let idsArchivos: any = {};
@@ -903,36 +870,15 @@ export class LegalizacionMatriculaAspiranteComponent {
       idsArchivos[propiedad] = ids;
     }
 
-    newLegalizacionMatricula.SoporteDiploma = this.prepareIds2Stringify(
-      idsArchivos['diplomaBachiller'],
-      'diplomaBachiller'
-    );
-    newLegalizacionMatricula.SoportePension = this.prepareIds2Stringify(
-      idsArchivos['soportePension'],
-      'soportePension'
-    );
-    newLegalizacionMatricula.SoporteNucleo = this.prepareIds2Stringify(
-      idsArchivos['soporteNucleo'],
-      'soporteNucleo'
-    );
-    newLegalizacionMatricula.SoporteEstratoCostea = this.prepareIds2Stringify(
-      idsArchivos['soporteEstrato'],
-      'soporteEstrato'
-    );
-    newLegalizacionMatricula.SoporteIngresosCostea = this.prepareIds2Stringify(
-      idsArchivos['soporteIngresos'],
-      'soporteIngresos'
-    );
-    newLegalizacionMatricula.SoporteDocumental = this.prepareIds2Stringify(
-      idsArchivos['documentosGeneral'],
-      'documentosGeneral'
-    );
+    newLegalizacionMatricula.SoporteDiploma = this.prepareIds2Stringify(idsArchivos['diplomaBachiller'], 'diplomaBachiller');
+    newLegalizacionMatricula.SoportePension = this.prepareIds2Stringify(idsArchivos['soportePension'], 'soportePension');
+    newLegalizacionMatricula.SoporteNucleo = this.prepareIds2Stringify(idsArchivos['soporteNucleo'], 'soporteNucleo');
+    newLegalizacionMatricula.SoporteEstratoCostea = this.prepareIds2Stringify(idsArchivos['soporteEstrato'], 'soporteEstrato');
+    newLegalizacionMatricula.SoporteIngresosCostea = this.prepareIds2Stringify(idsArchivos['soporteIngresos'], 'soporteIngresos');
+    newLegalizacionMatricula.SoporteDocumental = this.prepareIds2Stringify(idsArchivos['documentosGeneral'], 'documentosGeneral');
     if (idsArchivos['soporteSituacionLaboral']) {
       newLegalizacionMatricula.SoporteSituacionLaboral =
-        this.prepareIds2Stringify(
-          idsArchivos['soporteSituacionLaboral'],
-          'soporteSituacionLaboral'
-        );
+        this.prepareIds2Stringify(idsArchivos['soporteSituacionLaboral'], 'soporteSituacionLaboral');
     }
 
     let res: any = await this.crearLegalizacionMatricula(newLegalizacionMatricula);
@@ -958,6 +904,7 @@ export class LegalizacionMatriculaAspiranteComponent {
             this.popUpManager.showErrorAlert(
               this.translate.instant('legalizacion_admision.legalizacion_creacion_error')
             );
+            reject(false);
           }
         );
     });
@@ -1002,21 +949,6 @@ export class LegalizacionMatriculaAspiranteComponent {
         archivos[documento["SoporteDB"]] = newArchivos;
       }
     }
-    // for (const soporte in this.soportes) {
-    //   const archivosLoc = this.soportes[soporte].archivosLocal!;
-    //   let newArchivosLoc: any = [];
-
-    //   for (const archivo of archivosLoc) {
-    //     const newArchivo = {
-    //       IdDocumento: idTipoDocument,
-    //       nombre: archivo.file.name.split('.')[0],
-    //       descripcion: 'Soporte Legalización de matricula',
-    //       file: archivo.file,
-    //     };
-    //     newArchivosLoc.push(newArchivo);
-    //     archivos[soporte] = newArchivosLoc;
-    //   }
-    // }
     return archivos;
   }
 
@@ -1203,7 +1135,7 @@ export class LegalizacionMatriculaAspiranteComponent {
         },
           (error: any) => {
             this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.documento_error'));
-            console.log(error);
+            console.error(error);
             reject([]);
           });
     });
@@ -1229,6 +1161,15 @@ export class LegalizacionMatriculaAspiranteComponent {
       this.estadoLaboralAspiranteActual = 'Desempleado'
     } else {
       this.estadoLaboralAspiranteActual = 'Empleado'
+    }
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
   }
 }
