@@ -7,8 +7,10 @@ import { ListFormacionAcademicaComponent } from './preinscripcion/components/cru
 import { MatButtonModule } from '@angular/material/button';
 
 
+
 const routes: Routes = [
-  { path : '', component: PreinscripcionComponent},
+  { path : '', 
+    component: PreinscripcionComponent},
   
 ];
 
