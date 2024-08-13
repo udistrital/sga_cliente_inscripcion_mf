@@ -212,6 +212,7 @@ fieldset {
 .info-personal mat-card-header {
     background-color: #006eaf;
     padding: 10px 0;
+    color: white;
 }
 
 .info-personal mat-card-content {
@@ -290,7 +291,7 @@ fieldset {
 }
 
 .color-verde {
-    color: var(--danger-main);
+    color: var(--success-base);
 }
 
 .color-primary {
@@ -309,9 +310,44 @@ fieldset {
     color: var(--danger-main)
 }
 
+// .contenedor-tabla {
+//     width: 90%;
+//     margin: 15px auto 0;
+// }
+
+.info-personal .parametros-proyecto {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+}
+
+.info-personal .parametros-proyecto div {
+    margin: 10px 0;
+}
+
 .contenedor-tabla {
-    width: 90%;
-    margin: 15px auto 0;
+    width: 95%;
+    margin: auto;
+    overflow: overlay;
+}
+
+.boton-acciones {
+    border: 0;
+    cursor: pointer;
+}
+
+.contenedor-acciones {
+    text-align: center;
+}
+
+.filtro {
+    width: 95%;
+    margin-top: 15px;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+    background-color: var(--color100);
 }
 
 @media (width > 650px) {
@@ -381,5 +417,11 @@ fieldset {
 @media (max-width: 400px) {
     .credencial {
         width: 90%;
+    }
+}
+
+@media (width < 600px) {
+    .info-personal .parametros-proyecto {
+        flex-direction: column;
     }
 }

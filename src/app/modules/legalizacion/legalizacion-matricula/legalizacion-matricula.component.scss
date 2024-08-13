@@ -9,21 +9,6 @@
 
 }
 
-table {
-  width: 100%;
-  border-collapse: separate;
-  th {
-      text-align: center;
-      color: white;
-      background-color: var(--primary);
-  }
-  td {
-      text-align: center !important;
-      border-right: whitesmoke;
-      border-left: whitesmoke;
-  }
-}
-
 .btn-barcode,
 .container-button-column {
   display: flex;
@@ -126,10 +111,6 @@ mat-table {
   width: 100%;
 }
 
-.flex-container {
-  display: flex;
-}
-
 .card-id {
   flex-grow: 1;
   margin-right: 20px;
@@ -223,6 +204,53 @@ mat-table {
   cursor: not-allowed;
 }
 
+.contenedor-tabla {
+  width: 100%;
+  overflow: overlay;
+  margin-bottom: 25px;
+}
+
+.boton-acciones {
+  border: 0;
+  cursor: pointer;
+}
+
+.contenedor-acciones {
+  text-align: center;
+}
+
+.filtro {
+  width: 100%;
+}
+
+th {
+  font-weight: bold;
+}
+
+.contenedor-info-personal {
+  border: solid 1px var(--primary);
+  border-radius: 5px;
+  margin: 15px 0;
+}
+
+.contenedor-info-personal mat-card-title {
+  text-align: center;
+  background-color: var(--primary);
+  border-radius: 5px 5px 0 0;
+  color: white;
+}
+
+.contenedor-info-personal .parametros-info-personal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.contenedor-info-personal .parametros-info-personal div {
+  margin: 10px 0;
+}
+
 @media(width > 580px) {
   .form-container {
     grid-template-columns: repeat(2, 1fr);
@@ -241,5 +269,11 @@ mat-table {
 
   .botones-contenedor button {
     margin: 0;
+  }
+}
+
+@media(width < 600px) {
+  .contenedor-info-personal .parametros-info-personal {
+    flex-direction: column;
   }
 }
