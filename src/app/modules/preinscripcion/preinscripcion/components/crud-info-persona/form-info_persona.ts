@@ -2,7 +2,7 @@ export let FORM_INFO_PERSONA = {
     // titulo: 'InfoPersona',
     tipo_formulario: 'mini',
     alertas: true,
-    btn: 'Guardar',
+    btn: 'guardar',
     modelo: 'InfoPersona',
     campos: [
         {
