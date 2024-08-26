@@ -24,6 +24,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -61,6 +62,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private utilidadesService: UtilidadesService,
     private dialog: MatDialog,
     private projectService: ProyectoAcademicoService,
+    private route: ActivatedRoute
   ) {}
 
   isLinear = false;
@@ -158,14 +160,21 @@ export class LegalizacionMatriculaAspiranteComponent {
   documentosRechazados: any[] = [];
 
   async ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      const personaId = params.get('persona');
+      const periodoId = params.get('periodo');
+      const programaId = params.get('programa');
+
+      console.log('Persona ID:', personaId);
+      console.log('Periodo ID:', periodoId);
+      console.log('Programa ID:', programaId);
+
+      this.info_persona_id = personaId
+      this.proyectoAcademicoId = programaId
+      this.periodoId = periodoId
+    });
     this.initFormularios();
     this.cargarDatosFormularios();
-
-    // ESTAS VARIABLES CREO QUE PUEDEN LLEGAR COMO INPUTS O ALGO ASÍ, TAL VEZ COMO PARAMS EN LA RUTA 
-    //this.info_persona_id = await this.usuarioService.getPersonaId();
-    this.info_persona_id = 59802
-    this.proyectoAcademicoId = 83
-    this.periodoId = 40
 
     await this.cargarSalarioMinimo(this.periodoId)
     this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)

@@ -176,7 +176,7 @@
         (click)="validForm()"
         [hidden]="!normalform.btn"
       >
-        {{ normalform.btn }}
+        {{ normalform.btn | translate }}
       </button>
       <button
         class="btn boton-primary btn-tiny {{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
@@ -345,7 +345,7 @@
         (click)="validForm()"
         [hidden]="!normalform.btn"
       >
-        {{ normalform.btn }}
+        {{ normalform.btn | translate }}
       </button>
       <button
         class="btn boton-primary btn-tiny {{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
@@ -520,7 +520,7 @@
         (click)="validForm()"
         [hidden]="!normalform.btn"
       >
-        {{ normalform.btn }}
+        {{ normalform.btn | translate }}
       </button>
       <button
       class="btn boton-primary btn-tiny {{ !normalform.btnLimpiar ? 'no-mostrar' : '' }}"
@@ -750,7 +750,7 @@
             class="{{ !normalform.btn ? 'no-mostrar' : '' }}"
             [hidden]="!normalform.btn"
           >
-            {{ normalform.btn }}
+            {{ normalform.btn | translate }}
           </button>
         </div>
       </mat-card-content>
@@ -1334,7 +1334,7 @@
             class="{{ !normalform.btn ? 'no-mostrar' : '' }}"
             [hidden]="!normalform.btn"
           >
-            {{ normalform.btn }}
+            {{ normalform.btn | translate }}
           </button>
         </div>
       </mat-card-content>
