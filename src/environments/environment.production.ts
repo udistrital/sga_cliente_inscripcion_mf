@@ -6,7 +6,7 @@
 
 export const environment = {
   production: true,
-  apiUrl:"sgainscripcion.portaloas.udistrital.edu.co",
+  apiUrl: "https://pruebassgainscripcion.portaloas.udistrital.edu.co/",
   NUXEO_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/gestor_documental_mid/v1/',
   TERCEROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
   PRODUCCION_ACADEMICA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/produccion_academica_crud/v2/',
