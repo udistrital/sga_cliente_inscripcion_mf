@@ -132,6 +132,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   Campo2Control = new FormControl('', [Validators.required]);
   Campo3Control = new FormControl('', [Validators.required]);
 
+  tipoCupos: any = [];
+  tipoCupo!: any;
+  mostrarSelectorCupos= true
+  tipoCupoControl = new FormControl('', [Validators.required]);
+
   constructor(
     private projectService: ProyectoAcademicoService,
     private popUpManager: PopUpManager,
@@ -172,6 +177,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       await this.cargarPeriodo();
       await this.nivel_load();
       await this.loadInfoPersona();
+      await this.cargarTipoCuposPorPeriodo(this.periodo.Id);
     } catch (error) {
       if (error instanceof Error) {
         this.popUpManager.showErrorAlert(
@@ -638,6 +644,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       Year: this.periodo.Year,
       Periodo: parseInt(this.periodo.Ciclo, 10),
       FechaPago: '',
+      TipoCupo: this.tipoCupo
     };
     console.log(inscripcion)
 
@@ -1020,6 +1027,22 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       1
     );
     //this.source_emphasys.load(this.arr_proyecto);
+  }
+
+  cargarTipoCuposPorPeriodo(idPeriodo: any) {
+    // idPeriodo = 39
+    return new Promise((resolve, reject) => {
+      // this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:T,PeriodoId.Id:${idPeriodo}`)
+      this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:TIP_CUP,PeriodoId.Id:${idPeriodo}`)
+        .subscribe((res: any) => {
+          resolve(res.Data)
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('admision.facultades_error'));
+            reject(false);
+          });
+    });
   }
 
   preinscripcion() {
