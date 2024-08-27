@@ -295,13 +295,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   itemSelect(event: any): void {
-    let nivel = 1;
     sessionStorage.setItem('IdInscripcion', event.data.Id);
     this.inscripcionService
       .get('inscripcion/' + event.data.Id)
       .subscribe((response: any) => {
-        // if ( response.TipoInscripcionId.Id === 1) {
-        if (nivel === 1) {
+        if (event.data.NivelPP === 1) {
           console.log('Pregrado');
           sessionStorage.setItem(
             'ProgramaAcademico',
