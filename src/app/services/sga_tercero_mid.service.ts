@@ -16,33 +16,33 @@ const httpOptionsFile = {
     }),
 }
 
-const path = environment.SGA_TERCERO_MID_SERVICE;
+const path = environment.TERCEROS_SERVICE;
 
 @Injectable()
 export class TerceroMidService {
 
   constructor(private requestManager: RequestManager, private http: HttpClient) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+    this.requestManager.setPath('TERCEROS_SERVICE');
   }
   get(endpoint: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+    this.requestManager.setPath('TERCEROS_SERVICE');
     return this.requestManager.get(endpoint);
   }
   post(endpoint: any, element: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+    this.requestManager.setPath('TERCEROS_SERVICE');
     return this.requestManager.post(endpoint, element);
   }
   post_file(endpoint: any, element: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+    this.requestManager.setPath('TERCEROS_SERVICE');
     return this.requestManager.post_file(endpoint, element);
   }
 
   put(endpoint: any, element: any) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+    this.requestManager.setPath('TERCEROS_SERVICE');
     return this.requestManager.put(endpoint, element);
   }
   delete(endpoint: any, element: { Id: any; }) {
-    this.requestManager.setPath('SGA_TERCERO_MID_SERVICE');
+    this.requestManager.setPath('TERCEROS_SERVICE');
     return this.requestManager.delete(endpoint, element.Id);
   }
 
