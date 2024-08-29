@@ -21,7 +21,7 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
   styleUrls: ['./crud-informacion-contacto.component.scss']
 })
 export class CrudInformacionContactoComponent implements OnInit {
-  persona_id!: number;
+  terceroId!: number | null;
   informacion_contacto_id!: number;
   info_informacion_contacto: any;
   InfoSocioEconomica: any;
@@ -42,7 +42,6 @@ export class CrudInformacionContactoComponent implements OnInit {
   paisSeleccionado: any;
   departamentoSeleccionado: any;
   denied_acces: boolean = false;
-  info_persona_id!: number | null;
 
   constructor(
     private inscripcionMidService: InscripcionMidService,
@@ -160,22 +159,23 @@ export class CrudInformacionContactoComponent implements OnInit {
   }
 
   async ngOnInit() {
+    console.log("HOLA MUNDOooooooo");
     await this.initializePersonaId();
     this.construirForm();
   }
 
   async initializePersonaId() {
     try {
-      this.info_persona_id = await this.userService.getPersonaId();
+      this.terceroId = await this.userService.getPersonaId();
     } catch (error) {
-      this.info_persona_id = 1; // Valor por defecto en caso de error
+      this.terceroId = 1; // Valor por defecto en caso de error
       console.error('Error al obtener persona_id:', error);
     }
   }
 
   loadInformacionContacto() {
-    if (this.persona_id) {
-      this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.persona_id)
+    if (this.terceroId) {
+      this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.terceroId)
         .subscribe((res: any) => {
 
           if (res !== null && res.status != '404') {
@@ -200,7 +200,7 @@ export class CrudInformacionContactoComponent implements OnInit {
     if (event.valid) {
       const formData = event.data.InfoInformacionContacto;
       const tercero = {
-        Id: this.persona_id || 1, // se debe cambiar solo por persona id
+        Id: this.terceroId || 1, // se debe cambiar solo por persona id
       }
       const dataInfoContacto = {
         InfoComplementariaTercero: [
@@ -297,7 +297,7 @@ export class CrudInformacionContactoComponent implements OnInit {
       .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_informacion_contacto = <InformacionContacto>info_contacto;
-          this.info_informacion_contacto.Ente = this.info_persona_id;
+          this.info_informacion_contacto.Ente = this.terceroId;
           this.inscripcionMidService.put('inscripciones/informacion-complementaria/tercero', this.info_informacion_contacto).subscribe(
             (res: any) => {
               if (res !== null && res.status == '404') {
