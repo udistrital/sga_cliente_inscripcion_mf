@@ -251,7 +251,7 @@ export class CrudFormacionAcademicaComponent implements OnInit{
       
       this.inscripcionMidService.get('academico/formacion/informacion-universidad/nit/?Id=' + nit)
       .subscribe((res: any) => {
-        this.universidadConsultada = res.data;
+        this.universidadConsultada = res.Data;
         this.formInfoFormacionAcademica.campos[init].valor = this.universidadConsultada.NumeroIdentificacion;
         this.formInfoFormacionAcademica.campos[inombre].valor =
         (this.universidadConsultada.NombreCompleto && this.universidadConsultada.NombreCompleto.Id) ? this.universidadConsultada.NombreCompleto : { Id: 0, Nombre: 'No registrado' };
@@ -442,9 +442,9 @@ export class CrudFormacionAcademicaComponent implements OnInit{
       this.SoporteDocumento = [];
       this.inscripcionMidService.get('academico/formacion/informacion-complementaria?Id=' + this.info_id_formacion)
       .subscribe((response: any) => {
-        this.temp_info_academica = <any>response.data;
-        if (response !== null && response !== undefined) {
-          this.temp_info_academica = <any>response.data;
+        this.temp_info_academica = <any>response.Data;
+        if (response !== null && response !== undefined && response.Data !== null && response.Data !== undefined) {
+          this.temp_info_academica = <any>response.Data;
           const files = []
           if (this.temp_info_academica.Documento + '' !== '0') {
             files.push({ Id: this.temp_info_academica.Documento });
