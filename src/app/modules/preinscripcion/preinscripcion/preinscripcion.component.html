@@ -3,11 +3,7 @@
     <mat-tab-group fullWidth>
       <mat-tab label="{{ 'inscripcion.info_persona' | translate }}">
         <div *ngIf="!isBarraOculta" class="progress-bar margin-y">
-          <p>{{ "inscripcion.tu_progreso" | translate }}: {{ percentage_info }}%</p>
-          <mat-progress-bar
-            class="margin-y"
-            [value]="percentage_info"
-          ></mat-progress-bar>
+          <progress-bar [value]="percentage_info"></progress-bar>
         </div>
         <ngx-crud-info-persona
           *ngIf="!isLoading"
