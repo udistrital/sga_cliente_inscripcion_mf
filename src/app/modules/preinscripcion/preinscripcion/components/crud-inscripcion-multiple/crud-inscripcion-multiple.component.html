@@ -18,7 +18,7 @@
           <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
         </mat-form-field>
 
-        <div class="mat-elevation-z8 contenedor-tabla">
+        <div class="contenedor-tabla">
           <table mat-table [dataSource]="dataSource" matSort>
         
             <ng-container matColumnDef="recibo">
@@ -72,7 +72,7 @@
               </td>
             </ng-container>
 
-            <ng-container matColumnDef="opcion">
+            <ng-container matColumnDef="opcion" stickyEnd>
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.opcion" | translate}} </th>
               <td mat-cell *matCellDef="let row"> 
                 <app-button-payment (save)="onRenderButtonPaymentComponent($event)" [rowData]="row"></app-button-payment>
