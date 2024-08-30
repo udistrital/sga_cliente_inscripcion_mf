@@ -62,7 +62,7 @@ export class CrudIdiomasComponent implements OnInit {
   formData: any;
   clean!: boolean;
   percentage!: number;
-  persona_id!: number | null;
+  terceroId!: number | null;
   idioma_examen: any;
   idioma!: number;
   canEmit: boolean = false;
@@ -111,15 +111,15 @@ export class CrudIdiomasComponent implements OnInit {
     return 0;
   }
 
-  ngOnInit() {
-    this.initializePersonaId;
+  async ngOnInit() {
+    await this.initializePersonaId();
   }
 
   async initializePersonaId() {
     try {
-      this.persona_id = await this.users.getPersonaId();
+      this.terceroId = await this.users.getPersonaId();
     } catch (error) {
-      this.persona_id = 1; // Valor por defecto en caso de error
+      this.terceroId = 1; // Valor por defecto en caso de error
       console.error('Error al obtener persona_id:', error);
     }
   }
@@ -181,7 +181,7 @@ export class CrudIdiomasComponent implements OnInit {
           if (this.info_idioma.SeleccionExamen != true) {
             this.info_idioma.SeleccionExamen = false;
           }
-          this.info_idioma.TercerosId = this.persona_id || 1;
+          this.info_idioma.TercerosId = this.terceroId || 1;
           if (
             this.info_idioma.Nativo === true &&
             this.info_idioma.Nativo === this.info_idioma.SeleccionExamen
