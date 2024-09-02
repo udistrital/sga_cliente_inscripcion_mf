@@ -1,20 +1,10 @@
 <mat-card [hidden]="!show_info">
-  <mat-card-header>
-    <div>
-      <ngb-progressbar
-        [showValue]="true"
-        type="success"
-        [value]="percentage_info"
-        [animated]="true"
-        [height]="'15px'"
-        [hidden]="isBarraOculta"
-      >
-      </ngb-progressbar>
-    </div>
-  </mat-card-header>
   <mat-card-content>
     <mat-tab-group fullWidth>
       <mat-tab label="{{ 'inscripcion.info_persona' | translate }}">
+        <div *ngIf="!isBarraOculta" class="progress-bar margin-y">
+          <progress-bar [value]="percentage_info"></progress-bar>
+        </div>
         <ngx-crud-info-persona
           *ngIf="!isLoading"
           [info_persona_id]="info_persona_id"

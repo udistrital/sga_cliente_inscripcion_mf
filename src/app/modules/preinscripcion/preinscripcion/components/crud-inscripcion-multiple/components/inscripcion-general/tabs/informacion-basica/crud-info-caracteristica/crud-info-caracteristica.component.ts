@@ -355,8 +355,8 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
         .subscribe(
           async (res) => {
             if (res !== null && res.status != '404') {
-              this.datosGet = <InfoCaracteristicaGet>res.data;
-              this.info_info_caracteristica = <InfoCaracteristica>res.data;
+              this.datosGet = <InfoCaracteristicaGet>res.Data;
+              this.info_info_caracteristica = <InfoCaracteristica>res.Data;
               this.info_info_caracteristica.Ente =
                 1 * this.info_caracteristica_id;
               this.info_info_caracteristica.TipoRelacionUbicacionEnte = 1;
