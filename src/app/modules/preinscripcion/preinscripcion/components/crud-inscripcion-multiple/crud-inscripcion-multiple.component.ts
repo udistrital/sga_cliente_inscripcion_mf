@@ -272,33 +272,42 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     sessionStorage.setItem('IdInscripcion', event.data.Id);
     this.inscripcionService.get('inscripcion/' + event.data.Id).subscribe(
       (response: any) => {
-        // if ( response.TipoInscripcionId.Id === 1) {
-        if (nivel === 1) {
-          console.log("Pregrado")
-          sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
-          sessionStorage.setItem('IdPeriodo', response.PeriodoId);
-          sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
-          sessionStorage.setItem('ProgramaAcademicoId', response.ProgramaAcademicoId);
-          sessionStorage.setItem('IdEnfasis', response.EnfasisId);
-          const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
-          if (EstadoIns === 'true') {
-            this.nivelInscripcion = true;
-            this.loadInscriptionModule();
+        this.projectService.get(`proyecto_academico_institucion?limit=0&query=Id:${response.ProgramaAcademicoId},Activo:true&fields=Id,Nombre,NivelFormacionId,Codigo`).subscribe((response2: any) => {
+          if (response2)  {
+            if (response2[0].NivelFormacionId.CodigoAbreviacion == "PRE") {
+              console.log("Pregrado", response.TipoInscripcionId.Id)
+              sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
+              sessionStorage.setItem('IdPeriodo', response.PeriodoId);
+              sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
+              sessionStorage.setItem('ProgramaAcademicoId', response.ProgramaAcademicoId);
+              sessionStorage.setItem('IdEnfasis', response.EnfasisId);
+              const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
+              if (EstadoIns === 'true') {
+                this.nivelInscripcion = true;
+                this.loadInscriptionModule();
+              }
+            } else {
+              console.log("Posgrado", response.TipoInscripcionId.Id)
+              sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
+              sessionStorage.setItem('IdPeriodo', response.PeriodoId);
+              sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
+              sessionStorage.setItem('ProgramaAcademicoId', response.ProgramaAcademicoId);
+              sessionStorage.setItem('IdEnfasis', response.EnfasisId);
+              const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
+              if (EstadoIns === 'true') {
+                this.nivelInscripcion = false;
+                this.loadInscriptionModule();
+              }
+    
+            }
+          } else {
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
           }
-        } else {
-          console.log("Posgrado")
-          sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
-          sessionStorage.setItem('IdPeriodo', response.PeriodoId);
-          sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
-          sessionStorage.setItem('ProgramaAcademicoId', response.ProgramaAcademicoId);
-          sessionStorage.setItem('IdEnfasis', response.EnfasisId);
-          const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
-          if (EstadoIns === 'true') {
-            this.nivelInscripcion = false;
-            this.loadInscriptionModule();
-          }
-
-        }
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          });
       });
   }
 
@@ -325,7 +334,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   async loadInfoInscripcion() {
     await this.cargarPeriodo();
     const PeriodoActual: any = localStorage.getItem('IdPeriodo');
-    //const PeriodoActual = 40
     if (this.info_persona_id != null && PeriodoActual != null) {
       const inscripciones: any = await this.recuperarEstadosReciboInscripciones(this.info_persona_id, PeriodoActual)
       const dataInfo = <Array<any>>[];

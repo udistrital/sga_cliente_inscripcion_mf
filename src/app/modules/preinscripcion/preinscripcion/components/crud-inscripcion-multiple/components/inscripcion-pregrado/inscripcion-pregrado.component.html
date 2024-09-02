@@ -48,7 +48,25 @@
         <br />
 
         <div class="form-grid2">
-          <div class="form-col1">
+
+          <div *ngFor="let control of formControls; let i = index">
+            <mat-form-field class="form-field">
+              <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
+              <mat-select
+                [formControl]="control"
+                placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
+                (ngModelChange)="tipo_inscripcion('programa')"
+              >
+                <mat-option>--Seleccionar--</mat-option>
+                <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                  {{ item.NombreProyecto }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
+          <!-- <div class="form-col1">
             <mat-form-field class="form-field">
               <mat-label>{{
                 "inscripcion.aviso_programa" | translate
@@ -112,7 +130,7 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-          </div>
+          </div> -->
           
           <div class="form-col1">
             <mat-form-field class="form-field" *ngIf="tieneEnfasis">

@@ -181,6 +181,9 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   puedeInscribirse: boolean = false;
   soloPuedeVer: boolean = false;
 
+  numberOfSelects!: number
+  formControls: FormControl[] = [];
+
   constructor(
     private listService: ListService,
     private popUpManager: PopUpManager,
@@ -228,14 +231,36 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     this.loadTipoInscripcion(IdTipo);
     // Se carga el nivel del proyecto
     this.loadNivel(IdPrograma);
+    // Se carga el numero de proyectos permitidos para pregardo
+    this.loadNumeroProyectos(IdPeriodo)
   }
+
+  loadNumeroProyectos(IdPeriodo: any) {
+    // this.parametrosService.get(`parametro_periodo?query=PeriodoId:58,Activo:true&limit=0`).subscribe(
+    this.parametrosService.get(`parametro_periodo?query=PeriodoId:${IdPeriodo},Activo:true&limit=0`).subscribe(
+      response => {
+        const valorObject = JSON.parse(response.Data[0].Valor);
+        this.numberOfSelects = valorObject.Valor;
+
+        this.formControls = [];
+        for (let i = 0; i < this.numberOfSelects; i++) {
+          this.formControls.push(new FormControl(''));
+        }
+      },
+      error => {
+        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+      },
+    );
+  }
+  
+
 
   loadProject() {
     this.posgrados = new Array;
     const IdNivel = parseInt(sessionStorage.getItem('IdNivel')!, 10);
     let periodo = localStorage.getItem('IdPeriodo');
-    // this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
-    this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=1' + '&id-periodo=40').subscribe(
+    this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
+    // this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=1&id-periodo=40').subscribe(
       response => {
         const r = <any>response;
         if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
