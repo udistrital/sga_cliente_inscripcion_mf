@@ -85,10 +85,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
       this.listService.findTipoProyecto();
     this.formPropuestaGrado = FORM_PROPUESTA_GRADO;
     this.construirForm();
-    this.cargarValores().then(aux => {
-      this.loadLists();
-      this.loadPropuestaGrado();
-    });
   }
 
   async cargarValores() {
@@ -356,6 +352,10 @@ export class CrudPropuestaGradoComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.cargarValores().then(aux => {
+      this.loadLists();
+      this.loadPropuestaGrado();
+    });
   }
 
   validarForm(event:any) {
