@@ -45,11 +45,109 @@
             {{ estado_inscripcion_nombre }}
           </div>
         </div>
-        <br />
+        <br /><br /><br />
 
-        <div class="form-grid2">
 
-          <div *ngFor="let control of formControls; let i = index">
+        <div class="form-grid1" *ngIf="!preinscrito">
+          <div>
+            <div style="display: flex; flex-direction: column">
+              <div>
+                <b>Inscripcion principal</b>
+              </div>
+            </div>
+            <br />
+        
+            <div class="form-col1">
+              <mat-form-field class="form-field">
+                <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
+                <mat-select
+                  [formControl]="Campo1Control"
+                  placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
+                >
+                  <mat-option>--Seleccionar--</mat-option>
+                  <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                    {{ item.NombreProyecto }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+        
+            <div class="column">
+              <mat-form-field class="form-field">
+                <mat-label>{{ "inscripcion.tipo_cupo" | translate }}</mat-label>
+                <mat-select
+                  [formControl]="Campo2Control"
+                  placeholder="{{ 'inscripcion.tipo_cupo' | translate }}"
+                >
+                  <mat-option>--Seleccionar--</mat-option>
+                  <mat-option *ngFor="let item of tipoCupos" [value]="item.ParametroId.Id">
+                    {{ item.ParametroId.Nombre }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <br><br><br>
+        
+          <div style="display: flex; flex-direction: column">
+            <div>
+              <b>Inscripciones opcionales</b>
+            </div>
+          </div>
+          <br />
+        
+          <div *ngFor="let controlProyecto of formControlsProyectos; let i = index">
+            <div class="row">
+              <div class="column">
+                <mat-form-field class="form-field">
+                  <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
+                  <mat-select
+                    [formControl]="controlProyecto"
+                    placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
+                  >
+                    <mat-option>--Seleccionar--</mat-option>
+                    <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                      {{ item.NombreProyecto }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+        
+              <div class="column">
+                <mat-form-field class="form-field">
+                  <mat-label>{{ "inscripcion.tipo_cupo" | translate }}</mat-label>
+                  <mat-select
+                    [formControl]="formControlsTipoCupo[i]"
+                    placeholder="{{ 'inscripcion.tipo_cupo' | translate }}"
+                  >
+                    <mat-option>--Seleccionar--</mat-option>
+                    <mat-option *ngFor="let item of tipoCupos" [value]="item.ParametroId.Id">
+                      {{ item.ParametroId.Nombre }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <br />
+            </div>
+          </div>
+        
+          <button
+            style="margin-top: 1rem; width: 100%"
+            mat-flat-button
+            color="accent"
+            [disabled]="!puedePreInscribirse"
+            (click)="realizarPreInscripcion()"
+          >
+            Preinscribirse
+          </button>
+        </div>
+
+
+       
+
+        <!-- <div class="form-grid2">
+
+          <div *ngFor="let control of formControlsProyectos; let i = index">
             <mat-form-field class="form-field">
               <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
               <mat-select
@@ -65,72 +163,21 @@
             </mat-form-field>
           </div>
 
-
-          <!-- <div class="form-col1">
+          <div *ngFor="let control of formControlsTipoCupo; let i = index">
             <mat-form-field class="form-field">
-              <mat-label>{{
-                "inscripcion.aviso_programa" | translate
-              }}</mat-label>
+              <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
               <mat-select
-                [formControl]="Campo1Control"
-                [(ngModel)]="selectedValue"
+                [formControl]="control"
                 placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
                 (ngModelChange)="tipo_inscripcion('programa')"
               >
                 <mat-option>--Seleccionar--</mat-option>
-                <mat-option
-                  *ngFor="let item of posgrados"
-                  [value]="item.ProyectoId"
-                >
-                  {{ item.NombreProyecto }}
+                <mat-option *ngFor="let item of tipoCupos" [value]="item.ParametroId.Id">
+                  {{ item.ParametroId.Nombre }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-
-          <div class="form-col1">
-            <mat-form-field class="form-field">
-              <mat-label>{{
-                "inscripcion.aviso_programa" | translate
-              }}</mat-label>
-              <mat-select
-                [formControl]="Campo2Control"
-                [(ngModel)]="selectedValue2"
-                placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
-                (ngModelChange)="tipo_inscripcion('programa')"
-              >
-                <mat-option>--Seleccionar--</mat-option>
-                <mat-option
-                  *ngFor="let item of posgrados"
-                  [value]="item.ProyectoId"
-                >
-                  {{ item.NombreProyecto }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="form-col1">
-            <mat-form-field class="form-field">
-              <mat-label>{{
-                "inscripcion.aviso_programa" | translate
-              }}</mat-label>
-              <mat-select
-                [formControl]="Campo3Control"
-                [(ngModel)]="selectedValue3"
-                placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
-                (ngModelChange)="tipo_inscripcion('programa')"
-              >
-                <mat-option>--Seleccionar--</mat-option>
-                <mat-option
-                  *ngFor="let item of posgrados"
-                  [value]="item.ProyectoId"
-                >
-                  {{ item.NombreProyecto }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div> -->
           
           <div class="form-col1">
             <mat-form-field class="form-field" *ngIf="tieneEnfasis">
@@ -148,8 +195,34 @@
               </mat-select>
             </mat-form-field>
           </div>
+        </div> -->
+      </div>
+
+      <div class="form-grid1" *ngIf="puedeInscribirse">
+        <div style="display: flex; flex-direction: column">
+          <div>
+            <b>Seleccione uno a uno los proyectos y complete la informacion solicitada para cada uno</b>
+          </div>
+        </div>
+        <br><br>
+
+        <div class="form-col1">
+          <mat-form-field class="form-field">
+            <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
+            <mat-select
+              placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
+            >
+              <mat-option>--Seleccionar--</mat-option>
+              <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                {{ item.NombreProyecto }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
+      
+
+      <br><br>
 
 
       <!-- CAJAS PARA PEDIR INFORMACION -->
