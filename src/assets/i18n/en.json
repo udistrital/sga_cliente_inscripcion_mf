@@ -738,7 +738,21 @@
         "info_boton_cambio_inscrito": "Do not forget to press the button \"Confirm edition of documents with observations\" to return to the ENROLLED status, this is enabled when you have edited all the not approved documents.",
         "no_fechas_inscripcion": "The selected curricular project does not present registration dates",
         "no_documentos_proyecto": "El proyecto no tiene documentos definidos, contacte al proyecto",
-        "tu_progreso": "Your progress"
+        "tu_progreso": "Your progress",
+        "examen_estado": "State exam",
+        "datos_acudiente": "Data on guardians/family"
+    },
+    "examen_estado": {
+        "orden": "Order",
+        "examen": "State exam",
+        "tipo": "Type of exam",
+        "snp": "SNP",
+        "confirmar": "Confirm SNP",
+        "anno": "Year of presentation",
+        "soporte": "supports",
+        "seleccionar_archivo": "Select file",
+        "sin_archivo": "No files have been uploaded",
+        "visualizar_archivo": "View file"
     },
     "ERROR": {
         "general": "The request could not be satisfied",
