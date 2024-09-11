@@ -231,6 +231,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
     const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
     const IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
+    console.log("AAAAAAAAAAAAAAAAAA", IdPrograma)
     // Se carga el nombre del periodo al que se inscribió
     this.loadPeriodo(IdPeriodo);
     // Se carga el tipo de inscripción

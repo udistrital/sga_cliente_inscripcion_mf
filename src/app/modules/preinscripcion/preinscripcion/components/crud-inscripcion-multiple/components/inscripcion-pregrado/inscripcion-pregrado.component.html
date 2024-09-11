@@ -52,10 +52,16 @@
           <div>
             <div style="display: flex; flex-direction: column">
               <div>
-                <b>Inscripcion principal</b>
+                <h3>Inscripcion principal</h3>
               </div>
             </div>
             <br />
+
+            <div class="info" *ngIf="!estaInscrito">
+              <mat-icon>info</mat-icon> &nbsp;
+              <span>{{ "inscripcion.alerta_preinscripcion_principal" | translate }}</span>
+            </div>
+            <br /><br />
         
             <div class="form-col1">
               <mat-form-field class="form-field">
@@ -91,10 +97,16 @@
         
           <div style="display: flex; flex-direction: column">
             <div>
-              <b>Inscripciones opcionales</b>
+              <h3>Inscripciones opcionales</h3>
             </div>
           </div>
           <br />
+
+          <div class="info" *ngIf="!estaInscrito">
+            <mat-icon>info</mat-icon> &nbsp;
+            <span>{{ "inscripcion.alerta_preinscripcion_opcional" | translate }}</span>
+          </div>
+          <br /><br />
         
           <div *ngFor="let controlProyecto of formControlsProyectos; let i = index">
             <div class="row">
@@ -199,25 +211,19 @@
       </div>
 
       <div class="form-grid1" *ngIf="puedeInscribirse">
+
+        <div class="info">
+          <mat-icon>info</mat-icon> &nbsp;
+          <span>{{ "inscripcion.alerta_tags_preinscripcion" | translate }}</span>
+        </div>
+        <br /><br />
+
+
         <div style="display: flex; flex-direction: column">
           <div>
-            <b>Seleccione uno a uno los proyectos y complete la informacion solicitada para cada uno</b>
+            <b>Proyecto seleccionado:</b>
+            {{ inscripcion.ProgramaAcademicoId  }}
           </div>
-        </div>
-        <br><br>
-
-        <div class="form-col1">
-          <mat-form-field class="form-field">
-            <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
-            <mat-select
-              placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
-            >
-              <mat-option>--Seleccionar--</mat-option>
-              <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
-                {{ item.NombreProyecto }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
         </div>
       </div>
       
