@@ -273,7 +273,7 @@
             >
               <mat-card-header class="exp-card-header"
                 ><b>{{
-                  "inscripcion.formacion_academica" | translate
+                  "inscripcion.examen_estado" | translate
                 }}</b></mat-card-header
               >
               <mat-card-content class="exp-card-content">
@@ -1509,24 +1509,17 @@
   </mat-card-content>
 </div>
 
+
 <!-- <mat-card [hidden]="!show_examen"> -->
   <div *ngIf="show_examen">
     <mat-card-content>
-      <div class="row">
-        <div class="col-md-11">
-          <ngb-progressbar
-            [showValue]="true"
-            type="success"
-            [value]="percentage_examen"
-            [animated]="true"
-            [height]="'15px'"
-          >
+      <div>
+        <div>
+          <ngb-progressbar [showValue]="true" type="success" [value]="percentage_examen" [animated]="true" [height]="'15px'">
           </ngb-progressbar>
         </div>
-        <div class="col-md-1" align="right">
-          <button
-            mat-icon-button
-            color="primary"
+        <div class="contendor-close">
+          <button mat-icon-button color="primary"
             (click)="
               show_profile = false;
               show_info = false;
@@ -1541,30 +1534,19 @@
               showRegreso = true;
               mostrarBarraExterna();
               redirectBecauseObservations()
-            "
-          >
+            ">
             <mat-icon>close</mat-icon>
           </button>
         </div>
       </div>
-      <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-        <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
-          <ngx-view-examen-estado
-            (result)="setPercentage_acad($event,0)"
-          >
-          </ngx-view-examen-estado>
-        </mat-tab>
-      </mat-tab-group>
+      <ngx-view-examen-estado (result)="setPercentage_acad($event,0)">
+      </ngx-view-examen-estado>
   
-      <div style="display: flex; justify-content: center;">
-        <button
-          mat-fab
-          color="primary"
-          (click)="openVideoModal('video7')"
-        >
+      <div class="text-center">
+        <button mat-fab color="primary" (click)="openVideoModal('video7')">
           <div class="button-content">
             <mat-icon class="icon-help">live_help</mat-icon>
-            <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+            <p>{{ "GLOBAL.ayuda" | translate }}</p>
           </div>
         </button>
       </div>

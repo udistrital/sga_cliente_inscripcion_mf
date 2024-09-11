@@ -51,3 +51,35 @@ th.mat-header-cell, td.mat-cell {
 mat-select, input[type="file"], input[matInput] {
   width: 100%;
 }
+
+.contenedor-tabla {
+  width: 95%;
+  margin: auto;
+  overflow: overlay;
+}
+
+//HOVER SOBRE LAS FILAS
+.mat-mdc-row:hover .mat-mdc-cell {
+  background-color: var(--color100);
+}
+
+th {
+  font-weight: bold;
+}
+
+.boton-acciones {
+  border: 0;
+  cursor: pointer;
+}
+
+.enlace-documento {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0 0;
+  cursor: pointer;
+}
+
+.enlace-documento mat-icon {
+  color: var(--danger-main)
+}

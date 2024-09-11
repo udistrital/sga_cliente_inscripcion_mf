@@ -739,11 +739,24 @@
         "info_boton_cambio_inscrito": "No olvide presionar el botón \"Confirmar edición de documentos con observaciones\" para volver al estado INSCRITO, este se habilita cuando haya editado todos los documentos no aprobados.",
         "no_documentos_proyecto": "El proyecto no tiene documentos definidos, comuníquese con el proyecto",
         "tu_progreso": "Tu progreso",
+        "examen_estado": "Examen de estado",
+        "datos_acudiente": "Datos acudientes/familia",
         "alerta_preinscripcion_principal": "Aspirante, se presenta el proyecto principal de la inscripción. Puede cambiarlo si lo desea y seleccionar el tipo de cupo con el cual desea aplicar, ya que es obligatorio.",
         "alerta_preinscripcion_opcional": "Aspirante, se presentan las inscripciones opcionales. Puede no seleccionar ninguna o las que prefiera. Recuerde que por cada una debe seleccionar un tipo de cupo de forma obligatoria. Tenga en cuenta que para cada preinscripción debe completar toda la información solicitada por el proyecto curricular de forma individual.",
         "alerta_tags_preinscripcion": "Aspirante, a continuación se muestra el proyecto en el que está preinscrito. Debe completar al 100% cada uno de los tags que aparecen a continuación. Recuerde que, si tiene más de un proyecto preinscrito, deberá repetir este proceso para cada uno.",
         "tipo_cupo": "Seleccione el tipo de cupo con el que desea aplicar al programa seleccionado."
-
+    },
+    "examen_estado": {
+        "orden": "Orden",
+        "examen": "Examen de estado",
+        "tipo": "Tipo examen",
+        "snp": "SNP",
+        "confirmar": "Confirmar SNP",
+        "anno": "Año presentación",
+        "soporte": "Soporte",
+        "seleccionar_archivo": "Seleccionar archivo",
+        "sin_archivo": "No ha subido ningún archivo",
+        "visualizar_archivo": "Visualizar archivo"
     },
     "ERROR": {
         "general": "La solicitud no pudo ser cumplida",
