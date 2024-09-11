@@ -1,6 +1,12 @@
-<table class="table-responsive">
+<!-- <table class="table-responsive">
     <thead>
-        <!-- <tr><th colspan="6">{{ 'inscripcion.info_basica' | translate }}</th></tr> -->
+        
+        
+        
+        <tr><th colspan="6">{{ 'inscripcion.info_basica' | translate }}</th></tr> 
+
+
+
     </thead>
     <tbody *ngIf="info_info_persona">
         <tr class="subheader">
@@ -35,6 +41,7 @@
             <td colspan="2">{{direccion}}</td>
         </tr>
     </tbody>
+
     <tbody *ngIf="idSoporteDiscapacidad || idSoportePoblacion">
         <tr class="subheader">
             <th colspan="3">{{ 'inscripcion.info_caracteristica' | translate }}</th>
@@ -71,4 +78,157 @@
             </td>
         </tr>
     </tfoot>
-</table>
+</table> -->
+<div class="contenedor-tabla" *ngIf="info_info_persona">
+    <table mat-table [dataSource]="dataSourceBasica">
+
+        <ng-container matColumnDef="nombres">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.nombres" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.PrimerNombre}} {{element.SegundoNombre}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="apellidos">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.apellidos" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.PrimerApellido}} {{element.SegundoApellido}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="documento">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.documento_identificacion" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.TipoIdentificacion.CodigoAbreviacion}}:
+                {{info_info_persona.NumeroIdentificacion}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsBasica"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsBasica;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="3">{{ "admision.no_data" | translate }}</td>
+        </tr>
+    </table>
+
+    <table mat-table [dataSource]="dataSourceContacto">
+
+        <ng-container matColumnDef="correo">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.correo_principal" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.correo}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="telefono">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.telefono" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.telefono}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="telefono_alter">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.telefono_alternativo" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.telefono_alter}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsContacto"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsContacto;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="3">{{ "admision.no_data" | translate }}</td>
+        </tr>
+    </table>
+
+    <table mat-table [dataSource]="dataSourceUbicacion">
+
+        <ng-container matColumnDef="fecha_nacimiento">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.fecha_nacimiento" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.fecha_nacimiento}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lugar_nacimiento">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.lugar_nacimiento" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.lugar_nacimiento}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="direccion_residencia">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.direccion_residencia" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.direccion_residencia}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsUbicacion"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsUbicacion;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="3">{{ "admision.no_data" | translate }}</td>
+        </tr>
+    </table>
+</div>
+<div class="contenedor-tabla" *ngIf="idSoporteDiscapacidad || idSoportePoblacion">
+    <table mat-table [dataSource]="dataSourceDiscapacidad" *ngIf="idSoporteDiscapacidad">
+
+        <ng-container matColumnDef="info">
+            <th mat-header-cell *matHeaderCellDef>{{ "inscripcion.info_caracteristica" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{ 'GLOBAL.tipo_discapacidad' | translate }}: {{element.nombreDocumento}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>{{ "admision.estado" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.estadoObservacion?element.estadoObservacion:''}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="observacion">
+            <th mat-header-cell *matHeaderCellDef>{{ "admision.observacion" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}}:
+                {{info_info_persona.NumeroIdentificacion}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="soporte">
+            <th mat-header-cell *matHeaderCellDef>{{ "solicitudes.soporte" | translate }}</th>
+            <td mat-cell *matCellDef="let element">
+                <button mat-flat-button color="accent" type="button" (click)="verInfoCaracteristca(element)">
+                    <mat-icon fontIcon="search"></mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsDiscapacidad"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsDiscapacidad;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="3">{{ "admision.no_data" | translate }}</td>
+        </tr>
+    </table>
+
+    <table mat-table [dataSource]="dataSourcePoblacion" *ngIf="idSoportePoblacion">
+
+        <ng-container matColumnDef="info">
+            <th mat-header-cell *matHeaderCellDef>{{ "inscripcion.info_caracteristica" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{ 'GLOBAL.tipo_poclacion' | translate }}: {{element.nombreDocumento}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>{{ "admision.estado" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.estadoObservacion?element.estadoObservacion:''}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="observacion">
+            <th mat-header-cell *matHeaderCellDef>{{ "admision.observacion" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}}:
+                {{info_info_persona.NumeroIdentificacion}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="soporte">
+            <th mat-header-cell *matHeaderCellDef>{{ "solicitudes.soporte" | translate }}</th>
+            <td mat-cell *matCellDef="let element">
+                <button mat-button type="button" (click)="verInfoCaracteristca(element)">
+                    <i class="nb-search" title="{{ 'GLOBAL.tooltip_ver_registro' | translate }}"></i>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsPoblacion"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsPoblacion;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="3">{{ "admision.no_data" | translate }}</td>
+        </tr>
+    </table>
+</div>

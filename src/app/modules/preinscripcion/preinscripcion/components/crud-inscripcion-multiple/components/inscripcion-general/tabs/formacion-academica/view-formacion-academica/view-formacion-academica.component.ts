@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
@@ -17,6 +18,9 @@ import Swal from 'sweetalert2/dist/sweetalert2';
   styleUrls: ['./view-formacion-academica.component.scss']
 })
 export class ViewFormacionAcademicaComponent implements OnInit {
+  displayedColumns: string[] = ['institucion', 'programa', 'nivel', 'fechaInicio', 'fechaFin', 'estado', 'observacion', 'soporte'];
+  dataSource!: MatTableDataSource<any>;
+  
   info_formacion_academica_id!: number;
   organizacion: any;
   persona_id!: number;
@@ -126,7 +130,9 @@ export class ViewFormacionAcademicaComponent implements OnInit {
             }
           })
           this.info_formacion_academica = data;
+          this.dataSource = new MatTableDataSource(this.info_formacion_academica);
         } else {
+          this.dataSource = new MatTableDataSource();
           this.infoFalla();
         }
       },

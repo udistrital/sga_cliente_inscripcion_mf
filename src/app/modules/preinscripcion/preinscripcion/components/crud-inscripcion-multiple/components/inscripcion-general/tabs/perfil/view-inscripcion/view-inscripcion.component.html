@@ -1,23 +1,38 @@
-<table class="table-responsive">
-    <thead>
-        <!-- <tr><th colspan="4">{{ 'MENU.reportes.inscripciones.inscripciones' | translate }} </th></tr> -->
-        <tr class="subheader">
-            <th>{{ 'GLOBAL.periodo' | translate }} </th>
-            <th>{{ 'GLOBAL.programa_academico' | translate }} </th>
-            <th>{{ 'enfasis.enfasis' | translate }} </th>
-            <th>{{ 'tipo_inscripcion.sub_titulo' | translate }} </th>
-            <th>{{ 'solicitudes.numero' | translate }} {{ 'inscripcion.inscripcion' | translate }}</th>
-            <th>{{ 'tipo_inscripcion.estado' | translate }} </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{ inscripcion.Periodo }}</td>
-            <td>{{ inscripcion.Programa }}</td>
-            <td>{{ inscripcion.Enfasis}}</td>
-            <td>{{ inscripcion.TipoInscripcion }} </td>
-            <td>{{ inscripcion_id }}</td>
-            <td>{{ inscripcion.Estado }}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="contenedor-tabla">
+    <table mat-table [dataSource]="dataSource">
+
+    <ng-container matColumnDef="periodo">
+        <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.periodo" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.periodo}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="programa">
+        <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.programa_academico" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.programa}} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="enfasis">
+        <th mat-header-cell *matHeaderCellDef>{{ "enfasis.enfasis" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.enfasis}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tipoInscripcion">
+        <th mat-header-cell *matHeaderCellDef>{{ "tipo_inscripcion.sub_titulo" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.tipoInscripcion}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="numeroInscripcion">
+        <th mat-header-cell *matHeaderCellDef>{{ "solicitudes.numero" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.numeroInscripcion}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>{{ "tipo_inscripcion.estado" | translate }}</th>
+        <td mat-cell *matCellDef="let element"> {{element.estado}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>
