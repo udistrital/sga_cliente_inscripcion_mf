@@ -66,6 +66,31 @@ th {
   background-color: #bdc2c8 !important;
 }
 
+.contenedor-actualizar {
+  background-color: #ffffe0;
+  padding: 5px 0;
+  margin-top: 10px;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contenedor-actualizar span {
+  display: contents;
+}
+
+.equal-width-table {
+  width: 100%;
+}
+
+.equal-width {
+  flex: 1;
+  text-align: center; /* Opcional, para centrar el contenido */
+}
+
+
 @media only screen and (max-width: 760px), (min-width: 768px) and (max-width: 1024px) {
   table.table-responsive,
   .table-responsive thead,

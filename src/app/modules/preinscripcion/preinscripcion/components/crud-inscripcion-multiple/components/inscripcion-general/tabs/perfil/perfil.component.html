@@ -177,12 +177,13 @@
           </ngx-view-produccion-academica>
         </mat-expansion-panel>
 
-        <mat-expansion-panel id="documento_programa" *ngIf="SuiteTags.documento_programa && SuiteTags.documento_programa.selected" hideToggle
+        <mat-expansion-panel id="documento_programa"
+          *ngIf="SuiteTags.documento_programa && SuiteTags.documento_programa.selected" hideToggle
           [disabled]="!SuiteTags.documento_programa.render" [expanded]="SuiteTags.documento_programa.render">
           <mat-expansion-panel-header>
             <mat-panel-title>{{
               "inscripcion.documento_programa" | translate
-            }}</mat-panel-title>
+              }}</mat-panel-title>
             <mat-panel-description>
               <div *ngIf="SuiteTags.documento_programa.required">
                 {{ "GLOBAL.obligatorio" | translate }}
@@ -192,18 +193,9 @@
               </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <ngx-view-documento-programa
-            (url_editar)="editar($event, 'documento_programa')"
-            (revisar_doc)="abrirDocumento($event)"
-            (estadoCarga)="manageLoading($event, 'documento_programa')"
-            (docs_editados)="
-              SuiteTags.documento_programa.observacion = $event;
-              checkZeroObservations()
-            "
-            inscripcion_id="{{ info_inscripcion_id }}"
-            persona_id="{{ info_persona_id }}"
-            *ngIf="SuiteTags.documento_programa.render"
-          >
+          <ngx-view-documento-programa (url_editar)="editar($event, 'documento_programa')"
+            (revisar_doc)="abrirDocumento($event)" (estadoCarga)="manageLoading($event, 'documento_programa')" (docs_editados)="SuiteTags.documento_programa.observacion = $event; checkZeroObservations()" [inscripcion_id]="info_inscripcion_id" [persona_id]="info_persona_id"
+            *ngIf="SuiteTags.documento_programa.render">
           </ngx-view-documento-programa>
         </mat-expansion-panel>
 

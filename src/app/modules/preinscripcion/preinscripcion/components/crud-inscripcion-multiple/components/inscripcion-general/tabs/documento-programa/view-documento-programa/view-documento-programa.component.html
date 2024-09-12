@@ -1,33 +1,39 @@
-<table class="table-responsive">
-    <thead>
-        <!-- <tr>
-                        <th colspan="4">{{ 'inscripcion.documento_programa' | translate}}</th>
-                    </tr> -->
-        <tr class="subheader">
-            <th>{{ 'GLOBAL.soporte_documento' | translate }}</th>
-            <th>{{ 'GLOBAL.estado' | translate }} </th>
-            <th>{{ 'admision.observacion' | translate }} </th>
-            <th>{{ 'solicitudes.soporte' | translate }} </th>
-        </tr>
-    </thead>
-    <tbody *ngIf="info_documento_programa">
-        <tr *ngFor="let documento of info_documento_programa">
-            <td> {{documento.DocumentoProgramaId.TipoDocumentoProgramaId.Nombre}} </td>
-            <td> {{documento.estadoObservacion}} </td>
-            <td> {{documento.observacion}} </td>
-            <td *ngIf="documento.DocumentoId !== undefined">
-                <button color="accent" mat-flat-button type="button" (click)="abrirDocumento(documento)">
+<div class="contenedor-tabla">
+    <table mat-table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="documento">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.soporte_documento" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.DocumentoProgramaId.TipoDocumentoProgramaId.Nombre}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.estado" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.estadoObservacion?element.estadoObservacion:''}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="observacion">
+            <th mat-header-cell *matHeaderCellDef>{{ "admision.observacion" | translate }}</th>
+            <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="soporte">
+            <th mat-header-cell *matHeaderCellDef>{{ "solicitudes.soporte" | translate }}</th>
+            <td mat-cell *matCellDef="let element">
+                <button *ngIf="element.DocumentoId !== undefined" color="accent" mat-flat-button type="button" (click)="abrirDocumento(element)">
                     <mat-icon fontIcon="search"></mat-icon>
                 </button>
             </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">{{ "admision.no_data" | translate }}</td>
         </tr>
-    </tbody>
-    <tfoot *ngIf="(url_editar && gotoEdit) || (updateDocument && canUpdateDocument)">
-        <tr>
-            <td colspan="4" style="background-color: lightyellow;">
-                <span (click)="editar()" class="link"><i class="fa fa-edit link"></i> {{"GLOBAL.actualizar" |
-                    translate}}</span>
-            </td>
-        </tr>
-    </tfoot>
-</table>
+    </table>
+</div>
+<div class="contenedor-actualizar" *ngIf="(url_editar && gotoEdit) || (updateDocument && canUpdateDocument)">
+    <span (click)="editar()" class="link"><mat-icon>edit</mat-icon> {{"GLOBAL.actualizar" | translate}}</span>
+</div>
