@@ -190,6 +190,10 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   incripcionInicial: any
   listaPreinscripciones: any
 
+  IdPeriodo: any
+  IdTipo: any 
+  IdPrograma: any
+
   constructor(
     private listService: ListService,
     private popUpManager: PopUpManager,
@@ -228,20 +232,19 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     this.inscripcion = new Inscripcion();
     this.inscripcion.Id = parseInt(sessionStorage.getItem('IdInscripcion')!, 10);
     this.inscripcion.ProgramaAcademicoId = sessionStorage.getItem('ProgramaAcademico');
-    const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
-    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
-    const IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
-    console.log("AAAAAAAAAAAAAAAAAA", IdPrograma)
+    this.IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
+    this.IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
+    this.IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
     // Se carga el nombre del periodo al que se inscribió
-    this.loadPeriodo(IdPeriodo);
+    this.loadPeriodo(this.IdPeriodo);
     // Se carga el tipo de inscripción
-    this.loadTipoInscripcion(IdTipo);
+    this.loadTipoInscripcion(this.IdTipo);
     // Se carga el nivel del proyecto
-    this.loadNivel(IdPrograma);
+    this.loadNivel(this.IdPrograma);
     // Se cargan los tipos de cupo por perido
-    this.cargarTipoCuposPorPeriodo(IdPrograma);
+    this.cargarTipoCuposPorPeriodo(this.IdPrograma);
     // Se carga el numero de proyectos permitidos para pregardo
-    this.loadNumeroProyectos(IdPeriodo)
+    this.loadNumeroProyectos(this.IdPeriodo)
   }
 
   loadNumeroProyectos(IdPeriodo: any) {
@@ -295,7 +298,6 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   cargarInscripcionInicial (inscripcionId: any) {
-    // this.inscripcionService.get(`inscripcion?query=PeriodoId:58,Activo:true&limit=0`).subscribe(
     this.inscripcionService.get(`inscripcion?query=Id:${inscripcionId},Activo:true&limit=0`).subscribe(
       response => {
         this.incripcionInicial = response[0]
@@ -308,15 +310,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
           }
         }else{
           this.preinscrito = true
-          this.puedeInscribirse = true
-          this.inscripcionService.get(`inscripcion?query=PersonaId:${this.incripcionInicial.PersonaId},ReciboInscripcion:${this.incripcionInicial.ReciboInscripcion},Activo:true&limit=0`).subscribe(
-            response2 => {
-              this.listaPreinscripciones = response2
-            },
-            error => {
-              this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-            },
-          );
+          this.loadSuitePrograma(this.IdPeriodo,this.IdPrograma,this.IdTipo)
         } 
       },
       error => {
@@ -1546,21 +1540,24 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   loadSuitePrograma(periodo:any, proyecto:any, tipoInscrip:any) {
+    proyecto = 85
+    tipoInscrip = 15
     return new Promise((resolve) => {
     this.evaluacionInscripcionService.get('tags_por_dependencia?query=Activo:true,PeriodoId:'+periodo+',DependenciaId:'+proyecto+',TipoInscripcionId:'+tipoInscrip)
         .subscribe((response: any) => {
           if (response != null && response.Status == '200') {
-            // if (Object.keys(response.Data[0]).length > 0) {
-              // this.tagsObject = JSON.parse(response.Data[0].ListaTags);
+            if (Object.keys(response.Data[0]).length > 0) {
+              this.puedeInscribirse = true;
+              this.tagsObject = JSON.parse(response.Data[0].ListaTags);
               this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
               resolve(this.tagsObject)
-            // } else {
-            //   this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
-            //   this.puedeInscribirse = false;
-            //   this.soloPuedeVer = false;
-            //   this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
-            //   resolve(false);
-            // }
+            } else {
+              this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              this.puedeInscribirse = false;
+              this.soloPuedeVer = false;
+              this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
+              resolve(false);
+            }
           } else {
             this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
             this.puedeInscribirse = false;

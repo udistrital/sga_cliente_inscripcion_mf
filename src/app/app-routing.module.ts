@@ -10,32 +10,32 @@ import { AuthGuard } from 'src/_guards/auth.guard';
 const routes: Routes = [
   { 
     path: "",
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     loadChildren: () => import ('./modules/preinscripcion/preinscripcion.module').then(m => m.PreinscripcionModule),
   },
   { 
     path: "preinscripcion",
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     loadChildren: () => import ('./modules/preinscripcion/preinscripcion.module').then(m => m.PreinscripcionModule),
   },
   { 
     path: "transferencia",
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     component: TransferenciaComponent
   },
   {
     path: 'solicitud-transferencia/:id/:process',
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     component: SolicitudTransferenciaComponent,
   },
   {
     path: 'legalizacion-matricula-aspirante/:persona/:periodo/:programa',
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     component: LegalizacionMatriculaAspiranteComponent,
   },
   { 
     path: "legalizacion-matricula",
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     component: LegalizacionMatriculaComponent
   },
   {
