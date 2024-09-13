@@ -106,7 +106,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   nForms!: number;
   SelectedTipoBool: boolean = true;
   Campo1Control = new FormControl('', [Validators.required]);
-  Campo2Control = new FormControl('');
+  Campo2Control = new FormControl('', [Validators.required]);
   Campo3Control = new FormControl('');
   enfasisControl = new FormControl('', [Validators.required]);
 
@@ -182,7 +182,17 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   soloPuedeVer: boolean = false;
 
   numberOfSelects!: number
-  formControls: FormControl[] = [];
+  formControlsProyectos: FormControl[] = [];
+  formControlsTipoCupo: FormControl[] = [];
+  tipoCupos: any = [];
+  puedePreInscribirse = false;
+  preinscrito = false;
+  incripcionInicial: any
+  listaPreinscripciones: any
+
+  IdPeriodo: any
+  IdTipo: any 
+  IdPrograma: any
 
   constructor(
     private listService: ListService,
@@ -202,12 +212,28 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     private timeService: TimeService,
   ) {
     sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
-    this.info_persona_id = this.userService.getPersonaId();
     this.translate = translate;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.total = true;
     this.listService.findPais();
     this.loadData();
+  }
+
+  async ngOnInit() {
+    // Escuchar los cambios en los selects de la inscripción principal
+    this.Campo1Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    this.Campo2Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+
+    // Escuchar los cambios en los selects opcionales
+    this.formControlsProyectos.forEach((control, index) => {
+      control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    });
+    this.formControlsTipoCupo.forEach((control, index) => {
+      control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    });
+
+    this.info_persona_id = await this.userService.getPersonaId();
+    console.log("INFO EN ORIGINAL ", this.info_persona_id);
   }
 
   activateTab() {
@@ -222,30 +248,86 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     this.inscripcion = new Inscripcion();
     this.inscripcion.Id = parseInt(sessionStorage.getItem('IdInscripcion')!, 10);
     this.inscripcion.ProgramaAcademicoId = sessionStorage.getItem('ProgramaAcademico');
-    const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
-    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
-    const IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
+    this.IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
+    this.IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
+    this.IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
     // Se carga el nombre del periodo al que se inscribió
-    this.loadPeriodo(IdPeriodo);
+    this.loadPeriodo(this.IdPeriodo);
     // Se carga el tipo de inscripción
-    this.loadTipoInscripcion(IdTipo);
+    this.loadTipoInscripcion(this.IdTipo);
     // Se carga el nivel del proyecto
-    this.loadNivel(IdPrograma);
+    this.loadNivel(this.IdPrograma);
+    // Se cargan los tipos de cupo por perido
+    this.cargarTipoCuposPorPeriodo(this.IdPrograma);
     // Se carga el numero de proyectos permitidos para pregardo
-    this.loadNumeroProyectos(IdPeriodo)
+    this.loadNumeroProyectos(this.IdPeriodo)
   }
 
   loadNumeroProyectos(IdPeriodo: any) {
-    // this.parametrosService.get(`parametro_periodo?query=PeriodoId:58,Activo:true&limit=0`).subscribe(
-    this.parametrosService.get(`parametro_periodo?query=PeriodoId:${IdPeriodo},Activo:true&limit=0`).subscribe(
+    this.parametrosService.get(`parametro_periodo?query=PeriodoId:58,Activo:true&limit=0`).subscribe(
+    // this.parametrosService.get(`parametro_periodo?query=PeriodoId:${IdPeriodo},Activo:true&limit=0`).subscribe(
       response => {
         const valorObject = JSON.parse(response.Data[0].Valor);
-        this.numberOfSelects = valorObject.Valor;
-
-        this.formControls = [];
+        this.numberOfSelects = valorObject.Valor - 1;
+  
+        // Limpiar los arrays antes de volver a llenarlos
+        this.formControlsProyectos = [];
+        this.formControlsTipoCupo = [];
+  
         for (let i = 0; i < this.numberOfSelects; i++) {
-          this.formControls.push(new FormControl(''));
+          const proyectoControl = new FormControl('');
+          const tipoCupoControl = new FormControl('');
+  
+          // Agregar los controles al array
+          this.formControlsProyectos.push(proyectoControl);
+          this.formControlsTipoCupo.push(tipoCupoControl);
+  
+          // Suscribirse a los cambios de cada control
+          proyectoControl.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+          tipoCupoControl.valueChanges.subscribe(() => this.verificarHabilitarBoton());
         }
+  
+        // Verificar si el botón debe estar habilitado después de cargar los proyectos
+        this.verificarHabilitarBoton();
+      },
+      error => {
+        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+      }
+    );
+  }
+
+  cargarTipoCuposPorPeriodo(idPeriodo: any) {
+    idPeriodo = 39
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:T,PeriodoId.Id:${idPeriodo}`)
+      // this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:TIP_CUP,PeriodoId.Id:${idPeriodo}`)
+        .subscribe((res: any) => {
+          this.tipoCupos = res.Data
+          console.log(this.tipoCupos)
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('admision.facultades_error'));
+            reject(false);
+          });
+    });
+  }
+
+  cargarInscripcionInicial (inscripcionId: any) {
+    this.inscripcionService.get(`inscripcion?query=Id:${inscripcionId},Activo:true&limit=0`).subscribe(
+      response => {
+        this.incripcionInicial = response[0]
+        if(this.incripcionInicial.TipoCupo == 0){
+          for (let i = 0; i < this.posgrados.length; i++) {
+            if(this.posgrados[i].ProyectoId == this.incripcionInicial.ProgramaAcademicoId){
+              this.Campo1Control.setValue(this.posgrados[i].ProyectoId);
+              break;
+            }
+          }
+        }else{
+          this.preinscrito = true
+          this.loadSuitePrograma(this.IdPeriodo,this.IdPrograma,this.IdTipo)
+        } 
       },
       error => {
         this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
@@ -267,6 +349,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
           const inscripcionP = <Array<any>>response.Data;
           this.posgrados = inscripcionP;
           this.selectedValue = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10);
+          // Se carga la inscripcion principal del aspirante
+          this.cargarInscripcionInicial(this.inscripcion.Id)
         } else {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_inscripcion'));
         }
@@ -714,7 +798,98 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     });
   }
 
-  ngOnInit() {
+  verificarHabilitarBoton() {
+    // Verificar si ambos selects de la inscripción principal están seleccionados
+    const principalCompleto = this.Campo1Control.valid && this.Campo2Control.valid;
+
+    // Verificar que las inscripciones opcionales estén correctamente seleccionadas si es que están llenas
+    let opcionalesValidas = true;
+    for (let i = 0; i < this.formControlsProyectos.length; i++) {
+      const proyectoSeleccionado = this.formControlsProyectos[i].value;
+      const tipoCupoSeleccionado = this.formControlsTipoCupo[i].value;
+
+      if (proyectoSeleccionado && !tipoCupoSeleccionado) {
+        opcionalesValidas = false;
+        break;
+      }
+    }
+
+    // Habilitar o deshabilitar el botón
+    this.puedePreInscribirse = principalCompleto && opcionalesValidas;
+  }
+
+  realizarPreInscripcion() {
+    // Recoger la información de los selects principales
+    const principal = {
+      programa: this.Campo1Control.value,
+      tipoCupo: this.Campo2Control.value,
+    };
+
+    // Recoger la información de las inscripciones opcionales seleccionadas
+    const opcionales: any[] = [];
+    for (let i = 0; i < this.formControlsProyectos.length; i++) {
+      const proyectoSeleccionado = this.formControlsProyectos[i].value;
+      const tipoCupoSeleccionado = this.formControlsTipoCupo[i].value;
+
+      if (proyectoSeleccionado && tipoCupoSeleccionado) {
+        opcionales.push({
+          programa: proyectoSeleccionado,
+          tipoCupo: tipoCupoSeleccionado,
+        });
+      }
+    }
+
+    console.log('Datos de la inscripción:', { principal, opcionales });
+    this.preinscrito = true
+    this.puedeInscribirse = true
+    console.log("AAAAAA", this.incripcionInicial)
+
+    this.incripcionInicial.ProgramaAcademicoId = principal.programa
+    this.incripcionInicial.TipoCupo = principal.tipoCupo
+
+    this.inscripcionService.put(`inscripcion`, this.incripcionInicial).subscribe(
+      response => {
+        console.log(response)
+        if(response){
+          for (let i = 0; i < opcionales.length; i++) {
+
+            const nuevasPreInscripciones = {
+              AceptaTerminos: this.incripcionInicial.AceptaTerminos,
+              Activo: true,
+              EnfasisId: this.incripcionInicial.EnfasisId,
+              FechaAceptaTerminos: this.incripcionInicial.FechaAceptaTerminos,
+              NotaFinal: this.incripcionInicial.NotaFinal,
+              Opcion: this.incripcionInicial.Opcion,
+              PeriodoId: this.incripcionInicial.PeriodoId,
+              PersonaId: this.incripcionInicial.PersonaId,
+              Credencial: this.incripcionInicial.Credencial,
+              ProgramaAcademicoId: opcionales[i].programa,
+              ReciboInscripcion: this.incripcionInicial.ReciboInscripcion,   
+              TipoCupo: opcionales[i].tipoCupo,
+              EstadoInscripcionId: {
+                Id: this.incripcionInicial.EstadoInscripcionId.Id
+              },
+              TipoInscripcionId: {
+                Id: this.incripcionInicial.TipoInscripcionId.Id
+              }
+            };
+
+            this.inscripcionService.post(`inscripcion`, nuevasPreInscripciones).subscribe(
+              response => {
+                console.log(response)
+              },
+              error => {
+                this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+              },
+            );
+          }
+        }
+      },
+      error => {
+        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+      },
+    );
+
   }
 
   async getPorcentajes() {
@@ -1367,21 +1542,24 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   loadSuitePrograma(periodo:any, proyecto:any, tipoInscrip:any) {
+    // proyecto = 85
+    // tipoInscrip = 15
     return new Promise((resolve) => {
     this.evaluacionInscripcionService.get('tags_por_dependencia?query=Activo:true,PeriodoId:'+periodo+',DependenciaId:'+proyecto+',TipoInscripcionId:'+tipoInscrip)
         .subscribe((response: any) => {
           if (response != null && response.Status == '200') {
-            // if (Object.keys(response.Data[0]).length > 0) {
-              // this.tagsObject = JSON.parse(response.Data[0].ListaTags);
+            if (Object.keys(response.Data[0]).length > 0) {
+              this.puedeInscribirse = true;
+              this.tagsObject = JSON.parse(response.Data[0].ListaTags);
               this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
               resolve(this.tagsObject)
-            // } else {
-            //   this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
-            //   this.puedeInscribirse = false;
-            //   this.soloPuedeVer = false;
-            //   this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
-            //   resolve(false);
-            // }
+            } else {
+              this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              this.puedeInscribirse = false;
+              this.soloPuedeVer = false;
+              this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
+              resolve(false);
+            }
           } else {
             this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
             this.puedeInscribirse = false;

@@ -52,58 +52,58 @@ export class ListInformacionComponent {
   ngOnInit(){
     const terceroId = sessionStorage.getItem('TerceroId');
     this.tercerosMidService.get('personas/datos-acudiente/'+terceroId).subscribe((res) => {
-      console.log(res);
+      console.log("BBBBBBBBBBBBBBBBBBBBBBBBB",res);
       if (res) {
-        for (let i = 0; i < res.data.length; i++) {
-          switch (res.data[i].InfoComplementariaId.CodigoAbreviacion) {
+        for (let i = 0; i < res.Data.length; i++) {
+          switch (res.Data[i].InfoComplementariaId.CodigoAbreviacion) {
             case 'NOM_PRI_ACU':
               this.firstFormGroup.patchValue({
-                firstCtrl: JSON.parse(res.data[i].Dato).Dato
+                firstCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'PAREN_PRI_ACU':
               this.secondFormGroup.patchValue({
-                secondCtrl: JSON.parse(res.data[i].Dato).Dato
+                secondCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'CORREO_PRI_ACU':
               this.thirdFormGroup.patchValue({
-                thirdCtrl: JSON.parse(res.data[i].Dato).Dato
+                thirdCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'DIREC_PRI_ACU':
               this.fourthFormGroup.patchValue({
-                fourthCtrl: JSON.parse(res.data[i].Dato).Dato
+                fourthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'TEL_PRI_ACU':
               this.fifthFormGroup.patchValue({
-                fifthCtrl: JSON.parse(res.data[i].Dato).Dato
+                fifthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'NOM_SEG_ACU':
               this.sixthFormGroup.patchValue({
-                sixthCtrl: JSON.parse(res.data[i].Dato).Dato
+                sixthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'PAREN_SEG_ACU':
               this.seventhFormGroup.patchValue({
-                seventhCtrl: JSON.parse(res.data[i].Dato).Dato
+                seventhCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'CORREO_SEG_ACU':
               this.eighthFormGroup.patchValue({
-                eighthCtrl: JSON.parse(res.data[i].Dato).Dato
+                eighthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'DIREC_SEG_ACU':
               this.ninthFormGroup.patchValue({
-                ninthCtrl: JSON.parse(res.data[i].Dato).Dato
+                ninthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'TEL_SEG_ACU':
               this.tenthFormGroup.patchValue({
-                tenthCtrl: JSON.parse(res.data[i].Dato).Dato
+                tenthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
           }

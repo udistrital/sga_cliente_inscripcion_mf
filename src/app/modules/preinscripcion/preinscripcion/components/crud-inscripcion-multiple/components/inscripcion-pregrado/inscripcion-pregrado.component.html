@@ -45,11 +45,121 @@
             {{ estado_inscripcion_nombre }}
           </div>
         </div>
-        <br />
+        <br /><br /><br />
 
-        <div class="form-grid2">
 
-          <div *ngFor="let control of formControls; let i = index">
+        <div class="form-grid1" *ngIf="!preinscrito">
+          <div>
+            <div style="display: flex; flex-direction: column">
+              <div>
+                <h3>Inscripcion principal</h3>
+              </div>
+            </div>
+            <br />
+
+            <div class="info" *ngIf="!estaInscrito">
+              <mat-icon>info</mat-icon> &nbsp;
+              <span>{{ "inscripcion.alerta_preinscripcion_principal" | translate }}</span>
+            </div>
+            <br /><br />
+        
+            <div class="form-col1">
+              <mat-form-field class="form-field">
+                <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
+                <mat-select
+                  [formControl]="Campo1Control"
+                  placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
+                >
+                  <mat-option>--Seleccionar--</mat-option>
+                  <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                    {{ item.NombreProyecto }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+        
+            <div class="column">
+              <mat-form-field class="form-field">
+                <mat-label>{{ "inscripcion.tipo_cupo" | translate }}</mat-label>
+                <mat-select
+                  [formControl]="Campo2Control"
+                  placeholder="{{ 'inscripcion.tipo_cupo' | translate }}"
+                >
+                  <mat-option>--Seleccionar--</mat-option>
+                  <mat-option *ngFor="let item of tipoCupos" [value]="item.ParametroId.Id">
+                    {{ item.ParametroId.Nombre }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <br><br><br>
+        
+          <div style="display: flex; flex-direction: column">
+            <div>
+              <h3>Inscripciones opcionales</h3>
+            </div>
+          </div>
+          <br />
+
+          <div class="info" *ngIf="!estaInscrito">
+            <mat-icon>info</mat-icon> &nbsp;
+            <span>{{ "inscripcion.alerta_preinscripcion_opcional" | translate }}</span>
+          </div>
+          <br /><br />
+        
+          <div *ngFor="let controlProyecto of formControlsProyectos; let i = index">
+            <div class="row">
+              <div class="column">
+                <mat-form-field class="form-field">
+                  <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
+                  <mat-select
+                    [formControl]="controlProyecto"
+                    placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
+                  >
+                    <mat-option>--Seleccionar--</mat-option>
+                    <mat-option *ngFor="let item of posgrados" [value]="item.ProyectoId">
+                      {{ item.NombreProyecto }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+        
+              <div class="column">
+                <mat-form-field class="form-field">
+                  <mat-label>{{ "inscripcion.tipo_cupo" | translate }}</mat-label>
+                  <mat-select
+                    [formControl]="formControlsTipoCupo[i]"
+                    placeholder="{{ 'inscripcion.tipo_cupo' | translate }}"
+                  >
+                    <mat-option>--Seleccionar--</mat-option>
+                    <mat-option *ngFor="let item of tipoCupos" [value]="item.ParametroId.Id">
+                      {{ item.ParametroId.Nombre }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <br />
+            </div>
+          </div>
+        
+          <button
+            style="margin-top: 1rem; width: 100%"
+            mat-flat-button
+            color="accent"
+            [disabled]="!puedePreInscribirse"
+            (click)="realizarPreInscripcion()"
+          >
+            Preinscribirse
+          </button>
+        </div>
+
+
+       
+
+        <!-- <div class="form-grid2">
+
+          <div *ngFor="let control of formControlsProyectos; let i = index">
             <mat-form-field class="form-field">
               <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
               <mat-select
@@ -65,72 +175,21 @@
             </mat-form-field>
           </div>
 
-
-          <!-- <div class="form-col1">
+          <div *ngFor="let control of formControlsTipoCupo; let i = index">
             <mat-form-field class="form-field">
-              <mat-label>{{
-                "inscripcion.aviso_programa" | translate
-              }}</mat-label>
+              <mat-label>{{ "inscripcion.aviso_programa" | translate }}</mat-label>
               <mat-select
-                [formControl]="Campo1Control"
-                [(ngModel)]="selectedValue"
+                [formControl]="control"
                 placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
                 (ngModelChange)="tipo_inscripcion('programa')"
               >
                 <mat-option>--Seleccionar--</mat-option>
-                <mat-option
-                  *ngFor="let item of posgrados"
-                  [value]="item.ProyectoId"
-                >
-                  {{ item.NombreProyecto }}
+                <mat-option *ngFor="let item of tipoCupos" [value]="item.ParametroId.Id">
+                  {{ item.ParametroId.Nombre }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-
-          <div class="form-col1">
-            <mat-form-field class="form-field">
-              <mat-label>{{
-                "inscripcion.aviso_programa" | translate
-              }}</mat-label>
-              <mat-select
-                [formControl]="Campo2Control"
-                [(ngModel)]="selectedValue2"
-                placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
-                (ngModelChange)="tipo_inscripcion('programa')"
-              >
-                <mat-option>--Seleccionar--</mat-option>
-                <mat-option
-                  *ngFor="let item of posgrados"
-                  [value]="item.ProyectoId"
-                >
-                  {{ item.NombreProyecto }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="form-col1">
-            <mat-form-field class="form-field">
-              <mat-label>{{
-                "inscripcion.aviso_programa" | translate
-              }}</mat-label>
-              <mat-select
-                [formControl]="Campo3Control"
-                [(ngModel)]="selectedValue3"
-                placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
-                (ngModelChange)="tipo_inscripcion('programa')"
-              >
-                <mat-option>--Seleccionar--</mat-option>
-                <mat-option
-                  *ngFor="let item of posgrados"
-                  [value]="item.ProyectoId"
-                >
-                  {{ item.NombreProyecto }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div> -->
           
           <div class="form-col1">
             <mat-form-field class="form-field" *ngIf="tieneEnfasis">
@@ -148,8 +207,28 @@
               </mat-select>
             </mat-form-field>
           </div>
+        </div> -->
+      </div>
+
+      <div class="form-grid1" *ngIf="preinscrito">
+
+        <div class="info">
+          <mat-icon>info</mat-icon> &nbsp;
+          <span>{{ "inscripcion.alerta_tags_preinscripcion" | translate }}</span>
+        </div>
+        <br /><br />
+
+
+        <div style="display: flex; flex-direction: column">
+          <div>
+            <b>Proyecto seleccionado:</b>
+            {{ inscripcion.ProgramaAcademicoId  }}
+          </div>
         </div>
       </div>
+      
+
+      <br><br>
 
 
       <!-- CAJAS PARA PEDIR INFORMACION -->
@@ -194,7 +273,7 @@
             >
               <mat-card-header class="exp-card-header"
                 ><b>{{
-                  "inscripcion.formacion_academica" | translate
+                  "inscripcion.examen_estado" | translate
                 }}</b></mat-card-header
               >
               <mat-card-content class="exp-card-content">
@@ -1368,17 +1447,12 @@
 </div> -->
 
 <!-- <mat-card [hidden]="!show_docu"> -->
+
 <div *ngIf="show_docu">
   <mat-card-content>
     <div class="row">
       <div class="col-md-11">
-        <ngb-progressbar
-          [showValue]="true"
-          type="success"
-          [value]="percentage_docu"
-          [animated]="true"
-          [height]="'15px'"
-        >
+        <ngb-progressbar [showValue]="true" type="success" [value]="percentage_docu" [animated]="true" [height]="'15px'">
         </ngb-progressbar>
       </div>
       <div class="col-md-1" align="right">
@@ -1398,29 +1472,21 @@
             showRegreso = true;
             mostrarBarraExterna();
             redirectBecauseObservations()
-          "
-        >
+          ">
           <mat-icon>close</mat-icon>
         </button>
       </div>
     </div>
     <mat-tab-group fullWidth (changeTab)="selectTab($event)">
       <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
-        <ngx-list-documento-programa
-          (result)="setPercentage_docu($event, 0)"
-          [persona_id]="info_persona_id"
-          [inscripcion_id]="inscripcion_id"
-        >
+        <ngx-list-documento-programa (result)="setPercentage_docu($event, 0)" [persona_id]="info_persona_id"
+          [inscripcion_id]="inscripcion_id">
         </ngx-list-documento-programa>
       </mat-tab>
     </mat-tab-group>
 
     <div style="display: flex; justify-content: center;">
-      <button
-        mat-fab
-        color="primary"
-        (click)="openVideoModal('video7')"
-      >
+      <button mat-fab color="primary" (click)="openVideoModal('video7')">
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
           <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
@@ -1430,24 +1496,17 @@
   </mat-card-content>
 </div>
 
+
 <!-- <mat-card [hidden]="!show_examen"> -->
   <div *ngIf="show_examen">
     <mat-card-content>
-      <div class="row">
-        <div class="col-md-11">
-          <ngb-progressbar
-            [showValue]="true"
-            type="success"
-            [value]="percentage_examen"
-            [animated]="true"
-            [height]="'15px'"
-          >
+      <div>
+        <div>
+          <ngb-progressbar [showValue]="true" type="success" [value]="percentage_examen" [animated]="true" [height]="'15px'">
           </ngb-progressbar>
         </div>
-        <div class="col-md-1" align="right">
-          <button
-            mat-icon-button
-            color="primary"
+        <div class="contendor-close">
+          <button mat-icon-button color="primary"
             (click)="
               show_profile = false;
               show_info = false;
@@ -1462,30 +1521,19 @@
               showRegreso = true;
               mostrarBarraExterna();
               redirectBecauseObservations()
-            "
-          >
+            ">
             <mat-icon>close</mat-icon>
           </button>
         </div>
       </div>
-      <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-        <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
-          <ngx-view-examen-estado
-            (result)="setPercentage_acad($event,0)"
-          >
-          </ngx-view-examen-estado>
-        </mat-tab>
-      </mat-tab-group>
+      <ngx-view-examen-estado (result)="setPercentage_acad($event,0)">
+      </ngx-view-examen-estado>
   
-      <div style="display: flex; justify-content: center;">
-        <button
-          mat-fab
-          color="primary"
-          (click)="openVideoModal('video7')"
-        >
+      <div class="text-center">
+        <button mat-fab color="primary" (click)="openVideoModal('video7')">
           <div class="button-content">
             <mat-icon class="icon-help">live_help</mat-icon>
-            <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
+            <p>{{ "GLOBAL.ayuda" | translate }}</p>
           </div>
         </button>
       </div>
@@ -1670,17 +1718,11 @@
 <!--Vista de perfil------------------------------------------------------------->
 
 <!-- <div [hidden]="!show_profile"> -->
+
 <div *ngIf="show_profile">
-  <ngx-perfil
-    class="text-center"
-    [SuiteTags]="tagsObject"
-    [en_revision]="false"
-    (revisar_doc)="revisarDocumento($event)"
-    (url_editar)="perfil_editar($event)"
-    info_persona_id="{{ this.info_persona_id }}"
-    [inscripcion_id]="inscripcion_id"
-    [imprimir]="imprimir"
-  >
+  <ngx-perfil class="text-center" [SuiteTags]="tagsObject" [en_revision]="false" (revisar_doc)="revisarDocumento($event)"
+    (url_editar)="perfil_editar($event)" [info_persona_id]="this.info_persona_id" [inscripcion_id]="inscripcion_id"
+    [imprimir]="imprimir">
   </ngx-perfil>
 </div>
 
