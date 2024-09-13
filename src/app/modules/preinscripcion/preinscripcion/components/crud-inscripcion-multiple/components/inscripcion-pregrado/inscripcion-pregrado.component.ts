@@ -212,12 +212,28 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     private timeService: TimeService,
   ) {
     sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
-    this.info_persona_id = this.userService.getPersonaId();
     this.translate = translate;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.total = true;
     this.listService.findPais();
     this.loadData();
+  }
+
+  async ngOnInit() {
+    // Escuchar los cambios en los selects de la inscripción principal
+    this.Campo1Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    this.Campo2Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+
+    // Escuchar los cambios en los selects opcionales
+    this.formControlsProyectos.forEach((control, index) => {
+      control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    });
+    this.formControlsTipoCupo.forEach((control, index) => {
+      control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    });
+
+    this.info_persona_id = await this.userService.getPersonaId();
+    console.log("INFO EN ORIGINAL ", this.info_persona_id);
   }
 
   activateTab() {
@@ -780,20 +796,6 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       },
     );
     });
-  }
-
-  ngOnInit() {
-     // Escuchar los cambios en los selects de la inscripción principal
-     this.Campo1Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
-     this.Campo2Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
- 
-     // Escuchar los cambios en los selects opcionales
-     this.formControlsProyectos.forEach((control, index) => {
-       control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
-     });
-     this.formControlsTipoCupo.forEach((control, index) => {
-       control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
-     });
   }
 
   verificarHabilitarBoton() {

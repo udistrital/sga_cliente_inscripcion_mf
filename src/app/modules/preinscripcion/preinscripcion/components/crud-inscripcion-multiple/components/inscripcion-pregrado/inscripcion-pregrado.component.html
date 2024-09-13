@@ -1447,17 +1447,12 @@
 </div> -->
 
 <!-- <mat-card [hidden]="!show_docu"> -->
+
 <div *ngIf="show_docu">
   <mat-card-content>
     <div class="row">
       <div class="col-md-11">
-        <ngb-progressbar
-          [showValue]="true"
-          type="success"
-          [value]="percentage_docu"
-          [animated]="true"
-          [height]="'15px'"
-        >
+        <ngb-progressbar [showValue]="true" type="success" [value]="percentage_docu" [animated]="true" [height]="'15px'">
         </ngb-progressbar>
       </div>
       <div class="col-md-1" align="right">
@@ -1477,29 +1472,21 @@
             showRegreso = true;
             mostrarBarraExterna();
             redirectBecauseObservations()
-          "
-        >
+          ">
           <mat-icon>close</mat-icon>
         </button>
       </div>
     </div>
     <mat-tab-group fullWidth (changeTab)="selectTab($event)">
       <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
-        <ngx-list-documento-programa
-          (result)="setPercentage_docu($event, 0)"
-          [persona_id]="info_persona_id"
-          [inscripcion_id]="inscripcion_id"
-        >
+        <ngx-list-documento-programa (result)="setPercentage_docu($event, 0)" [persona_id]="info_persona_id"
+          [inscripcion_id]="inscripcion_id">
         </ngx-list-documento-programa>
       </mat-tab>
     </mat-tab-group>
 
     <div style="display: flex; justify-content: center;">
-      <button
-        mat-fab
-        color="primary"
-        (click)="openVideoModal('video7')"
-      >
+      <button mat-fab color="primary" (click)="openVideoModal('video7')">
         <div class="button-content">
           <mat-icon class="icon-help">live_help</mat-icon>
           <p style="font-weight: 500">{{ "GLOBAL.ayuda" | translate }}</p>
@@ -1731,17 +1718,11 @@
 <!--Vista de perfil------------------------------------------------------------->
 
 <!-- <div [hidden]="!show_profile"> -->
+
 <div *ngIf="show_profile">
-  <ngx-perfil
-    class="text-center"
-    [SuiteTags]="tagsObject"
-    [en_revision]="false"
-    (revisar_doc)="revisarDocumento($event)"
-    (url_editar)="perfil_editar($event)"
-    info_persona_id="{{ this.info_persona_id }}"
-    [inscripcion_id]="inscripcion_id"
-    [imprimir]="imprimir"
-  >
+  <ngx-perfil class="text-center" [SuiteTags]="tagsObject" [en_revision]="false" (revisar_doc)="revisarDocumento($event)"
+    (url_editar)="perfil_editar($event)" [info_persona_id]="this.info_persona_id" [inscripcion_id]="inscripcion_id"
+    [imprimir]="imprimir">
   </ngx-perfil>
 </div>
 
