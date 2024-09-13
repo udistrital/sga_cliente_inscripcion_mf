@@ -1540,8 +1540,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   loadSuitePrograma(periodo:any, proyecto:any, tipoInscrip:any) {
-    proyecto = 85
-    tipoInscrip = 15
+    // proyecto = 85
+    // tipoInscrip = 15
     return new Promise((resolve) => {
     this.evaluacionInscripcionService.get('tags_por_dependencia?query=Activo:true,PeriodoId:'+periodo+',DependenciaId:'+proyecto+',TipoInscripcionId:'+tipoInscrip)
         .subscribe((response: any) => {
