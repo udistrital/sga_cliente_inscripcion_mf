@@ -11,7 +11,7 @@ export const TAGS_INSCRIPCION_PROGRAMA = {
       selected: false,
       required: false,
     },
-    datos_familiares: {
+    datos_acudiente: {
       selected: true,
       required: true,
     },

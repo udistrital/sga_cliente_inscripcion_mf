@@ -599,7 +599,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       conteoObligatorios += 1;
     }
 
-    if (this.tagsObject.datos_familiares.required) {
+    if (this.tagsObject.datos_acudiente.required) {
       sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_familiar);
       conteoObligatorios += 1;
     }
@@ -957,7 +957,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       await this.loadPercentageExamenEstado();
     }
 
-    if (this.percentage_familiar === 0 && this.tagsObject.datos_familiares.selected) {
+    if (this.percentage_familiar === 0 && this.tagsObject.datos_acudiente.selected) {
       await this.loadPercentageInformacionFamiliar();
     }
 
@@ -1070,6 +1070,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   perfil_editar(event:any): void {
+    console.log(event);
     this.ocultarBarra.emit(true);
     switch (event) {
       case 'info_contacto':
@@ -1107,6 +1108,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_examen = false;
         break;
       case 'info_persona':
+        console.log(this.selectTipo, this.viewtag);
         if (this.selectTipo === 'Pregrado') {
           this.viewtag = 'Informacion_pregrado'
           this.selecttabview(this.viewtag);
@@ -1287,7 +1289,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_acudiente = false;
         this.show_examen = false;
         break;
-      case 'datos_familiares':
+      case 'datos_acudiente':
         this.showRegreso = false;
         this.show_info = false;
         this.show_profile = false;
@@ -1551,7 +1553,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
             if (Object.keys(response.Data[0]).length > 0) {
               this.puedeInscribirse = true;
               this.tagsObject = JSON.parse(response.Data[0].ListaTags);
-              this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              //this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              console.log(this.tagsObject)
               resolve(this.tagsObject)
             } else {
               this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
