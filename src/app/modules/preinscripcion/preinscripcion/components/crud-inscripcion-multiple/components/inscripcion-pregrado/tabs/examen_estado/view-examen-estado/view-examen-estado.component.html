@@ -1,3 +1,12 @@
+<div class="info contendor-info">
+  <mat-icon class="icon-info">info</mat-icon>
+  <div>
+    <p>{{ "inscripcion.alerta_examen_estado" | translate }}</p>
+    <p>{{ "inscripcion.ac_examen_estado" | translate }}</p>
+    <p>{{ "inscripcion.vg_examen_estado" | translate }}</p>
+  </div>
+</div>
+
 <div class="contenedor-tabla">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
@@ -225,4 +234,7 @@
           </mat-card>
         </mat-card-content>
       </mat-card> -->
+</div>
+<div class="contenedor-boton">
+  <button mat-stroked-button class="boton-general btn boton-primary">{{ 'GLOBAL.guardar' | translate }}</button>
 </div>
