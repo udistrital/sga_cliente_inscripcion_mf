@@ -17,6 +17,7 @@ export class ListInformacionAcademicaComponent {
   oportunidades : any[] = [];
 
   tieneDatos = false;
+  terceroId: any
 
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
@@ -41,38 +42,38 @@ export class ListInformacionAcademicaComponent {
   constructor(private _formBuilder: FormBuilder, private tercerosMidService: TercerosMidService) {}
 
   ngOnInit(){
-    const terceroId = sessionStorage.getItem('TerceroId');
+    this.terceroId = sessionStorage.getItem('IdTercero');
     this.tercerosMidService.get('personas/localidades').subscribe((res) => {
       if (res) {
-        res.data.localidades.forEach((element: any) => {
+        res.Data.localidades.forEach((element: any) => {
           this.localidades.push(element);
         });
-        res.data.tipoColegio.forEach((element: any) => {
+        res.Data.tipoColegio.forEach((element: any) => {
           this.tiposColegio.push(element);
         });
-        res.data.valido.forEach((element: any) => {
+        res.Data.valido.forEach((element: any) => {
           this.validar.push(element);
         });
-        res.data.semestres.forEach((element: any) => {
+        res.Data.semestres.forEach((element: any) => {
           this.semestres.push(element);
         });
-        res.data.medio.forEach((element: any) => {
+        res.Data.medio.forEach((element: any) => {
           this.medios.push(element);
         });
-        res.data.presentacion.forEach((element: any) => {
+        res.Data.presentacion.forEach((element: any) => {
           this.oportunidades.push(element);
         });
       } 
     });
 
-    this.tercerosMidService.get('personas/localidades/'+terceroId).subscribe((res) => {
-      if (res) {
-        this.firstFormGroup.get('firstCtrl')?.setValue(res.data.localidades[0].InfoComplementariaId.Id);
-        this.secondFormGroup.get('secondCtrl')?.setValue(res.data.colegio[0].InfoComplementariaId.Id);
-        this.thirdFormGroup.get('thirdCtrl')?.setValue(res.data.valido[0].InfoComplementariaId.Id);
-        this.fourthFormGroup.get('fourthCtrl')?.setValue(res.data.semestres[0].InfoComplementariaId.Id);
-        this.fifthFormGroup.get('fifthCtrl')?.setValue(res.data.medio[0].InfoComplementariaId.Id);
-        this.sixthFormGroup.get('sixthCtrl')?.setValue(res.data.presentacion[0].InfoComplementariaId.Id);
+    this.tercerosMidService.get('personas/localidades/'+ this.terceroId).subscribe((res) => {
+      if (res.Data.colegio[0].Id != 0) {
+        this.firstFormGroup.get('firstCtrl')?.setValue(res.Data.localidades[0].InfoComplementariaId.Id);
+        this.secondFormGroup.get('secondCtrl')?.setValue(res.Data.colegio[0].InfoComplementariaId.Id);
+        this.thirdFormGroup.get('thirdCtrl')?.setValue(res.Data.valido[0].InfoComplementariaId.Id);
+        this.fourthFormGroup.get('fourthCtrl')?.setValue(res.Data.semestres[0].InfoComplementariaId.Id);
+        this.fifthFormGroup.get('fifthCtrl')?.setValue(res.Data.medio[0].InfoComplementariaId.Id);
+        this.sixthFormGroup.get('sixthCtrl')?.setValue(res.Data.presentacion[0].InfoComplementariaId.Id);
         this.tieneDatos = true;
       } 
     });
@@ -89,18 +90,14 @@ export class ListInformacionAcademicaComponent {
       oportunidad : this.sixthFormGroup.get('sixthCtrl')?.value,
     }
 
-    const terceroId = sessionStorage.getItem('TerceroId');
-    console.log(data);
 
     if (this.tieneDatos) {
-      console.log('actualizar');
-      this.tercerosMidService.put('personas/localidades/'+terceroId, data).subscribe((res) => {
-        console.log(res);
+      this.tercerosMidService.put('personas/localidades/'+ this.terceroId, data).subscribe((res) => {
+
       });
     } else {
-      console.log('crear');
-      this.tercerosMidService.post('personas/localidades/'+terceroId, data).subscribe((res) => {
-        console.log(res);
+      this.tercerosMidService.post('personas/localidades/'+ this.terceroId, data).subscribe((res) => {
+
       });
     }
   }

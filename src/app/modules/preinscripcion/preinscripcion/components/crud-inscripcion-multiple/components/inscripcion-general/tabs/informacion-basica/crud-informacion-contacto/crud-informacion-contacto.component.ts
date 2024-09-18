@@ -21,7 +21,7 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
   styleUrls: ['./crud-informacion-contacto.component.scss']
 })
 export class CrudInformacionContactoComponent implements OnInit {
-  persona_id!: number;
+  terceroId!: number | null;
   informacion_contacto_id!: number;
   info_informacion_contacto: any;
   InfoSocioEconomica: any;
@@ -42,7 +42,6 @@ export class CrudInformacionContactoComponent implements OnInit {
   paisSeleccionado: any;
   departamentoSeleccionado: any;
   denied_acces: boolean = false;
-  info_persona_id!: number | null;
 
   constructor(
     private inscripcionMidService: InscripcionMidService,
@@ -63,7 +62,6 @@ export class CrudInformacionContactoComponent implements OnInit {
     this.listService.findInfoSocioEconomica();
     this.listService.findInfoContacto();
     this.loadLists();
-    this.loadInformacionContacto();
   }
 
   construirForm() {
@@ -162,24 +160,24 @@ export class CrudInformacionContactoComponent implements OnInit {
   async ngOnInit() {
     await this.initializePersonaId();
     this.construirForm();
+    this.loadInformacionContacto();
   }
 
   async initializePersonaId() {
     try {
-      this.info_persona_id = await this.userService.getPersonaId();
+      this.terceroId = await this.userService.getPersonaId();
     } catch (error) {
-      this.info_persona_id = 1; // Valor por defecto en caso de error
+      this.terceroId = 1; // Valor por defecto en caso de error
       console.error('Error al obtener persona_id:', error);
     }
   }
 
   loadInformacionContacto() {
-    if (this.persona_id) {
-      this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.persona_id)
+    if (this.terceroId) {
+      this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.terceroId)
         .subscribe((res: any) => {
-
-          if (res !== null && res.status != '404') {
-            this.info_informacion_contacto = <InformacionContacto>res.data;
+          if (res !== null && res.Status != '404') {
+            this.info_informacion_contacto = <InformacionContacto>res.Data;
             if (this.info_informacion_contacto.PaisResidencia !== null && this.info_informacion_contacto.DepartamentoResidencia !== null
               && this.info_informacion_contacto.CiudadResidencia != null) {
               this.formInformacionContacto.campos[this.getIndexForm('DepartamentoResidencia')].opciones = [this.info_informacion_contacto.DepartamentoResidencia];
@@ -200,7 +198,7 @@ export class CrudInformacionContactoComponent implements OnInit {
     if (event.valid) {
       const formData = event.data.InfoInformacionContacto;
       const tercero = {
-        Id: this.persona_id || 1, // se debe cambiar solo por persona id
+        Id: this.terceroId || 1, // se debe cambiar solo por persona id
       }
       const dataInfoContacto = {
         InfoComplementariaTercero: [
@@ -297,14 +295,14 @@ export class CrudInformacionContactoComponent implements OnInit {
       .then((willDelete: any) => {
         if (willDelete.value) {
           this.info_informacion_contacto = <InformacionContacto>info_contacto;
-          this.info_informacion_contacto.Ente = this.info_persona_id;
+          this.info_informacion_contacto.Ente = this.terceroId;
           this.inscripcionMidService.put('inscripciones/informacion-complementaria/tercero', this.info_informacion_contacto).subscribe(
             (res: any) => {
-              if (res !== null && res.status == '404') {
+              if (res !== null && res.Status == '404') {
                 this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_data'));
-              } else if (res !== null && res.status == '400') {
+              } else if (res !== null && res.Status == '400') {
                 this.popUpManager.showAlert('', this.translate.instant('inscripcion.error_update'));
-              } else if (res !== null && res.status == '200') {
+              } else if (res !== null && res.Status == '200') {
                 this.snackBar.open(this.translate.instant('inscripcion.actualizar'), '', { duration: 3000, panelClass: ['info-snackbar'] });
 
                 this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar')).then(() => {
@@ -345,8 +343,7 @@ export class CrudInformacionContactoComponent implements OnInit {
           this.info_informacion_contacto = <any>info_contacto;
           this.inscripcionMidService.post('inscripciones/informacion-complementaria/tercero', this.info_informacion_contacto)
             .subscribe((res: any) => {
-              const r = <any>res;
-              if (r !== null && r.message !== 'error') {
+              if (res !== null && res.Success !== false) {
                 this.popUpManager.showSuccessAlert(this.translate.instant('informacion_contacto_posgrado.informacion_contacto_registrada')).then(() => {
                   this.loadInformacionContacto();
                 });

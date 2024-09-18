@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
@@ -19,6 +20,16 @@ import { ZipManagerService } from 'src/app/services/zip-manager.service';
   styleUrls: ['./view-info-persona.component.scss']
 })
 export class ViewInfoPersonaComponent implements OnInit {
+  displayedColumnsBasica: string[] = ['nombres', 'apellidos', 'documento'];
+  dataSourceBasica!: MatTableDataSource<any>;
+  displayedColumnsContacto: string[] = ['correo', 'telefono', 'telefono_alter'];
+  dataSourceContacto!: MatTableDataSource<any>;
+  displayedColumnsUbicacion: string[] = ['fecha_nacimiento', 'lugar_nacimiento', 'direccion_residencia'];
+  dataSourceUbicacion!: MatTableDataSource<any>;
+  displayedColumnsDiscapacidad: string[] = ['info', 'estado', 'observacion', 'soporte'];
+  dataSourceDiscapacidad!: MatTableDataSource<any>;
+  displayedColumnsPoblacion: string[] = ['info', 'estado', 'observacion', 'soporte'];
+  dataSourcePoblacion!: MatTableDataSource<any>;
 
   info_persona_id!: number;
   info_info_persona!: any;
@@ -93,160 +104,229 @@ export class ViewInfoPersonaComponent implements OnInit {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.infoCarga.status = "start";
     this.estadoCarga.emit(this.infoCarga);
     this.canUpdateDocument = <string>(sessionStorage.getItem('IdEstadoInscripcion') || "").toUpperCase() === "INSCRITO CON OBSERVACIÓN";
+    //await this.loadInfoPersona();
   }
 
-  public loadInfoPersona(): void {
+  cargarDataBasica(data: any) {
+
+  }
+
+  public async loadInfoPersona() {
     this.infoCarga.nCargas = 5;
-    const id = this.info_persona_id ? this.info_persona_id : this.userService.getPersonaId();
+    const idPersona = await this.userService.getPersonaId();
+    // const id: any = await this.userService.getPersonaId();
+    const id: any = this.info_persona_id ? this.info_persona_id : idPersona;
+
     if (id !== undefined && id !== 0 && id.toString() !== '') {
-      this.terceroMidService.get('personas/' + id)
-        .subscribe((res:any) => {
-          const r = <any>res;
-          if (r !== null && r.Message !== 'error') {
-            this.info_info_persona = <InfoPersona>res.Data;
-            let nombreAspirante: string = this.info_info_persona.PrimerApellido + ' ' + this.info_info_persona.SegundoApellido + ' '
-                                  + this.info_info_persona.PrimerNombre + ' ' + this.info_info_persona.SegundoNombre;
-            let nombreCarpetaDocumental: string = sessionStorage.getItem('IdInscripcion') + ' ' + nombreAspirante;
-            sessionStorage.setItem('nameFolder', nombreCarpetaDocumental);
+      const persona: any = await this.recuperarPersona(id);
+      this.info_info_persona = <InfoPersona>persona.Data;
+      this.dataSourceBasica = new MatTableDataSource([this.info_info_persona]);
+      let nombreAspirante: string = this.info_info_persona.PrimerApellido + ' ' + this.info_info_persona.SegundoApellido + ' ' + this.info_info_persona.PrimerNombre + ' ' + this.info_info_persona.SegundoNombre;
+      let nombreCarpetaDocumental: string = sessionStorage.getItem('IdInscripcion') + ' ' + nombreAspirante;
+      sessionStorage.setItem('nameFolder', nombreCarpetaDocumental);
 
+      const info_complementaria: any = await this.recuperarInfoComplementariaTercero(this.info_persona_id);
+      if (info_complementaria) {
+        //let dataContacto = [];
+        let rawDate = this.info_info_persona.FechaNacimiento.split('-')
+        this.fechaNacimiento = rawDate[2].slice(0,2)+"/"+rawDate[1]+"/"+rawDate[0];
+        let info = info_complementaria.Data;
+        this.correo = info.Correo;
+        this.direccion = info.DireccionResidencia;
+        this.telefono = info.Telefono;
+        this.telefonoAlt = info.TelefonoAlterno;
+        this.lugarOrigen = info.CiudadResidencia.Nombre + ", " + info.DepartamentoResidencia.Nombre;
 
-            this.terceroMidService.get('personas/'+ this.info_persona_id +'/complementarios')
-            .subscribe( (res:any) => {
-              if (res !== null && res.Status != '404') {
-                this.info_info_caracteristica = <InfoCaracteristica>res.Data;
+        const dataContacto = {
+          "correo": this.correo,
+          "telefono": this.telefono,
+          "telefono_alter": this.telefonoAlt
+        }
 
-                //this.lugarOrigen = this.info_info_caracteristica.Lugar["Lugar"].CIUDAD.Nombre + ", " + this.info_info_caracteristica.Lugar["Lugar"].DEPARTAMENTO.Nombre
+        const dataUbicacion = {
+          "fecha_nacimiento": this.fechaNacimiento,
+          "lugar_nacimiento": this.lugarOrigen,
+          "direccion_residencia": this.direccion
+        }
 
-                this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.info_persona_id)
-                  .subscribe((resp:any) => {
-                    if (resp.Status == "200") {
-                      let rawDate = this.info_info_persona.FechaNacimiento.split('-')
-                      this.fechaNacimiento = rawDate[2].slice(0,2)+"/"+rawDate[1]+"/"+rawDate[0];
-                      let info = resp.Data;
-                      this.correo = info.Correo;
-                      this.direccion = info.DireccionResidencia;
-                      this.telefono = info.Telefono;
-                      this.telefonoAlt = info.TelefonoAlterno;
-                      this.lugarOrigen = info.CiudadResidencia.Nombre + ", " + info.DepartamentoResidencia.Nombre;
-                      this.addCargado(3);
-                    }
-                  },
-                  (error: HttpErrorResponse) => {
-                    this.infoFalla();
-                    this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
-                  });
+        this.dataSourceContacto = new MatTableDataSource([dataContacto]);
+        this.dataSourceUbicacion = new MatTableDataSource([dataUbicacion]);
+        this.addCargado(3);
+      } else {
+        this.dataSourceContacto = new MatTableDataSource();
+        this.dataSourceUbicacion = new MatTableDataSource();
+        console.log(this.dataSourceContacto)
+      }
 
-                if(this.info_info_caracteristica.hasOwnProperty('IdDocumentoDiscapacidad')){
-                  this.idSoporteDiscapacidad = <number>this.info_info_caracteristica["IdDocumentoDiscapacidad"];
-                  this.documentoService.get('documento/'+this.idSoporteDiscapacidad)
-                    .subscribe((resp: any) => {
-                      if(resp.Status && (resp.Status == "400" || resp.Status == "404")) {
-                        this.infoFalla();
-                      } else {
-                        let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);
-                        if (estadoDoc.aprobado === false) {
-                          this.updateDocument = true;
-                        }
-                        this.docs_editados.emit(this.updateDocument);
-                        this.tipoDiscapacidad = "";
-                        let total = this.info_info_caracteristica.TipoDiscapacidad.length - 1;
-                        this.info_info_caracteristica.TipoDiscapacidad.forEach((dis:any, i:any) => {
-                          this.tipoDiscapacidad += dis.Nombre;
-                          if(i < total){
-                            this.tipoDiscapacidad += ", ";
-                          }
-                        });
-                        this.docDiscapacidad = {
-                          //Documento: response[0]["Documento"],
-                          DocumentoId: resp.Id,
-                          aprobado: estadoDoc.aprobado,
-                          estadoObservacion: estadoDoc.estadoObservacion,
-                          observacion: estadoDoc.observacion,
-                          nombreDocumento: this.tipoDiscapacidad,
-                          tabName: this.translate.instant('GLOBAL.comprobante_discapacidad'),
-                          carpeta: "Información Básica"
-                        }
-                        this.zipManagerService.adjuntarArchivos([this.docDiscapacidad]);
-                        this.addCargado(1);
-                      }
-                    },
-                    (error: HttpErrorResponse) => {
-                      this.infoFalla();
-                      this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
-                    }
-                  );
-                } else {
-                  this.addCargado(1);
-                }
+      const complementaria: any = await this.recuperarComplemantariaPersona(this.info_persona_id);
+      this.info_info_caracteristica = <InfoCaracteristica>complementaria.Data;
 
-                if(this.info_info_caracteristica.hasOwnProperty('IdDocumentoPoblacion')){
-                  this.idSoportePoblacion = <number>this.info_info_caracteristica["IdDocumentoPoblacion"];
-                  this.documentoService.get('documento/'+this.idSoportePoblacion)
-                    .subscribe((resp: any) => {
-                      if(resp.Status && (resp.Status == "400" || resp.Status == "404")) {
-                        this.infoFalla();
-                      } else {
-                        let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);
-                        if (estadoDoc.aprobado === false) {
-                          this.updateDocument = true;
-                        }
-                        this.docs_editados.emit(this.updateDocument);
-                        this.tipoPoblacion = "";
-                        let total = this.info_info_caracteristica.TipoPoblacion.length - 1;
-                        this.info_info_caracteristica.TipoPoblacion.forEach((dis:any, i:any) => {
-                          this.tipoPoblacion += dis.Nombre;
-                          if(i < total){
-                            this.tipoPoblacion += ", ";
-                          }
-                        });
-                        this.docPoblacion = {
-                          //Documento: response[0]["Documento"],
-                          DocumentoId: resp.Id,
-                          aprobado: estadoDoc.aprobado,
-                          estadoObservacion: estadoDoc.estadoObservacion,
-                          observacion: estadoDoc.observacion,
-                          nombreDocumento: this.tipoPoblacion,
-                          tabName: this.translate.instant('GLOBAL.comprobante_poblacion'),
-                          carpeta: "Información Básica"
-                        }
-                        this.zipManagerService.adjuntarArchivos([this.docPoblacion]);
-                        this.addCargado(1);
-                        }
-                    }, (error: HttpErrorResponse) => {
-                      this.infoFalla();
-                      this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
-                    }
-                  );
-                } else {
-                  this.addCargado(1);
-                }
-                
-              } else {
-                this.info_info_caracteristica = undefined;
-                this.infoFalla();
-              }
-            },
-            (error: HttpErrorResponse) => {
-              this.infoFalla();
-              this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
-            })
-          } else {
-            this.info_info_persona = undefined;
-            this.infoFalla();
+      if(this.info_info_caracteristica.hasOwnProperty('IdDocumentoDiscapacidad')) {
+        this.idSoporteDiscapacidad = <number>this.info_info_caracteristica["IdDocumentoDiscapacidad"];
+        const documento: any = await this.recuperarDocumento(this.idSoporteDiscapacidad);
+
+        if(documento.Status && (documento.Status == "400" || documento.Status == "404")) {
+          this.infoFalla();
+          this.dataSourceDiscapacidad = new MatTableDataSource();
+        } else {
+          let estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
+          if (estadoDoc.aprobado === false) {
+            this.updateDocument = true;
           }
-        },
-          (error: HttpErrorResponse) => {
-            this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR.' + error.status));
+          this.docs_editados.emit(this.updateDocument);
+          this.tipoDiscapacidad = "";
+          let total = this.info_info_caracteristica.TipoDiscapacidad.length - 1;
+          this.info_info_caracteristica.TipoDiscapacidad.forEach((dis: any, i: any) => {
+            this.tipoDiscapacidad += dis.Nombre;
+            if (i < total) {
+              this.tipoDiscapacidad += ", ";
+            }
           });
+          this.docDiscapacidad = {
+            //Documento: response[0]["Documento"],
+            DocumentoId: documento.Id,
+            aprobado: estadoDoc.aprobado,
+            estadoObservacion: estadoDoc.estadoObservacion,
+            observacion: estadoDoc.observacion,
+            nombreDocumento: this.tipoDiscapacidad,
+            tabName: this.translate.instant('GLOBAL.comprobante_discapacidad'),
+            carpeta: "Información Básica"
+          }
+          this.zipManagerService.adjuntarArchivos([this.docDiscapacidad]);
+          this.dataSourceDiscapacidad = new MatTableDataSource([this.docDiscapacidad]);
+          this.addCargado(1);
+        }
+      } else {
+        this.addCargado(1);
+      }
+
+      if(this.info_info_caracteristica.hasOwnProperty('IdDocumentoPoblacion')) {
+        this.idSoportePoblacion = <number>this.info_info_caracteristica["IdDocumentoPoblacion"];
+        const documento: any = await this.recuperarDocumento(this.idSoportePoblacion);
+
+        if(documento.Status && (documento.Status == "400" || documento.Status == "404")) {
+          this.infoFalla();
+          this.dataSourcePoblacion = new MatTableDataSource();
+        } else {
+          let estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
+          if (estadoDoc.aprobado === false) {
+            this.updateDocument = true;
+          }
+          this.docs_editados.emit(this.updateDocument);
+          this.tipoPoblacion = "";
+          let total = this.info_info_caracteristica.TipoPoblacion.length - 1;
+          this.info_info_caracteristica.TipoPoblacion.forEach((dis:any, i:any) => {
+            this.tipoPoblacion += dis.Nombre;
+            if(i < total){
+              this.tipoPoblacion += ", ";
+            }
+          });
+          this.docPoblacion = {
+            //Documento: response[0]["Documento"],
+            DocumentoId: documento.Id,
+            aprobado: estadoDoc.aprobado,
+            estadoObservacion: estadoDoc.estadoObservacion,
+            observacion: estadoDoc.observacion,
+            nombreDocumento: this.tipoPoblacion,
+            tabName: this.translate.instant('GLOBAL.comprobante_poblacion'),
+            carpeta: "Información Básica"
+          }
+          this.zipManagerService.adjuntarArchivos([this.docPoblacion]);
+          this.dataSourcePoblacion = new MatTableDataSource([this.docPoblacion]);
+          this.addCargado(1);
+        }
+
+      } else {
+        this.addCargado(1);
+      }
+
     } else {
       this.info_info_persona = undefined
+      this.dataSourceBasica = new MatTableDataSource();
       this.infoFalla();
     }
+  }
+
+  recuperarPersona(id: any) {
+    return new Promise((resolve, reject) => {
+      this.terceroMidService.get('personas/' + id)
+        .subscribe((res: any) => {
+          const r = <any>res;
+          if (r !== null && r.Message !== 'error') {
+            resolve(res);
+          } else {
+            this.info_info_persona = undefined;
+            this.dataSourceBasica = new MatTableDataSource();
+            this.infoFalla();
+            reject(false);
+          }
+        },
+          (error: any) => {
+            console.error(error);
+            this.infoFalla();
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR.' + error.status));
+            reject(false);
+          });
+    });
+  }
+
+  recuperarComplemantariaPersona(id: any) {
+    return new Promise((resolve, reject) => {
+      this.terceroMidService.get('personas/'+ id +'/complementarios')
+        .subscribe((res: any) => {
+          if (res !== null && res.Status != '404') {
+            resolve(res);
+          } else {
+            this.info_info_caracteristica = undefined;
+            this.infoFalla();
+            reject(false);
+          }
+        },
+          (error: any) => {
+            console.error(error);
+            this.infoFalla();
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
+            reject(false);
+          });
+    });
+  }
+
+  recuperarInfoComplementariaTercero(id: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + id)
+        .subscribe((res: any) => {
+          if (res.Status == "200") {
+            resolve(res)
+          } else {
+            resolve(false);
+          }
+        },
+          (error: any) => {
+            console.error(error);
+            this.infoFalla();
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR: ' + error.status));
+            resolve(false);
+          });
+    });
+  }
+
+  recuperarDocumento(id: any) {
+    return new Promise((resolve, reject) => {
+      this.documentoService.get('documento/'+ id)
+        .subscribe((res: any) => {
+          resolve(res);
+        },
+          (error: any) => {
+            console.error(error);
+            this.infoFalla();
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
+            reject(false);
+          });
+    });
   }
 
   verInfoCaracteristca(documento: any) {

@@ -106,7 +106,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   nForms!: number;
   SelectedTipoBool: boolean = true;
   Campo1Control = new FormControl('', [Validators.required]);
-  Campo2Control = new FormControl('');
+  Campo2Control = new FormControl('', [Validators.required]);
   Campo3Control = new FormControl('');
   enfasisControl = new FormControl('', [Validators.required]);
 
@@ -181,6 +181,19 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   puedeInscribirse: boolean = false;
   soloPuedeVer: boolean = false;
 
+  numberOfSelects!: number
+  formControlsProyectos: FormControl[] = [];
+  formControlsTipoCupo: FormControl[] = [];
+  tipoCupos: any = [];
+  puedePreInscribirse = false;
+  preinscrito = false;
+  incripcionInicial: any
+  listaPreinscripciones: any
+
+  IdPeriodo: any
+  IdTipo: any 
+  IdPrograma: any
+
   constructor(
     private listService: ListService,
     private popUpManager: PopUpManager,
@@ -199,12 +212,29 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     private timeService: TimeService,
   ) {
     sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
-    this.info_persona_id = this.userService.getPersonaId();
     this.translate = translate;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.total = true;
     this.listService.findPais();
     this.loadData();
+  }
+
+  async ngOnInit() {
+    // Escuchar los cambios en los selects de la inscripción principal
+    this.Campo1Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    this.Campo2Control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+
+    // Escuchar los cambios en los selects opcionales
+    this.formControlsProyectos.forEach((control, index) => {
+      control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    });
+    this.formControlsTipoCupo.forEach((control, index) => {
+      control.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+    });
+
+    this.info_persona_id = await this.userService.getPersonaId();
+    console.log("INFO EN ORIGINAL ", this.info_persona_id);
+    sessionStorage.setItem('IdTercero', String(this.info_persona_id));
   }
 
   activateTab() {
@@ -219,29 +249,110 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     this.inscripcion = new Inscripcion();
     this.inscripcion.Id = parseInt(sessionStorage.getItem('IdInscripcion')!, 10);
     this.inscripcion.ProgramaAcademicoId = sessionStorage.getItem('ProgramaAcademico');
-    const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
-    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
-    const IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
+    this.IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
+    this.IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
+    this.IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
     // Se carga el nombre del periodo al que se inscribió
-    this.loadPeriodo(IdPeriodo);
+    this.loadPeriodo(this.IdPeriodo);
     // Se carga el tipo de inscripción
-    this.loadTipoInscripcion(IdTipo);
+    this.loadTipoInscripcion(this.IdTipo);
     // Se carga el nivel del proyecto
-    this.loadNivel(IdPrograma);
+    this.loadNivel(this.IdPrograma);
+    // Se cargan los tipos de cupo por perido
+    this.cargarTipoCuposPorPeriodo(this.IdPrograma);
+    // Se carga el numero de proyectos permitidos para pregardo
+    this.loadNumeroProyectos(this.IdPeriodo)
   }
+
+  loadNumeroProyectos(IdPeriodo: any) {
+    this.parametrosService.get(`parametro_periodo?query=PeriodoId:58,Activo:true&limit=0`).subscribe(
+    // this.parametrosService.get(`parametro_periodo?query=PeriodoId:${IdPeriodo},Activo:true&limit=0`).subscribe(
+      response => {
+        const valorObject = JSON.parse(response.Data[0].Valor);
+        this.numberOfSelects = valorObject.Valor - 1;
+  
+        // Limpiar los arrays antes de volver a llenarlos
+        this.formControlsProyectos = [];
+        this.formControlsTipoCupo = [];
+  
+        for (let i = 0; i < this.numberOfSelects; i++) {
+          const proyectoControl = new FormControl('');
+          const tipoCupoControl = new FormControl('');
+  
+          // Agregar los controles al array
+          this.formControlsProyectos.push(proyectoControl);
+          this.formControlsTipoCupo.push(tipoCupoControl);
+  
+          // Suscribirse a los cambios de cada control
+          proyectoControl.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+          tipoCupoControl.valueChanges.subscribe(() => this.verificarHabilitarBoton());
+        }
+  
+        // Verificar si el botón debe estar habilitado después de cargar los proyectos
+        this.verificarHabilitarBoton();
+      },
+      error => {
+        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+      }
+    );
+  }
+
+  cargarTipoCuposPorPeriodo(idPeriodo: any) {
+    idPeriodo = 39
+    return new Promise((resolve, reject) => {
+      this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:T,PeriodoId.Id:${idPeriodo}`)
+      // this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:TIP_CUP,PeriodoId.Id:${idPeriodo}`)
+        .subscribe((res: any) => {
+          this.tipoCupos = res.Data
+          console.log(this.tipoCupos)
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('admision.facultades_error'));
+            reject(false);
+          });
+    });
+  }
+
+  cargarInscripcionInicial (inscripcionId: any) {
+    this.inscripcionService.get(`inscripcion?query=Id:${inscripcionId},Activo:true&limit=0`).subscribe(
+      response => {
+        this.incripcionInicial = response[0]
+        if(this.incripcionInicial.TipoCupo == 0){
+          for (let i = 0; i < this.posgrados.length; i++) {
+            if(this.posgrados[i].ProyectoId == this.incripcionInicial.ProgramaAcademicoId){
+              this.Campo1Control.setValue(this.posgrados[i].ProyectoId);
+              break;
+            }
+          }
+        }else{
+          this.preinscrito = true
+          // this.puedeInscribirse = true;
+          this.loadSuitePrograma(this.IdPeriodo,this.IdPrograma,this.IdTipo)
+        } 
+      },
+      error => {
+        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+      },
+    );
+  }
+  
+
 
   loadProject() {
     this.posgrados = new Array;
     const IdNivel = parseInt(sessionStorage.getItem('IdNivel')!, 10);
     let periodo = localStorage.getItem('IdPeriodo');
-    // this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
-    this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=1' + '&id-periodo=40').subscribe(
+    this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
+    // this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=1&id-periodo=40').subscribe(
       response => {
         const r = <any>response;
         if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
           const inscripcionP = <Array<any>>response.Data;
           this.posgrados = inscripcionP;
           this.selectedValue = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10);
+          // Se carga la inscripcion principal del aspirante
+          this.cargarInscripcionInicial(this.inscripcion.Id)
         } else {
           this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_inscripcion'));
         }
@@ -450,10 +561,10 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       conteoObligatorios += 1;
     }
 
-    if (this.tagsObject.formacion_academica.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_acad);
-      conteoObligatorios += 1;
-    }
+    // if (this.tagsObject.formacion_academica.required) {
+    //   sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_acad);
+    //   conteoObligatorios += 1;
+    // }
 
     // if (this.tagsObject.idiomas.required) {
     //   sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_idio);
@@ -490,7 +601,13 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       conteoObligatorios += 1;
     }
 
-    if (this.tagsObject.datos_familiares.required) {
+    if (this.tagsObject.informacion_academica.required) {
+      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_acad);
+      conteoObligatorios += 1;
+    }
+
+
+    if (this.tagsObject.datos_acudiente.required) {
       sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_familiar);
       conteoObligatorios += 1;
     }
@@ -584,6 +701,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   loadPercentageExamenEstado() {}
 
   loadPercentageInformacionFamiliar() {}
+
+  loadPercentageInformacionAcademica() {}
   
   // loadPercentageIdiomas() {
   //     this.idiomaService.get('conocimiento_idioma?query=Activo:true,TercerosId:' + this.info_persona_id + '&limit=0')
@@ -689,7 +808,98 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     });
   }
 
-  ngOnInit() {
+  verificarHabilitarBoton() {
+    // Verificar si ambos selects de la inscripción principal están seleccionados
+    const principalCompleto = this.Campo1Control.valid && this.Campo2Control.valid;
+
+    // Verificar que las inscripciones opcionales estén correctamente seleccionadas si es que están llenas
+    let opcionalesValidas = true;
+    for (let i = 0; i < this.formControlsProyectos.length; i++) {
+      const proyectoSeleccionado = this.formControlsProyectos[i].value;
+      const tipoCupoSeleccionado = this.formControlsTipoCupo[i].value;
+
+      if (proyectoSeleccionado && !tipoCupoSeleccionado) {
+        opcionalesValidas = false;
+        break;
+      }
+    }
+
+    // Habilitar o deshabilitar el botón
+    this.puedePreInscribirse = principalCompleto && opcionalesValidas;
+  }
+
+  realizarPreInscripcion() {
+    // Recoger la información de los selects principales
+    const principal = {
+      programa: this.Campo1Control.value,
+      tipoCupo: this.Campo2Control.value,
+    };
+
+    // Recoger la información de las inscripciones opcionales seleccionadas
+    const opcionales: any[] = [];
+    for (let i = 0; i < this.formControlsProyectos.length; i++) {
+      const proyectoSeleccionado = this.formControlsProyectos[i].value;
+      const tipoCupoSeleccionado = this.formControlsTipoCupo[i].value;
+
+      if (proyectoSeleccionado && tipoCupoSeleccionado) {
+        opcionales.push({
+          programa: proyectoSeleccionado,
+          tipoCupo: tipoCupoSeleccionado,
+        });
+      }
+    }
+
+    console.log('Datos de la inscripción:', { principal, opcionales });
+    this.preinscrito = true
+    this.puedeInscribirse = true
+    console.log("AAAAAA", this.incripcionInicial)
+
+    this.incripcionInicial.ProgramaAcademicoId = principal.programa
+    this.incripcionInicial.TipoCupo = principal.tipoCupo
+
+    this.inscripcionService.put(`inscripcion`, this.incripcionInicial).subscribe(
+      response => {
+        console.log(response)
+        if(response){
+          for (let i = 0; i < opcionales.length; i++) {
+
+            const nuevasPreInscripciones = {
+              AceptaTerminos: this.incripcionInicial.AceptaTerminos,
+              Activo: true,
+              EnfasisId: this.incripcionInicial.EnfasisId,
+              FechaAceptaTerminos: this.incripcionInicial.FechaAceptaTerminos,
+              NotaFinal: this.incripcionInicial.NotaFinal,
+              Opcion: this.incripcionInicial.Opcion,
+              PeriodoId: this.incripcionInicial.PeriodoId,
+              PersonaId: this.incripcionInicial.PersonaId,
+              Credencial: this.incripcionInicial.Credencial,
+              ProgramaAcademicoId: opcionales[i].programa,
+              ReciboInscripcion: this.incripcionInicial.ReciboInscripcion,   
+              TipoCupo: opcionales[i].tipoCupo,
+              EstadoInscripcionId: {
+                Id: this.incripcionInicial.EstadoInscripcionId.Id
+              },
+              TipoInscripcionId: {
+                Id: this.incripcionInicial.TipoInscripcionId.Id
+              }
+            };
+
+            this.inscripcionService.post(`inscripcion`, nuevasPreInscripciones).subscribe(
+              response => {
+                console.log(response)
+              },
+              error => {
+                this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+              },
+            );
+          }
+        }
+      },
+      error => {
+        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+      },
+    );
+
   }
 
   async getPorcentajes() {
@@ -707,20 +917,20 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     }
 
     // Consulta si hay información en formación académica
-    if (this.percentage_acad === 0 && this.tagsObject.formacion_academica.selected) {
-      if (this.nivel == 'Pregrado') {
-        let factor = 1
-        if (this.selectTipo != 'Transferencia interna' && this.selectTipo != 'Reingreso' && this.selectTipo != 'Transferencia externa') {
-          let factor = 2
-          ////////////////////////////////////////////////////////////////////////////////
-          ////// TO DO: Preguntas de ingreso a al univerisdad en inscripción normal //////
-          ////////////////////////////////////////////////////////////////////////////////
-        }
-        await this.loadPercentageFormacionAcademicaPregado(factor);
-      } else {
-        await this.loadPercentageFormacionAcademica();
-      }
-    }
+    // if (this.percentage_acad === 0 && this.tagsObject.formacion_academica.selected) {
+    //   if (this.nivel == 'Pregrado') {
+    //     let factor = 1
+    //     if (this.selectTipo != 'Transferencia interna' && this.selectTipo != 'Reingreso' && this.selectTipo != 'Transferencia externa') {
+    //       let factor = 2
+    //       ////////////////////////////////////////////////////////////////////////////////
+    //       ////// TO DO: Preguntas de ingreso a al univerisdad en inscripción normal //////
+    //       ////////////////////////////////////////////////////////////////////////////////
+    //     }
+    //     await this.loadPercentageFormacionAcademicaPregado(factor);
+    //   } else {
+    //     await this.loadPercentageFormacionAcademica();
+    //   }
+    // }
 
     // Consulta si hay información en idiomas
     // if (this.percentage_idio === 0 && this.tagsObject.idiomas.selected) {
@@ -757,9 +967,14 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       await this.loadPercentageExamenEstado();
     }
 
-    if (this.percentage_familiar === 0 && this.tagsObject.datos_familiares.selected) {
+    if (this.percentage_familiar === 0 && this.tagsObject.datos_acudiente.selected) {
       await this.loadPercentageInformacionFamiliar();
     }
+
+    if (this.percentage_familiar === 0 && this.tagsObject.informacion_academica.selected) {
+      await this.loadPercentageInformacionAcademica();
+    }
+
 
     // Consulta si hay información en descuento
     // if (this.percentage_desc === 0 && this.tagsObject.descuento_matricula.selected) {
@@ -870,6 +1085,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   perfil_editar(event:any): void {
+    console.log(event);
     this.ocultarBarra.emit(true);
     switch (event) {
       case 'info_contacto':
@@ -907,28 +1123,33 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_examen = false;
         break;
       case 'info_persona':
-        if (this.selectTipo === 'Pregrado') {
-          this.viewtag = 'Informacion_pregrado'
-          this.selecttabview(this.viewtag);
-        }
-        if (this.selectTipo === 'Posgrado') {
-          this.viewtag = 'Informacion_posgrado'
-          this.selecttabview(this.viewtag);
-        }
-        if (this.selectTipo === 'Transferencia interna' || this.selectTipo === 'Reingreso') {
-          if (this.nivel === 'Pregrado') {
-            this.viewtag = 'Informacion_pregrado'
-            this.selecttabview(this.viewtag);
-          }
-          if (this.nivel === 'Posgrado') {
-            this.viewtag = 'Informacion_posgrado'
-            this.selecttabview(this.viewtag);
-          }
-        }
-        if (this.inscripcion.TipoInscripcion === 'Transferencia externa') {
-          this.viewtag = 'Informacion_externa'
-          this.selecttabview(this.viewtag);
-        }
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        console.log(this.selectTipo, this.viewtag);
+        this.viewtag = 'Informacion_pregrado'
+        this.selecttabview(this.viewtag);
+        // if (this.selectTipo === 'Pregrado') {
+        //   console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        //   this.viewtag = 'Informacion_pregrado'
+        //   this.selecttabview(this.viewtag);
+        // }
+        // if (this.selectTipo === 'Posgrado') {
+        //   this.viewtag = 'Informacion_posgrado'
+        //   this.selecttabview(this.viewtag);
+        // }
+        // if (this.selectTipo === 'Transferencia interna' || this.selectTipo === 'Reingreso') {
+        //   if (this.nivel === 'Pregrado') {
+        //     this.viewtag = 'Informacion_pregrado'
+        //     this.selecttabview(this.viewtag);
+        //   }
+        //   if (this.nivel === 'Posgrado') {
+        //     this.viewtag = 'Informacion_posgrado'
+        //     this.selecttabview(this.viewtag);
+        //   }
+        // }
+        // if (this.inscripcion.TipoInscripcion === 'Transferencia externa') {
+        //   this.viewtag = 'Informacion_externa'
+        //   this.selecttabview(this.viewtag);
+        // }
         break;
       case 'info_familiar':
         this.showRegreso = false;
@@ -1087,7 +1308,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_acudiente = false;
         this.show_examen = false;
         break;
-      case 'datos_familiares':
+      case 'datos_acudiente':
         this.showRegreso = false;
         this.show_info = false;
         this.show_profile = false;
@@ -1121,6 +1342,24 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_desc = false;
         this.show_acudiente = false;
         this.show_examen = true;
+        break;
+      case 'informacion_academica':
+        this.showRegreso = false;
+        this.show_info = false;
+        this.show_profile = false;
+        this.show_acad = true;
+        this.show_idiomas = false;
+        this.show_expe = false;
+        this.info_contacto = false;
+        this.info_caracteristica = false;
+        this.info_persona = false;
+        this.show_desc = false;
+        this.show_docu = false;
+        this.show_proy = false;
+        this.show_prod = false;
+        this.show_desc = false;
+        this.show_acudiente = false;
+        this.show_examen = false;
         break;
       case 'salir_preinscripcion':
         this.activateTab();
@@ -1342,21 +1581,25 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   loadSuitePrograma(periodo:any, proyecto:any, tipoInscrip:any) {
+    // proyecto = 85
+    // tipoInscrip = 15
     return new Promise((resolve) => {
     this.evaluacionInscripcionService.get('tags_por_dependencia?query=Activo:true,PeriodoId:'+periodo+',DependenciaId:'+proyecto+',TipoInscripcionId:'+tipoInscrip)
         .subscribe((response: any) => {
           if (response != null && response.Status == '200') {
-            // if (Object.keys(response.Data[0]).length > 0) {
-              // this.tagsObject = JSON.parse(response.Data[0].ListaTags);
-              this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+            if (Object.keys(response.Data[0]).length > 0) {
+              this.puedeInscribirse = true;
+              this.tagsObject = JSON.parse(response.Data[0].ListaTags);
+              //this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              console.log(this.tagsObject)
               resolve(this.tagsObject)
-            // } else {
-            //   this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
-            //   this.puedeInscribirse = false;
-            //   this.soloPuedeVer = false;
-            //   this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
-            //   resolve(false);
-            // }
+            } else {
+              this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              this.puedeInscribirse = false;
+              this.soloPuedeVer = false;
+              this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
+              resolve(false);
+            }
           } else {
             this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
             this.puedeInscribirse = false;

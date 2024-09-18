@@ -51,3 +51,80 @@ th.mat-header-cell, td.mat-cell {
 mat-select, input[type="file"], input[matInput] {
   width: 100%;
 }
+
+.contenedor-tabla {
+  width: 95%;
+  margin: auto;
+  overflow: overlay;
+}
+
+//HOVER SOBRE LAS FILAS
+.mat-mdc-row:hover .mat-mdc-cell {
+  background-color: var(--color100);
+}
+
+th {
+  font-weight: bold;
+}
+
+.boton-acciones {
+  border: 0;
+  cursor: pointer;
+}
+
+.enlace-documento {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0 0;
+  cursor: pointer;
+}
+
+.enlace-documento mat-icon {
+  color: var(--danger-main)
+}
+
+.contendor-info {
+  display: flex;
+}
+
+.icon-info {
+  width: 5%;
+  margin: auto 0 auto 5px;
+}
+
+.contendor-info div {
+  width: 95%;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.contendor-info div p {
+  margin: 5px 0;
+}
+
+.contenedor-boton {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.contenedor-boton button {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+@media(width < 600px) {
+  .contendor-info {
+    flex-direction: column;
+  }
+
+  .icon-info {
+    width: 100%;
+    text-align: center;
+    margin: 5px 0 0;
+  }
+
+  .contendor-info div {
+    width: 100%;
+  }
+}
