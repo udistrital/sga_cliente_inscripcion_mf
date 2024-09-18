@@ -12,6 +12,7 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 // @ts-ignore
@@ -20,7 +21,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 @Component({
   selector: 'ngx-list-descuento-academico',
   templateUrl: './list-descuento-academico.component.html',
-  styleUrls: ['./list-descuento-academico.component.scss']
+  styleUrls: ['./list-descuento-academico.component.scss'],
 })
 export class ListDescuentoAcademicoComponent implements OnInit {
   uid!: number;
@@ -32,7 +33,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   data!: Array<SolicitudDescuento>;
   solicituddescuento: any;
   listAlreadyUploaded: number[] = [];
-  selected = 0
+  selected = 0;
   displayedColumns = ['tipo_documento', 'estado', 'observacion', 'acciones'];
   dataSource!: MatTableDataSource<any>;
 
@@ -44,8 +45,12 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   @Input('inscripcion_id')
   set info2(info2: number) {
     this.inscripcion = info2;
-    if (this.inscripcion !== undefined && this.inscripcion !== null && this.inscripcion !== 0 &&
-      this.inscripcion.toString() !== '') {
+    if (
+      this.inscripcion !== undefined &&
+      this.inscripcion !== null &&
+      this.inscripcion !== 0 &&
+      this.inscripcion.toString() !== ''
+    ) {
       this.loadData();
     }
   }
@@ -56,81 +61,98 @@ export class ListDescuentoAcademicoComponent implements OnInit {
 
   percentage!: number;
 
-  constructor(private translate: TranslateService,
+  constructor(
+    private translate: TranslateService,
     private inscripcionMidService: InscripcionMidService,
     private popUpManager: PopUpManager,
     private documentoService: DocumentoService,
     private utilidades: UtilidadesService,
     private newNuxeoService: NewNuxeoService,
-    private descuentoAcademicoService: DescuentoAcademicoService) {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
+    private descuentoAcademicoService: DescuentoAcademicoService,
+    private userService: UserService
+  ) {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {});
     this.loadData();
   }
-
-
 
   useLanguage(language: string) {
     this.translate.use(language);
   }
 
-  loadData(): void {
-    const id = decrypt(window.localStorage.getItem('persona_id'));
-    this.inscripcionMidService.get('academico/descuento/detalle?' +
-      'PersonaId=' + Number(id) + '&DependenciaId=' +
-      Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
-      .subscribe((result: any) => {
-        const r = <any>result.Data;
-        if (result.Data == null && result.Status == '200') {
-          this.popUpManager.showAlert('', this.translate.instant('inscripcion.sin_descuento'));
-          this.getPercentage(0);
-          this.dataSource = new MatTableDataSource()
-
-        } else if (result.Data != null && result.Status == '200') {
-          this.data = <Array<SolicitudDescuento>>r;
-          this.data.forEach(async (docDesc: any) => {
-            let estadoDoc = await <any>this.cargarEstadoDocumento(docDesc["DocumentoId"]);
-            this.listAlreadyUploaded.push(docDesc["DescuentosDependenciaId"].TipoDescuentoId.Id);
-            docDesc["EstadoObservacion"] = estadoDoc.estadoObservacion;
-            docDesc["Observacion"] = estadoDoc.observacion;
-            docDesc["Aprobado"] = estadoDoc.aprobado;
-            this.dataSource = new MatTableDataSource(this.data)
-          });
-          this.getPercentage(1);
-          this.dataSource = new MatTableDataSource(this.data)
-        }
-      },
+  async loadData() {
+    const terceroId = await this.userService.getPersonaId();
+    this.inscripcionMidService
+      .get(
+        'academico/descuento/detalle?' +
+          'PersonaId=' +
+          terceroId +
+          '&DependenciaId=' +
+          Number(window.sessionStorage.getItem('ProgramaAcademicoId')) +
+          '&PeriodoId=' +
+          Number(window.sessionStorage.getItem('IdPeriodo'))
+      )
+      .subscribe(
+        (result: any) => {
+          const r = <any>result.Data;
+          if (result.Data == null && result.Status == '200') {
+            this.popUpManager.showAlert(
+              '',
+              this.translate.instant('inscripcion.sin_descuento')
+            );
+            this.getPercentage(0);
+            this.dataSource = new MatTableDataSource();
+          } else if (result.Data != null && result.Status == '200') {
+            this.data = <Array<SolicitudDescuento>>r;
+            this.data.forEach(async (docDesc: any) => {
+              let estadoDoc = await (<any>(
+                this.cargarEstadoDocumento(docDesc['DocumentoId'])
+              ));
+              this.listAlreadyUploaded.push(
+                docDesc['DescuentosDependenciaId'].TipoDescuentoId.Id
+              );
+              docDesc['EstadoObservacion'] = estadoDoc.estadoObservacion;
+              docDesc['Observacion'] = estadoDoc.observacion;
+              docDesc['Aprobado'] = estadoDoc.aprobado;
+              this.dataSource = new MatTableDataSource(this.data);
+            });
+            this.getPercentage(1);
+            this.dataSource = new MatTableDataSource(this.data);
+          }
+        },
         (error: HttpErrorResponse) => {
           Swal.fire({
             icon: 'error',
             title: error.status + '',
             text: this.translate.instant('ERROR.' + error.status),
-            footer: this.translate.instant('GLOBAL.cargar') + '-' +
-              this.translate.instant('GLOBAL.descuento_matricula') + '|' +
+            footer:
+              this.translate.instant('GLOBAL.cargar') +
+              '-' +
+              this.translate.instant('GLOBAL.descuento_matricula') +
+              '|' +
               this.translate.instant('GLOBAL.descuento_matricula'),
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
-        });
+        }
+      );
   }
 
   cargarEstadoDocumento(Id: any) {
     return new Promise((resolve) => {
-      this.documentoService.get('documento/' + Id).subscribe(
-        (doc: Documento) => {
+      this.documentoService
+        .get('documento/' + Id)
+        .subscribe((doc: Documento) => {
           let estadoDoc = this.utilidades.getEvaluacionDocumento(doc.Metadatos);
-          resolve(estadoDoc)
+          resolve(estadoDoc);
         });
     });
-
   }
 
   ngOnInit() {
     this.uid = 0;
-    this.selected = 0
-    this.irAIndexTab(0)
+    this.selected = 0;
+    this.irAIndexTab(0);
   }
-  
-  
+
   onAction(event: any): void {
     switch (event.action) {
       case 'open':
@@ -153,7 +175,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
       },
     ];
     this.newNuxeoService.get(filesToGet).subscribe(
-      response => {
+      (response) => {
         const filesResponse = <any>response;
         if (Object.keys(filesResponse).length === filesToGet.length) {
           filesToGet.forEach((file: any) => {
@@ -162,32 +184,32 @@ export class ListDescuentoAcademicoComponent implements OnInit {
           });
         }
       },
-      error => {
+      (error) => {
         this.popUpManager.showErrorToast('ERROR.error_cargar_documento');
-      },
+      }
     );
   }
 
   onEdit(event: any): void {
     if (event.Aprobado != true) {
       this.uid = event.Id;
-      this.irAIndexTab(1)
+      this.irAIndexTab(1);
     } else {
       this.popUpManager.showAlert(
         this.translate.instant('GLOBAL.info'),
-        this.translate.instant('inscripcion.no_edit_doc_aprobado'),
-      )
+        this.translate.instant('inscripcion.no_edit_doc_aprobado')
+      );
     }
   }
 
   onCreate(): void {
     this.uid = 0;
-    this.irAIndexTab(1)
+    this.irAIndexTab(1);
   }
 
   onDelete(event: any): void {
     let estado: string = event.EstadoObservacion;
-    let esAprobado: boolean = estado === "Aprobado";
+    let esAprobado: boolean = estado === 'Aprobado';
 
     if (esAprobado) {
       const opt: any = {
@@ -196,7 +218,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         icon: 'info',
         dangerMode: true,
         showCancelButton: false,
-        confirmButtonText: this.translate.instant('GLOBAL.aceptar')
+        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
       };
       Swal.fire(opt);
     } else {
@@ -208,41 +230,50 @@ export class ListDescuentoAcademicoComponent implements OnInit {
         confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
         cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
       };
-      Swal.fire(opt)
-        .then((willDelete: any) => {
-          if (willDelete.value) {
-            event.Activo = false;
-            this.descuentoAcademicoService.put('solicitud_descuento', event).subscribe(res => {
-              if (res !== null) {
-                this.loadData();
-                Swal.fire({
-                  icon: 'success',
-                  title: this.translate.instant('descuento_academico.descuento_eliminado'),
-                  text: this.translate.instant('descuento_academico.mensaje_eliminado'),
-                  confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-                });
-              }
-            },
+      Swal.fire(opt).then((willDelete: any) => {
+        if (willDelete.value) {
+          event.Activo = false;
+          this.descuentoAcademicoService
+            .put('solicitud_descuento', event)
+            .subscribe(
+              (res) => {
+                if (res !== null) {
+                  this.loadData();
+                  Swal.fire({
+                    icon: 'success',
+                    title: this.translate.instant(
+                      'descuento_academico.descuento_eliminado'
+                    ),
+                    text: this.translate.instant(
+                      'descuento_academico.mensaje_eliminado'
+                    ),
+                    confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+                  });
+                }
+              },
               (error: HttpErrorResponse) => {
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
                   text: this.translate.instant('ERROR.' + error.status),
-                  footer: this.translate.instant('GLOBAL.eliminar') + '-' +
+                  footer:
+                    this.translate.instant('GLOBAL.eliminar') +
+                    '-' +
                     this.translate.instant('GLOBAL.descuento_academico'),
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
-              });
-          }
-        });
+              }
+            );
+        }
+      });
     }
   }
 
   activetab(): void {
     if (this.selected == 0) {
-      this.selected = 1
+      this.selected = 1;
     } else {
-      this.selected = 0
+      this.selected = 0;
     }
   }
 
@@ -250,12 +281,11 @@ export class ListDescuentoAcademicoComponent implements OnInit {
     if (event) {
       this.uid = 0;
       this.loadData();
-      this.irAIndexTab(0)
+      this.irAIndexTab(0);
     }
   }
 
-  itemselec(event: any): void {
-  }
+  itemselec(event: any): void {}
 
   getPercentage(event: any) {
     this.percentage = event;
@@ -263,10 +293,10 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   }
 
   tabChanged(event: MatTabChangeEvent) {
-    this.irAIndexTab(event.index)
+    this.irAIndexTab(event.index);
   }
 
   irAIndexTab(index: number) {
-    this.selected = index
+    this.selected = index;
   }
 }

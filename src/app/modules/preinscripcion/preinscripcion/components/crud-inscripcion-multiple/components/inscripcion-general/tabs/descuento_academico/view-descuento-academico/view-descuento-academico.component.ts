@@ -10,6 +10,7 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
 // @ts-ignore
@@ -74,7 +75,8 @@ export class ViewDescuentoAcademicoComponent implements OnInit {
     private newNuxeoService: NewNuxeoService,
     private utilidades: UtilidadesService,
     private zipManagerService: ZipManagerService,
-    private popUpManager: PopUpManager,) {
+    private popUpManager: PopUpManager,
+    private userService : UserService) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.gotoEdit = localStorage.getItem('goToEdit') === 'true';
@@ -92,9 +94,10 @@ export class ViewDescuentoAcademicoComponent implements OnInit {
     this.url_editar.emit(true);
   }
 
-  loadData(): void {
+  async loadData() {
+    const terceroId = await this.userService.getPersonaId();
     this.inscripcionMidService.get('academico/descuento/detalle?' +
-      'PersonaId=' + sessionStorage.getItem('TerceroId') + '&DependenciaId=' +
+      'PersonaId=' + terceroId + '&DependenciaId=' +
       sessionStorage.getItem('ProgramaAcademicoId') + '&PeriodoId=' + sessionStorage.getItem('IdPeriodo'))
       .subscribe((result: any) => {
         const r = <any>result.Data;
@@ -127,7 +130,7 @@ export class ViewDescuentoAcademicoComponent implements OnInit {
                     let doc = this.docDesSoporte.find((doc:any) => doc.Id === info.DocumentoId);
                     if (doc !== undefined) {
                       let estadoDoc = this.utilidades.getEvaluacionDocumento(doc.Metadatos);
-                      if (estadoDoc.aprobado === false) {
+                      if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== "Por definir") {
                         this.updateDocument = true;
                       }
                       this.docs_editados.emit(this.updateDocument);

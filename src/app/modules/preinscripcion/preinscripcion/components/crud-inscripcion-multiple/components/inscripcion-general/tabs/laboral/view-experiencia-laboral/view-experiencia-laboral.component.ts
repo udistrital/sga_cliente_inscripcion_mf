@@ -117,9 +117,10 @@ export class ViewExperienciaLaboralComponent implements OnInit {
                       if (doc !== undefined) {
                         //info.Soporte = doc;
                         let estadoDoc = this.utilidades.getEvaluacionDocumento(doc.Metadatos);
-                        if (estadoDoc.aprobado === false) {
+                        if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== "Por definir") {
                           this.updateDocument = true;
                         }
+                        this.docs_editados.emit(this.updateDocument);
                         info.Soporte = {
                           //Documento: doc.Documento, 
                           DocumentoId: doc.Id,

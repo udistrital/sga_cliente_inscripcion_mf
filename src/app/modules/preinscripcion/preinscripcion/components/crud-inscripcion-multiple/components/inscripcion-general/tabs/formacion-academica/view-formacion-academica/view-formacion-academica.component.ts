@@ -102,7 +102,7 @@ export class ViewFormacionAcademicaComponent implements OnInit {
                       //element.Documento = response[0]["Documento"]; 
                       element.DocumentoId = resp.Id;
                       let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);
-                      if (estadoDoc.aprobado === false) {
+                      if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== "Por definir") {
                         this.updateDocument = true;
                       }
                       this.docs_editados.emit(this.updateDocument);
