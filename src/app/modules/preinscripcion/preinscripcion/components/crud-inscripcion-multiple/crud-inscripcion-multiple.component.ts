@@ -140,6 +140,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   Campo2Control = new FormControl('', [Validators.required]);
   Campo3Control = new FormControl('', [Validators.required]);
 
+  tipoCupos: any = [];
+  tipoCupo!: any;
+  mostrarSelectorCupos= true
+  tipoCupoControl = new FormControl('', [Validators.required]);
+
   constructor(
     private projectService: ProyectoAcademicoService,
     private popUpManager: PopUpManager,
@@ -180,6 +185,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       await this.cargarPeriodo();
       await this.nivel_load();
       await this.loadInfoPersona();
+      await this.cargarTipoCuposPorPeriodo(this.periodo.Id);
     } catch (error) {
       if (error instanceof Error) {
         this.popUpManager.showErrorAlert(
@@ -296,52 +302,44 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   itemSelect(event: any): void {
     sessionStorage.setItem('IdInscripcion', event.data.Id);
-    this.inscripcionService
-      .get('inscripcion/' + event.data.Id)
-      .subscribe((response: any) => {
-        if (event.data.NivelPP === 1) {
-          console.log('Pregrado');
-          sessionStorage.setItem(
-            'ProgramaAcademico',
-            event.data.ProgramaAcademicoId
-          );
-          sessionStorage.setItem('IdPeriodo', response.PeriodoId);
-          sessionStorage.setItem(
-            'IdTipoInscripcion',
-            response.TipoInscripcionId.Id
-          );
-          sessionStorage.setItem(
-            'ProgramaAcademicoId',
-            response.ProgramaAcademicoId
-          );
-          sessionStorage.setItem('IdEnfasis', response.EnfasisId);
-          const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
-          if (EstadoIns === 'true') {
-            this.nivelInscripcion = true;
-            this.loadInscriptionModule();
+    this.inscripcionService.get('inscripcion/' + event.data.Id).subscribe(
+      (response: any) => {
+        this.projectService.get(`proyecto_academico_institucion?limit=0&query=Id:${response.ProgramaAcademicoId},Activo:true&fields=Id,Nombre,NivelFormacionId,Codigo`).subscribe((response2: any) => {
+          if (response2)  {
+            if (response2[0].NivelFormacionId.CodigoAbreviacion == "PRE") {
+              console.log("Pregrado", response.TipoInscripcionId.Id)
+              sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
+              sessionStorage.setItem('IdPeriodo', response.PeriodoId);
+              sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
+              sessionStorage.setItem('ProgramaAcademicoId', response.ProgramaAcademicoId);
+              sessionStorage.setItem('IdEnfasis', response.EnfasisId);
+              const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
+              if (EstadoIns === 'true') {
+                this.nivelInscripcion = true;
+                this.loadInscriptionModule();
+              }
+            } else {
+              console.log("Posgrado", response.TipoInscripcionId.Id)
+              sessionStorage.setItem('ProgramaAcademico', event.data.ProgramaAcademicoId);
+              sessionStorage.setItem('IdPeriodo', response.PeriodoId);
+              sessionStorage.setItem('IdTipoInscripcion', response.TipoInscripcionId.Id);
+              sessionStorage.setItem('ProgramaAcademicoId', response.ProgramaAcademicoId);
+              sessionStorage.setItem('IdEnfasis', response.EnfasisId);
+              const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
+              if (EstadoIns === 'true') {
+                this.nivelInscripcion = false;
+                this.loadInscriptionModule();
+              }
+    
+            }
+          } else {
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
           }
-        } else {
-          console.log('Posgrado');
-          sessionStorage.setItem(
-            'ProgramaAcademico',
-            event.data.ProgramaAcademicoId
-          );
-          sessionStorage.setItem('IdPeriodo', response.PeriodoId);
-          sessionStorage.setItem(
-            'IdTipoInscripcion',
-            response.TipoInscripcionId.Id
-          );
-          sessionStorage.setItem(
-            'ProgramaAcademicoId',
-            response.ProgramaAcademicoId
-          );
-          sessionStorage.setItem('IdEnfasis', response.EnfasisId);
-          const EstadoIns = sessionStorage.getItem('EstadoInscripcion');
-          if (EstadoIns === 'true') {
-            this.nivelInscripcion = false;
-            this.loadInscriptionModule();
-          }
-        }
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+          });
       });
   }
 
@@ -374,7 +372,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   async loadInfoInscripcion() {
     await this.cargarPeriodo();
     const PeriodoActual: any = localStorage.getItem('IdPeriodo');
-    //const PeriodoActual = 40
     if (this.info_persona_id != null && PeriodoActual != null) {
       const inscripciones: any = await this.recuperarEstadosReciboInscripciones(
         this.info_persona_id,
@@ -790,6 +787,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       Year: this.periodo.Year,
       Periodo: parseInt(this.periodo.Ciclo, 10),
       FechaPago: '',
+      TipoCupo: this.tipoCupo
     };
     console.log(inscripcion);
 
@@ -1222,6 +1220,22 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       1
     );
     //this.source_emphasys.load(this.arr_proyecto);
+  }
+
+  cargarTipoCuposPorPeriodo(idPeriodo: any) {
+    // idPeriodo = 39
+    return new Promise((resolve, reject) => {
+      // this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:T,PeriodoId.Id:${idPeriodo}`)
+      this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:TIP_CUP,PeriodoId.Id:${idPeriodo}`)
+        .subscribe((res: any) => {
+          resolve(res.Data)
+        },
+          (error: any) => {
+            console.error(error);
+            this.popUpManager.showErrorAlert(this.translate.instant('admision.facultades_error'));
+            reject(false);
+          });
+    });
   }
 
   preinscripcion() {

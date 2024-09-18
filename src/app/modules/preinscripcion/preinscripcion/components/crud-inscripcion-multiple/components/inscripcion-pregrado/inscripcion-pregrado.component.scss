@@ -56,8 +56,15 @@
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 }
 
-
-
 .exp-card:hover {
   background-color: var(--color200);
+}
+
+.contendor-close {
+  display: flex;
+  justify-content: end;
+}
+
+.text-center {
+  text-align: center;
 }

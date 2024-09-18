@@ -7,17 +7,17 @@ export const TAGS_INSCRIPCION_PROGRAMA = {
       selected: true,
       required: true,
     },
-    formacion_academica: {
-      selected: false,
-      required: false,
+    informacion_academica: {
+      selected: true,
+      required: true,
     },
-    datos_familiares: {
+    datos_acudiente: {
       selected: true,
       required: true,
     },
     documento_programa: {
-      selected: false,
-      required: false,
+      selected: true,
+      required: true,
     },
     perfil: {
       selected: true,

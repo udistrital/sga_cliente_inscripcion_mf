@@ -42,6 +42,45 @@ table.rwd_auto {
   white-space: nowrap;
 }
 
+table {
+  width: 100%;
+}
+
+th.mat-header-cell, td.mat-cell {
+  text-align: center;
+}
+
+.contenedor-tabla {
+  width: 100%;
+  margin: auto;
+  overflow: overlay;
+}
+
+//HOVER SOBRE LAS FILAS
+.mat-mdc-row:hover .mat-mdc-cell {
+  background-color: var(--color100);
+}
+
+th {
+  font-weight: bold;
+  background-color: #bdc2c8 !important;
+}
+
+.contenedor-actualizar {
+  background-color: #ffffe0;
+  padding: 5px 0;
+  margin-top: 10px;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contenedor-actualizar span {
+  display: contents;
+}
+
 @media only screen and (max-width: 760px), (min-width: 768px) and (max-width: 1024px) {
   table.table-responsive,
   .table-responsive thead,

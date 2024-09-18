@@ -14,6 +14,7 @@ import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 export class ListInformacionComponent {
 
   tieneDatos = false;
+  terceroId: any
 
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
@@ -50,60 +51,59 @@ export class ListInformacionComponent {
   constructor(private _formBuilder: FormBuilder, private tercerosMidService: TercerosMidService) {}
 
   ngOnInit(){
-    const terceroId = sessionStorage.getItem('TerceroId');
-    this.tercerosMidService.get('personas/datos-acudiente/'+terceroId).subscribe((res) => {
-      console.log(res);
-      if (res) {
-        for (let i = 0; i < res.data.length; i++) {
-          switch (res.data[i].InfoComplementariaId.CodigoAbreviacion) {
+    this.terceroId = sessionStorage.getItem('IdTercero');
+    this.tercerosMidService.get('personas/datos-acudiente/'+this.terceroId).subscribe((res) => {
+      if (res.Data.length > 1) {
+        for (let i = 0; i < res.Data.length; i++) {
+          switch (res.Data[i].InfoComplementariaId.CodigoAbreviacion) {
             case 'NOM_PRI_ACU':
               this.firstFormGroup.patchValue({
-                firstCtrl: JSON.parse(res.data[i].Dato).Dato
+                firstCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'PAREN_PRI_ACU':
               this.secondFormGroup.patchValue({
-                secondCtrl: JSON.parse(res.data[i].Dato).Dato
+                secondCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'CORREO_PRI_ACU':
               this.thirdFormGroup.patchValue({
-                thirdCtrl: JSON.parse(res.data[i].Dato).Dato
+                thirdCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'DIREC_PRI_ACU':
               this.fourthFormGroup.patchValue({
-                fourthCtrl: JSON.parse(res.data[i].Dato).Dato
+                fourthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'TEL_PRI_ACU':
               this.fifthFormGroup.patchValue({
-                fifthCtrl: JSON.parse(res.data[i].Dato).Dato
+                fifthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'NOM_SEG_ACU':
               this.sixthFormGroup.patchValue({
-                sixthCtrl: JSON.parse(res.data[i].Dato).Dato
+                sixthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'PAREN_SEG_ACU':
               this.seventhFormGroup.patchValue({
-                seventhCtrl: JSON.parse(res.data[i].Dato).Dato
+                seventhCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'CORREO_SEG_ACU':
               this.eighthFormGroup.patchValue({
-                eighthCtrl: JSON.parse(res.data[i].Dato).Dato
+                eighthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'DIREC_SEG_ACU':
               this.ninthFormGroup.patchValue({
-                ninthCtrl: JSON.parse(res.data[i].Dato).Dato
+                ninthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
             case 'TEL_SEG_ACU':
               this.tenthFormGroup.patchValue({
-                tenthCtrl: JSON.parse(res.data[i].Dato).Dato
+                tenthCtrl: JSON.parse(res.Data[i].Dato).Dato
               });
               break;
           }
@@ -127,20 +127,14 @@ export class ListInformacionComponent {
       telefonoSegundo: this.tenthFormGroup.get('tenthCtrl')?.value
     };
 
-    const terceroId = sessionStorage.getItem('TerceroId');
-    console.log(data);
 
     if (this.tieneDatos) {
-      console.log('actualizar');
-      //hacer un put con los datos
-      this.tercerosMidService.put('personas/datos-acudiente/'+terceroId, data).subscribe((res) => {
-        console.log(res);
+      this.tercerosMidService.put('personas/datos-acudiente/'+this.terceroId, data).subscribe((res) => {
+        
       });
     }else{
-      console.log('crear');
-      //hacer un post con los datos
-      this.tercerosMidService.post('personas/datos-acudiente/'+terceroId, data).subscribe((res) => {
-        console.log(res);
+      this.tercerosMidService.post('personas/datos-acudiente/'+this.terceroId, data).subscribe((res) => {
+
       });
     }
   }

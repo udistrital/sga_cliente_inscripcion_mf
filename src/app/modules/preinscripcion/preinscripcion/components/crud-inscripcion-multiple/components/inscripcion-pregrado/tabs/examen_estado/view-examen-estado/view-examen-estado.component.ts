@@ -18,6 +18,7 @@ interface Examen {
   confirmarSnp: string;
   anoPresentacion: string;
   soporte: File | null;
+  linkDoc: any;
 }
 
 @Component({
@@ -41,16 +42,18 @@ export class ViewExamenEstadoComponent {
 
   displayedColumns: string[] = ['orden', 'examen', 'tipoExamen', 'snp', 'confirmarSnp', 'anoPresentacion', 'soporte'];
   dataSource = new MatTableDataSource<Examen>([
-    { orden: 1, examen: 'Saber 11 (ICFES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null },
-    { orden: 2, examen: 'Saber TyT (ECAES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null }
+    { orden: 1, examen: 'Saber 11 (ICFES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null },
+    { orden: 2, examen: 'Saber TyT (ECAES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null }
   ]);
   tiposExamen: string[] = ['AC', 'VG'];
 
-  onFileChange(event: Event, element: Examen) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      element.soporte = input.files[0];
-    }
+  onFileChange(event: any, element: any) {
+    const files = <File[]>Object.values(event.target.files);
+    const newFiles = files.map((f) => {
+      return { file: f, urlTemp: URL.createObjectURL(f), err: false };
+    });
+    element.linkDoc = newFiles[0]["urlTemp"]
+    element.soporte = newFiles[0];
   }
 
   gridItems: any = {};
@@ -349,6 +352,14 @@ export class ViewExamenEstadoComponent {
           reject(error);
         });
     });
+  }
+
+  previewFile(url: string): void {
+    const h = screen.height * 0.65;
+    const w = (h * 3) / 4;
+    const left = (screen.width * 3) / 4 - w / 2;
+    const top = screen.height / 2 - h / 2;
+    window.open(url, '', 'toolbar=no,' + 'location=no, directories=no, status=no, menubar=no,' + 'scrollbars=no, resizable=no, copyhistory=no, ' + 'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
   }
 
 }

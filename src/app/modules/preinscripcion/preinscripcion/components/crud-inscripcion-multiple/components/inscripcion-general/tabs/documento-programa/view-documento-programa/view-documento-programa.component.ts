@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
@@ -15,6 +16,9 @@ import { ZipManagerService } from 'src/app/services/zip-manager.service';
   styleUrls: ['./view-documento-programa.component.scss']
 })
 export class ViewDocumentoProgramaComponent implements OnInit {
+  displayedColumns: string[] = ['documento', 'estado', 'observacion', 'soporte'];
+  dataSource!: MatTableDataSource<any>;
+
   persona_id!: number | null;
   inscripcion_id!: number;
   periodo_id!: number;
@@ -73,6 +77,16 @@ export class ViewDocumentoProgramaComponent implements OnInit {
     this.gotoEdit = localStorage.getItem('goToEdit') === 'true';
   }
 
+  async ngOnInit() {
+    this.infoCarga.status = "start";
+    this.estadoCarga.emit(this.infoCarga);
+    this.programa_id = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!);
+    this.persona_id = this.persona_id ? this.persona_id : await this.userService.getPersonaId();
+    this.inscripcion_id = this.inscripcion_id ? this.inscripcion_id : parseInt(sessionStorage.getItem('IdInscripcion')!);
+    this.loadData();
+    this.canUpdateDocument = <string>(sessionStorage.getItem('IdEstadoInscripcion') || "").toUpperCase() === "INSCRITO CON OBSERVACIÓN";
+  }
+
   useLanguage(language: string) {
     this.translate.use(language);
   }
@@ -90,15 +104,15 @@ export class ViewDocumentoProgramaComponent implements OnInit {
     this.inscripcionService.get('soporte_documento_programa?query=InscripcionId.Id:' +
       this.inscripcion_id + ',DocumentoProgramaId.ProgramaId:' + this.programa_id + ',DocumentoProgramaId.TipoInscripcionId:' + this.tipoInscripcion_id + ',DocumentoProgramaId.PeriodoId:' + parseInt(sessionStorage.getItem('IdPeriodo')!, 10) + ',DocumentoProgramaId.Activo:true&limit=0').subscribe(
         // (response: any[]) => {
-          (response: any) => {
+        (response: any) => {
           if (response !== null && Object.keys(response[0]).length > 0 && response[0] != '{}') {
             this.info_documento_programa = response;
             this.infoCarga.nCargas = this.info_documento_programa.length;
             let docSoporte1 = "";
-            this.info_documento_programa.forEach((doc:any, i:any) => {
+            this.info_documento_programa.forEach((doc: any, i: any) => {
               this.docSoporte.push({ Id: doc.DocumentoId, key: 'DocumentoPrograma' + doc.DocumentoId })
               docSoporte1 += String(doc.DocumentoId);
-              if (i < this.infoCarga.nCargas - 1 ) {
+              if (i < this.infoCarga.nCargas - 1) {
                 docSoporte1 += '|'
               } else {
                 docSoporte1 += `&limit=${Number(this.infoCarga.nCargas)}`;
@@ -106,13 +120,13 @@ export class ViewDocumentoProgramaComponent implements OnInit {
               doc.IdDoc = doc.DocumentoId;
             });
             if (docSoporte1 != '') {
-              this.documentoService.get('documento?query=Id__in:'+docSoporte1)
+              this.documentoService.get('documento?query=Id__in:' + docSoporte1)
                 .subscribe((resp: any) => {
-                  if((resp.Status && (resp.Status == "400" || resp.Status == "404")) || Object.keys(resp[0]).length == 0) {
+                  if ((resp.Status && (resp.Status == "400" || resp.Status == "404")) || Object.keys(resp[0]).length == 0) {
                     this.infoFalla();
                   } else {
-                    this.info_documento_programa.forEach((doc:any) => {
-                      let f = resp.find((file:any) => doc.IdDoc === file.Id);
+                    this.info_documento_programa.forEach((doc: any) => {
+                      let f = resp.find((file: any) => doc.IdDoc === file.Id);
                       if (f !== undefined) {
                         //doc.Documento = f["Documento"];
                         let estadoDoc = this.utilidades.getEvaluacionDocumento(f.Metadatos);
@@ -132,13 +146,15 @@ export class ViewDocumentoProgramaComponent implements OnInit {
                     });
                   }
                 },
-                (error) => {
-                  this.infoFalla();
-                  //this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
-                }
+                  (error) => {
+                    this.infoFalla();
+                    //this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
+                  }
                 );
             }
+            this.dataSource = new MatTableDataSource(this.info_documento_programa);
           } else {
+            this.dataSource = new MatTableDataSource();
             this.info_documento_programa = null
             this.infoFalla();
           }
@@ -147,17 +163,7 @@ export class ViewDocumentoProgramaComponent implements OnInit {
           this.infoFalla();
           this.popUpManager.showErrorToast(this.translate.instant('ERROR.error_cargar_documento'));
         },
-    );
-  }
-
-  async ngOnInit() {
-    this.infoCarga.status = "start";
-    this.estadoCarga.emit(this.infoCarga);
-    this.programa_id = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!);
-    this.persona_id = this.persona_id ? this.persona_id : await this.userService.getPersonaId();
-    this.inscripcion_id = this.inscripcion_id ? this.inscripcion_id : parseInt(sessionStorage.getItem('IdInscripcion')!);
-    this.loadData();
-    this.canUpdateDocument = <string>(sessionStorage.getItem('IdEstadoInscripcion') || "").toUpperCase() === "INSCRITO CON OBSERVACIÓN";
+      );
   }
 
   abrirDocumento(documento: any) {

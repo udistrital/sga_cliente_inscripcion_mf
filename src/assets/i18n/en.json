@@ -738,7 +738,29 @@
         "info_boton_cambio_inscrito": "Do not forget to press the button \"Confirm edition of documents with observations\" to return to the ENROLLED status, this is enabled when you have edited all the not approved documents.",
         "no_fechas_inscripcion": "The selected curricular project does not present registration dates",
         "no_documentos_proyecto": "El proyecto no tiene documentos definidos, contacte al proyecto",
-        "tu_progreso": "Your progress"
+        "tu_progreso": "Your progress",
+        "examen_estado": "State exam",
+        "informacion_academica": "Academic Information",
+        "datos_acudiente": "Data on guardians/family",
+        "alerta_preinscripcion_principal": "Applicant, the main registration project is presented. You can change it if you wish and select the type of seat you want to apply for, as it is mandatory.",
+        "alerta_preinscripcion_opcional": "Applicant, the optional registrations are presented. You can choose not to select any or select the ones you prefer. Remember that for each one, you must select a type of seat, as it is mandatory. Please note that for each pre-registration, you must complete all the information requested by the curricular project individually.",
+        "alerta_tags_preinscripcion": "Applicant, below is the project in which you are pre-registered. You must complete 100% of each of the tags listed below. Remember, if you have more than one pre-registered project, you must repeat this process for each one.",
+        "tipo_cupo": "Select the type of seat you want to apply for in the selected program.",
+        "alerta_examen_estado": "El saber T y T (Ecaes) is optional",
+        "ac_examen_estado": "AC = Normal high school",
+        "vg_examen_estado": "VG = Validation of high school diploma"
+    },
+    "examen_estado": {
+        "orden": "Order",
+        "examen": "State exam",
+        "tipo": "Type of exam",
+        "snp": "SNP",
+        "confirmar": "Confirm SNP",
+        "anno": "Year of presentation",
+        "soporte": "supports",
+        "seleccionar_archivo": "Select file",
+        "sin_archivo": "No files have been uploaded",
+        "visualizar_archivo": "View file"
     },
     "ERROR": {
         "general": "The request could not be satisfied",
