@@ -14,6 +14,7 @@ import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 export class ListInformacionComponent {
 
   tieneDatos = false;
+  terceroId: any
 
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
@@ -50,10 +51,9 @@ export class ListInformacionComponent {
   constructor(private _formBuilder: FormBuilder, private tercerosMidService: TercerosMidService) {}
 
   ngOnInit(){
-    const terceroId = sessionStorage.getItem('TerceroId');
-    this.tercerosMidService.get('personas/datos-acudiente/'+terceroId).subscribe((res) => {
-      console.log("BBBBBBBBBBBBBBBBBBBBBBBBB",res);
-      if (res) {
+    this.terceroId = sessionStorage.getItem('IdTercero');
+    this.tercerosMidService.get('personas/datos-acudiente/'+this.terceroId).subscribe((res) => {
+      if (res.Data.length > 1) {
         for (let i = 0; i < res.Data.length; i++) {
           switch (res.Data[i].InfoComplementariaId.CodigoAbreviacion) {
             case 'NOM_PRI_ACU':
@@ -127,20 +127,14 @@ export class ListInformacionComponent {
       telefonoSegundo: this.tenthFormGroup.get('tenthCtrl')?.value
     };
 
-    const terceroId = sessionStorage.getItem('TerceroId');
-    console.log(data);
 
     if (this.tieneDatos) {
-      console.log('actualizar');
-      //hacer un put con los datos
-      this.tercerosMidService.put('personas/datos-acudiente/'+terceroId, data).subscribe((res) => {
-        console.log(res);
+      this.tercerosMidService.put('personas/datos-acudiente/'+this.terceroId, data).subscribe((res) => {
+        
       });
     }else{
-      console.log('crear');
-      //hacer un post con los datos
-      this.tercerosMidService.post('personas/datos-acudiente/'+terceroId, data).subscribe((res) => {
-        console.log(res);
+      this.tercerosMidService.post('personas/datos-acudiente/'+this.terceroId, data).subscribe((res) => {
+
       });
     }
   }

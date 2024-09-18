@@ -740,6 +740,7 @@
         "no_documentos_proyecto": "El proyecto no tiene documentos definidos, comuníquese con el proyecto",
         "tu_progreso": "Tu progreso",
         "examen_estado": "Examen de estado",
+        "informacion_academica": "Información academica",
         "datos_acudiente": "Datos acudientes/familia",
         "alerta_preinscripcion_principal": "Aspirante, se presenta el proyecto principal de la inscripción. Puede cambiarlo si lo desea y seleccionar el tipo de cupo con el cual desea aplicar, ya que es obligatorio.",
         "alerta_preinscripcion_opcional": "Aspirante, se presentan las inscripciones opcionales. Puede no seleccionar ninguna o las que prefiera. Recuerde que por cada una debe seleccionar un tipo de cupo de forma obligatoria. Tenga en cuenta que para cada preinscripción debe completar toda la información solicitada por el proyecto curricular de forma individual.",

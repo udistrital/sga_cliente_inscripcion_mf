@@ -79,7 +79,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { InscripcionPregradoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/inscripcion-pregrado.component';
 import { ListInformacionComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_acudiente/list-informacion/list-informacion.component';
 import { ListInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_academica/list-informacion-academica/list-informacion-academica.component';
-import { CrudInformacionAcademicaComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/informacion_academica/crud-informacion-academica/crud-informacion-academica.component';
 import { ViewExamenEstadoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/examen_estado/view-examen-estado/view-examen-estado.component';
 import { AuthGuard } from 'src/_guards/auth.guard';
 import { ProgressBarComponent } from '../components/progress-bar/progress-bar.component';
@@ -141,7 +140,6 @@ export function createTranslateLoader(http: HttpClient) {
     InscripcionPregradoComponent,
     ListInformacionComponent,
     ListInformacionAcademicaComponent,
-    CrudInformacionAcademicaComponent,
     ViewExamenEstadoComponent,
   ],
   imports: [

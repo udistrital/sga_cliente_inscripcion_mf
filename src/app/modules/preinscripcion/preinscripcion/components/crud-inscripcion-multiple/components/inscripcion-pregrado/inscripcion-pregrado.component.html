@@ -274,7 +274,27 @@
             </mat-card>
           </div>
 
-          <div
+          <div *ngIf="tagsObject.informacion_academica.selected && puedeInscribirse && !soloPuedeVer">
+            <mat-card class="exp-card" (click)="perfil_editar('informacion_academica')">
+              <mat-card-header class="exp-card-header"><b>{{
+                  "inscripcion.informacion_academica" | translate
+                  }}</b></mat-card-header>
+              <mat-card-content class="exp-card-content">
+                <mat-icon class="exp-card-content-icon">school</mat-icon>
+                <p class="percentage">{{ percentage_acad }} %</p>
+              </mat-card-content>
+              <mat-card-footer class="exp-card-content-footer">
+                <div *ngIf="tagsObject.informacion_academica.required">
+                  {{ "GLOBAL.obligatorio" | translate }}
+                </div>
+                <div *ngIf="!tagsObject.informacion_academica.required">
+                  {{ "GLOBAL.opcional" | translate }}
+                </div>
+              </mat-card-footer>
+            </mat-card>
+          </div>
+
+          <!-- <div
             *ngIf="tagsObject.formacion_academica.selected && puedeInscribirse && !soloPuedeVer">
             <mat-card class="exp-card" (click)="perfil_editar('formacion_academica')">
               <mat-card-header class="exp-card-header"
@@ -295,7 +315,7 @@
                 </div>
               </mat-card-footer>
             </mat-card>
-          </div>
+          </div> -->
 
           <div *ngIf="tagsObject.datos_acudiente.selected && puedeInscribirse && !soloPuedeVer">
             <mat-card class="exp-card" (click)="perfil_editar('datos_acudiente')">
@@ -318,6 +338,8 @@
               </mat-card-footer>
             </mat-card>
           </div>
+
+          
 
           <!-- <div
             *ngIf="
