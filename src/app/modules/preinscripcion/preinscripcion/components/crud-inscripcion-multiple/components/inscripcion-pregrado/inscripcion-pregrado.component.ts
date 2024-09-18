@@ -234,6 +234,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
 
     this.info_persona_id = await this.userService.getPersonaId();
     console.log("INFO EN ORIGINAL ", this.info_persona_id);
+    sessionStorage.setItem('IdTercero', String(this.info_persona_id));
   }
 
   activateTab() {
@@ -326,6 +327,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
           }
         }else{
           this.preinscrito = true
+          // this.puedeInscribirse = true;
           this.loadSuitePrograma(this.IdPeriodo,this.IdPrograma,this.IdTipo)
         } 
       },
@@ -559,10 +561,10 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       conteoObligatorios += 1;
     }
 
-    if (this.tagsObject.formacion_academica.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_acad);
-      conteoObligatorios += 1;
-    }
+    // if (this.tagsObject.formacion_academica.required) {
+    //   sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_acad);
+    //   conteoObligatorios += 1;
+    // }
 
     // if (this.tagsObject.idiomas.required) {
     //   sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_idio);
@@ -598,6 +600,12 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       sumaPorcentajes += UtilidadesService.getSumArray(this.percentaje_tab_examen);
       conteoObligatorios += 1;
     }
+
+    if (this.tagsObject.informacion_academica.required) {
+      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_acad);
+      conteoObligatorios += 1;
+    }
+
 
     if (this.tagsObject.datos_acudiente.required) {
       sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_familiar);
@@ -693,6 +701,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   loadPercentageExamenEstado() {}
 
   loadPercentageInformacionFamiliar() {}
+
+  loadPercentageInformacionAcademica() {}
   
   // loadPercentageIdiomas() {
   //     this.idiomaService.get('conocimiento_idioma?query=Activo:true,TercerosId:' + this.info_persona_id + '&limit=0')
@@ -907,20 +917,20 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     }
 
     // Consulta si hay información en formación académica
-    if (this.percentage_acad === 0 && this.tagsObject.formacion_academica.selected) {
-      if (this.nivel == 'Pregrado') {
-        let factor = 1
-        if (this.selectTipo != 'Transferencia interna' && this.selectTipo != 'Reingreso' && this.selectTipo != 'Transferencia externa') {
-          let factor = 2
-          ////////////////////////////////////////////////////////////////////////////////
-          ////// TO DO: Preguntas de ingreso a al univerisdad en inscripción normal //////
-          ////////////////////////////////////////////////////////////////////////////////
-        }
-        await this.loadPercentageFormacionAcademicaPregado(factor);
-      } else {
-        await this.loadPercentageFormacionAcademica();
-      }
-    }
+    // if (this.percentage_acad === 0 && this.tagsObject.formacion_academica.selected) {
+    //   if (this.nivel == 'Pregrado') {
+    //     let factor = 1
+    //     if (this.selectTipo != 'Transferencia interna' && this.selectTipo != 'Reingreso' && this.selectTipo != 'Transferencia externa') {
+    //       let factor = 2
+    //       ////////////////////////////////////////////////////////////////////////////////
+    //       ////// TO DO: Preguntas de ingreso a al univerisdad en inscripción normal //////
+    //       ////////////////////////////////////////////////////////////////////////////////
+    //     }
+    //     await this.loadPercentageFormacionAcademicaPregado(factor);
+    //   } else {
+    //     await this.loadPercentageFormacionAcademica();
+    //   }
+    // }
 
     // Consulta si hay información en idiomas
     // if (this.percentage_idio === 0 && this.tagsObject.idiomas.selected) {
@@ -960,6 +970,11 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     if (this.percentage_familiar === 0 && this.tagsObject.datos_acudiente.selected) {
       await this.loadPercentageInformacionFamiliar();
     }
+
+    if (this.percentage_familiar === 0 && this.tagsObject.informacion_academica.selected) {
+      await this.loadPercentageInformacionAcademica();
+    }
+
 
     // Consulta si hay información en descuento
     // if (this.percentage_desc === 0 && this.tagsObject.descuento_matricula.selected) {
@@ -1108,29 +1123,33 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_examen = false;
         break;
       case 'info_persona':
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
         console.log(this.selectTipo, this.viewtag);
-        if (this.selectTipo === 'Pregrado') {
-          this.viewtag = 'Informacion_pregrado'
-          this.selecttabview(this.viewtag);
-        }
-        if (this.selectTipo === 'Posgrado') {
-          this.viewtag = 'Informacion_posgrado'
-          this.selecttabview(this.viewtag);
-        }
-        if (this.selectTipo === 'Transferencia interna' || this.selectTipo === 'Reingreso') {
-          if (this.nivel === 'Pregrado') {
-            this.viewtag = 'Informacion_pregrado'
-            this.selecttabview(this.viewtag);
-          }
-          if (this.nivel === 'Posgrado') {
-            this.viewtag = 'Informacion_posgrado'
-            this.selecttabview(this.viewtag);
-          }
-        }
-        if (this.inscripcion.TipoInscripcion === 'Transferencia externa') {
-          this.viewtag = 'Informacion_externa'
-          this.selecttabview(this.viewtag);
-        }
+        this.viewtag = 'Informacion_pregrado'
+        this.selecttabview(this.viewtag);
+        // if (this.selectTipo === 'Pregrado') {
+        //   console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        //   this.viewtag = 'Informacion_pregrado'
+        //   this.selecttabview(this.viewtag);
+        // }
+        // if (this.selectTipo === 'Posgrado') {
+        //   this.viewtag = 'Informacion_posgrado'
+        //   this.selecttabview(this.viewtag);
+        // }
+        // if (this.selectTipo === 'Transferencia interna' || this.selectTipo === 'Reingreso') {
+        //   if (this.nivel === 'Pregrado') {
+        //     this.viewtag = 'Informacion_pregrado'
+        //     this.selecttabview(this.viewtag);
+        //   }
+        //   if (this.nivel === 'Posgrado') {
+        //     this.viewtag = 'Informacion_posgrado'
+        //     this.selecttabview(this.viewtag);
+        //   }
+        // }
+        // if (this.inscripcion.TipoInscripcion === 'Transferencia externa') {
+        //   this.viewtag = 'Informacion_externa'
+        //   this.selecttabview(this.viewtag);
+        // }
         break;
       case 'info_familiar':
         this.showRegreso = false;
@@ -1323,6 +1342,24 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_desc = false;
         this.show_acudiente = false;
         this.show_examen = true;
+        break;
+      case 'informacion_academica':
+        this.showRegreso = false;
+        this.show_info = false;
+        this.show_profile = false;
+        this.show_acad = true;
+        this.show_idiomas = false;
+        this.show_expe = false;
+        this.info_contacto = false;
+        this.info_caracteristica = false;
+        this.info_persona = false;
+        this.show_desc = false;
+        this.show_docu = false;
+        this.show_proy = false;
+        this.show_prod = false;
+        this.show_desc = false;
+        this.show_acudiente = false;
+        this.show_examen = false;
         break;
       case 'salir_preinscripcion':
         this.activateTab();
