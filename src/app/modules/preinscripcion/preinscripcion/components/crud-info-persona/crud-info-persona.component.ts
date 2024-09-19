@@ -337,7 +337,7 @@ export class CrudInfoPersonaComponent implements OnInit {
     infoPersona.FechaExpedicion = infoPersona.FechaExpedicion + ' +0000 +0000';
     infoPersona.NumeroIdentificacion = infoPersona.NumeroIdentificacion.toString();
     infoPersona.Usuario = this.userService.getPayload().email;
-    this.terceroMidService.post('personas/', infoPersona).subscribe(
+    this.terceroMidService.post('personas', infoPersona).subscribe(
       (res: any) => {
         res = res.data;
         const r = <any>res;
