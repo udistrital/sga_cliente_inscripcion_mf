@@ -1,5 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -29,7 +36,7 @@ import { decrypt } from 'src/app/utils/util-encrypt';
 @Component({
   selector: 'ngx-inscripcion-general',
   templateUrl: './inscripcion-general.component.html',
-  styleUrls: ['./inscripcion-general.component.scss']
+  styleUrls: ['./inscripcion-general.component.scss'],
 })
 export class InscripcionGeneralComponent implements OnInit, OnChanges {
   hide_header_labels!: boolean;
@@ -42,11 +49,11 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   es_transferencia: boolean = false;
   nivel: any;
 
-  tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+  tagsObject = { ...TAGS_INSCRIPCION_PROGRAMA };
 
   @Input('inscriptionSettings')
   set nameInscription(inscriptionSettings: any) {
-    if(inscriptionSettings){
+    if (inscriptionSettings) {
       const {
         basic_info_button,
         hide_header_labels,
@@ -59,7 +66,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         produccion_academica,
         es_transferencia,
       } = inscriptionSettings;
-  
+
       this.nivel = nivel;
       this.selectTipo = select_tipo;
       this.hide_header_labels = !!hide_header_labels;
@@ -94,7 +101,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   info_persona_id!: number | null;
   info_ente_id!: number;
   estado_inscripcion!: number;
-  estado_inscripcion_nombre: string = "";
+  estado_inscripcion_nombre: string = '';
   estaInscrito: boolean = false;
   info_info_persona: any;
   usuariowso2: any;
@@ -121,13 +128,13 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   total: boolean = false;
 
   percentage_tab_info: any[] = [];
-  percentage_tab_expe: any[] = [];;
-  percentage_tab_acad: any[] = [];;
-  percentage_tab_idio: any[] = [];;
-  percentage_tab_proy: any[] = [];;
-  percentage_tab_prod: any[] = [];;
-  percentage_tab_desc: any[] = [];;
-  percentage_tab_docu: any[] = [];;
+  percentage_tab_expe: any[] = [];
+  percentage_tab_acad: any[] = [];
+  percentage_tab_idio: any[] = [];
+  percentage_tab_proy: any[] = [];
+  percentage_tab_prod: any[] = [];
+  percentage_tab_desc: any[] = [];
+  percentage_tab_docu: any[] = [];
   posgrados!: any[];
   tipo_inscripciones = [];
 
@@ -186,11 +193,14 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     private calendarioMidService: CalendarioMidService,
     private dialog: MatDialog,
     private evaluacionInscripcionService: EvaluacionInscripcionService,
-    private timeService: TimeService,
+    private timeService: TimeService
   ) {
-    sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
+    sessionStorage.setItem(
+      'TerceroId',
+      this.userService.getPersonaId().toString()
+    );
     this.translate = translate;
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {});
     this.total = true;
     this.listService.findPais();
     this.loadData();
@@ -202,15 +212,24 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   async loadData() {
-    if(<string>sessionStorage.getItem('IdEstadoInscripcion') != null){
-      this.estado_inscripcion_nombre = <string>sessionStorage.getItem('IdEstadoInscripcion')!.toUpperCase();
+    if (<string>sessionStorage.getItem('IdEstadoInscripcion') != null) {
+      this.estado_inscripcion_nombre = <string>(
+        sessionStorage.getItem('IdEstadoInscripcion')!.toUpperCase()
+      );
     }
     this.inscripcion = new Inscripcion();
-    this.inscripcion.Id = parseInt(sessionStorage.getItem('IdInscripcion')!, 10);
-    this.inscripcion.ProgramaAcademicoId = sessionStorage.getItem('ProgramaAcademico');
+    this.inscripcion.Id = parseInt(
+      sessionStorage.getItem('IdInscripcion')!,
+      10
+    );
+    this.inscripcion.ProgramaAcademicoId =
+      sessionStorage.getItem('ProgramaAcademico');
     const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
-    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
-    const IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
+    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10);
+    const IdPrograma = parseInt(
+      sessionStorage.getItem('ProgramaAcademicoId')!,
+      10
+    );
     // Se carga el nombre del periodo al que se inscribió
     this.loadPeriodo(IdPeriodo);
     // Se carga el tipo de inscripción
@@ -220,82 +239,124 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   loadProject() {
-    this.posgrados = new Array;
+    this.posgrados = new Array();
     const IdNivel = parseInt(sessionStorage.getItem('IdNivel')!, 10);
     let periodo = localStorage.getItem('IdPeriodo');
-    this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
-      response => {
-        const r = <any>response;
-        if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
-          const inscripcionP = <Array<any>>response.Data;
-          this.posgrados = inscripcionP;
-          this.selectedValue = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10);
-        } else {
-          this.popUpManager.showAlert('', this.translate.instant('inscripcion.no_inscripcion'));
+    this.calendarioMidService
+      .get(
+        'calendario-proyecto/calendario/proyecto?id-nivel=' +
+          IdNivel +
+          '&id-periodo=' +
+          periodo
+      )
+      .subscribe(
+        (response) => {
+          const r = <any>response;
+          if (
+            response !== null &&
+            response !== '{}' &&
+            r.Type !== 'error' &&
+            r.length !== 0
+          ) {
+            const inscripcionP = <Array<any>>response.Data;
+            this.posgrados = inscripcionP;
+            this.selectedValue = parseInt(
+              sessionStorage.getItem('ProgramaAcademicoId')!,
+              10
+            );
+          } else {
+            this.popUpManager.showAlert(
+              '',
+              this.translate.instant('inscripcion.no_inscripcion')
+            );
+          }
+        },
+        (error) => {
+          this.popUpManager.showErrorToast(
+            this.translate.instant('ERROR.general')
+          );
         }
-      },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-      },
-    );
+      );
   }
 
   loadNivel(IdPrograma: number) {
-    this.programaService.get('proyecto_academico_institucion/?query=Id:' + IdPrograma).subscribe(
-      (response: any) => {
-        let IdNivel;
-        if (response[0].NivelFormacionId.NivelFormacionPadreId !== null) {
-          IdNivel = response[0].NivelFormacionId.NivelFormacionPadreId.Id;
-        } else {
-          IdNivel = response[0].NivelFormacionId.Id;
+    this.programaService
+      .get('proyecto_academico_institucion/?query=Id:' + IdPrograma)
+      .subscribe(
+        (response: any) => {
+          let IdNivel;
+          if (response[0].NivelFormacionId.NivelFormacionPadreId !== null) {
+            IdNivel = response[0].NivelFormacionId.NivelFormacionPadreId.Id;
+          } else {
+            IdNivel = response[0].NivelFormacionId.Id;
+          }
+          this.programaService.get('nivel_formacion/' + IdNivel).subscribe(
+            (res: any) => {
+              this.inscripcion.Nivel = res.Nombre;
+              this.inscripcion.IdNivel = res.Id;
+              sessionStorage.setItem('IdNivel', res.Id);
+              this.loadProject();
+            },
+            (error) => {
+              this.popUpManager.showErrorToast(
+                this.translate.instant('ERROR.general')
+              );
+            }
+          );
+        },
+        (error) => {
+          this.popUpManager.showErrorToast(
+            this.translate.instant('ERROR.general')
+          );
         }
-        this.programaService.get('nivel_formacion/' + IdNivel).subscribe(
-          (res: any) => {
-            this.inscripcion.Nivel = res.Nombre;
-            this.inscripcion.IdNivel = res.Id;
-            sessionStorage.setItem('IdNivel', res.Id)
-            this.loadProject();
-          },
-          error => {
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-          },
-        );
-      },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-      },
-    );
+      );
   }
 
   async checkEventoInscripcion() {
-    if(this.selectedValue) {
-      let EventosPrograma = this.posgrados.find((EventsProgram) => EventsProgram.ProyectoId == this.selectedValue);
+    if (this.selectedValue) {
+      let EventosPrograma = this.posgrados.find(
+        (EventsProgram) => EventsProgram.ProyectoId == this.selectedValue
+      );
       if (EventosPrograma) {
         if (EventosPrograma.EventoInscripcion) {
-          let fechafin = moment(EventosPrograma.EventoInscripcion.FechaFinEvento,"YYYY-MM-DDTHH:mm:ss").tz("America/Bogota").toDate();
+          let fechafin = moment(
+            EventosPrograma.EventoInscripcion.FechaFinEvento,
+            'YYYY-MM-DDTHH:mm:ss'
+          )
+            .tz('America/Bogota')
+            .toDate();
           fechafin.setDate(fechafin.getDate() + 1);
 
-          const realhora = await this.timeService.getDate("BOG");
-          let ahora = moment(realhora).tz("America/Bogota").toDate();
+          const realhora = await this.timeService.getDate('BOG');
+          let ahora = moment(realhora).tz('America/Bogota').toDate();
 
-          if(fechafin > ahora) {
+          if (fechafin > ahora) {
             this.puedeInscribirse = true;
           } else {
-            if(!this.estaInscrito){
-              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.no_puede_inscribirse'));
+            if (!this.estaInscrito) {
+              this.popUpManager.showErrorAlert(
+                this.translate.instant('inscripcion.no_puede_inscribirse')
+              );
             }
             this.puedeInscribirse = false;
           }
         } else {
-          this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.no_hay_programa_evento'));
+          this.popUpManager.showErrorAlert(
+            this.translate.instant('inscripcion.no_hay_programa_evento')
+          );
           this.puedeInscribirse = false;
         }
       } else {
-        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.no_hay_programa_evento'));
+        this.popUpManager.showErrorAlert(
+          this.translate.instant('inscripcion.no_hay_programa_evento')
+        );
         this.puedeInscribirse = false;
       }
     }
-    localStorage.setItem("goToEdit", String(this.puedeInscribirse && !this.soloPuedeVer));
+    localStorage.setItem(
+      'goToEdit',
+      String(this.puedeInscribirse && !this.soloPuedeVer)
+    );
     return this.puedeInscribirse;
   }
 
@@ -304,9 +365,11 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
       (response: any) => {
         this.inscripcion.TipoInscripcion = response.Nombre;
       },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-      },
+      (error) => {
+        this.popUpManager.showErrorToast(
+          this.translate.instant('ERROR.general')
+        );
+      }
     );
   }
 
@@ -315,13 +378,15 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
       (response: any) => {
         this.inscripcion.PeriodoId = response.Data.Nombre;
       },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-      },
+      (error) => {
+        this.popUpManager.showErrorToast(
+          this.translate.instant('ERROR.general')
+        );
+      }
     );
   }
 
-  create_inscription(data:any) {
+  create_inscription(data: any) {
     const info_inscripcion_temp = {
       Id: 0,
       PersonaId: this.info_persona_id || 4,
@@ -334,129 +399,169 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         Id: 1,
       },
       TipoInscripcionId: this.tipo_inscripcion_selected,
-    }
-    this.inscripcionService.post('inscripcion', info_inscripcion_temp)
-      .subscribe(res => {
-        const r = <any>res;
-        if (res !== null && r.Type !== 'error') {
-          this.inscripcion_id = r.Id;
-        }
-      },
+    };
+    this.inscripcionService
+      .post('inscripcion', info_inscripcion_temp)
+      .subscribe(
+        (res) => {
+          const r = <any>res;
+          if (res !== null && r.Type !== 'error') {
+            this.inscripcion_id = r.Id;
+          }
+        },
         (error: HttpErrorResponse) => {
           Swal.fire({
             icon: 'error',
             title: error.status + '',
-            text: this.translate.instant('inscripcion.error_registrar_informacion'),
+            text: this.translate.instant(
+              'inscripcion.error_registrar_informacion'
+            ),
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
-        });
+        }
+      );
   }
 
-  setPercentage_info(number:any, tab:any) {
+  setPercentage_info(number: any, tab: any) {
     this.percentage_tab_info[tab] = (number * 100) / 2;
-    this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info));
+    this.percentage_info = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_info)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_info_externo(number:any, tab:any) {
+  setPercentage_info_externo(number: any, tab: any) {
     this.percentage_tab_info[tab] = (number * 100) / 3;
-    this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info));
+    this.percentage_info = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_info)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_acad(number:any, tab:any) {
+  setPercentage_acad(number: any, tab: any) {
     this.percentage_tab_acad[tab] = (number * 100) / 1;
-    this.percentage_acad = Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad));
+    this.percentage_acad = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_acad)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_idio(number:any, tab:any) {
+  setPercentage_idio(number: any, tab: any) {
     this.percentage_tab_idio[tab] = (number * 100) / 1;
-    this.percentage_idio = Math.round(UtilidadesService.getSumArray(this.percentage_tab_idio));
+    this.percentage_idio = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_idio)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_acad_pre(number:any, tab:any) {
-    this.percentage_tab_acad[tab] = (number * 100);
+  setPercentage_acad_pre(number: any, tab: any) {
+    this.percentage_tab_acad[tab] = number * 100;
     if (!this.es_transferencia) {
       this.percentage_tab_acad[tab] = (number * 100) / 2;
     }
-    this.percentage_acad = Math.round(UtilidadesService.getSumArray(this.percentage_tab_acad));
+    this.percentage_acad = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_acad)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_expe(number:any, tab:any) {
+  setPercentage_expe(number: any, tab: any) {
     this.percentage_tab_expe[tab] = (number * 100) / 1;
-    this.percentage_expe = Math.round(UtilidadesService.getSumArray(this.percentage_tab_expe));
+    this.percentage_expe = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_expe)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_proy(number:any, tab:any) {
+  setPercentage_proy(number: any, tab: any) {
     this.percentage_tab_proy[tab] = (number * 100) / 1;
-    this.percentage_proy = Math.round(UtilidadesService.getSumArray(this.percentage_tab_proy));
+    this.percentage_proy = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_proy)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_desc(number:any, tab:any) {
+  setPercentage_desc(number: any, tab: any) {
     this.percentage_tab_desc[tab] = (number * 100) / 1;
-    this.percentage_desc = Math.round(UtilidadesService.getSumArray(this.percentage_tab_desc));
+    this.percentage_desc = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_desc)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_docu(number:any, tab:any) {
+  setPercentage_docu(number: any, tab: any) {
     this.percentage_tab_docu[tab] = (number * 100) / 1;
-    this.percentage_docu = Math.round(UtilidadesService.getSumArray(this.percentage_tab_docu));
+    this.percentage_docu = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_docu)
+    );
     this.setPercentage_total();
   }
 
-  setPercentage_prod(number:any, tab:any) {
+  setPercentage_prod(number: any, tab: any) {
     this.percentage_tab_prod[tab] = (number * 100) / 1;
-    this.percentage_prod = Math.round(UtilidadesService.getSumArray(this.percentage_tab_prod));
+    this.percentage_prod = Math.round(
+      UtilidadesService.getSumArray(this.percentage_tab_prod)
+    );
     this.setPercentage_total();
   }
 
   setPercentage_total() {
-
     let conteoObligatorios = 0;
     let sumaPorcentajes = 0;
 
     if (this.tagsObject.info_persona.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_info);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_info
+      );
       conteoObligatorios += 1;
     }
 
     if (this.tagsObject.formacion_academica.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_acad);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_acad
+      );
       conteoObligatorios += 1;
     }
 
     if (this.tagsObject.idiomas.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_idio);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_idio
+      );
       conteoObligatorios += 1;
     }
 
     if (this.tagsObject.experiencia_laboral.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_expe);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_expe
+      );
       conteoObligatorios += 1;
     }
 
     if (this.tagsObject.produccion_academica.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_prod);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_prod
+      );
       conteoObligatorios += 1;
     }
 
     if (this.tagsObject.documento_programa.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_docu);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_docu
+      );
       conteoObligatorios += 1;
     }
 
     if (this.tagsObject.descuento_matricula.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_desc);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_desc
+      );
       conteoObligatorios += 1;
     }
 
     if (this.tagsObject.propuesta_grado.required) {
-      sumaPorcentajes += UtilidadesService.getSumArray(this.percentage_tab_proy);
+      sumaPorcentajes += UtilidadesService.getSumArray(
+        this.percentage_tab_proy
+      );
       conteoObligatorios += 1;
     }
 
@@ -466,13 +571,29 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     if (sessionStorage['EstadoInscripcion']) {
       if (this.percentage_total >= 100) {
         this.total = false;
-        let enAlgunaVista = this.show_profile || this.show_info_pregrado ||
-                            this.show_acad_pregrado || this.show_expe || 
-                            this.show_proy || this.show_prod || this.show_desc ||
-                            this.show_docu || this.show_info || this.show_acad || 
-                            this.show_info_externa || this.show_idiomas;
-        if (!enAlgunaVista && this.estado_inscripcion_nombre == "INSCRIPCIÓN SOLICITADA"){
-          this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.inscripcion'), this.translate.instant('inscripcion.mensaje_100_inscripcion'), "info", false)
+        let enAlgunaVista =
+          this.show_profile ||
+          this.show_info_pregrado ||
+          this.show_acad_pregrado ||
+          this.show_expe ||
+          this.show_proy ||
+          this.show_prod ||
+          this.show_desc ||
+          this.show_docu ||
+          this.show_info ||
+          this.show_acad ||
+          this.show_info_externa ||
+          this.show_idiomas;
+        if (
+          !enAlgunaVista &&
+          this.estado_inscripcion_nombre == 'INSCRIPCIÓN SOLICITADA'
+        ) {
+          this.popUpManager.showPopUpGeneric(
+            this.translate.instant('inscripcion.inscripcion'),
+            this.translate.instant('inscripcion.mensaje_100_inscripcion'),
+            'info',
+            false
+          );
         }
       } else {
         this.total = true;
@@ -481,172 +602,236 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   loadPercentageInfoCaracteristica(factor: number) {
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
-        .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
-            this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2));
-            this.percentage_tab_info[1] = Number((100 / factor));
-          } else {
-            this.percentage_info = this.percentage_info + 0;
-            this.percentage_tab_info[1] = 0;
-          }
-        });
+    this.terceroMidService
+      .get('personas/' + this.info_persona_id + '/complementarios')
+      .subscribe((res) => {
+        if (
+          res !== null &&
+          JSON.stringify(res[0]) !== '{}' &&
+          res.Status != '404'
+        ) {
+          this.percentage_info =
+            this.percentage_info + Number((100 / factor).toFixed(2));
+          this.percentage_tab_info[1] = Number(100 / factor);
+        } else {
+          this.percentage_info = this.percentage_info + 0;
+          this.percentage_tab_info[1] = 0;
+        }
+      });
   }
 
   loadPercentageInfoContacto(factor: number) {
-      this.inscripcionMidService.get('inscripciones/informacion-complementaria/tercero/' + this.info_persona_id)
-        .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
-            this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2));
-            this.percentage_tab_info[2] = Number((100 / factor));
-          } else {
-            this.percentage_info = this.percentage_info + 0;
-            this.percentage_tab_info[2] = 0;
-          }
-        });
+    this.inscripcionMidService
+      .get(
+        'inscripciones/informacion-complementaria/tercero/' +
+          this.info_persona_id
+      )
+      .subscribe((res) => {
+        if (
+          res !== null &&
+          JSON.stringify(res[0]) !== '{}' &&
+          res.Status != '404'
+        ) {
+          this.percentage_info =
+            this.percentage_info + Number((100 / factor).toFixed(2));
+          this.percentage_tab_info[2] = Number(100 / factor);
+        } else {
+          this.percentage_info = this.percentage_info + 0;
+          this.percentage_tab_info[2] = 0;
+        }
+      });
   }
 
   loadPercentageInfoFamiliar(factor: number) {
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/familiar')
-        .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}' && res.Status != '404') {
-            this.percentage_info = this.percentage_info + Number((100 / factor).toFixed(2)) + 0.01;
-            this.percentage_tab_info[3] = Number((100 / factor));
-          } else {
-            this.percentage_info = this.percentage_info + 0;
-            this.percentage_tab_info[3] = 0;
-          }
-        });
+    this.terceroMidService
+      .get('personas/' + this.info_persona_id + '/familiar')
+      .subscribe((res) => {
+        if (
+          res !== null &&
+          JSON.stringify(res[0]) !== '{}' &&
+          res.Status != '404'
+        ) {
+          this.percentage_info =
+            this.percentage_info + Number((100 / factor).toFixed(2)) + 0.01;
+          this.percentage_tab_info[3] = Number(100 / factor);
+        } else {
+          this.percentage_info = this.percentage_info + 0;
+          this.percentage_tab_info[3] = 0;
+        }
+      });
   }
 
   loadPercentageFormacionAcademica() {
-      this.inscripcionMidService.get('academico/formacion/?Id=' + this.info_persona_id)
-        .subscribe(res => {
-          if (res.Status == '200' && (Object.keys(res.Data).length > 0)) {
-            this.percentage_acad = 100;
-            this.percentage_tab_acad[0] = 100;
-          } else {
-            this.percentage_acad = 0;
-            this.percentage_tab_acad[0] = 0;
-          }
-        
-    });
+    this.inscripcionMidService
+      .get('academico/formacion/?Id=' + this.info_persona_id)
+      .subscribe((res) => {
+        if (res.Status == '200' && Object.keys(res.Data).length > 0) {
+          this.percentage_acad = 100;
+          this.percentage_tab_acad[0] = 100;
+        } else {
+          this.percentage_acad = 0;
+          this.percentage_tab_acad[0] = 0;
+        }
+      });
   }
 
-  loadPercentageFormacionAcademicaPregado(factor:any) {
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/formacion-pregrado')
-        .subscribe(res => {
-          if (res.Status == '200') {
-            this.percentage_acad = this.percentage_acad + (100 / factor);
-            this.percentage_tab_acad[0] = (100 / factor);
-          } else {
-            this.percentage_acad = this.percentage_acad + 0;
-            this.percentage_tab_acad[0] = 0;
-          }
-        });
+  loadPercentageFormacionAcademicaPregado(factor: any) {
+    this.terceroMidService
+      .get('personas/' + this.info_persona_id + '/formacion-pregrado')
+      .subscribe((res) => {
+        if (res.Status == '200') {
+          this.percentage_acad = this.percentage_acad + 100 / factor;
+          this.percentage_tab_acad[0] = 100 / factor;
+        } else {
+          this.percentage_acad = this.percentage_acad + 0;
+          this.percentage_tab_acad[0] = 0;
+        }
+      });
   }
-  
+
   loadPercentageIdiomas() {
-      this.idiomaService.get('conocimiento_idioma?query=Activo:true,TercerosId:' + this.info_persona_id + '&limit=0')
-        .subscribe(res => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}') {
-            this.percentage_idio = 100;
-            this.percentage_tab_idio[0] = 100;
-          } else {
-            this.percentage_idio = 0;
-            this.percentage_tab_idio[0] = 0;
-          }
-    });
+    this.idiomaService
+      .get(
+        'conocimiento_idioma?query=Activo:true,TercerosId:' +
+          this.info_persona_id +
+          '&limit=0'
+      )
+      .subscribe((res) => {
+        if (res !== null && JSON.stringify(res[0]) !== '{}') {
+          this.percentage_idio = 100;
+          this.percentage_tab_idio[0] = 100;
+        } else {
+          this.percentage_idio = 0;
+          this.percentage_tab_idio[0] = 0;
+        }
+      });
   }
 
   loadPercentageExperienciaLaboral() {
-      this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.info_persona_id)
-        .subscribe((res: any) => {
-          if (res.Status == '200' && res.Data.length > 0) {
-            this.percentage_expe = 100;
-            this.percentage_tab_expe[0] = 100;
-          } else {
-            this.percentage_expe = 0;
-            this.percentage_tab_expe[0] = 0;
-          }
-        });
+    this.inscripcionMidService
+      .get('experiencia-laboral/tercero/?Id=' + this.info_persona_id)
+      .subscribe((res: any) => {
+        if (res.Status == '200' && res.Data.length > 0) {
+          this.percentage_expe = 100;
+          this.percentage_tab_expe[0] = 100;
+        } else {
+          this.percentage_expe = 0;
+          this.percentage_tab_expe[0] = 0;
+        }
+      });
   }
 
   loadPercentageProduccionAcademica() {
-      this.inscripcionMidService.get('academico/produccion/' + this.info_persona_id)
-        .subscribe(res => {
-          if (res.Status == '200' && res.Data != null) {
-            this.percentage_prod = 100;
-            this.percentage_tab_prod[0] = 100;
-          } else {
-            this.percentage_prod = 0;
-            this.percentage_tab_prod[0] = 0;
-          }
-        });
+    this.inscripcionMidService
+      .get('academico/produccion/' + this.info_persona_id)
+      .subscribe((res) => {
+        if (res.Status == '200' && res.Data != null) {
+          this.percentage_prod = 100;
+          this.percentage_tab_prod[0] = 100;
+        } else {
+          this.percentage_prod = 0;
+          this.percentage_tab_prod[0] = 0;
+        }
+      });
   }
 
   loadPercentageDocumentos() {
-      this.inscripcionService.get('soporte_documento_programa?query=InscripcionId.Id:' +
-        this.inscripcion.Id + ',DocumentoProgramaId.ProgramaId:' + parseInt(sessionStorage['ProgramaAcademicoId'], 10) + ',DocumentoProgramaId.TipoInscripcionId:' + parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) + ',DocumentoProgramaId.PeriodoId:' + parseInt(sessionStorage.getItem('IdPeriodo')!, 10) + ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true&limit=0').subscribe(
-          (res: any[]) => {
-            if (Object.keys(res[0]).length > 0) {
-              this.percentage_docu = Math.round((res.length / this.tipo_documentos.length) * 100);
-              if(this.percentage_docu >= 100){
-                this.percentage_docu = 100;
-              }
-              this.percentage_tab_docu[0] = Math.round(this.percentage_docu);
-            } else {
-              this.percentage_docu = 0;
-              this.percentage_tab_docu[0] = 0;
-            }
-          });
+    this.inscripcionService
+      .get(
+        'soporte_documento_programa?query=InscripcionId.Id:' +
+          this.inscripcion.Id +
+          ',DocumentoProgramaId.ProgramaId:' +
+          parseInt(sessionStorage['ProgramaAcademicoId'], 10) +
+          ',DocumentoProgramaId.TipoInscripcionId:' +
+          parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) +
+          ',DocumentoProgramaId.PeriodoId:' +
+          parseInt(sessionStorage.getItem('IdPeriodo')!, 10) +
+          ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true&limit=0'
+      )
+      .subscribe((res: any[]) => {
+        if (Object.keys(res[0]).length > 0) {
+          this.percentage_docu = Math.round(
+            (res.length / this.tipo_documentos.length) * 100
+          );
+          if (this.percentage_docu >= 100) {
+            this.percentage_docu = 100;
+          }
+          this.percentage_tab_docu[0] = Math.round(this.percentage_docu);
+        } else {
+          this.percentage_docu = 0;
+          this.percentage_tab_docu[0] = 0;
+        }
+      });
   }
 
-  loadPercentageDescuentos() {
-    const id = decrypt(window.localStorage.getItem('persona_id'));
-      this.inscripcionMidService.get('academico/descuento/detalle?' + 'PersonaId=' +
-        id + '&DependenciaId=' +
-        Number(window.sessionStorage.getItem('ProgramaAcademicoId')) + '&PeriodoId=' + Number(window.sessionStorage.getItem('IdPeriodo')))
-        .subscribe((res: any) => {
-          if (res.Status == '200' && res.Data != null) {
-            this.percentage_desc = 100;
-            this.percentage_tab_desc[0] = 100;
-          } else {
-            this.percentage_desc = 0;
-            this.percentage_tab_desc[0] = 0;
-          }
-        });
+  async loadPercentageDescuentos() {
+    const terceroId = await this.userService.getPersonaId();
+    this.inscripcionMidService
+      .get(
+        'academico/descuento/detalle?' +
+          'PersonaId=' +
+          terceroId +
+          '&DependenciaId=' +
+          Number(window.sessionStorage.getItem('ProgramaAcademicoId')) +
+          '&PeriodoId=' +
+          Number(window.sessionStorage.getItem('IdPeriodo'))
+      )
+      .subscribe((res: any) => {
+        if (res.Status == '200' && res.Data != null) {
+          this.percentage_desc = 100;
+          this.percentage_tab_desc[0] = 100;
+        } else {
+          this.percentage_desc = 0;
+          this.percentage_tab_desc[0] = 0;
+        }
+      });
   }
 
   loadPercentageTrabajoDeGrado() {
-      this.inscripcionService.get('propuesta?query=Activo:true,InscripcionId:' +
-        Number(window.sessionStorage.getItem('IdInscripcion'))).subscribe((res: any) => {
-          if (res !== null && JSON.stringify(res[0]) !== '{}') {
-            this.percentage_proy = 100;
-            this.percentage_tab_proy[0] = 100;
-          } else {
-            this.percentage_proy = 0;
-            this.percentage_tab_proy[0] = 0;
-          }
-        });
+    this.inscripcionService
+      .get(
+        'propuesta?query=Activo:true,InscripcionId:' +
+          Number(window.sessionStorage.getItem('IdInscripcion'))
+      )
+      .subscribe((res: any) => {
+        if (res !== null && JSON.stringify(res[0]) !== '{}') {
+          this.percentage_proy = 100;
+          this.percentage_tab_proy[0] = 100;
+        } else {
+          this.percentage_proy = 0;
+          this.percentage_tab_proy[0] = 0;
+        }
+      });
   }
 
-  loadLists() {  
+  loadLists() {
     return new Promise((resolve, reject) => {
-    this.inscripcionService.get('documento_programa?query=Activo:true,ProgramaId:' + parseInt(sessionStorage['ProgramaAcademicoId'], 10) + ',TipoInscripcionId:' + parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) + ',PeriodoId:'+sessionStorage.getItem('IdPeriodo') + ',Obligatorio:true&limit=0').subscribe(
-      response => {
-        if (Object.keys(response[0]).length > 0) {
-          this.tipo_documentos = <any[]>response;
-        } else {
-          this.tipo_documentos = [];
-        }
-        resolve(this.tipo_documentos)
-      },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-        reject(error)
-      },
-    );
+      this.inscripcionService
+        .get(
+          'documento_programa?query=Activo:true,ProgramaId:' +
+            parseInt(sessionStorage['ProgramaAcademicoId'], 10) +
+            ',TipoInscripcionId:' +
+            parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) +
+            ',PeriodoId:' +
+            sessionStorage.getItem('IdPeriodo') +
+            ',Obligatorio:true&limit=0'
+        )
+        .subscribe(
+          (response) => {
+            if (Object.keys(response[0]).length > 0) {
+              this.tipo_documentos = <any[]>response;
+            } else {
+              this.tipo_documentos = [];
+            }
+            resolve(this.tipo_documentos);
+          },
+          (error) => {
+            this.popUpManager.showErrorToast(
+              this.translate.instant('ERROR.general')
+            );
+            reject(error);
+          }
+        );
     });
   }
 
@@ -664,10 +849,12 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   async getPorcentajes() {
-
     // Consulta si hay información en el tab de información personal
     if (this.percentage_info === 0 && this.tagsObject.info_persona.selected) {
-      if (this.selectTipo === 'Transferencia externa' || this.nivel == 'Pregrado') {
+      if (
+        this.selectTipo === 'Transferencia externa' ||
+        this.nivel == 'Pregrado'
+      ) {
         await this.loadPercentageInfoCaracteristica(3);
         await this.loadPercentageInfoContacto(3);
         await this.loadPercentageInfoFamiliar(3);
@@ -678,11 +865,18 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     }
 
     // Consulta si hay información en formación académica
-    if (this.percentage_acad === 0 && this.tagsObject.formacion_academica.selected) {
+    if (
+      this.percentage_acad === 0 &&
+      this.tagsObject.formacion_academica.selected
+    ) {
       if (this.nivel == 'Pregrado') {
-        let factor = 1
-        if (this.selectTipo != 'Transferencia interna' && this.selectTipo != 'Reingreso' && this.selectTipo != 'Transferencia externa') {
-          let factor = 2
+        let factor = 1;
+        if (
+          this.selectTipo != 'Transferencia interna' &&
+          this.selectTipo != 'Reingreso' &&
+          this.selectTipo != 'Transferencia externa'
+        ) {
+          let factor = 2;
           ////////////////////////////////////////////////////////////////////////////////
           ////// TO DO: Preguntas de ingreso a al univerisdad en inscripción normal //////
           ////////////////////////////////////////////////////////////////////////////////
@@ -696,9 +890,13 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     // Consulta si hay información en idiomas
     if (this.percentage_idio === 0 && this.tagsObject.idiomas.selected) {
       if (this.nivel == 'Pregrado') {
-        let factor = 1
-        if (this.selectTipo != 'Transferencia interna' && this.selectTipo != 'Reingreso' && this.selectTipo != 'Transferencia externa') {
-          let factor = 2
+        let factor = 1;
+        if (
+          this.selectTipo != 'Transferencia interna' &&
+          this.selectTipo != 'Reingreso' &&
+          this.selectTipo != 'Transferencia externa'
+        ) {
+          let factor = 2;
           ////////////////////////////////////////////////////////////////////////////////
           ////// TO DO: Preguntas de ingreso a al univerisdad en inscripción normal //////
           ////////////////////////////////////////////////////////////////////////////////
@@ -709,28 +907,43 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     }
 
     // Consulta si hay información en experiencia laboral
-    if (this.percentage_expe === 0 && this.tagsObject.experiencia_laboral.selected) {
+    if (
+      this.percentage_expe === 0 &&
+      this.tagsObject.experiencia_laboral.selected
+    ) {
       await this.loadPercentageExperienciaLaboral();
     }
 
     // Consulta si hay información en produccion academica
-    if (this.percentage_prod === 0 && this.tagsObject.produccion_academica.selected) {
+    if (
+      this.percentage_prod === 0 &&
+      this.tagsObject.produccion_academica.selected
+    ) {
       await this.loadPercentageProduccionAcademica();
     }
     // Consulta si hay información en documentos solicitados
-    if (this.percentage_docu === 0 && this.tagsObject.documento_programa.selected) {
+    if (
+      this.percentage_docu === 0 &&
+      this.tagsObject.documento_programa.selected
+    ) {
       await this.loadLists().then(async () => {
         await this.loadPercentageDocumentos();
-      })
+      });
     }
 
     // Consulta si hay información en descuento
-    if (this.percentage_desc === 0 && this.tagsObject.descuento_matricula.selected) {
+    if (
+      this.percentage_desc === 0 &&
+      this.tagsObject.descuento_matricula.selected
+    ) {
       await this.loadPercentageDescuentos();
     }
 
     // Consulta si hay información en propuesta trabajo de grado
-    if (this.percentage_proy === 0 && this.tagsObject.propuesta_grado.selected) {
+    if (
+      this.percentage_proy === 0 &&
+      this.tagsObject.propuesta_grado.selected
+    ) {
       await this.loadPercentageTrabajoDeGrado();
     }
     this.setPercentage_total();
@@ -757,78 +970,111 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   realizarInscripcion() {
-    if(this.Campo1Control.status == "VALID" && this.enfasisControl.status == "VALID") {
+    if (
+      this.Campo1Control.status == 'VALID' &&
+      this.enfasisControl.status == 'VALID'
+    ) {
+      this.inscripcionService
+        .get('inscripcion/' + parseInt(sessionStorage['IdInscripcion'], 10))
+        .subscribe(
+          (response: any) => {
+            const inscripcionPut: any = response;
+            inscripcionPut.ProgramaAcademicoId = parseInt(
+              sessionStorage['ProgramaAcademicoId'],
+              10
+            );
 
-      this.inscripcionService.get('inscripcion/' + parseInt(sessionStorage['IdInscripcion'], 10)).subscribe(
-        (response: any) => {
-          const inscripcionPut: any = response;
-          inscripcionPut.ProgramaAcademicoId = parseInt(sessionStorage['ProgramaAcademicoId'], 10);
-          
-          if (this.tieneEnfasis) {
-            if (this.enfasisSelected) {
-              inscripcionPut.EnfasisId = parseInt(this.enfasisSelected, 10);
-            } else {
-              inscripcionPut.EnfasisId = parseInt(this.enfasisControl.value!,10);
+            if (this.tieneEnfasis) {
+              if (this.enfasisSelected) {
+                inscripcionPut.EnfasisId = parseInt(this.enfasisSelected, 10);
+              } else {
+                inscripcionPut.EnfasisId = parseInt(
+                  this.enfasisControl.value!,
+                  10
+                );
+              }
             }
-          }
 
-          this.inscripcionService.get('estado_inscripcion?query=Nombre:INSCRITO').subscribe(
-            (response: any) => {
-              const estadoInscripcio: any = response[0];
-              inscripcionPut.EstadoInscripcionId = estadoInscripcio;
-              inscripcionPut.TerceroId = this.info_persona_id;
+            this.inscripcionService
+              .get('estado_inscripcion?query=Nombre:INSCRITO')
+              .subscribe(
+                (response: any) => {
+                  const estadoInscripcio: any = response[0];
+                  inscripcionPut.EstadoInscripcionId = estadoInscripcio;
+                  inscripcionPut.TerceroId = this.info_persona_id;
 
-              this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', inscripcionPut)
-                .subscribe(res_ins => {
-                  const r_ins = <any>res_ins;
-                  if (res_ins !== null && r_ins.Status !== '400') {
-                    this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.actualizar'));
-                    this.imprimir = true;
-                    localStorage.setItem("goToEdit", String(false));
-                    this.perfil_editar('perfil');
-                  }
+                  this.inscripcionMidService
+                    .post(
+                      'inscripciones/actualizar-inscripcion',
+                      inscripcionPut
+                    )
+                    .subscribe(
+                      (res_ins) => {
+                        const r_ins = <any>res_ins;
+                        if (res_ins !== null && r_ins.Status !== '400') {
+                          this.popUpManager.showSuccessAlert(
+                            this.translate.instant('inscripcion.actualizar')
+                          );
+                          this.imprimir = true;
+                          localStorage.setItem('goToEdit', String(false));
+                          this.perfil_editar('perfil');
+                        }
+                      },
+                      (error: any) => {
+                        if (error.System.Message.includes('duplicate')) {
+                          Swal.fire({
+                            icon: 'info',
+                            text: this.translate.instant(
+                              'inscripcion.error_update_programa_seleccionado'
+                            ),
+                            confirmButtonText:
+                              this.translate.instant('GLOBAL.aceptar'),
+                          });
+                        } else {
+                          Swal.fire({
+                            icon: 'error',
+                            title: error.status + '',
+                            text: this.translate.instant(
+                              'ERROR.' + error.status
+                            ),
+                            footer:
+                              this.translate.instant('GLOBAL.actualizar') +
+                              '-' +
+                              this.translate.instant('GLOBAL.admision'),
+                            confirmButtonText:
+                              this.translate.instant('GLOBAL.aceptar'),
+                          });
+                        }
+                      }
+                    );
                 },
-                  (error: any) => {
-                    if (error.System.Message.includes('duplicate')) {
-                      Swal.fire({
-                        icon: 'info',
-                        text: this.translate.instant('inscripcion.error_update_programa_seleccionado'),
-                        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-
-                      });
-                    } else {
-                      Swal.fire({
-                        icon: 'error',
-                        title: error.status + '',
-                        text: this.translate.instant('ERROR.' + error.status),
-                        footer: this.translate.instant('GLOBAL.actualizar') + '-' +
-                          this.translate.instant('GLOBAL.admision'),
-                        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-                      });
-                    }
-                  });
-            },
-            error => {
-              this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-            },
-          );
-        },
-        error => {
-          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-        },
-      );
+                (error) => {
+                  this.popUpManager.showErrorToast(
+                    this.translate.instant('ERROR.general')
+                  );
+                }
+              );
+          },
+          (error) => {
+            this.popUpManager.showErrorToast(
+              this.translate.instant('ERROR.general')
+            );
+          }
+        );
     } else {
-      this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'),this.translate.instant('enfasis.select_enfasis'));
+      this.popUpManager.showAlert(
+        this.translate.instant('inscripcion.preinscripcion'),
+        this.translate.instant('enfasis.select_enfasis')
+      );
       this.enfasisControl.markAsTouched();
     }
-
   }
 
   useLanguage(language: string) {
     this.translate.use(language);
   }
 
-  perfil_editar(event:any): void {
+  perfil_editar(event: any): void {
     this.ocultarBarra.emit(true);
     switch (event) {
       case 'info_contacto':
@@ -851,7 +1097,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.show_info = false;
         this.show_profile = false;
         this.show_acad = false;
-        this.show_idiomas = false
+        this.show_idiomas = false;
         this.show_expe = false;
         this.info_contacto = false;
         this.info_caracteristica = true;
@@ -863,25 +1109,28 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         break;
       case 'info_persona':
         if (this.selectTipo === 'Pregrado') {
-          this.viewtag = 'Informacion_pregrado'
+          this.viewtag = 'Informacion_pregrado';
           this.selecttabview(this.viewtag);
         }
         if (this.selectTipo === 'Posgrado') {
-          this.viewtag = 'Informacion_posgrado'
+          this.viewtag = 'Informacion_posgrado';
           this.selecttabview(this.viewtag);
         }
-        if (this.selectTipo === 'Transferencia interna' || this.selectTipo === 'Reingreso') {
+        if (
+          this.selectTipo === 'Transferencia interna' ||
+          this.selectTipo === 'Reingreso'
+        ) {
           if (this.nivel === 'Pregrado') {
-            this.viewtag = 'Informacion_pregrado'
+            this.viewtag = 'Informacion_pregrado';
             this.selecttabview(this.viewtag);
           }
           if (this.nivel === 'Posgrado') {
-            this.viewtag = 'Informacion_posgrado'
+            this.viewtag = 'Informacion_posgrado';
             this.selecttabview(this.viewtag);
           }
         }
         if (this.inscripcion.TipoInscripcion === 'Transferencia externa') {
-          this.viewtag = 'Informacion_externa'
+          this.viewtag = 'Informacion_externa';
           this.selecttabview(this.viewtag);
         }
         break;
@@ -918,20 +1167,24 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         break;
       case 'formacion_academica':
         if (this.selectTipo === 'Pregrado') {
-          this.viewtag = 'Formacion_pregrago'
+          this.viewtag = 'Formacion_pregrago';
           this.selecttabview(this.viewtag);
         }
         if (this.selectTipo === 'Posgrado') {
-          this.viewtag = 'Formacion_posgrago'
+          this.viewtag = 'Formacion_posgrago';
           this.selecttabview(this.viewtag);
         }
-        if (this.selectTipo === 'Transferencia interna' || this.selectTipo === 'Reingreso' || this.selectTipo === 'Transferencia externa') {
+        if (
+          this.selectTipo === 'Transferencia interna' ||
+          this.selectTipo === 'Reingreso' ||
+          this.selectTipo === 'Transferencia externa'
+        ) {
           if (this.nivel === 'Pregrado') {
-            this.viewtag = 'Formacion_pregrago'
+            this.viewtag = 'Formacion_pregrago';
             this.selecttabview(this.viewtag);
           }
           if (this.nivel === 'Posgrado') {
-            this.viewtag = 'Formacion_posgrago'
+            this.viewtag = 'Formacion_posgrago';
             this.selecttabview(this.viewtag);
           }
         }
@@ -1034,7 +1287,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.show_docu = false;
         this.show_profile = false;
         this.show_acad = false;
-        this.show_idiomas = false
+        this.show_idiomas = false;
         this.info_contacto = false;
         this.info_caracteristica = false;
         this.show_desc = false;
@@ -1048,9 +1301,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     }
   }
 
-  selecttabview(viewtag:any) {
+  selecttabview(viewtag: any) {
     switch (viewtag) {
-      case ('Informacion_pregrado'):
+      case 'Informacion_pregrado':
         this.showRegreso = false;
         this.show_info_pregrado = true;
         this.show_profile = false;
@@ -1065,7 +1318,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.show_proy = false;
         this.show_prod = false;
         break;
-      case ('Formacion_pregrago'):
+      case 'Formacion_pregrago':
         this.showRegreso = false;
         this.show_info_pregrado = false;
         this.show_profile = false;
@@ -1080,7 +1333,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.show_proy = false;
         this.show_prod = false;
         break;
-      case ('Informacion_posgrado'):
+      case 'Informacion_posgrado':
         this.showRegreso = false;
         this.show_info = true;
         this.show_profile = false;
@@ -1095,7 +1348,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.show_proy = false;
         this.show_prod = false;
         break;
-      case ('Formacion_posgrago'):
+      case 'Formacion_posgrago':
         this.showRegreso = false;
         this.show_info = false;
         this.show_profile = false;
@@ -1110,7 +1363,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.show_proy = false;
         this.show_prod = false;
         break;
-      case ('Informacion_externa'):
+      case 'Informacion_externa':
         this.showRegreso = false;
         this.show_info_externa = true;
         this.show_profile = false;
@@ -1126,77 +1379,85 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.show_prod = false;
         break;
     }
-
   }
 
-  selectTab(event:any): void {
+  selectTab(event: any): void {
     if (event.tabTitle === this.translate.instant('GLOBAL.info_persona')) {
-      if (this.info_persona)
-        this.perfil_editar('info_persona');
-    } else if (event.tabTitle === this.translate.instant('GLOBAL.info_caracteristica')) {
+      if (this.info_persona) this.perfil_editar('info_persona');
+    } else if (
+      event.tabTitle === this.translate.instant('GLOBAL.info_caracteristica')
+    ) {
       this.perfil_editar('info_caracteristica');
-    } else if (event.tabTitle === this.translate.instant('GLOBAL.informacion_contacto')) {
+    } else if (
+      event.tabTitle === this.translate.instant('GLOBAL.informacion_contacto')
+    ) {
       this.perfil_editar('info_contacto');
     }
   }
 
-  ngOnChanges() {
-  }
+  ngOnChanges() {}
 
-  async tipo_inscripcion(select:any) {
+  async tipo_inscripcion(select: any) {
     if (select == 'programa') {
       this.enfasisSelected = undefined;
-      this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
-    
+      this.tagsObject = { ...TAGS_INSCRIPCION_PROGRAMA };
+
       if (this.inscripcion.IdNivel === 1) {
-        this.selectedTipo = 'Pregrado'
+        this.selectedTipo = 'Pregrado';
       } else {
-        this.selectedTipo = 'Posgrado'
+        this.selectedTipo = 'Posgrado';
       }
 
       if (this.selectedValue !== undefined) {
         sessionStorage.setItem('ProgramaAcademicoId', this.selectedValue);
-        this.programaService.get('proyecto_academico_enfasis/?query=Activo:true,ProyectoAcademicoInstitucionId.Id:' + this.selectedValue + '&limit=0')
+        this.programaService
+          .get(
+            'proyecto_academico_enfasis/?query=Activo:true,ProyectoAcademicoInstitucionId.Id:' +
+              this.selectedValue +
+              '&limit=0'
+          )
           .subscribe((enfasis: any) => {
-            this.enfasis = enfasis.map((e:any) => (e.EnfasisId));
+            this.enfasis = enfasis.map((e: any) => e.EnfasisId);
             this.tieneEnfasis = this.enfasis.length > 0;
-            this.enfasisSelected = parseInt(sessionStorage.getItem('IdEnfasis')!);
-          })
+            this.enfasisSelected = parseInt(
+              sessionStorage.getItem('IdEnfasis')!
+            );
+          });
       } else {
         this.tieneEnfasis = false;
         this.enfasis = [];
       }
-    
+
       switch (this.selectedTipo) {
-        case ('Pregrado'):
+        case 'Pregrado':
           this.selectTipo = 'Pregrado';
           this.selectprograma = true;
           break;
-        case ('Posgrado'):
+        case 'Posgrado':
           this.selectTipo = 'Posgrado';
           this.selectprograma = true;
           break;
-        case ('Transferencia interna'):
+        case 'Transferencia interna':
           this.selectprograma = false;
           this.selectTipo = 'Transferencia interna';
           break;
-        case ('Reingreso'):
+        case 'Reingreso':
           this.selectprograma = false;
           this.selectTipo = 'Reingreso';
           break;
-        case ('Transferencia externa'):
+        case 'Transferencia externa':
           this.selectprograma = true;
           this.selectTipo = 'Transferencia externa';
           break;
-        case ('Profesionalización tecnólogos'):
+        case 'Profesionalización tecnólogos':
           this.selectTipo = 'Pregrado';
           this.selectprograma = true;
           break;
-        case ('Ciclos propedéuticos'):
+        case 'Ciclos propedéuticos':
           this.selectTipo = 'Pregrado';
           this.selectprograma = true;
           break;
-        case ('Movilidad Académica'):
+        case 'Movilidad Académica':
           this.selectTipo = 'Pregrado';
           this.selectprograma = true;
           break;
@@ -1207,18 +1468,29 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
       if (this.enfasisSelected) {
         this.resetPercentages();
         const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
-        const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
-        if(await this.loadSuitePrograma(IdPeriodo, this.selectedValue, IdTipo)) {
-          if (this.estado_inscripcion_nombre !== "INSCRIPCIÓN SOLICITADA") {
+        const IdTipo = parseInt(
+          sessionStorage.getItem('IdTipoInscripcion')!,
+          10
+        );
+        if (
+          await this.loadSuitePrograma(IdPeriodo, this.selectedValue, IdTipo)
+        ) {
+          if (this.estado_inscripcion_nombre !== 'INSCRIPCIÓN SOLICITADA') {
             this.Campo1Control.disable();
             this.enfasisControl.disable();
             this.estaInscrito = true;
             this.soloPuedeVer = true;
             this.puedeInscribirse = false;
-            localStorage.setItem("goToEdit", String(this.puedeInscribirse));
-            if (this.estado_inscripcion_nombre == "INSCRITO CON OBSERVACIÓN"){
-              this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.inscripcion'), 
-                    this.translate.instant('inscripcion.informar_estado_inscrito_obs'), "info", false);
+            localStorage.setItem('goToEdit', String(this.puedeInscribirse));
+            if (this.estado_inscripcion_nombre == 'INSCRITO CON OBSERVACIÓN') {
+              this.popUpManager.showPopUpGeneric(
+                this.translate.instant('inscripcion.inscripcion'),
+                this.translate.instant(
+                  'inscripcion.informar_estado_inscrito_obs'
+                ),
+                'info',
+                false
+              );
             }
           } else if (await this.checkEventoInscripcion()) {
             this.percentage_total = 0;
@@ -1229,52 +1501,73 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     }
   }
 
-  volverATabs(){
+  volverATabs() {
     const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
-    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
-    this.loadSuitePrograma(IdPeriodo, this.selectedValue, IdTipo)
+    const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10);
+    this.loadSuitePrograma(IdPeriodo, this.selectedValue, IdTipo);
   }
 
   redirectBecauseObservations() {
-    if (this.estado_inscripcion_nombre == "INSCRITO CON OBSERVACIÓN"){
-      this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.inscripcion'), 
-            this.translate.instant('inscripcion.info_boton_cambio_inscrito'), "info", false);
+    if (this.estado_inscripcion_nombre == 'INSCRITO CON OBSERVACIÓN') {
+      this.popUpManager.showPopUpGeneric(
+        this.translate.instant('inscripcion.inscripcion'),
+        this.translate.instant('inscripcion.info_boton_cambio_inscrito'),
+        'info',
+        false
+      );
       this.perfil_editar('perfil');
     }
   }
 
-  loadSuitePrograma(periodo:any, proyecto:any, tipoInscrip:any) {
+  loadSuitePrograma(periodo: any, proyecto: any, tipoInscrip: any) {
     return new Promise((resolve) => {
-    this.evaluacionInscripcionService.get('tags_por_dependencia?query=Activo:true,PeriodoId:'+periodo+',DependenciaId:'+proyecto+',TipoInscripcionId:'+tipoInscrip)
-        .subscribe((response: any) => {
-          console.log(response)
-          if (response != null && response.Status == '200') {
-            if (Object.keys(response.Data[0]).length > 0) {
-              this.tagsObject = JSON.parse(response.Data[0].ListaTags);
-              resolve(this.tagsObject)
+      this.evaluacionInscripcionService
+        .get(
+          'tags_por_dependencia?query=Activo:true,PeriodoId:' +
+            periodo +
+            ',DependenciaId:' +
+            proyecto +
+            ',TipoInscripcionId:' +
+            tipoInscrip
+        )
+        .subscribe(
+          (response: any) => {
+            if (response != null && response.Status == '200') {
+              if (Object.keys(response.Data[0]).length > 0) {
+                this.tagsObject = JSON.parse(response.Data[0].ListaTags);
+                resolve(this.tagsObject);
+              } else {
+                this.tagsObject = { ...TAGS_INSCRIPCION_PROGRAMA };
+                this.puedeInscribirse = false;
+                this.soloPuedeVer = false;
+                this.popUpManager.showAlert(
+                  this.translate.instant('inscripcion.preinscripcion'),
+                  this.translate.instant('admision.no_tiene_suite')
+                );
+                resolve(false);
+              }
             } else {
-              this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              this.tagsObject = { ...TAGS_INSCRIPCION_PROGRAMA };
               this.puedeInscribirse = false;
               this.soloPuedeVer = false;
-              this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
+              this.popUpManager.showAlert(
+                this.translate.instant('inscripcion.preinscripcion'),
+                this.translate.instant('admision.no_tiene_suite')
+              );
               resolve(false);
             }
-          } else {
-            this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+          },
+          (error: HttpErrorResponse) => {
+            this.tagsObject = { ...TAGS_INSCRIPCION_PROGRAMA };
             this.puedeInscribirse = false;
             this.soloPuedeVer = false;
-            this.popUpManager.showAlert(this.translate.instant('inscripcion.preinscripcion'), this.translate.instant('admision.no_tiene_suite'));
+            this.popUpManager.showErrorToast(
+              this.translate.instant('ERROR.general')
+            );
             resolve(false);
           }
-        },
-        (error: HttpErrorResponse) => {
-          this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
-          this.puedeInscribirse = false;
-          this.soloPuedeVer = false;
-          this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
-          resolve(false);
-        });
-  });
+        );
+    });
   }
 
   mostrarBarraExterna() {
@@ -1283,21 +1576,20 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   revisarDocumento(doc: any) {
-      const assignConfig = new MatDialogConfig();
-      assignConfig.width = '1300px';
-      assignConfig.height = '750px';
-      assignConfig.data = { documento: doc }
-      const dialogo = this.dialog.open(DialogoDocumentosComponent, assignConfig);
-//      dialogo.afterClosed().subscribe(data => {});
+    const assignConfig = new MatDialogConfig();
+    assignConfig.width = '1300px';
+    assignConfig.height = '750px';
+    assignConfig.data = { documento: doc };
+    const dialogo = this.dialog.open(DialogoDocumentosComponent, assignConfig);
+    //      dialogo.afterClosed().subscribe(data => {});
   }
 
   openVideoModal(videoId: string): void {
     const dialogRef = this.dialog.open(VideoModalComponent, {
-      width: '600px', 
-      data: { videoId: videoId }
+      width: '600px',
+      data: { videoId: videoId },
     });
-  
-    dialogRef.afterClosed().subscribe(result => {
-    });
+
+    dialogRef.afterClosed().subscribe((result) => {});
   }
 }

@@ -183,7 +183,7 @@ export class ViewPropuestaGradoComponent implements OnInit {
               } else {
                 //temp.FormatoProyecto = filesResponse_2[0].url;
                 let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);
-                if (estadoDoc.aprobado === false) {
+                if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== "Por definir") {
                   this.updateDocument = true;
                 }
                 this.docs_editados.emit(this.updateDocument);

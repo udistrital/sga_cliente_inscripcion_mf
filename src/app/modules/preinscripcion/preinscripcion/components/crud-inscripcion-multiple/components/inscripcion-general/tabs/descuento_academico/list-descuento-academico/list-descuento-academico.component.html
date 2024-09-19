@@ -1,7 +1,7 @@
 <mat-card>
   <mat-card-content>
-    <div class="info my-3">
-      <mat-icon class="info-icon">info</mat-icon> &nbsp;
+    <div class="info margin-y">
+      <mat-icon class="info-icon">info</mat-icon>
       <span>{{ "inscripcion.alerta_desc_matricula" | translate }}</span>
     </div>
     <mat-tab-group
@@ -9,92 +9,74 @@
       [selectedIndex]="selected"
       (selectedTabChange)="tabChanged($event)"
     >
-      <div class="talble mat-elevation-z8">
-        <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
-          <br />
-          <div class="d-flex justify-content-end">
-            <button
-              class="btn boton-primary mx-4"
-              (click)="onCreate()"
-              mat-button
-            >
-              <mat-icon>add</mat-icon>
-              {{ "GLOBAL.agregar" | translate }}
-            </button>
-          </div>
-          <div class="table-container">
-            <mat-table [dataSource]="dataSource" class="demo-table">
-              <ng-container matColumnDef="tipo_documento">
-                <mat-header-cell *matHeaderCellDef
-                  ><b>{{ "GLOBAL.tipo_descuento_matricula" | translate }}</b>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  {{ row.DescuentosDependenciaId.TipoDescuentoId.Nombre }}
-                </mat-cell>
-              </ng-container>
+      <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
+        <!-- AGREGAR -->
+        <button
+          class="margin-y"
+          mat-flat-button
+          color="accent"
+          (click)="onCreate()"
+          type="button"
+        >
+          <mat-icon>add</mat-icon>
+          {{ "GLOBAL.agregar" | translate }}
+        </button>
 
-              <ng-container matColumnDef="estado">
-                <mat-header-cell *matHeaderCellDef
-                  ><b>{{ "admision.estado" | translate }}</b>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  {{ row.EstadoObservacion }}
-                </mat-cell>
-              </ng-container>
+        <!-- TABLA -->
+        <div class="table">
+          <mat-table [dataSource]="dataSource" class="demo-table">
+            <ng-container matColumnDef="tipo_documento">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "GLOBAL.tipo_descuento_matricula" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.DescuentosDependenciaId.TipoDescuentoId.Nombre }}
+              </mat-cell>
+            </ng-container>
 
-              <ng-container matColumnDef="observacion">
-                <mat-header-cell *matHeaderCellDef
-                  ><b>{{ "admision.observacion" | translate }}</b>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  {{ row.Observacion }}
-                </mat-cell>
-              </ng-container>
+            <ng-container matColumnDef="estado">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "admision.estado" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.EstadoObservacion }}
+              </mat-cell>
+            </ng-container>
 
-              <ng-container matColumnDef="acciones">
-                <mat-header-cell *matHeaderCellDef
-                  ><b>{{ "GLOBAL.acciones" | translate }}</b>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  <button
-                    mat-icon-button
-                    color="accent"
-                    (click)="onOpen(row)"
-                  >
-                    <mat-icon>remove_red_eye</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    color="accent"
-                    (click)="onEdit(row)"
-                  >
-                    <mat-icon>edit_outline</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="onDelete(row)"
-                  >
-                    <mat-icon>delete_outline</mat-icon>
-                  </button>
-                </mat-cell>
-              </ng-container>
-              <mat-header-row
-                *matHeaderRowDef="displayedColumns"
-                class="encabezado"
-              ></mat-header-row>
-              <mat-row
-                *matRowDef="let row; columns: displayedColumns"
-              ></mat-row>
-            </mat-table>
-          </div>
-          <!-- <div class="text-center">
-                                  <button (click)="activetab()" class="btn btn-info btn-sm">
-                                    <i class="nb-plus"></i> {{ 'GLOBAL.agregar' | translate }}
-                                  </button>
-                              </div> -->
-        </mat-tab>
-      </div>
+            <ng-container matColumnDef="observacion">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "admision.observacion" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.Observacion }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="acciones">
+              <mat-header-cell *matHeaderCellDef
+                ><b>{{ "GLOBAL.acciones" | translate }}</b>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <button mat-icon-button color="accent" (click)="onOpen(row)">
+                  <mat-icon>remove_red_eye</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="onEdit(row)">
+                  <mat-icon>edit_outline</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onDelete(row)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+              class="encabezado"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+        </div>
+      </mat-tab>
+
       <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
         <ngx-crud-descuento-academico
           [descuento_academico_id]="uid"
