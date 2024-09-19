@@ -310,7 +310,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?nombre=' + nombre)
         .subscribe(res => {
           if (res !== null) {
-            consultaEmpresa = <Array<InfoPersona>>res;
+            consultaEmpresa = <Array<InfoPersona>>res.Data;
             for (let i = 0; i < consultaEmpresa.length; i++) {
               empresa.push(consultaEmpresa[i]);
             }
@@ -343,8 +343,8 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       const icorreo = this.getIndexForm('Correo');
       const ipais = this.getIndexForm('Pais');
       this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?Id=' + nit)
-        .subscribe((res: any) => {
-          res = res.data
+        .subscribe((response: any) => {
+          const res = response.Data
           this.formInfoExperienciaLaboral.campos[init].valor = res.NumeroIdentificacion;
           this.formInfoExperienciaLaboral.campos[inombre].valor = (res.NombreCompleto &&
             res.NombreCompleto.Id) ? res.NombreCompleto : { Id: 0, NombreCompleto: 'No registrado' };

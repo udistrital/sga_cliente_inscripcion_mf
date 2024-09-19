@@ -8,7 +8,7 @@ export let FORM_DESCUENTO = {
   campos: [
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'DescuentoDependencia',
       label_i18n: 'tipo_descuento_matricula',
       placeholder_i18n: 'tipo_descuento_matricula',
@@ -19,7 +19,7 @@ export let FORM_DESCUENTO = {
     },
     {
       etiqueta: 'fileRev',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       clase: 'form-control',
       nombre: 'Documento',
       label_i18n: 'soporte_documento',

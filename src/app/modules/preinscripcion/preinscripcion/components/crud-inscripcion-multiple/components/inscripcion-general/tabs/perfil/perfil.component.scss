@@ -63,3 +63,9 @@
     color: white !important;
     padding: 8px;
   }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

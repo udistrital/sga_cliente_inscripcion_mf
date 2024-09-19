@@ -104,7 +104,7 @@ export class ViewProduccionAcademicaComponent implements OnInit {
                       this.infoFalla();
                     } else {
                       let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);
-                      if (estadoDoc.aprobado === false) {
+                      if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== "Por definir") {
                         this.updateDocument = true;
                       }
                       this.docs_editados.emit(this.updateDocument);

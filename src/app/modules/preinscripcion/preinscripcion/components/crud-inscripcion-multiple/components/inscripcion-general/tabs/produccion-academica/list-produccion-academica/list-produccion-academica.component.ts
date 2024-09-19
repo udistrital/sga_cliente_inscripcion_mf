@@ -19,7 +19,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 export class ListProduccionAcademicaComponent implements OnInit {
   prod_selected: ProduccionAcademicaPost | undefined;
   settings: any;
-  persona_id!: number;
+  terceroId: number | null = null;
   percentage!: number;
   selected = 0;
 
@@ -56,7 +56,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
 
   loadData(): void {
     this.inscripcionMidService
-      .get('academico/produccion/tercero/' + this.persona_id)
+      .get('academico/produccion/tercero/' + this.terceroId)
       .subscribe(
         (res) => {
           if (res.Data !== null && res.Status == '200') {
@@ -97,7 +97,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
 
   async initializePersonaId() {
     try {
-      this.persona_id = (await this.user.getPersonaId()) || 1;
+      this.terceroId = await this.user.getPersonaId();
     } catch (error) {
       if (error instanceof Error) {
         this.popUpManager.showErrorAlert(
@@ -110,7 +110,6 @@ export class ListProduccionAcademicaComponent implements OnInit {
           this.translate.instant('inscripcion.error_cargar_informacion')
         );
       }
-      this.persona_id = 1; // Valor por defecto en caso de error
     }
   }
 

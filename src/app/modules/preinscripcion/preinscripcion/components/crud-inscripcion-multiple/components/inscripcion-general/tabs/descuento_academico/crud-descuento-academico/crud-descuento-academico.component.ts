@@ -101,7 +101,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     this.inscripcionMidService.get('academico/descuento/' + programa)
     .subscribe(
       (result: any) => {
-        const r = <any>result.data;
+        const r = <any>result.Data;
         if (result !== null && result.status == '404') {
           this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].opciones = []
         } else {
@@ -119,22 +119,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
     );
   }
 
-  /* cargarPeriodo() {
-    return new Promise((resolve, reject) => {
-      this.coreService.get('periodo?query=Activo:true&sortby=Id&order=desc&limit=1')
-      .subscribe(res => {
-        const r = <any>res;
-        if (res !== null && r.Type !== 'error') {
-          this.periodo = <any>res[0].Id;
-          resolve(this.periodo);
-        }
-      },
-      (error: HttpErrorResponse) => {
-        reject(error);
-      });
-    });
-  } */
-
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
@@ -150,7 +134,6 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
       },
    );
   }
-
 
   construirForm() {
     // this.formDescuentoAcademico.titulo = this.translate.instant('GLOBAL.descuento_academico');
@@ -188,7 +171,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
         this.inscripcionMidService.get('academico/descuento/?PersonaId=' + id + '&SolicitudId=' + this.descuento_academico_id)
           .subscribe(solicitud => {
             if (solicitud !== null) {
-              this.temp = <SolicitudDescuento>solicitud.data;
+              this.temp = <SolicitudDescuento>solicitud.Data;
               this.info_descuento_academico = this.temp[0];
                     this.formDescuentoAcademico.campos[this.getIndexForm('DescuentoDependencia')].valor = (this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id && this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id) ?
                     { Id: this.info_descuento_academico.DescuentosDependenciaId.TipoDescuentoId.Id,
