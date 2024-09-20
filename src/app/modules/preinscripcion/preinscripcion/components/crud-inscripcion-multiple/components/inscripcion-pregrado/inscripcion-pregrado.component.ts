@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -24,6 +24,8 @@ import { VideoModalComponent } from 'src/app/modules/components/video-modal.comp
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
+import { CrudInfoCaracteristicaPregradoComponent } from '../inscripcion-general/tabs/informacion-basica/crud-info-caracteristica-pregrado/crud-info-caracteristica-pregrado.component';
 import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
@@ -194,6 +196,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   IdTipo: any 
   IdPrograma: any
 
+  @ViewChild(CrudInfoCaracteristicaPregradoComponent, { static: true }) hijoComponente!: CrudInfoCaracteristicaPregradoComponent;
+  
   constructor(
     private listService: ListService,
     private popUpManager: PopUpManager,
@@ -205,6 +209,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     private parametrosService: ParametrosService,
     private programaService: ProyectoAcademicoService,
     private terceroMidService: TerceroMidService,
+    private tercerosMid: TercerosMidService,
     private inscripcionMidService: InscripcionMidService,
     private calendarioMidService: CalendarioMidService,
     private dialog: MatDialog,
@@ -249,7 +254,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     this.inscripcion = new Inscripcion();
     this.inscripcion.Id = parseInt(sessionStorage.getItem('IdInscripcion')!, 10);
     this.inscripcion.ProgramaAcademicoId = sessionStorage.getItem('ProgramaAcademico');
-    this.IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
+    // this.IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
+    this.IdPeriodo = 59;
     this.IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
     this.IdPrograma = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10)
     // Se carga el nombre del periodo al que se inscribió
@@ -262,6 +268,8 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     this.cargarTipoCuposPorPeriodo(this.IdPrograma);
     // Se carga el numero de proyectos permitidos para pregardo
     this.loadNumeroProyectos(this.IdPeriodo)
+
+    this.tipo_inscripcion("enfasis")
   }
 
   loadNumeroProyectos(IdPeriodo: any) {
@@ -342,9 +350,9 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   loadProject() {
     this.posgrados = new Array;
     const IdNivel = parseInt(sessionStorage.getItem('IdNivel')!, 10);
-    let periodo = localStorage.getItem('IdPeriodo');
+    // let periodo = localStorage.getItem('IdPeriodo');
+    let periodo = 59
     this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
-    // this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=1&id-periodo=40').subscribe(
       response => {
         const r = <any>response;
         if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
@@ -483,7 +491,9 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   setPercentage_info_externo(number:any, tab:any) {
-    this.percentage_tab_info[tab] = (number * 100) / 3;
+    console.log("AQUIIIIIIIIIIIIIIIIIIIIIIII", number, tab)
+    // this.percentage_tab_info[tab] = (number * 100) / 3;
+    this.percentage_tab_info[tab] = (number * 105) / 2;
     this.percentage_info = Math.round(UtilidadesService.getSumArray(this.percentage_tab_info));
     this.setPercentage_total();
   }
@@ -685,24 +695,44 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     });
   }
 
-  loadPercentageFormacionAcademicaPregado(factor:any) {
-      this.terceroMidService.get('personas/' + this.info_persona_id + '/formacion-pregrado')
-        .subscribe(res => {
-          if (res.Status == '200') {
-            this.percentage_acad = this.percentage_acad + (100 / factor);
-            this.percentage_tab_acad[0] = (100 / factor);
-          } else {
-            this.percentage_acad = this.percentage_acad + 0;
-            this.percentage_tab_acad[0] = 0;
-          }
-        });
-  }
+  // loadPercentageFormacionAcademicaPregado(factor:any) {
+  //     this.terceroMidService.get('personas/' + this.info_persona_id + '/formacion-pregrado')
+  //       .subscribe(res => {
+  //         if (res.Status == '200') {
+  //           this.percentage_acad = this.percentage_acad + (100 / factor);
+  //           this.percentage_tab_acad[0] = (100 / factor);
+  //         } else {
+  //           this.percentage_acad = this.percentage_acad + 0;
+  //           this.percentage_tab_acad[0] = 0;
+  //         }
+  //       });
+  // }
 
   loadPercentageExamenEstado() {}
 
   loadPercentageInformacionFamiliar() {}
 
-  loadPercentageInformacionAcademica() {}
+  loadPercentageInformacionAcademica() {
+    console.log("Holaaaaaaaaaaaaaaaaaaaaaaa")
+    this.tercerosMid.get('personas/localidades/'+this.info_persona_id)
+      .subscribe((res: any) => {
+        // if (res !== null && JSON.stringify(res[0]) !== '{}') {
+          
+        // } else {
+          
+        // }
+
+
+        if (res.Data.colegio[0].Id != 0) {
+          console.log("Entraaaaaaaaaaaaaaaaaaaaaaaaaaa")
+          this.percentage_acad = 100;
+          this.percentage_tab_acad[0] = 100;
+        } else {
+          this.percentage_acad = 0;
+          this.percentage_tab_acad[0] = 0;
+        }
+    });
+  }
   
   // loadPercentageIdiomas() {
   //     this.idiomaService.get('conocimiento_idioma?query=Activo:true,TercerosId:' + this.info_persona_id + '&limit=0')
@@ -849,17 +879,14 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       }
     }
 
-    console.log('Datos de la inscripción:', { principal, opcionales });
     this.preinscrito = true
     this.puedeInscribirse = true
-    console.log("AAAAAA", this.incripcionInicial)
 
     this.incripcionInicial.ProgramaAcademicoId = principal.programa
     this.incripcionInicial.TipoCupo = principal.tipoCupo
 
     this.inscripcionService.put(`inscripcion`, this.incripcionInicial).subscribe(
       response => {
-        console.log(response)
         if(response){
           for (let i = 0; i < opcionales.length; i++) {
 
@@ -904,6 +931,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
 
   async getPorcentajes() {
 
+    console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
     // Consulta si hay información en el tab de información personal
     if (this.percentage_info === 0 && this.tagsObject.info_persona.selected) {
       if (this.selectTipo === 'Transferencia externa' || this.nivel == 'Pregrado') {
@@ -971,7 +999,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       await this.loadPercentageInformacionFamiliar();
     }
 
-    if (this.percentage_familiar === 0 && this.tagsObject.informacion_academica.selected) {
+    if (this.percentage_acad === 0 && this.tagsObject.informacion_academica.selected) {
       await this.loadPercentageInformacionAcademica();
     }
 
@@ -1123,7 +1151,6 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
         this.show_examen = false;
         break;
       case 'info_persona':
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
         console.log(this.selectTipo, this.viewtag);
         this.viewtag = 'Informacion_pregrado'
         this.selecttabview(this.viewtag);
@@ -1481,6 +1508,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   async tipo_inscripcion(select:any) {
+    select = "enfasis"
     if (select == 'programa') {
       this.enfasisSelected = undefined;
       this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
@@ -1540,8 +1568,11 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
       }
     }
 
+    console.log("AAAAAAAAAAAA", select)
+
     if (select == 'enfasis') {
       if (this.enfasisSelected) {
+        console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQ")
         this.resetPercentages();
         const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
         const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10)
@@ -1581,8 +1612,6 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   }
 
   loadSuitePrograma(periodo:any, proyecto:any, tipoInscrip:any) {
-    // proyecto = 85
-    // tipoInscrip = 15
     return new Promise((resolve) => {
     this.evaluacionInscripcionService.get('tags_por_dependencia?query=Activo:true,PeriodoId:'+periodo+',DependenciaId:'+proyecto+',TipoInscripcionId:'+tipoInscrip)
         .subscribe((response: any) => {
@@ -1590,7 +1619,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
             if (Object.keys(response.Data[0]).length > 0) {
               this.puedeInscribirse = true;
               this.tagsObject = JSON.parse(response.Data[0].ListaTags);
-              //this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
+              // this.tagsObject = {...TAGS_INSCRIPCION_PROGRAMA};
               console.log(this.tagsObject)
               resolve(this.tagsObject)
             } else {

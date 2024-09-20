@@ -371,7 +371,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   async loadInfoInscripcion() {
     await this.cargarPeriodo();
-    const PeriodoActual: any = localStorage.getItem('IdPeriodo');
+    // const PeriodoActual: any = localStorage.getItem('IdPeriodo');
+    const PeriodoActual: any = 59;
     if (this.info_persona_id != null && PeriodoActual != null) {
       const inscripciones: any = await this.recuperarEstadosReciboInscripciones(
         this.info_persona_id,
@@ -595,8 +596,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showPeriodo = true;
     this.showTipoInscripcion = false;
     this.showInfo = false;
-    let periodo: any = localStorage.getItem('IdPeriodo');
-    //let periodo = 40
+    // let periodo: any = localStorage.getItem('IdPeriodo');
+    let periodo = 59
     const resCalendario: any = await this.recuperarCalendarioProyecto(
       this.selectedSubLevel,
       periodo
@@ -610,6 +611,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   recuperarCalendarioProyecto(idNivel: number, idPeriodo: number) {
+    idPeriodo = 59;
     return new Promise((resolve, reject) => {
       this.calendarioMidService
         .get(
@@ -890,7 +892,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       } else if (this.selectedLevel === 2) {
         this.parametro = '12';
       }
-      let periodo = localStorage.getItem('IdPeriodo');
+      // let periodo = localStorage.getItem('IdPeriodo');
+      let periodo = 59
       this.calendarioMidService
         .get(
           'calendario-proyecto/calendario/proyecto?id-nivel=' +
