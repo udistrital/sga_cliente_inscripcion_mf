@@ -613,7 +613,16 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.projects = <any[]>(
         proyectos.filter((proyecto: any) => this.filtrarProyecto(proyecto))
       );
-      console.log('this.projects', this.projects);
+      this.showPeriodo = true;
+    }
+  }
+
+  async onSelectPeriodo() {
+    if (this.periodoId === undefined) {
+      this.popUpManager.showInfoToast(
+        this.translate.instant('inscripcion.erro_selec_periodo')
+      );
+    } else {
       await this.validateProject();
     }
   }
@@ -640,11 +649,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showTipoInscripcion = false;
     this.showInfo = false;
     let periodo: any = localStorage.getItem('IdPeriodo');
-    console.log("THIS IS THE REAL PERIODO", periodo);
-    // let periodo = 59;
     const resCalendario: any = await this.recuperarCalendarioProyecto(
       this.selectedSubLevel,
-      periodo
+      this.periodoId.Id
     );
     if (
       resCalendario === null ||
