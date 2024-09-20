@@ -896,17 +896,17 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.post('inscripciones/nueva', body).subscribe(
         (response: any) => {
-          if (response.status == '200') {
+          if (response.Status == 200) {
             this.popUpManager.showSuccessAlert(
               this.translate.instant('recibo_pago.generado')
             );
             resolve(true);
-          } else if (response.status == '204') {
+          } else if (response.Status == 204) {
             this.popUpManager.showErrorAlert(
               this.translate.instant('recibo_pago.recibo_duplicado')
             );
             reject(false);
-          } else if (response.status == '400') {
+          } else if (response.Status == 400) {
             this.popUpManager.showErrorToast(
               this.translate.instant('recibo_pago.no_generado')
             );
