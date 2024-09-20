@@ -1514,7 +1514,7 @@
           </button>
         </div>
       </div>
-      <ngx-view-examen-estado (result)="setPercentage_acad($event,0)">
+      <ngx-view-examen-estado (result)="setPercentage_acad($event,0)" [inscripcion_id]="inscripcion_id" [persona_id]="info_persona_id">
       </ngx-view-examen-estado>
   
       <div class="text-center">
@@ -1533,13 +1533,7 @@
       <mat-card-content>
         <div class="row">
           <div class="col-md-11">
-            <ngb-progressbar
-              [showValue]="true"
-              type="success"
-              [value]="percentage_examen"
-              [animated]="true"
-              [height]="'15px'"
-            >
+            <ngb-progressbar [showValue]="true" type="success" [value]="percentage_examen" [animated]="true" [height]="'15px'">
             </ngb-progressbar>
           </div>
           <div class="col-md-1" align="right">
@@ -1567,7 +1561,7 @@
           </div>
         </div>
         <mat-tab-group fullWidth (changeTab)="selectTab($event)">
-          <mat-tab label="{{ 'inscripcion.documento_programa' | translate }}">
+          <mat-tab label="{{ 'inscripcion.datos_acudiente' | translate }}">
             <ngx-list-informacion-acudiente 
               (result)="setPercentage_acad($event,0)"
             >

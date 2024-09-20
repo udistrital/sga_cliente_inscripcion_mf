@@ -9,11 +9,16 @@ import { UserService } from 'src/app/services/users.service';
 import { FORM_EXAMEN_ESTADO } from './examen-estado';
 import { MatTableDataSource } from '@angular/material/table';
 import { EvaluacionInscripcionService } from 'src/app/services/evaluacion_inscripcion.service';
+import { MODALS } from 'src/app/models/informacion/diccionario';
+import { SgaMidService } from 'src/app/services/sga_mid.service';
+import { TercerosService } from 'src/app/services/terceros.service';
 
 interface Examen {
   orden: number;
   examen: string;
   tipoExamen: string;
+  tipoDocumento: string;
+  documento: string;
   snp: string;
   confirmarSnp: string;
   anoPresentacion: string;
@@ -40,10 +45,10 @@ export class ViewExamenEstadoComponent {
   listed: number[] = [];
   isEdit: boolean = false;
 
-  displayedColumns: string[] = ['orden', 'examen', 'tipoExamen', 'snp', 'confirmarSnp', 'anoPresentacion', 'soporte'];
+  displayedColumns: string[] = ['orden', 'examen', 'tipoExamen', 'tipoDocumento', 'documento', 'snp', 'confirmarSnp', 'anoPresentacion', 'soporte'];
   dataSource = new MatTableDataSource<Examen>([
-    { orden: 1, examen: 'Saber 11 (ICFES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null },
-    { orden: 2, examen: 'Saber TyT (ECAES)', tipoExamen: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null }
+    { orden: 1, examen: 'Saber 11 (ICFES)', tipoExamen: '', tipoDocumento: '', documento: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null },
+    { orden: 2, examen: 'Saber TyT (ECAES)', tipoExamen: '', tipoDocumento: '', documento: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null }
   ]);
   tiposExamen: string[] = ['AC', 'VG'];
 
@@ -106,6 +111,9 @@ export class ViewExamenEstadoComponent {
   valido!: boolean;
   percentage!: number;
   sin_docs: boolean = false;
+  tipos_icfes!: any;
+  tipos_documentos!: any;
+  existeIcfes!: boolean
 
   constructor(
     private translate: TranslateService,
@@ -115,6 +123,8 @@ export class ViewExamenEstadoComponent {
     private userService: UserService,
     private newNuxeoService: NewNuxeoService,
     private evaluacionInscripcionService: EvaluacionInscripcionService,
+    private sgamidService: SgaMidService,
+    private tercerosService: TercerosService
   ) {
     this.formDocumentoPrograma = FORM_EXAMEN_ESTADO;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -122,13 +132,78 @@ export class ViewExamenEstadoComponent {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.programa = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10) // this.userService.getPrograma();
     this.periodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10) // this.userService.getPeriodo();
     this.tipoInscripcion = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10);
     this.sin_docs = false;
     this.detallesExamenEstado();
+    this.tipos_icfes = await this.recuperarTiposIcfes();
+    this.tipos_documentos = await this.recuperarTiposDocumentos();
+    await this.preCargarIcfes();
     // this.loadLists();
+  }
+
+  async preCargarIcfes() {
+    const inscripcionPregrado: any = await this.recuperarInscripcionPregradoByInscripcion(this.inscripcion)
+    if (Object.keys(inscripcionPregrado[0]).length > 0) {
+      this.existeIcfes = true;
+      const icfes: any = this.dataSource.filteredData.find((item: any) => item.examen === "Saber 11 (ICFES)")
+      const tipoDoc: any = this.tipos_documentos.find((item: any) => item.Id === inscripcionPregrado[0].TipoDocumentoIcfes)
+      icfes.anoPresentacion = inscripcionPregrado[0].AnoIcfes;
+      icfes.confirmarSnp = inscripcionPregrado[0].CodigoIcfes;
+      icfes.documento = inscripcionPregrado[0].NumeroIdentificacionIcfes;
+      icfes.snp = inscripcionPregrado[0].CodigoIcfes;
+      icfes.tipoDocumento = tipoDoc;
+      icfes.tipoExamen = inscripcionPregrado[0].TipoIcfesId.CodigoAbreviacion;
+    } else {
+      this.existeIcfes = false;
+    }
+  }
+
+  recuperarInscripcionPregradoByInscripcion(inscripcionId: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get('inscripcion_pregrado?query=Activo:true,InscripcionId.Id:'+ inscripcionId +'&sortby=Id&order=asc&limit=0')
+        .subscribe(
+          (res: any) => {
+            resolve(res);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+            reject([]);
+          }
+        );
+    });
+  }
+
+  recuperarTiposIcfes() {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get('tipo_icfes?query=Activo:true&sortby=Id&order=asc&limit=0')
+        .subscribe(
+          (res: any) => {
+            resolve(res);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+            reject([]);
+          }
+        );
+    });
+  }
+
+  recuperarTiposDocumentos() {
+    return new Promise((resolve, reject) => {
+      this.tercerosService.get('tipo_documento?query=Activo:true&sortby=Id&order=asc&limit=0')
+        .subscribe(
+          (res: any) => {
+            resolve(res);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+            reject([]);
+          }
+        );
+    });
   }
 
   detallesExamenEstado() {
@@ -360,6 +435,154 @@ export class ViewExamenEstadoComponent {
     const left = (screen.width * 3) / 4 - w / 2;
     const top = screen.height / 2 - h / 2;
     window.open(url, '', 'toolbar=no,' + 'location=no, directories=no, status=no, menubar=no,' + 'scrollbars=no, resizable=no, copyhistory=no, ' + 'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+  }
+
+  async guardar() {
+    const data = this.dataSource.filteredData;
+    const validacion: any = await this.validarData(data);
+    if (validacion) {
+      this.popUpManager.showPopUpGeneric(this.translate.instant('documento_programa.titulo'), this.translate.instant('documento_programa.guardar_documentos'), MODALS.INFO, true).then(
+        async (action) => {
+          if (action.value) {
+            await this.prepararCreacion(data);
+          }
+        });
+    } else {
+      this.popUpManager.showErrorAlert(this.translate.instant('documento_programa.formulario_error'));
+    }
+  }
+
+  async prepararCreacion(data: any) {
+    for (const item of data) {
+      // SE VERIFICA QUE SI EL ITEM ES EL DE ICFES NO TENGA DATOS EN LA DB
+      if (item.examen === "Saber 11 (ICFES)" && this.existeIcfes) {
+        this.popUpManager.showSuccessAlert(this.translate.instant('documento_programa.icfes_existente'));
+        this.popUpManager.showAlert(this.translate.instant('documento_programa.documento_programa_registrado'), this.translate.instant('documento_programa.icfes_existente'))
+        continue;
+      }
+      if (item.soporte) {
+        if (item.examen === "Saber 11 (ICFES)") {
+          const archivo: any = this.prepararArchivo(item.soporte);
+          let idArchivo: any = await this.cargarArchivos(archivo);
+          const tipo_icfes: any = this.tipos_icfes.find((tipo: any) => tipo.CodigoAbreviacion == item.tipoExamen)
+
+          const info_pregrado: any = {
+            "InscripcionId": {
+              "Id": this.inscripcion
+            },
+            "CodigoIcfes": item.snp,
+            "TipoDocumentoIcfes": item.tipoDocumento.Id,
+            "NumeroIdentificacionIcfes": Number(item.documento), //aqui
+            "AnoIcfes": Number(item.anoPresentacion), //aqui
+            "Activo": true,
+            "TipoIcfesId": {
+              "Id": tipo_icfes.Id
+            },
+            "Valido": false,
+            "Uid": idArchivo[0]
+          }
+
+          await this.crearInscripcionPregradoBySNP(info_pregrado)
+        }
+      }
+    }
+  }
+
+  async validarData(data: any) {
+    if (!this.existeIcfes) {
+      const examenSaber11 = data.find((item: any) => item.examen === "Saber 11 (ICFES)");
+      let snp;
+      let confirmarSnp;
+
+      //VALIDA QUE LA DATA DEL EXAMEN ICFES EXISTA
+      if (!examenSaber11) {
+        return false;
+      }
+
+      // VALIDA QUE ESTEN COMPLETOS LOS DATOS 
+      for (const [key, value] of Object.entries(examenSaber11)) {
+        if (key !== 'examen' && (value === null || value === "")) {
+          return false; // Si se encuentra un campo nulo o vacío, retorna false.
+        }
+        if (key === 'snp') {
+          snp = value;
+        } else if (key === 'confirmarSnp') {
+          confirmarSnp = value;
+        }
+      }
+
+      // VALIDA QUE EL CÓDIGO SNP NO EXISTA YA EN LA DB
+      const inscripcion: any = await this.recuperarInscripcionPregradoBySNP(snp)
+      if (Object.keys(inscripcion[0]).length != 0) {
+        this.popUpManager.showErrorToast(this.translate.instant('documento_programa.snp_repetido'));
+        return false
+      }
+
+      // VALIDA QUE EL CÓDIGO SNP SEA EL MISMO QUE EN LA CONFIRMACIÓN
+      if (snp != confirmarSnp) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  recuperarInscripcionPregradoBySNP(snp: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.get('inscripcion_pregrado?query=Activo:true,CodigoIcfes:'+ snp +'&sortby=Id&order=asc&limit=0')
+        .subscribe(
+          (res: any) => {
+            resolve(res);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+            reject([]);
+          }
+        );
+    });
+  }
+
+  crearInscripcionPregradoBySNP(data: any) {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService.post('inscripcion_pregrado', data)
+        .subscribe(
+          (res: any) => {
+            this.popUpManager.showSuccessAlert(this.translate.instant('documento_programa.creacion_inscripcion_pregrado_exito'));
+            resolve(res);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('documento_programa.creacion_inscripcion_pregrado_fallo'));
+            reject([]);
+          }
+        );
+    });
+  }
+
+  prepararArchivo(archivo: any) {
+    const idTipoDocument = 171;
+    let archivos: any = [];
+    // TODO: RECUPERAR EL ARCHIVO
+    const newArchivo = {
+      IdDocumento: idTipoDocument,
+      nombre: archivo.file.name.split('.')[0],
+      descripcion: 'Soporte examen de estado',
+      file: archivo.file,
+    };
+    archivos.push(newArchivo)
+    return archivos
+  }
+
+  cargarArchivos(archivos: any): Promise<number[]> {
+    return new Promise<number[]>((resolve) => {
+      this.newNuxeoService
+        .uploadFiles(archivos)
+        .subscribe((respuesta: any[]) => {
+          const listaIds = respuesta.map((f) => {
+            return f.res.Id;
+          });
+          resolve(listaIds);
+        });
+    });
   }
 
 }

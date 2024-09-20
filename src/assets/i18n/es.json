@@ -748,7 +748,8 @@
         "tipo_cupo": "Seleccione el tipo de cupo con el que desea aplicar al programa seleccionado.",
         "alerta_examen_estado": "El saber T y T (Ecaes) es opcional",
         "ac_examen_estado": "AC = Bachillerato normal",
-        "vg_examen_estado": "VG = Validación de bachillerato"
+        "vg_examen_estado": "VG = Validación de bachillerato",
+        "alerta_documentos_icfes": "Ingrese el tipo de documento y número de documento con el que presento el examen"
     },
     "examen_estado": {
         "orden": "Orden",
@@ -1468,7 +1469,14 @@
         "no_permite_borrar": "En este estado no es posible eliminar el documento.",
         "seguro_borrar": "¿Esta seguro que desea eliminar el documento?",
         "documento_eliminado": "Documento eliminado",
-        "mensaje_eliminado": "Se ha eliminado exitosamente el documento."
+        "mensaje_eliminado": "Se ha eliminado exitosamente el documento.",
+        "titulo": "Documentos examen de estado",
+        "guardar_documentos": "¿Guardar los documentos?",
+        "formulario_error": "Verifique que los datos solicitados de ICFES estén correctos y completos",
+        "snp_repetido": "El código snp ya existe",
+        "creacion_inscripcion_pregrado_exito": "Se guardo correctamente la información del examen de estado",
+        "creacion_inscripcion_pregrado_fallo": "Ocurrio un error guardando la información del examen de estado",
+        "icfes_existente": "Ya existe información asociada al ICFES por lo que no se puede guardar nueva indformación de ICFES"
     },
     "descuento_academico": {
         "descuento_academico_no_registrado": "Descuento académico no registrado",

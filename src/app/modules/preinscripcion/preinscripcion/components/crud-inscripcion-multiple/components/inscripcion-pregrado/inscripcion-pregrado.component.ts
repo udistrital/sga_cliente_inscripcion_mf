@@ -216,7 +216,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     private evaluacionInscripcionService: EvaluacionInscripcionService,
     private timeService: TimeService,
   ) {
-    sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
+    //sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
     this.translate = translate;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.total = true;
