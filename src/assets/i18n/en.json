@@ -747,7 +747,8 @@
         "tipo_cupo": "Select the type of seat you want to apply for in the selected program.",
         "alerta_examen_estado": "El saber T y T (Ecaes) is optional",
         "ac_examen_estado": "AC = Normal high school",
-        "vg_examen_estado": "VG = Validation of high school diploma"
+        "vg_examen_estado": "VG = Validation of high school diploma",
+        "alerta_documentos_icfes": "Enter the type of document and document number with which you took the exam"
     },
     "examen_estado": {
         "orden": "Order",
@@ -1467,7 +1468,14 @@
         "no_permite_borrar": "In this state, it is not possible to remove the document.",
         "seguro_borrar": "Are you sure you want to remove the document?",
         "documento_eliminado": "Document removed",
-        "mensaje_eliminado": "The document has been successfully deleted."
+        "mensaje_eliminado": "The document has been successfully deleted.",
+        "titulo": "State exam documents",
+        "guardar_documentos": "Save the documents?",
+        "formulario_error": "Verify that the requested ICFES data is correct and complete",
+        "snp_repetido": "The snp code already exists",
+        "creacion_inscripcion_pregrado_exito": "State exam information was saved successfully",
+        "creacion_inscripcion_pregrado_fallo": "An error occurred while saving the state exam information",
+        "icfes_existente": "There is already information associated with the ICFES so new ICFES information cannot be saved."
     },
     "descuento_academico": {
         "documento_programa_no_registrado": "Document not registered",

@@ -211,7 +211,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     private evaluacionInscripcionService: EvaluacionInscripcionService,
     private timeService: TimeService,
   ) {
-    sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
+    //sessionStorage.setItem('TerceroId', this.userService.getPersonaId().toString());
     this.translate = translate;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.total = true;
@@ -233,7 +233,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     });
 
     this.info_persona_id = await this.userService.getPersonaId();
-    console.log("INFO EN ORIGINAL ", this.info_persona_id);
+    sessionStorage.setItem('TerceroId', this.info_persona_id.toString());
   }
 
   activateTab() {
