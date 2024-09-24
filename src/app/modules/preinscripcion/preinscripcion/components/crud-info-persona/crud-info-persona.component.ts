@@ -300,7 +300,7 @@ export class CrudInfoPersonaComponent implements OnInit {
 
     this.terceroMidService.put('personas', prepareUpdate).subscribe(
       (response: any) => {
-        response = response.data;
+        response = response.Data;
         this.faltandatos = false;
         this.existePersona = false;
         this.formInfoPersona.btn = '';
@@ -337,9 +337,9 @@ export class CrudInfoPersonaComponent implements OnInit {
     infoPersona.FechaExpedicion = infoPersona.FechaExpedicion + ' +0000 +0000';
     infoPersona.NumeroIdentificacion = infoPersona.NumeroIdentificacion.toString();
     infoPersona.Usuario = this.userService.getPayload().email;
-    this.terceroMidService.post('personas/', infoPersona).subscribe(
+    this.terceroMidService.post('personas', infoPersona).subscribe(
       (res: any) => {
-        res = res.data;
+        res = res.Data;
         const r = <any>res;
         if (r !== null && r.Type !== 'error') {
           window.localStorage.setItem('ente', r.Id);

@@ -749,7 +749,7 @@
         "alerta_examen_estado": "El saber T y T (Ecaes) is optional",
         "ac_examen_estado": "AC = Normal high school",
         "vg_examen_estado": "VG = Validation of high school diploma",
-        "alerta_documentos_icfes": "Enter the type of document and document number with which you took the exam"
+        "no_proyectos_disponibles": "No available curricular projects were found for enrollment at this time. Please contact the administration or try again later."
     },
     "examen_estado": {
         "orden": "Order",

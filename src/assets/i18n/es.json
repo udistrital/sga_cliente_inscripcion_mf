@@ -749,7 +749,7 @@
         "alerta_examen_estado": "El saber T y T (Ecaes) es opcional",
         "ac_examen_estado": "AC = Bachillerato normal",
         "vg_examen_estado": "VG = Validación de bachillerato",
-        "alerta_documentos_icfes": "Ingrese el tipo de documento y número de documento con el que presento el examen"
+        "no_proyectos_disponibles": "Actualmente no se encontraron proyectos curriculares disponibles para matricularse. Por favor, contacta con la administración o intenta más tarde."
     },
     "examen_estado": {
         "orden": "Orden",
