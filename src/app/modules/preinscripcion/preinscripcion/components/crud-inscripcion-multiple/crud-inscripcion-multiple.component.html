@@ -123,8 +123,26 @@
         <mat-form-field *ngIf="showPeriodo">
           <mat-select [(ngModel)]="periodoId" placeholder="{{ 'inscripcion.aviso_periodo' | translate }}" (selectionChange)="onSelectPeriodo()">
             <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let item of periodos" [value]="item">
-              {{ item.Nombre }}
+            <mat-option *ngFor="let periodo of periodos" [value]="periodo">
+              <div
+                    style="display: flex; flex-wrap: wrap; align-items: center"
+                  >
+                    <div
+                      class="badge"
+                      [ngStyle]="{
+                        backgroundColor: periodo.Activo
+                          ? 'var(--success-accent)'
+                          : 'var(--danger-base)'
+                      }"
+                    ></div>
+                    <b>{{ periodo.Nombre }}</b>
+                    <small
+                      style="margin-left: 5px; font-size: 0.8em; color: gray"
+                    >
+                      (Inicio vigencia:
+                      {{ periodo.InicioVigencia | date : "yyyy-MM-dd" }})
+                    </small>
+                  </div>
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -147,21 +165,7 @@
           <mat-error *ngIf="Campo2Control.hasError('required')">{{ "inscripcion.aviso_tipo" | translate }}</mat-error>
         </mat-form-field>
 
-        <mat-card-content *ngIf="mostrarSelectorCupos">
-              <mat-form-field style="width: 100%;">
-                  <mat-label>
-                      {{ 'evaluacionPregrado.periodo' | translate }}:
-                  </mat-label>
-                  <mat-select [(ngModel)]="tipoCupo" [disabled]='false' [formControl]="tipoCupoControl">
-                      <mat-option>
-                          --{{ 'GLOBAL.seleccionar' | translate }}--
-                      </mat-option>
-                      <mat-option *ngFor="let item of tipoCupos" [value]="item.ParametroId.Id">
-                          {{ item.ParametroId.Nombre }}
-                      </mat-option>
-                  </mat-select>
-              </mat-form-field>
-      </mat-card-content>
+        
 
         <button *ngIf="showInfo" mat-flat-button color="accent" style="display: grid" (click)="generarRecibo()">
           {{ "inscripcion.generar_recibo" | translate }}
