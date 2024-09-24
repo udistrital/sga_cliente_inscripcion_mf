@@ -2,8 +2,8 @@
   <mat-icon class="icon-info">info</mat-icon>
   <div>
     <p>{{ "inscripcion.alerta_examen_estado" | translate }}</p>
-    <p>{{ "inscripcion.ac_examen_estado" | translate }}</p>
-    <p>{{ "inscripcion.vg_examen_estado" | translate }}</p>
+    <p>{{ "inscripcion.ac_examen_estado" | translate }} / {{ "inscripcion.vg_examen_estado" | translate }}</p>
+    <p>{{ "inscripcion.alerta_documentos_icfes" | translate }}</p>
   </div>
 </div>
 
@@ -31,6 +31,26 @@
             {{tipo}}
           </mat-option>
         </mat-select>
+      </td>
+    </ng-container>
+
+    <!-- Tipo Documento Column -->
+    <ng-container matColumnDef="tipoDocumento">
+      <th mat-header-cell *matHeaderCellDef>{{ "legalizacion_matricula.tipo_doc" | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <mat-select [(value)]="element.tipoDocumento">
+          <mat-option *ngFor="let tipo of tipos_documentos" [value]="tipo">
+            {{tipo.CodigoAbreviacion}}
+          </mat-option>
+        </mat-select>
+      </td>
+    </ng-container>
+
+    <!-- Documento Column -->
+    <ng-container matColumnDef="documento">
+      <th mat-header-cell *matHeaderCellDef>{{ "legalizacion_matricula.documento" | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <input matInput [(ngModel)]="element.documento">
       </td>
     </ng-container>
 
@@ -68,7 +88,7 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="fileInput.click()">
+            <button mat-menu-item (click)="fileInput.click()" [disabled]="existeIcfes">
               <mat-icon>attach_file_add</mat-icon>
               <span>{{ 'examen_estado.seleccionar_archivo' | translate }}</span>
             </button>
@@ -236,5 +256,5 @@
       </mat-card> -->
 </div>
 <div class="contenedor-boton">
-  <button mat-stroked-button class="boton-general btn boton-primary">{{ 'GLOBAL.guardar' | translate }}</button>
+  <button mat-stroked-button (click)="guardar()" class="boton-general btn boton-primary">{{ 'GLOBAL.guardar' | translate }}</button>
 </div>

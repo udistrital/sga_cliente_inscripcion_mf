@@ -1469,7 +1469,14 @@
         "no_permite_borrar": "En este estado no es posible eliminar el documento.",
         "seguro_borrar": "¿Esta seguro que desea eliminar el documento?",
         "documento_eliminado": "Documento eliminado",
-        "mensaje_eliminado": "Se ha eliminado exitosamente el documento."
+        "mensaje_eliminado": "Se ha eliminado exitosamente el documento.",
+        "titulo": "Documentos examen de estado",
+        "guardar_documentos": "¿Guardar los documentos?",
+        "formulario_error": "Verifique que los datos solicitados de ICFES estén correctos y completos",
+        "snp_repetido": "El código snp ya existe",
+        "creacion_inscripcion_pregrado_exito": "Se guardo correctamente la información del examen de estado",
+        "creacion_inscripcion_pregrado_fallo": "Ocurrio un error guardando la información del examen de estado",
+        "icfes_existente": "Ya existe información asociada al ICFES por lo que no se puede guardar nueva indformación de ICFES"
     },
     "descuento_academico": {
         "descuento_academico_no_registrado": "Descuento académico no registrado",
@@ -1890,7 +1897,7 @@
         "legalizacion_actualizacion_error": "Ocurrio un error al actualizar los datos de legalización"
     },
     "informacion_acudientes": {
-        "titulo": "Datos de contacto del acudiente",
+        "titulo": "Datos de contacto del primer acudiente",
         "nombre_acudiente": "Nombre del acudiente",
         "nombre": "Nombre",
         "parentesco": "Parentesco",
@@ -1900,7 +1907,7 @@
         "direccion": "Dirección",
         "telefono_acudiente": "Teléfono del acudiente",
         "telefono": "Teléfono",
-        "titulo2": "Datos de contacto de otro familiar",
+        "titulo2": "Datos de contacto de otro acudiente",
         "nombre_familiar": "Nombre del familiar",
         "siguiente": "Siguiente",
         "anterior": "Anterior",

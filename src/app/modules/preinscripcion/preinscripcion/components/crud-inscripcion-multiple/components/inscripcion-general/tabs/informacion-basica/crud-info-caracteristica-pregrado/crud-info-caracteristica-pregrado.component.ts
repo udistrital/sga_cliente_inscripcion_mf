@@ -41,7 +41,8 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
 
   @Input('porcentaje')
   set valPorcentaje(porcentaje: number) {
-    this.porcentaje = porcentaje / 100 * 3;
+    // this.porcentaje = porcentaje / 100 * 3;
+    this.porcentaje = porcentaje / 100 * 2;
   }
 
   // tslint:disable-next-line: no-output-rename
@@ -105,38 +106,45 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       this.departamentoSeleccionado = event.valor;
       this.loadOptionsCiudadNacimiento();
     } else if (event.nombre === 'TipoDiscapacidad') {
-      this.formInfoCaracteristica.campos[this.getIndexForm('ComprobanteDiscapacidad')].ocultar =
-        !((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0);
+        if (Array.isArray(event.valor) && event.valor.length > 0){
 
-      if ((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0) {
-        this.mensaje_discapcidades = true;
-      } else {
-        this.mensaje_discapcidades = false;
-      }
+          this.formInfoCaracteristica.campos[this.getIndexForm('ComprobanteDiscapacidad')].ocultar =
+          !((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0);
+  
+          if ((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0) {
+            this.mensaje_discapcidades = true;
+          } else {
+            this.mensaje_discapcidades = false;
+          }
+    
+          this.mensaje_poblacion_discapcidades = this.mensaje_discapcidades && this.mensaje_poblacion;
+    
+          if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.length === 0) {
+            this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].opciones.filter((data: any) => data.Nombre === 'NO APLICA');
+          } else if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.length > 1) {
+            this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.filter((data: any) => data.Nombre !== 'NO APLICA');
+          }
 
-      this.mensaje_poblacion_discapcidades = this.mensaje_discapcidades && this.mensaje_poblacion;
-
-      if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.length === 0) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].opciones.filter((data: any) => data.Nombre === 'NO APLICA');
-      } else if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.length > 1) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoDiscapacidad')].valor.filter((data: any) => data.Nombre !== 'NO APLICA');
-      }
+        } 
     } else if (event.nombre === 'TipoPoblacion') {
-      this.formInfoCaracteristica.campos[this.getIndexForm('ComprobantePoblacion')].ocultar =
+      if (Array.isArray(event.valor) && event.valor.length > 0){
+        this.formInfoCaracteristica.campos[this.getIndexForm('ComprobantePoblacion')].ocultar =
         !((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0);
 
-      if ((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0) {
-        this.mensaje_poblacion = true;
-      } else {
-        this.mensaje_poblacion = false;
-      }
+        if ((event.valor.filter((data: any) => data.Nombre !== 'NO APLICA')).length > 0) {
+          this.mensaje_poblacion = true;
+        } else {
+          this.mensaje_poblacion = false;
+        }
 
-      this.mensaje_poblacion_discapcidades = this.mensaje_discapcidades && this.mensaje_poblacion;
+        this.mensaje_poblacion_discapcidades = this.mensaje_discapcidades && this.mensaje_poblacion;
 
-      if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.length === 0) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].opciones.filter((data: any) => data.Nombre === 'NO APLICA');
-      } else if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.length > 1) {
-        this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.filter((data: any) => data.Nombre !== 'NO APLICA');
+        if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.length === 0) {
+          this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].opciones.filter((data: any) => data.Nombre === 'NO APLICA');
+        } else if (this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.length > 1) {
+          this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor = this.formInfoCaracteristica.campos[this.getIndexForm('TipoPoblacion')].valor.filter((data: any) => data.Nombre !== 'NO APLICA');
+        }
+
       }
     }
   }
@@ -253,8 +261,8 @@ export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
       this.terceroMidService.get('personas/' + this.info_persona_id + '/complementarios')
         .subscribe(async res => {
           if (res.status != "404") {
-            this.datosGet = <InfoCaracteristicaGet>res.data;
-            this.info_info_caracteristica = <InfoCaracteristica>res.data;
+            this.datosGet = <InfoCaracteristicaGet>res.Data;
+            this.info_info_caracteristica = <InfoCaracteristica>res.Data;
             this.info_info_caracteristica.GrupoSanguineo = this.info_info_caracteristica.GrupoSanguineo;
             this.info_info_caracteristica.Rh = this.info_info_caracteristica.Rh;
             this.info_info_caracteristica.TipoRelacionUbicacionEnte = 1;
