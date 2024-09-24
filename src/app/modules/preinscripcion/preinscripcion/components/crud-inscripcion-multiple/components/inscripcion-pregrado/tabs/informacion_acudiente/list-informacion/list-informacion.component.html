@@ -1,4 +1,4 @@
-<div>
+<!-- <div>
   <mat-card>
     <mat-card-header>
       <mat-card-title>{{ "informacion_acudientes.titulo" | translate }}</mat-card-title>
@@ -156,6 +156,98 @@
                           !seventhFormGroup.valid || !eighthFormGroup.valid || 
                           !ninthFormGroup.valid || !tenthFormGroup.valid"
       (click)="submit()">{{ "informacion_acudientes.guardar" | translate }}</button>
+    </mat-card-actions>
+  </mat-card>
+</div> -->
+
+
+<div>
+  <mat-card>
+    <mat-card-content>
+      <!-- Contenedor de dos columnas -->
+      <div style="display: flex; flex-wrap: wrap;">
+        <!-- Columna izquierda -->
+        <div style="flex: 1 1 50%; padding: 10px;">
+          <mat-card-title>{{ "informacion_acudientes.titulo" | translate }}</mat-card-title>
+          <!-- Formularios de la columna izquierda -->
+          <form [formGroup]="firstFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.nombre_acudiente" | translate }}</mat-label>
+              <input matInput formControlName="firstCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="secondFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.parentesco" | translate }}</mat-label>
+              <input matInput formControlName="secondCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="thirdFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.correo_acudiente" | translate }}</mat-label>
+              <input matInput formControlName="thirdCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="fourthFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.direccion_acudiente" | translate }}</mat-label>
+              <input matInput formControlName="fourthCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="fifthFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.telefono_acudiente" | translate }}</mat-label>
+              <input matInput formControlName="fifthCtrl" required>
+            </mat-form-field>
+          </form>
+        </div>
+        <!-- Columna derecha -->
+        <div style="flex: 1 1 50%; padding: 10px;">
+          <mat-card-title>{{ "informacion_acudientes.titulo2" | translate }}</mat-card-title>
+          <!-- Formularios de la columna derecha -->
+          <form [formGroup]="sixthFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.nombre_familiar" | translate }}</mat-label>
+              <input matInput formControlName="sixthCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="seventhFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.parentesco" | translate }}</mat-label>
+              <input matInput formControlName="seventhCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="eighthFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.correo" | translate }}</mat-label>
+              <input matInput formControlName="eighthCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="ninthFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.direccion" | translate }}</mat-label>
+              <input matInput formControlName="ninthCtrl" required>
+            </mat-form-field>
+          </form>
+          <form [formGroup]="tenthFormGroup">
+            <mat-form-field style="width: 100%;">
+              <mat-label>{{ "informacion_acudientes.telefono" | translate }}</mat-label>
+              <input matInput formControlName="tenthCtrl" required>
+            </mat-form-field>
+          </form>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <!-- Botón de guardar -->
+      <button mat-raised-button color="primary" [disabled]="!firstFormGroup.valid || !secondFormGroup.valid ||
+                      !thirdFormGroup.valid || !fourthFormGroup.valid ||
+                      !fifthFormGroup.valid || !sixthFormGroup.valid ||
+                      !seventhFormGroup.valid || !eighthFormGroup.valid ||
+                      !ninthFormGroup.valid || !tenthFormGroup.valid"
+              (click)="submit()">
+        {{ "informacion_acudientes.guardar" | translate }}
+      </button>
     </mat-card-actions>
   </mat-card>
 </div>
