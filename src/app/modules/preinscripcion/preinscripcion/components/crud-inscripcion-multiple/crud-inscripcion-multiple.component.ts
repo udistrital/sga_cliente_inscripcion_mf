@@ -1131,22 +1131,17 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   cargarPeriodo() {
     return new Promise((resolve, reject) => {
       this.parametrosService
-        .get('periodo?query=CodigoAbreviacion:PA&sortby=Id&order=desc&limit=0')
+        .get('periodo?query=CodigoAbreviacion:PA,Activo:true&sortby=Id&order=desc&limit=0')
         .subscribe(
-          (res: any) => {
-            console.log(res);
-            const r = <any>res;
-            if (res !== null && r.Status == '200') {
-              this.periodo = <any>res['Data'][0];
+          (response: any) => {
+            if (response.Status && response.Data) {
+              this.periodo = response['Data'][0];
               window.localStorage.setItem(
                 'IdPeriodo',
                 String(this.periodo['Id'])
               );
+              this.periodos = response.Data;
               resolve(this.periodo);
-              const periodos = <any[]>res['Data'];
-              periodos.forEach((element) => {
-                this.periodos.push(element);
-              });
             }
           },
           (error: HttpErrorResponse) => {
