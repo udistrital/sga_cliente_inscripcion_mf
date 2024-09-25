@@ -1,4 +1,4 @@
-<div>
+<!-- <div>
   <mat-card>
     <mat-card-header>
       <mat-card-title>{{ "informacion_academica.titulo" | translate }}</mat-card-title>
@@ -126,6 +126,98 @@
       !thirdFormGroup.valid || !fourthFormGroup.valid || 
       !fifthFormGroup.valid || !sixthFormGroup.valid"
       (click)="submit()">Guardar</button>
+    </mat-card-actions>
+  </mat-card>
+</div> -->
+
+<div>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ "informacion_academica.titulo" | translate }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Primer formulario -->
+      <form [formGroup]="firstFormGroup">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>{{ "informacion_academica.localidad" | translate }}</mat-label>
+          <mat-select formControlName="firstCtrl" required (selectionChange)="calculatePercentage()">
+            <mat-option *ngFor="let localidad of localidades" [value]="localidad.Id">
+              {{ localidad.Nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <!-- Segundo formulario -->
+      <form [formGroup]="secondFormGroup">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>{{ "informacion_academica.tipo" | translate }}</mat-label>
+          <mat-select formControlName="secondCtrl" required (selectionChange)="calculatePercentage()">
+            <mat-option *ngFor="let colegio of tiposColegio" [value]="colegio.Id">
+              {{ colegio.Nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <!-- Tercer formulario -->
+      <form [formGroup]="thirdFormGroup">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>{{ "informacion_academica.valido" | translate }}</mat-label>
+          <mat-select formControlName="thirdCtrl" required (selectionChange)="calculatePercentage()">
+            <mat-option *ngFor="let valido of validar" [value]="valido.Id">
+              {{ valido.Nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <!-- Cuarto formulario -->
+      <form [formGroup]="fourthFormGroup">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>{{ "informacion_academica.semestres" | translate }}</mat-label>
+          <mat-select formControlName="fourthCtrl" required (selectionChange)="calculatePercentage()">
+            <mat-option *ngFor="let semestre of semestres" [value]="semestre.Id">
+              {{ semestre.Nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <!-- Quinto formulario -->
+      <form [formGroup]="fifthFormGroup">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>{{ "informacion_academica.medio" | translate }}</mat-label>
+          <mat-select formControlName="fifthCtrl" required (selectionChange)="calculatePercentage()">
+            <mat-option *ngFor="let medio of medios" [value]="medio.Id">
+              {{ medio.Nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <!-- Sexto formulario -->
+      <form [formGroup]="sixthFormGroup">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>{{ "informacion_academica.oportunidad" | translate }}</mat-label>
+          <mat-select formControlName="sixthCtrl" required (selectionChange)="calculatePercentage()">
+            <mat-option *ngFor="let oportunidad of oportunidades" [value]="oportunidad.Id">
+              {{ oportunidad.Nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <!-- Botón de guardar -->
+      <button mat-raised-button color="primary" [disabled]="!firstFormGroup.valid || !secondFormGroup.valid || 
+                          !thirdFormGroup.valid || !fourthFormGroup.valid || 
+                          !fifthFormGroup.valid || !sixthFormGroup.valid"
+              (click)="submit()">
+        {{ "informacion_academica.guardar" | translate }}
+      </button>
     </mat-card-actions>
   </mat-card>
 </div>
