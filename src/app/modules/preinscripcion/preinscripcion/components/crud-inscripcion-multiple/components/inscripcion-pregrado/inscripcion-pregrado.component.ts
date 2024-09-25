@@ -269,8 +269,6 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     this.cargarTipoCuposPorPeriodo(this.IdPrograma);
     // Se carga el numero de proyectos permitidos para pregardo
     this.loadNumeroProyectos(this.IdPeriodo)
-
-    this.tipo_inscripcion("enfasis")
   }
 
   loadNumeroProyectos(IdPeriodo: any) {
@@ -334,8 +332,10 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
             }
           }
         }else{
+          console.log("AAAAAAAAAAAAAAAAA")
           this.preinscrito = true
           // this.puedeInscribirse = true;
+          this.tipo_inscripcion("enfasis")
           this.loadSuitePrograma(this.IdPeriodo,this.IdPrograma,this.IdTipo)
         } 
       },
@@ -1627,6 +1627,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
 
     if (select == 'enfasis') {
       // if (this.enfasisSelected) {
+      if(this.preinscrito === true){
         console.log(this.IdPrograma)
         this.resetPercentages();
         const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
@@ -1651,6 +1652,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
             await this.getPorcentajes();
           }
         }
+      }
       // }
     }
   }
