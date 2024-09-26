@@ -7,7 +7,12 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment-timezone';
@@ -108,7 +113,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   programa!: number;
   aspirante!: number;
   periodo: Periodo = new Periodo();
-  periodoId: any;
   periodos: any = [];
   selectednivel: any;
   tipo_inscripciones: any = [];
@@ -145,6 +149,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   mostrarSelectorCupos = true;
   tipoCupoControl = new FormControl('', [Validators.required]);
 
+  preinscripcionForm!: FormGroup;
+
   constructor(
     private projectService: ProyectoAcademicoService,
     private popUpManager: PopUpManager,
@@ -155,7 +161,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     private terceroMidService: TerceroMidService,
     private inscripcionMidService: InscripcionMidService,
     private calendarioMidService: CalendarioMidService,
-    private eventoService: EventoService
+    private fb: FormBuilder
   ) {
     this.showProyectoCurricular = false;
     this.showTipoInscripcion = false;
@@ -168,6 +174,13 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   async ngOnInit() {
+    // Inicializando formulario de preinscripción
+    this.preinscripcionForm = this.fb.group({
+      nivel: ['', Validators.required],
+      proyecto: ['', Validators.required],
+      tipoInscripcion: ['', Validators.required],
+    });
+
     sessionStorage.setItem('EstadoInscripcion', 'false');
     // Inicializaciones sincrónicas
     this.parametros_pago = {
@@ -513,17 +526,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     });
   }
 
-  filtrarProyecto(proyecto: any) {
-    // if (proyecto['NivelFormacionId']['NivelFormacionPadreId'] !== null) {
-    //   if (proyecto['NivelFormacionId']['Id'] === this.selectedSubLevel
-    //   ) {
-    //     console.log(this.selectedSubLevel+"okSL")
-    //     console.log(proyecto['NivelFormacionId']['NivelFormacionPadreId']['Id']+"ok")
-    //     return true;
-    //   }
-    // }
-    // return false;
-    if (proyecto['NivelFormacionId']['Id'] === this.selectedSubLevel) {
+  filtrarProyecto(proyecto: any, subNivel: any) {
+    if (proyecto['NivelFormacionId']['Id'] === subNivel) {
       return true;
     } else {
       return false;
@@ -531,46 +535,60 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   async onSelectLevel() {
-    if (this.selectedLevel === undefined) {
+    // Capturar el id del nivel
+    const selectedLevel = this.preinscripcionForm.get('nivel')?.value;
+
+    // Limpiar todos los controles del FormGroup y resetear valores
+    this.preinscripcionForm.reset({
+      nivel: selectedLevel,
+      subNivel: '',
+      proyecto: '',
+      tipoInscripcion: '',
+    });
+    this.showTipoInscripcion = false;
+    this.showInfo = false;
+
+    if (selectedLevel === undefined) {
       this.popUpManager.showInfoToast(
         this.translate.instant('inscripcion.erro_selec_nivel')
       );
     } else {
-      if (this.selectedLevel === 2) {
+      if (selectedLevel === 2) {
         Swal.fire({
           icon: 'info',
           title: this.translate.instant('GLOBAL.info'),
           text: this.translate.instant('inscripcion.alerta_posgrado'),
         });
       }
-      const proyectos: any =
-        await this.recuperarProyectosAcademicosInstitucion();
-      const res = proyectos.map((item: any) => ({
-        IdNivel: item.NivelFormacionId ? item.NivelFormacionId.Id : null,
-        Nombre: item.NivelFormacionId ? item.NivelFormacionId.Nombre : null,
-        IdNivelPadre: item.NivelFormacionId?.NivelFormacionPadreId?.Id ?? null,
-      }));
-      //Filtro de subniveles
-      const resLimpia = [];
-      const repetidos = new Set();
-      for (const item of res) {
-        if (item.Nombre && !repetidos.has(item.Nombre)) {
-          repetidos.add(item.Nombre);
-          resLimpia.push(item);
+
+      const proyectosResponse: any = await this.recuperarProyectosAcademicosInstitucion();
+      this.projects = proyectosResponse;
+
+      // Encontrar los niveles de formación únicos
+      const nivelesSet = new Set();
+      const niveles = [];
+      for (const item of proyectosResponse) {
+        const IdNivel = item.NivelFormacionId ? item.NivelFormacionId.Id : null;
+        const Nombre = item.NivelFormacionId
+          ? item.NivelFormacionId.Nombre
+          : null;
+        const IdNivelPadre =
+          item.NivelFormacionId?.NivelFormacionPadreId?.Id ?? null;
+
+        if (Nombre && !nivelesSet.has(Nombre)) {
+          nivelesSet.add(Nombre);
+          niveles.push({ IdNivel, Nombre, IdNivelPadre });
         }
       }
-      if (this.selectedLevel === 1) {
-        this.showSublevel = true;
-        this.subniveles = resLimpia.filter(
-          (item) => item.IdNivelPadre !== 2 && item.IdNivel !== 2
-        );
-      }
-      if (this.selectedLevel === 2) {
-        this.showSublevel = true;
-        this.subniveles = resLimpia.filter(
-          (item) => item.IdNivelPadre !== 1 && item.IdNivel !== 1
-        );
-      }
+
+      // Filtrar los niveles por el nivel seleccionado
+      this.showSublevel = true;
+      this.subniveles = niveles.filter(
+        (nivel) => nivel.IdNivelPadre === selectedLevel
+      );
+
+      await this.validateProject();
+      this.showProyectoCurricular = true;
     }
   }
 
@@ -602,57 +620,33 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     });
   }
 
-  async onSelectSubLevel() {
-    if (this.selectedSubLevel === undefined) {
-      this.popUpManager.showInfoToast(
-        this.translate.instant('inscripcion.erro_selec_nivel')
-      );
-    } else {
-      const proyectos: any =
-        await this.recuperarProyectosAcademicosInstitucion();
-      this.projects = <any[]>(
-        proyectos.filter((proyecto: any) => this.filtrarProyecto(proyecto))
-      );
-      this.showPeriodo = true;
-    }
-  }
-
-  async onSelectPeriodo() {
-    if (this.periodoId === undefined) {
-      this.popUpManager.showInfoToast(
-        this.translate.instant('inscripcion.erro_selec_periodo')
-      );
-    } else {
-      await this.validateProject();
-    }
-  }
 
   nuevaPreinscripcion() {
     this.showNew = true;
   }
 
   onSelectProyecto() {
+    this.preinscripcionForm.patchValue({
+      tipoInscripcion: '',
+    });
     this.loadTipoInscripcion();
   }
 
   onSelectTipoInscripcion(tipo: any) {
     this.showInfo = true;
-    // if (this.inscripcionProjects != null) {
-    //   this.showInfo = true;
-    // }
   }
 
   async validateProject() {
-    this.inscripcionProjects = new Array();
-    this.showProyectoCurricular = false;
-    this.showPeriodo = true;
     this.showTipoInscripcion = false;
     this.showInfo = false;
-    let periodo: any = localStorage.getItem('IdPeriodo');
+
+    const selectedNivel = this.preinscripcionForm.get('nivel')?.value;
+
     const resCalendario: any = await this.recuperarCalendarioProyecto(
-      this.selectedSubLevel,
-      this.periodoId.Id
+      selectedNivel,
+      this.periodo.Id
     );
+
     if (
       resCalendario === null ||
       resCalendario.length === 0 ||
@@ -663,13 +657,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         this.translate.instant('inscripcion.no_proyectos_disponibles')
       );
     }
-    console.log('CALENDARIO', resCalendario);
     this.inscripcionProjects = resCalendario;
-    console.log(this.projects);
-    console.log(this.inscripcionProjects);
-    this.showProyectoCurricular = true;
-    this.showPeriodo = true;
-    // this.loadTipoInscripcion();
   }
 
   recuperarCalendarioProyecto(idNivel: number, idPeriodo: number) {
@@ -825,10 +813,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   async generar_inscripcion() {
-    console.log(this.selectedLevel, this.periodoId);
-    if (this.selectedLevel == 1) {
-      this.periodo = this.periodoId;
-    }
+    const nivelId = this.preinscripcionForm.get('nivel')?.value;
+    const proyectoId = this.preinscripcionForm.get('proyecto')?.value;
+    const tipoInscripcionId =
+      this.preinscripcionForm.get('tipoInscripcion')?.value;
 
     const inscripcion = {
       Id: parseInt(this.info_info_persona.NumeroIdentificacion, 10),
@@ -838,15 +826,14 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         .email,
       PersonaId: Number(this.info_persona_id),
       PeriodoId: this.periodo.Id,
-      Nivel: parseInt(this.selectedLevel, 10),
-      ProgramaAcademicoId: parseInt(this.selectedProject, 10),
+      Nivel: parseInt(nivelId, 10),
+      ProgramaAcademicoId: parseInt(proyectoId, 10),
       ProgramaAcademicoCodigo: parseInt(
-        this.projects.find(
-          (proyecto: any) => proyecto.Id === this.selectedProject
-        ).Codigo,
+        this.projects.find((proyecto: any) => proyecto.Id === proyectoId)
+          ?.Codigo,
         10
       ),
-      TipoInscripcionId: parseInt(this.tipo_inscripcion_selected, 10),
+      TipoInscripcionId: parseInt(tipoInscripcionId, 10),
       Year: this.periodo.Year,
       Periodo: parseInt(this.periodo.Ciclo, 10),
       FechaPago: '',
@@ -854,20 +841,14 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     };
     console.log(inscripcion);
 
-    let periodo: any = localStorage.getItem('IdPeriodo');
-    //let periodo = 40
-
     const resCalendario: any = await this.recuperarCalendarioProyecto(
-      this.selectedSubLevel,
-      periodo
+      nivelId,
+      this.periodo.Id
     );
     this.inscripcionProjects = resCalendario;
 
     for (const proyecto of this.inscripcionProjects) {
-      if (
-        proyecto.ProyectoId === this.selectedProject &&
-        proyecto.Evento != null
-      ) {
+      if (proyecto.ProyectoId === proyectoId && proyecto.Evento != null) {
         inscripcion.FechaPago = moment(
           proyecto.Evento.FechaFinEvento,
           'YYYY-MM-DD'
@@ -881,13 +862,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
           this.showTipoInscripcion = false;
           this.showInfo = false;
           this.showNew = false;
+          this.preinscripcionForm.reset();
           this.loadInfoInscripcion();
         }
-      } else {
-        this.popUpManager.showAlert(
-          this.translate.instant('inscripcion.preinscripcion'),
-          this.translate.instant('inscripcion.no_fechas_inscripcion')
-        );
       }
     }
   }
@@ -896,14 +873,15 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.post('inscripciones/nueva', body).subscribe(
         (response: any) => {
-          if (response.Status == 200) {
+          console.log("LA RESPUESTA NUEVA", response)
+          if (response.Status == 200 && response.Success) {
             this.popUpManager.showSuccessAlert(
               this.translate.instant('recibo_pago.generado')
             );
             resolve(true);
-          } else if (response.Status == 204) {
+          } else if (response.Status == 200 && !response.Success) {
             this.popUpManager.showErrorAlert(
-              this.translate.instant('recibo_pago.recibo_duplicado')
+              response.Message
             );
             reject(false);
           } else if (response.Status == 400) {
@@ -1055,12 +1033,14 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   async loadTipoInscripcion() {
     this.tipo_inscripciones = new Array();
     let tiposInscripciones;
-    const tiposInscripcion: any = await this.recuperarTipoInscripcionNivel(
-      this.selectedLevel
-    );
-    window.localStorage.setItem('IdNivel', String(this.selectedLevel));
 
-    if (this.selectedLevel == 1) {
+    const selectedLevel = this.preinscripcionForm.get('nivel')?.value;
+    const tiposInscripcion: any = await this.recuperarTipoInscripcionNivel(
+      selectedLevel
+    );
+    window.localStorage.setItem('IdNivel', String(selectedLevel));
+
+    if (selectedLevel == 1) {
       tiposInscripciones = <Array<any>>tiposInscripcion;
     } else {
       tiposInscripciones = <Array<any>>tiposInscripcion;
@@ -1131,7 +1111,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   cargarPeriodo() {
     return new Promise((resolve, reject) => {
       this.parametrosService
-        .get('periodo?query=CodigoAbreviacion:PA,Activo:true&sortby=Id&order=desc&limit=0')
+        .get(
+          'periodo?query=CodigoAbreviacion:PA,Activo:true&sortby=Id&order=desc&limit=0'
+        )
         .subscribe(
           (response: any) => {
             if (response.Status && response.Data) {
@@ -1281,9 +1263,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   cargarTipoCuposPorPeriodo(idPeriodo: any) {
-    // idPeriodo = 39
     return new Promise((resolve, reject) => {
-      // this.parametrosService.get(`parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:T,PeriodoId.Id:${idPeriodo}`)
       this.parametrosService
         .get(
           `parametro_periodo?limit=0&query=ParametroId.TipoParametroId.CodigoAbreviacion:TIP_CUP,PeriodoId.Id:${idPeriodo}`
