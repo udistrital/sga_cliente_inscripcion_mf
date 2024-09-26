@@ -663,7 +663,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
   loadPercentageFormacionAcademica() {
     this.inscripcionMidService
-      .get('academico/formacion/?Id=' + this.info_persona_id)
+      .get('academico/formacion?Id=' + this.info_persona_id)
       .subscribe((res) => {
         if (res.Status == '200' && Object.keys(res.Data).length > 0) {
           this.percentage_acad = 100;
