@@ -7,7 +7,8 @@
       <mat-icon>info</mat-icon>
       {{ "inscripcion.warning_info" | translate }}
     </div>
-
+    <p><b>{{"GLOBAL.periodo" | translate }}</b> : {{this.periodo.Nombre}}</p>
+    <br/>
     <mat-card>
       <mat-card-header>
         <mat-card-title>{{ "inscripcion.recibos_generados" | translate }}</mat-card-title>
@@ -102,75 +103,40 @@
 
     <mat-card *ngIf="showNew">
       <mat-card-content>
-        <!-- select Nivel -->
-        <mat-form-field *ngIf="showNew">
-          <mat-select [formControl]="CampoControl" [(ngModel)]="selectedLevel" placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectLevel()">
-            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
-            <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">{{ nivel.Nombre }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="CampoControl.hasError('required')">{{ "inscripcion.erro_selec_nivel" | translate }}</mat-error>
-        </mat-form-field>
-
-        <mat-form-field *ngIf="showSublevel">
-          <mat-select [formControl]="Campo3Control" [(ngModel)]="selectedSubLevel" placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectSubLevel()">
-            <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let subnivel of subniveles" [value]="subnivel.IdNivel">{{ subnivel.Nombre }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="Campo3Control.hasError('required')">{{ "inscripcion.erro_selec_nivel" | translate }}</mat-error>
-        </mat-form-field>
-
-        <!-- select periodo -->
-        <mat-form-field *ngIf="showPeriodo">
-          <mat-select [(ngModel)]="periodoId" placeholder="{{ 'inscripcion.aviso_periodo' | translate }}" (selectionChange)="onSelectPeriodo()">
-            <mat-option>--Seleccionar--</mat-option>
-            <mat-option *ngFor="let periodo of periodos" [value]="periodo">
-              <div
-                    style="display: flex; flex-wrap: wrap; align-items: center"
-                  >
-                    <div
-                      class="badge"
-                      [ngStyle]="{
-                        backgroundColor: periodo.Activo
-                          ? 'var(--success-accent)'
-                          : 'var(--danger-base)'
-                      }"
-                    ></div>
-                    <b>{{ periodo.Nombre }}</b>
-                    <small
-                      style="margin-left: 5px; font-size: 0.8em; color: gray"
-                    >
-                      (Inicio vigencia:
-                      {{ periodo.InicioVigencia | date : "yyyy-MM-dd" }})
-                    </small>
-                  </div>
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- select proyecto academico -->
-        <mat-form-field *ngIf="showProyectoCurricular">
-          <mat-select [formControl]="Campo1Control" [(ngModel)]="selectedProject" placeholder="{{ 'oferta.proyecto' | translate }}" (selectionChange)="onSelectProyecto()">
-            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
-            <mat-option *ngFor="let project of inscripcionProjects" [value]="project.ProyectoId">{{ project.NombreProyecto }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="Campo1Control.hasError('required')">{{ "inscripcion.erro_selec" | translate }}</mat-error>
-        </mat-form-field>
-
-        <!-- select tipo de inscripcion -->
-        <mat-form-field *ngIf="showTipoInscripcion">
-          <mat-select [formControl]="Campo2Control" [(ngModel)]="tipo_inscripcion_selected" placeholder="{{ 'inscripcion.aviso_tipo' | translate }}" (selectionChange)="onSelectTipoInscripcion($event)">
-            <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
-            <mat-option *ngFor="let item of tipo_inscripciones" [value]="item.Id">{{ item.Nombre }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="Campo2Control.hasError('required')">{{ "inscripcion.aviso_tipo" | translate }}</mat-error>
-        </mat-form-field>
-
-        
-
-        <button *ngIf="showInfo" mat-flat-button color="accent" style="display: grid" (click)="generarRecibo()">
-          {{ "inscripcion.generar_recibo" | translate }}
-          <i class="fa fa-barcode fa-5x"></i>
-        </button>
+        <form [formGroup]="preinscripcionForm">
+          <!-- select Nivel -->
+          <mat-form-field *ngIf="showNew">
+            <mat-select formControlName="nivel" placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectLevel()">
+              <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
+              <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">{{ nivel.Nombre }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="preinscripcionForm.get('nivel')?.hasError('required')">{{ "inscripcion.erro_selec_nivel" | translate }}</mat-error>
+          </mat-form-field>
+    
+          <!-- select Proyecto Académico -->
+          <mat-form-field *ngIf="showProyectoCurricular">
+            <mat-select formControlName="proyecto" placeholder="{{ 'oferta.proyecto' | translate }}" (selectionChange)="onSelectProyecto()">
+              <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
+              <mat-option *ngFor="let project of inscripcionProjects" [value]="project.ProyectoId">{{ project.NombreProyecto }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="preinscripcionForm.get('proyecto')?.hasError('required')">{{ "inscripcion.erro_selec" | translate }}</mat-error>
+          </mat-form-field>
+    
+          <!-- select Tipo de Inscripción -->
+          <mat-form-field *ngIf="showTipoInscripcion">
+            <mat-select formControlName="tipoInscripcion" placeholder="{{ 'inscripcion.aviso_tipo' | translate }}" (selectionChange)="onSelectTipoInscripcion($event)">
+              <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
+              <mat-option *ngFor="let item of tipo_inscripciones" [value]="item.Id">{{ item.Nombre }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="preinscripcionForm.get('tipoInscripcion')?.hasError('required')">{{ "inscripcion.aviso_tipo" | translate }}</mat-error>
+          </mat-form-field>
+    
+          <!-- Botón para generar recibo -->
+          <button *ngIf="this.preinscripcionForm.valid" mat-flat-button color="accent" style="display: grid" (click)="generarRecibo()">
+            {{ "inscripcion.generar_recibo" | translate }}
+            <i class="fa fa-barcode fa-5x"></i>
+          </button>
+        </form>
       </mat-card-content>
     </mat-card>
 
