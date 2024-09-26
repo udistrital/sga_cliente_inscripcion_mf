@@ -530,7 +530,7 @@ export class CrudFormacionAcademicaComponent implements OnInit{
                   if (Object.keys(responseNux).length === files.length) {
                     const documentos_actualizados = <any>responseNux;
                     this.info_formacion_academica.DocumentoId = documentos_actualizados[0].res.Id
-                    this.inscripcionMidService.put('academico/formacion/?Id=' + this.info_id_formacion, this.info_formacion_academica)
+                    this.inscripcionMidService.put('academico/formacion?Id=' + this.info_id_formacion, this.info_formacion_academica)
                     .subscribe(res => {
                       if (documentos_actualizados[0] !== undefined) {
                         this.info_formacion_academica.DocumentoId = documentos_actualizados[0].res.Enlace;
@@ -573,7 +573,7 @@ export class CrudFormacionAcademicaComponent implements OnInit{
                   });
                 } else {
                   this.info_formacion_academica.DocumentoId = this.SoporteDocumento;
-                  this.inscripcionMidService.put('academico/formacion/?Id=' + this.info_id_formacion, this.info_formacion_academica)
+                  this.inscripcionMidService.put('academico/formacion?Id=' + this.info_id_formacion, this.info_formacion_academica)
                   .subscribe(res => {
                     this.canEmit = true;
                     this.setPercentage(1);
