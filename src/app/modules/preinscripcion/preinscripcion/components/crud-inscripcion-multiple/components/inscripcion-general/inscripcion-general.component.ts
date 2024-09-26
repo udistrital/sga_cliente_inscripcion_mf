@@ -709,7 +709,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
   loadPercentageExperienciaLaboral() {
     this.inscripcionMidService
-      .get('experiencia-laboral/tercero/?Id=' + this.info_persona_id)
+      .get('experiencia-laboral/tercero?Id=' + this.info_persona_id)
       .subscribe((res: any) => {
         if (res.Status == '200' && res.Data.length > 0) {
           this.percentage_expe = 100;
