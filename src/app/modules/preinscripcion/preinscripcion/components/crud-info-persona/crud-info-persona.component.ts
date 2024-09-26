@@ -313,9 +313,14 @@ export class CrudInfoPersonaComponent implements OnInit {
         this.info_persona_id = response.tercero.Id;
         sessionStorage.setItem('IdTercero', String(this.info_persona_id));
         this.setPercentage(1);
-        this.popUpManager.showSuccessAlert(
-          this.translate.instant('GLOBAL.persona_actualizado')
-        );
+        Swal.fire({
+          icon: 'success',
+          title: this.translate.instant('GLOBAL.persona_actualizado'),
+          text: this.translate.instant('GLOBAL.operacion_exitosa'),
+          confirmButtonText: this.translate.instant('GLOBAL.aceptar')
+        }).then(() => {
+          window.location.reload();
+        });
         this.success.emit();
         // Evitar limpiar el formulario
         this.loadInfoPersona();
@@ -353,7 +358,15 @@ export class CrudInfoPersonaComponent implements OnInit {
             campo.deshabilitar = true;
           });
           this.setPercentage(1);
-          this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.persona_creado'));
+          // Mostrar modal de éxito y recargar la página al cerrarlo
+          Swal.fire({
+            icon: 'success',
+            title: this.translate.instant('GLOBAL.persona_creado'),
+            text: this.translate.instant('GLOBAL.operacion_exitosa'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar')
+          }).then(() => {
+            window.location.reload();
+          });
           this.success.emit();
           // Evitar limpiar el formulario
           this.loadInfoPersona();
