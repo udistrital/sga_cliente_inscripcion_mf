@@ -83,7 +83,7 @@ export class ViewExperienciaLaboralComponent implements OnInit {
 
   loadData(): void {
     this.info_experiencia_laboral = <any>[];
-    this.inscripcionMidService.get('experiencia-laboral/tercero/?Id=' + this.persona_id).subscribe(
+    this.inscripcionMidService.get('experiencia-laboral/tercero?Id=' + this.persona_id).subscribe(
       (response: any) => {
         const soportes = [];
         let soportes1 = "";
