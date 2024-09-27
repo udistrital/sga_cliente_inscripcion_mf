@@ -307,7 +307,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       let consultaEmpresa: Array<any> = [];
       const empresa: Array<any> = [];
       //todo: endpoint no existe?
-      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?nombre=' + nombre)
+      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa?nombre=' + nombre)
         .subscribe(res => {
           if (res !== null) {
             consultaEmpresa = <Array<InfoPersona>>res.Data;
@@ -342,7 +342,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       const itel = this.getIndexForm('Telefono');
       const icorreo = this.getIndexForm('Correo');
       const ipais = this.getIndexForm('Pais');
-      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?Id=' + nit)
+      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa?Id=' + nit)
         .subscribe((response: any) => {
           const res = response.Data
           this.formInfoExperienciaLaboral.campos[init].valor = res.NumeroIdentificacion;
