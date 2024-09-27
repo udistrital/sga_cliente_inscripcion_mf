@@ -185,7 +185,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     const icargo = this.getIndexForm('Cargo');
     const iactividades = this.getIndexForm('Actividades');
     const isoporte = this.getIndexForm('Soporte');
-    const isActual = this.getIndexForm('experiencia_actual')
 
     if (this.detalleExp.FechaFinalizacion == '') {
       this.updateFinishDate('EditOption')
@@ -211,13 +210,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       this.detalleExp.Cargo.Id) ? this.detalleExp.Cargo : { Id: 0, Nombre: 'No registrado' };
     this.formInfoExperienciaLaboral.campos[iactividades].valor = (this.detalleExp.Actividades);
     this.formInfoExperienciaLaboral.campos[init].deshabilitar = false;
-
-    if (this.detalleExp.FechaFinalizacion == '') {
-      this.formInfoExperienciaLaboral.campos[isActual].valor = true
-      this.onCheckChange(new CustomEvent("event", {
-        detail: true
-      }))
-    }
 
     const files = []
     if (this.detalleExp.Soporte + '' !== '0') {
@@ -641,21 +633,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       }
       this.createInfoExperienciaLaboral(postData);
       //this.result.emit(event);
-    }
-  }
-
-  
-
-  onCheckChange(event: any) {
-    if (event.checked || event.detail) {
-      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].deshabilitar = true
-      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].ocultar = true
-      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].valor = ''
-      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].requerido = false
-    }else {
-      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].deshabilitar = false
-      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].ocultar = false
-      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].requerido = true
     }
   }
 

@@ -456,15 +456,11 @@ export class CrudFormacionAcademicaComponent implements OnInit{
                 if (Object.keys(filesResponse).length === files.length) {
                   this.SoporteDocumento = this.temp_info_academica.Documento;
                   const FechaI = moment(this.temp_info_academica.FechaInicio, 'DD-MM-YYYY').toDate();
-                  let FechaF
-                  if (this.temp_info_academica.FechaFinalizacion == ''){
-                    const isActual = this.getIndexForm('formacion_actual')
-                    this.formInfoFormacionAcademica.campos[isActual].valor = true
-                    this.onCheckChange(new CustomEvent("event", {
-                      detail: true
-                    }))
-                  }else {
+                  let FechaF;
+                  if(this.temp_info_academica.FechaFinalizacion !== ''){
                     FechaF = moment(this.temp_info_academica.FechaFinalizacion, 'DD-MM-YYYY').toDate();
+                  }else{
+                    this.updateFinishDate('EditOption')
                   }
                   
                   const init = this.getIndexForm('Nit');
@@ -742,18 +738,5 @@ export class CrudFormacionAcademicaComponent implements OnInit{
     const buscadorIndex = this.getIndexForm('Nit');
     this.formInfoFormacionAcademica.campos[buscadorIndex].valor = '';
     this.formInfoFormacionAcademica.campos[buscadorIndex].deshabilitar = false;
-  }
-
-  onCheckChange(event: any) {
-    if (event.checked || event.detail) {
-      this.formInfoFormacionAcademica.campos[this.getIndexForm('FechaFinalizacion')].deshabilitar = true
-      this.formInfoFormacionAcademica.campos[this.getIndexForm('FechaFinalizacion')].ocultar = true
-      this.formInfoFormacionAcademica.campos[this.getIndexForm('FechaFinalizacion')].valor = ''
-      this.formInfoFormacionAcademica.campos[this.getIndexForm('FechaFinalizacion')].requerido = false
-    }else {
-      this.formInfoFormacionAcademica.campos[this.getIndexForm('FechaFinalizacion')].deshabilitar = false
-      this.formInfoFormacionAcademica.campos[this.getIndexForm('FechaFinalizacion')].ocultar = false
-      this.formInfoFormacionAcademica.campos[this.getIndexForm('FechaFinalizacion')].requerido = true
-    }
   }
 }
