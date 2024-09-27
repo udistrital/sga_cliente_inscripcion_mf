@@ -102,7 +102,7 @@ export let FORM_FORMACION_ACADEMICA = {
     {
       step: 2,
       etiqueta: 'autocomplete',
-      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
       nombre: 'ProgramaAcademico',
       label_i18n: 'programa_academico',
       placeholder_i18n: 'programa_academico',
@@ -128,7 +128,7 @@ export let FORM_FORMACION_ACADEMICA = {
     {
       step: 2,
       etiqueta: 'mat-date',
-      claseGrid: 'col-lg-4 col-md-4 col-sm-12 col-xs-12',
+      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
       nombre: 'FechaInicio',
       label_i18n: 'fecha_inicio',
       placeholder_i18n: 'fecha_inicio',
@@ -138,14 +138,15 @@ export let FORM_FORMACION_ACADEMICA = {
     {
       step: 2,
       etiqueta: 'mat-date',
-      claseGrid: 'col-lg-4 col-md-4 col-sm-12 col-xs-12',
+      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
       nombre: 'FechaFinalizacion',
       label_i18n: 'fecha_fin',
       placeholder_i18n: 'fecha_fin',
       requerido: true,
       tipo: 'date',
+      ocultar: false,
       deshabilitar: false,
-      ocultar:false,
+      minDate: null,
     },
     {
       step: 2,
@@ -167,15 +168,6 @@ export let FORM_FORMACION_ACADEMICA = {
       requerido: true,
       tipo: 'text',
       cantidadCaracteres: 400,
-    },
-    {
-      step: 2,
-      etiqueta: 'checkbox',
-      nombre: 'formacion_actual',
-      claseGrid: 'col-lg-4 col-md-4 col-sm-12 col-xs-12',
-      label_i18n: 'formacion_actual',
-      placeholder_i18n: 'formacion_actual',
-      requerido: false,
     },
     {
       step: 3,

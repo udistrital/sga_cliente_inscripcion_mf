@@ -573,8 +573,8 @@
         "tipo_colegio": "Type of School where Grade 11 was completed",
         "tipo_icfes": "Type of ICFES",
         "valido_colegio": "Did you validate your high school diploma?",
-        "formacion_actual": "Actual work",
-        "experiencia_actual": "Actual work",
+        "formacion_actual": "Current formation",
+        "experiencia_actual": "Current work",
         "paso": "Step",
         "ayuda": "Help",
         "filtro": "Filter"
