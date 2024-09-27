@@ -249,7 +249,7 @@ export class CrudFormacionAcademicaComponent implements OnInit{
       
       this.formInfoFormacionAcademica.campos[init].valor = nit;
       
-      this.inscripcionMidService.get('academico/formacion/informacion-universidad/nit/?Id=' + nit)
+      this.inscripcionMidService.get('academico/formacion/informacion-universidad/nit?Id=' + nit)
       .subscribe((res: any) => {
         this.universidadConsultada = res.Data;
         this.formInfoFormacionAcademica.campos[init].valor = this.universidadConsultada.NumeroIdentificacion;
