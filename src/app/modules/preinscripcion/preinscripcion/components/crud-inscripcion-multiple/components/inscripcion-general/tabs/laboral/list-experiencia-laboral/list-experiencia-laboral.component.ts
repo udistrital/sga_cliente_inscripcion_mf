@@ -88,7 +88,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
 
   loadData(): void {
     this.inscripcionMidService
-      .get('experiencia-laboral/tercero/?Id=' + this.persona_id)
+      .get('experiencia-laboral/tercero?Id=' + this.persona_id)
       .subscribe(
         (response: any) => {
           if (response.Data.length > 0 && response.Status == '200') {
