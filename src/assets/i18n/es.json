@@ -577,7 +577,9 @@
         "experiencia_actual": "Trabajo actual",
         "paso": "Paso",
         "ayuda": "Ayuda",
-        "filtro": "Filtro"
+        "filtro": "Filtro",
+        "campos_invalidos": "Campos inválidos",
+        "campos_invalidos_detalle": "Hay campos inválidos. Por favor, revise el formulario."
     },
     "inscripcion": {
         "cambiar_tab": "¡Atención! Recuerde llenar la información de contacto que se encuentra en esta misma pestaña",

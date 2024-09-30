@@ -4,13 +4,16 @@
             (result)="validarForm($event)" [clean]="clean" (interlaced)="getSeleccion($event)"
             (percentage)="setPercentage($event)">
         </ngx-dinamicform>
-        <div class="info margin-y" *ngIf="mensaje_discapcidades && !mensaje_poblacion_discapcidades">
+        <div class="alert info margin-y" *ngIf="mensaje_discapcidades && !mensaje_poblacion_discapcidades">
+            <mat-icon class="icon">info</mat-icon>
             {{ 'inscripcion.alerta_discapacidades' | translate }}
         </div>
-        <div class="info margin-y" *ngIf="mensaje_poblacion && !mensaje_poblacion_discapcidades">
+        <div class="alert info margin-y" *ngIf="mensaje_poblacion && !mensaje_poblacion_discapcidades">
+            <mat-icon class="icon">info</mat-icon>
             {{ 'inscripcion.alerta_poblacion' | translate }}
         </div>
-        <div class="info margin-y" *ngIf="mensaje_poblacion_discapcidades">
+        <div class="alert info margin-y" *ngIf="mensaje_poblacion_discapcidades">
+            <mat-icon class="icon">info</mat-icon>
             {{ 'inscripcion.alerta_poblacion_discapacidades' | translate }}
         </div>
     </div>
