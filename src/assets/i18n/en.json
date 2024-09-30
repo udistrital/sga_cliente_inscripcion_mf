@@ -577,7 +577,9 @@
         "experiencia_actual": "Current work",
         "paso": "Step",
         "ayuda": "Help",
-        "filtro": "Filter"
+        "filtro": "Filter",
+        "campos_invalidos": "Invalid fields",
+        "campos_invalidos_detalle": "There are invalid fields. Please review the form."
     },
     "inscripcion": {
         "cambiar_tab": "Attention! Remember to fill in the contact information found in this same tab",
