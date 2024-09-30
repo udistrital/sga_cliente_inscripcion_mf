@@ -147,6 +147,7 @@ export let FORM_FORMACION_ACADEMICA = {
       ocultar: false,
       deshabilitar: false,
       minDate: null,
+      maxDate: new Date(),
     },
     {
       step: 2,
