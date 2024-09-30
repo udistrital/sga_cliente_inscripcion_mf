@@ -427,6 +427,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.dataSource = new MatTableDataSource(dataInfo);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+     console.log(this.dataSource);
+     
     }
   }
 
