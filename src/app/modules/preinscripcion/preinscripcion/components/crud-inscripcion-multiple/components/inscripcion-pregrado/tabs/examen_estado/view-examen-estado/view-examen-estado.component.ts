@@ -527,6 +527,13 @@ export class ViewExamenEstadoComponent {
      }
     }
 
+    if(data[1].anoPresentacion){
+      const tiempoDesdePresentacion = new Date().getFullYear() -  data[1].anoPresentacion;
+     if(tiempoDesdePresentacion >= this.vigencia){
+        return false;
+     }
+    }
+
 
 
     if (!this.existeIcfes) {
