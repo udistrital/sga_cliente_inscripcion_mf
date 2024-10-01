@@ -17,7 +17,7 @@
 </ngx-dinamicform>
 
 <div class="row">
-  <ngx-new-tercero *ngIf="nuevoTercero" (result)="NuevoTercero($event)">
+  <ngx-new-tercero *ngIf="nuevoTercero" (result)="NuevoTercero($event)" [nit]="nit">
   </ngx-new-tercero>
 
   <button
