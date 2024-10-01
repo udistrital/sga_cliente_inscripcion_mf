@@ -82,7 +82,7 @@ import { ListInformacionAcademicaComponent } from './preinscripcion/components/c
 import { ViewExamenEstadoComponent } from './preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-pregrado/tabs/examen_estado/view-examen-estado/view-examen-estado.component';
 import { AuthGuard } from 'src/_guards/auth.guard';
 import { ProgressBarComponent } from '../components/progress-bar/progress-bar.component';
-
+import { MatDividerModule } from '@angular/material/divider';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
 export function createTranslateLoader(http: HttpClient) {
@@ -172,6 +172,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatButtonModule,
     CommonModule,
     NgbModule,
+    MatDividerModule,
     PreinscripcionRoutingModule,
     TranslateModule.forRoot({
       loader: {

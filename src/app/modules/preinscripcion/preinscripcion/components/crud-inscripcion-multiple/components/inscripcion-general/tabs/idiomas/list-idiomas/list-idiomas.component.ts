@@ -6,7 +6,6 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { IdiomaService } from 'src/app/services/idioma.service';
 import { UserService } from 'src/app/services/users.service';
-import { CrudIdiomasComponent } from '../crud-idiomas/crud-idiomas.component';
 
 @Component({
   selector: 'ngx-list-idiomas',

@@ -9,7 +9,7 @@ export let NUEVO_TERCERO = {
   campos: [
     {
       etiqueta: 'input',
-      claseGrid: 'col-lg-12 col-md-122 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'Nit',
       label_i18n: 'nit',
       placeholder_i18n: 'nit',
@@ -19,7 +19,7 @@ export let NUEVO_TERCERO = {
     },
     {
       etiqueta: 'input',
-      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NombreCompleto',
       label_i18n: 'nombre_entidad',
       placeholder_i18n: 'nombre_entidad',
@@ -31,7 +31,7 @@ export let NUEVO_TERCERO = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'Pais',
       label_i18n: 'pais_entidad',
       placeholder_i18n: 'pais_entidad',
@@ -42,7 +42,7 @@ export let NUEVO_TERCERO = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'TipoTrecero',
       label_i18n: 'tipo_tercero',
       placeholder_i18n: 'tipo_tercero',
@@ -53,7 +53,7 @@ export let NUEVO_TERCERO = {
     },
     {
       etiqueta: 'input',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'Correo',
       label_i18n: 'correo_entidad',
       placeholder_i18n: 'correo_entidad',
@@ -62,7 +62,7 @@ export let NUEVO_TERCERO = {
     },
     {
       etiqueta: 'input',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'Telefono',
       label_i18n: 'telefono_entidad',
       placeholder_i18n: 'telefono_entidad',
@@ -71,7 +71,7 @@ export let NUEVO_TERCERO = {
     },
     {
       etiqueta: 'input',
-      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'Direccion',
       label_i18n: 'direccion_entidad',
       placeholder_i18n: 'direccion_entidad',
