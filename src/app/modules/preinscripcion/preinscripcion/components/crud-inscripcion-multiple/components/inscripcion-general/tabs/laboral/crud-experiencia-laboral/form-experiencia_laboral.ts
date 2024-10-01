@@ -109,6 +109,7 @@ export let FORM_EXPERIENCIA_LABORAL = {
       placeholder_i18n: 'fecha_inicio',
       requerido: true,
       tipo: 'date',
+      maxDate: new Date(),
     },
     {
       step: 2,
@@ -119,6 +120,7 @@ export let FORM_EXPERIENCIA_LABORAL = {
       placeholder_i18n: 'fecha_fin',
       requerido: true,
       tipo: 'date',
+      maxDate: new Date(),
     },
     {
       step: 2,
