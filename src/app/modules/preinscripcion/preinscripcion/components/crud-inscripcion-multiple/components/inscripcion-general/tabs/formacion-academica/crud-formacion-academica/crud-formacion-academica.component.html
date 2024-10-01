@@ -54,10 +54,14 @@
 
   <button
     *ngIf="nuevoTercero || nuevoPrograma"
+    class="margin-y"
     mat-flat-button
-    color="accent"
+    color="primary"
     (click)="nuevoTercero = false; nuevoPrograma = false"
   >
     {{ "GLOBAL.cancelar" | translate }}
   </button>
+
+  <mat-divider class="margin-y"/>
+  <br/>
 </div>
