@@ -64,7 +64,7 @@ export class CrudIdiomasComponent implements OnInit {
   percentage!: number;
   terceroId!: number | null;
   idioma_examen: any;
-  idioma!: number;
+  idioma!: number | undefined;
   canEmit: boolean = false;
 
   constructor(
@@ -193,81 +193,158 @@ export class CrudIdiomasComponent implements OnInit {
             this.info_idioma.SeleccionExamen === true &&
             this.idioma_examen !== undefined
           ) {
-            // this.info_idioma.Idioma.Id !== this.idioma_examen) {
             this.popUpManager.showErrorAlert(
               this.translate.instant('idiomas.error_doble_examen')
             );
           } else {
-            this.info_idioma.Activo = true;
             this.idiomaService
-              .post('conocimiento_idioma', this.info_idioma)
-              .subscribe(
-                (res) => {
-                  const r = <any>res;
-                  if (r !== null && r.Type !== 'error') {
-                    if (this.info_idioma!.SeleccionExamen === true) {
-                      const examen = {
-                        Idioma: this.info_idioma!.IdiomaId.Id,
-                        Activo: true,
-                        InscripcionId: { Id: Number(this.inscripcion_id) },
-                      };
-                      this.inscripcionService
-                        .post('inscripcion_posgrado/', examen)
-                        .subscribe(
-                          (resexamen) => {
-                            const rex = <any>resexamen;
-                            if (rex !== null && rex.Type !== 'error') {
-                              this.idioma_examen =
-                                this.info_idioma!.IdiomaId.Id;
-                              this.canEmit = true;
-                              this.setPercentage(1);
-                              this.eventChange.emit(true);
-                              this.popUpManager.showSuccessAlert(
-                                this.translate.instant(
-                                  'idiomas.informacion_idioma_registrada'
-                                )
-                              );
-                              this.info_idioma_id = 0;
-                              this.info_idioma = undefined;
-                              this.clean = !this.clean;
-                            }
-                          },
-                          (error: HttpErrorResponse) => {
-                            Swal.fire({
-                              icon: 'error',
-                              title: error.status + '',
-                              text: this.translate.instant(
-                                'ERROR.' + error.status
-                              ),
-                              footer: this.translate.instant(
-                                'idiomas.informacion_idioma_no_registrada'
-                              ),
-                              confirmButtonText:
-                                this.translate.instant('GLOBAL.aceptar'),
-                            });
-                          }
-                        );
-                    } else {
-                      this.eventChange.emit(true);
-                      this.popUpManager.showSuccessAlert(
-                        this.translate.instant(
-                          'idiomas.informacion_idioma_registrada'
-                        )
-                      );
-                      this.info_idioma_id = 0;
-                      this.info_idioma = undefined;
-                      this.clean = !this.clean;
-                    }
-                  }
-                },
-                (error: HttpErrorResponse) => {
+              .get(
+                `conocimiento_idioma?query=TercerosId:${this.terceroId},IdiomaId:${this.info_idioma.IdiomaId.Id},Activo:true`
+              )
+              .subscribe((idiomas) => {
+                if (idiomas.length > 0 && Object.keys(idiomas[0]).length > 0) {
                   this.popUpManager.showErrorAlert(
-                    this.translate.instant(
-                      'idiomas.informacion_idioma_no_registrada'
-                    )
+                    this.translate.instant('inscripcion.error_idioma_existente')
                   );
+                  return;
                 }
-              );
+
+                if (this.info_idioma) {
+                  this.info_idioma.Activo = true;
+                }
+                this.idiomaService
+                  .post('conocimiento_idioma', this.info_idioma)
+                  .subscribe(
+                    (res) => {
+                      const r = <any>res;
+                      if (r !== null && r.Type !== 'error') {
+                        if (this.info_idioma!.SeleccionExamen === true) {
+                          const examen = {
+                            Idioma: this.info_idioma!.IdiomaId.Id,
+                            Activo: true,
+                            InscripcionId: { Id: Number(this.inscripcion_id) },
+                          };
+                          this.inscripcionService
+                            .get(
+                              'inscripcion_posgrado/?query=InscripcionId:' +
+                                examen.InscripcionId.Id
+                            )
+                            .subscribe(
+                              (res) => {
+                                const r = <any>res;
+                                if (
+                                  r !== null &&
+                                  r.Type !== 'error' &&
+                                  JSON.stringify(r[0]).toString() !== '{}'
+                                ) {
+                                  // El registro ya existe, realizar una actualización
+                                  this.inscripcionService
+                                    .put(
+                                      'inscripcion_posgrado/' + r[0].Id,
+                                      examen
+                                    )
+                                    .subscribe(
+                                      (resexamen) => {
+                                        const rex = <any>resexamen;
+                                        if (
+                                          rex !== null &&
+                                          rex.Type !== 'error'
+                                        ) {
+                                        }
+                                      },
+                                      (error: HttpErrorResponse) => {
+                                        Swal.fire({
+                                          icon: 'error',
+                                          title: error.status + '',
+                                          text: this.translate.instant(
+                                            'ERROR.' + error.status
+                                          ),
+                                          footer: this.translate.instant(
+                                            'idiomas.informacion_idioma_no_actualizada'
+                                          ),
+                                          confirmButtonText:
+                                            this.translate.instant(
+                                              'GLOBAL.aceptar'
+                                            ),
+                                        });
+                                      }
+                                    );
+                                } else {
+                                  // El registro no existe, realizar una inserción
+                                  this.inscripcionService
+                                    .post('inscripcion_posgrado/', examen)
+                                    .subscribe(
+                                      (resexamen) => {
+                                        const rex = <any>resexamen;
+                                        if (
+                                          rex !== null &&
+                                          rex.Type !== 'error'
+                                        ) {
+                                        }
+                                      },
+                                      (error: HttpErrorResponse) => {
+                                        Swal.fire({
+                                          icon: 'error',
+                                          title: error.status + '',
+                                          text: this.translate.instant(
+                                            'ERROR.' + error.status
+                                          ),
+                                          footer: this.translate.instant(
+                                            'idiomas.informacion_idioma_no_registrada'
+                                          ),
+                                          confirmButtonText:
+                                            this.translate.instant(
+                                              'GLOBAL.aceptar'
+                                            ),
+                                        });
+                                      }
+                                    );
+                                }
+                              },
+                              (error: HttpErrorResponse) => {
+                                Swal.fire({
+                                  icon: 'error',
+                                  title: error.status + '',
+                                  text: this.translate.instant(
+                                    'ERROR.' + error.status
+                                  ),
+                                  footer: this.translate.instant(
+                                    'idiomas.informacion_idioma_no_verificada'
+                                  ),
+                                  confirmButtonText:
+                                    this.translate.instant('GLOBAL.aceptar'),
+                                });
+                              }
+                            );
+                        }
+                        this.idioma_examen = this.info_idioma!.IdiomaId.Id;
+                        this.canEmit = true;
+                        this.setPercentage(1);
+                        this.eventChange.emit(true);
+                        this.popUpManager.showSuccessAlert(
+                          this.translate.instant(
+                            'idiomas.informacion_idioma_registrada'
+                          )
+                        );
+                        this.info_idioma_id = 0;
+                        this.info_idioma = undefined;
+                        this.clean = !this.clean;
+                      }
+                    },
+                    (error: HttpErrorResponse) => {
+                      Swal.fire({
+                        icon: 'error',
+                        title: error.status + '',
+                        text: this.translate.instant('ERROR.' + error.status),
+                        footer: this.translate.instant(
+                          'idiomas.informacion_idioma_no_registrada'
+                        ),
+                        confirmButtonText:
+                          this.translate.instant('GLOBAL.aceptar'),
+                      });
+                    }
+                  );
+              });
           }
         }
       });
@@ -301,6 +378,8 @@ export class CrudIdiomasComponent implements OnInit {
           }
         );
     } else {
+      this.info_idioma = undefined;
+      this.idioma = undefined;
       this.clean = !this.clean;
     }
   }
