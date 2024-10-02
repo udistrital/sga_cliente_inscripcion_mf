@@ -1259,6 +1259,7 @@
         "nombre_autor": "Nombre",
         "error_autor_ya_existe": "El autor ya está agregado.",
         "error_autor_borrar": "El autor no se puede borrar",
+        "error_autor_no_existe": "El autor no existe, por favor seleccione uno de la lista o cree uno nuevo",
         "datos_basicos": "Datos básicos",
         "alerta_llenar_campo": "Debe llenar este campo",
         "alerta_llenar_campos_datos_basicos": "Debe llenar todos los datos básicos",
