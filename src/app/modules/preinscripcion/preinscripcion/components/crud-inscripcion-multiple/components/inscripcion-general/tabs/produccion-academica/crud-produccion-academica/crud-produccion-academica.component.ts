@@ -30,6 +30,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { AnyService } from 'src/app/services/any.service';
 
 @Component({
   selector: 'ngx-crud-produccion-academica',
@@ -97,7 +98,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     private tercerosService: TercerosService,
     private listService: ListService,
     private store: Store<IAppState>,
-    private http: HttpClient,
+    private anyService: AnyService,
     private newNuxeoService: NewNuxeoService,
     private terceroMidService: TerceroMidService,
     private inscripcionMidService: InscripcionMidService,
@@ -650,9 +651,9 @@ export class CrudProduccionAcademicaComponent implements OnInit {
         distinctUntilChanged(),
         debounceTime(1000),
         switchMap((value) =>
-          this.http.get(
-            environment.TERCEROS_SERVICE +
-              'tercero?query=NombreCompleto__icontains:' +
+          this.anyService.get(
+            environment.TERCEROS_SERVICE,
+            'tercero?query=NombreCompleto__icontains:' +
               value +
               ',TipoContribuyenteId.Id:1&fields=Id,NombreCompleto&limit=50'
           )
@@ -911,13 +912,11 @@ export class CrudProduccionAcademicaComponent implements OnInit {
           this.autorSeleccionado = newAutorResponse.Data;
           this.agregarAutor(true, 3);
           this.NuevoAutor();
-        }else {
+        } else {
           Swal.fire({
             icon: 'error',
             title: 'ERROR',
-            text: this.translate.instant(
-              'solicitudes.error'
-            ),
+            text: this.translate.instant('solicitudes.error'),
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
           });
         }
