@@ -782,7 +782,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
   async loadPercentageDocumentos(): Promise<void> {
     return new Promise((resolve) => {
       this.inscripcionService.get('soporte_documento_programa?query=InscripcionId.Id:' +
-        this.inscripcion.Id + ',DocumentoProgramaId.ProgramaId:' + parseInt(sessionStorage['ProgramaAcademicoId'], 10) + ',DocumentoProgramaId.TipoInscripcionId:' + parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) + ',DocumentoProgramaId.PeriodoId:' + parseInt(sessionStorage.getItem('IdPeriodo')!, 10) + ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true&limit=0')
+        this.inscripcion.Id + ',DocumentoProgramaId.ProgramaId:' + parseInt(sessionStorage['ProgramaAcademicoId'], 10) + ',DocumentoProgramaId.TipoInscripcionId:' + parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) + ',DocumentoProgramaId.PeriodoId:' + parseInt(sessionStorage.getItem('IdPeriodo')!, 10) + ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true,Activo:true&limit=0')
         .toPromise()
         .then((res: any[]) => {
           if (Object.keys(res[0]).length > 0) {
