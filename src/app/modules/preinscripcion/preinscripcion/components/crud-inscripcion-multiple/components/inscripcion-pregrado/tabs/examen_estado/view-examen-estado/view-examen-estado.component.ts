@@ -12,6 +12,7 @@ import { EvaluacionInscripcionService } from 'src/app/services/evaluacion_inscri
 import { MODALS } from 'src/app/models/informacion/diccionario';
 import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
+import { co } from '@fullcalendar/core/internal-common';
 
 interface Examen {
   orden: number;
@@ -47,8 +48,8 @@ export class ViewExamenEstadoComponent {
 
   displayedColumns: string[] = ['orden', 'examen', 'tipoExamen', 'tipoDocumento', 'documento', 'snp', 'confirmarSnp', 'anoPresentacion', 'soporte'];
   dataSource = new MatTableDataSource<Examen>([
-    { orden: 1, examen: 'Saber 11 (ICFES)', tipoExamen: '', tipoDocumento: '', documento: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null },
-    { orden: 2, examen: 'Saber TyT (ECAES)', tipoExamen: '', tipoDocumento: '', documento: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc:null }
+    { orden: 1, examen: 'Saber 11 (ICFES)', tipoExamen: '', tipoDocumento: '', documento: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc: null },
+    { orden: 2, examen: 'Saber TyT (ECAES)', tipoExamen: '', tipoDocumento: '', documento: '', snp: '', confirmarSnp: '', anoPresentacion: '', soporte: null, linkDoc: null }
   ]);
   tiposExamen: string[] = ['AC', 'VG'];
 
@@ -63,7 +64,7 @@ export class ViewExamenEstadoComponent {
 
   gridItems: any = {};
 
-  
+
 
   @Input('documento_programa_id')
   set name(documento_programa_id: number) {
@@ -114,6 +115,7 @@ export class ViewExamenEstadoComponent {
   tipos_icfes!: any;
   tipos_documentos!: any;
   existeIcfes!: boolean
+  vigencia!: number;
 
   constructor(
     private translate: TranslateService,
@@ -130,6 +132,7 @@ export class ViewExamenEstadoComponent {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       // this.construirForm();
     });
+    this.consultarVigencia();
   }
 
   async ngOnInit() {
@@ -142,6 +145,28 @@ export class ViewExamenEstadoComponent {
     this.tipos_documentos = await this.recuperarTiposDocumentos();
     await this.preCargarIcfes();
     // this.loadLists();
+  }
+
+
+  consultarVigencia(){
+    
+    this.evaluacionInscripcionService.get(
+      "requisito_programa_academico?query=Activo:true,ProgramaAcademicoId:" +
+      sessionStorage.getItem("ProgramaAcademicoId") +
+      ",PeriodoId:" +
+      localStorage.getItem('IdPeriodo')
+    )
+    .subscribe(response => {
+      if (response[0].Id !== undefined && response[0] !== "{}" && response.Type !== "error")  {
+
+        this.vigencia = JSON.parse(response[0].PorcentajeEspecifico).vigencia;
+  
+      }else {
+        console.log("error consultando vigencia")
+      
+      }
+
+    });
   }
 
   async preCargarIcfes() {
@@ -163,7 +188,7 @@ export class ViewExamenEstadoComponent {
 
   recuperarInscripcionPregradoByInscripcion(inscripcionId: any) {
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion_pregrado?query=Activo:true,InscripcionId.Id:'+ inscripcionId +'&sortby=Id&order=asc&limit=0')
+      this.inscripcionService.get('inscripcion_pregrado?query=Activo:true,InscripcionId.Id:' + inscripcionId + '&sortby=Id&order=asc&limit=0')
         .subscribe(
           (res: any) => {
             resolve(res);
@@ -286,7 +311,12 @@ export class ViewExamenEstadoComponent {
     return 0;
   }
 
-  validarForm(event:any) {
+    //Bloquea inpur de snp para que no pueda copiar ni pegar
+    blockEvent(event: ClipboardEvent) {
+      event.preventDefault();  // Previene la acción predeterminada (copiar, cortar o pegar)
+    }
+
+  validarForm(event: any) {
     if (event.valid) {
       const idActualSelect = this.formDocumentoPrograma.campos[this.getIndexForm('DocumentoProgramaId')].valor.Id;
       if (this.listed.find(id => id === idActualSelect) && !this.isEdit) {
@@ -317,7 +347,7 @@ export class ViewExamenEstadoComponent {
     this.popUpManager.showConfirmAlert(
       this.translate.instant('documento_programa.seguro_continuar_registrar'),
       this.translate.instant('GLOBAL.crear'),
-    ).then((ok:any) => {
+    ).then((ok: any) => {
       if (ok.value) {
         this.loading = true;
         this.info_documento_programa = <SoporteDocumentoPrograma>documentoPrograma;
@@ -339,7 +369,7 @@ export class ViewExamenEstadoComponent {
             };
             soporteDocumentoPrograma.InscripcionId = { Id: Number(this.inscripcion) };
             this.inscripcionService.post('soporte_documento_programa', soporteDocumentoPrograma).subscribe(
-              (response:any) => {
+              (response: any) => {
                 this.loading = false;
                 this.popUpManager.showSuccessAlert(this.translate.instant('documento_programa.documento_programa_registrado'));
                 this.documento_programa_id = 0;
@@ -347,7 +377,7 @@ export class ViewExamenEstadoComponent {
                 this.clean = !this.clean;
                 this.eventChange.emit(true);
               },
-              (error:any) => {
+              (error: any) => {
                 this.popUpManager.showErrorToast(this.translate.instant('documento_programa.documento_programa_no_registrado'));
                 this.loading = false;
               },
@@ -367,11 +397,11 @@ export class ViewExamenEstadoComponent {
     this.popUpManager.showConfirmAlert(
       this.translate.instant('documento_programa.seguro_continuar_registrar'),
       this.translate.instant('GLOBAL.actualizar'),
-    ).then((ok:any) => {
+    ).then((ok: any) => {
       if (ok.value) {
         this.loading = true;
         this.inscripcionService.get('soporte_documento_programa/' + this.soporteId).subscribe(
-          (response:any) => {
+          (response: any) => {
             const soporte = <SoporteDocumentoPrograma>response;
             this.info_documento_programa = <SoporteDocumentoPrograma>documentoPrograma;
             this.info_documento_programa.PersonaId = Number(this.persona) || 1;
@@ -392,7 +422,7 @@ export class ViewExamenEstadoComponent {
                     this.clean = !this.clean;
                     this.eventChange.emit(true);
                   },
-                  (error:any) => {
+                  (error: any) => {
                     this.popUpManager.showErrorToast(this.translate.instant('documento_programa.documento_programa_no_registrado'));
                     this.loading = false;
                   },
@@ -405,7 +435,7 @@ export class ViewExamenEstadoComponent {
               },
             );
           },
-          (error:any) => {
+          (error: any) => {
             this.popUpManager.showErrorToast(this.translate.instant('ERROR.error_subir_documento'));
             this.loading = false;
           },
@@ -414,16 +444,16 @@ export class ViewExamenEstadoComponent {
     });
   }
 
-  uploadFile(file:any): Promise<any> {
+  uploadFile(file: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.newNuxeoService.uploadFiles([file]).subscribe(
         (responseNux: any[]) => {
-          if(responseNux[0].Status == "200"){
+          if (responseNux[0].Status == "200") {
             resolve(responseNux[0].res.Id);
           } else {
             reject()
           }
-        }, (error:any) => {
+        }, (error: any) => {
           reject(error);
         });
     });
@@ -489,6 +519,23 @@ export class ViewExamenEstadoComponent {
   }
 
   async validarData(data: any) {
+
+    if(data[0].anoPresentacion){
+      const tiempoDesdePresentacion = new Date().getFullYear() -  data[0].anoPresentacion;
+     if(tiempoDesdePresentacion >= this.vigencia){
+        return false;
+     }
+    }
+
+    if(data[1].anoPresentacion){
+      const tiempoDesdePresentacion = new Date().getFullYear() -  data[1].anoPresentacion;
+     if(tiempoDesdePresentacion >= this.vigencia){
+        return false;
+     }
+    }
+
+
+
     if (!this.existeIcfes) {
       const examenSaber11 = data.find((item: any) => item.examen === "Saber 11 (ICFES)");
       let snp;
@@ -529,7 +576,7 @@ export class ViewExamenEstadoComponent {
 
   recuperarInscripcionPregradoBySNP(snp: any) {
     return new Promise((resolve, reject) => {
-      this.inscripcionService.get('inscripcion_pregrado?query=Activo:true,CodigoIcfes:'+ snp +'&sortby=Id&order=asc&limit=0')
+      this.inscripcionService.get('inscripcion_pregrado?query=Activo:true,CodigoIcfes:' + snp + '&sortby=Id&order=asc&limit=0')
         .subscribe(
           (res: any) => {
             resolve(res);
