@@ -18,8 +18,8 @@
     <mat-card-content>
       <!-- HEADER REPORTE Y FIELDS -->
       <div *ngIf="!hide_header_labels">
-        <div class="info" *ngIf="!estaInscrito">
-          <mat-icon>info</mat-icon> &nbsp;
+        <div class="info alert" *ngIf="!estaInscrito">
+          <mat-icon class="icon">info</mat-icon> &nbsp;
           <span>{{ "inscripcion.alerta_preinscripcion" | translate }}</span>
         </div>
 
@@ -706,14 +706,7 @@
   <mat-card *ngIf="!estaInscrito" style="margin-top: 1rem">
     <mat-card-content>
       <div class="">
-        <ngb-progressbar
-          [showValue]="true"
-          type="success"
-          [value]="percentage_total"
-          [animated]="true"
-          [height]="'15px'"
-        >
-        </ngb-progressbar>
+        <progress-bar [value]="percentage_total"></progress-bar>
         <blockquote class="blockquote">
           <li>{{ "inscripcion.aviso_progreso" | translate }}</li>
         </blockquote>

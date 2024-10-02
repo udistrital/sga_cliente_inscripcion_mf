@@ -9,7 +9,7 @@ export let NUEVO_AUTOR = {
   campos: [
     {
       etiqueta: 'input',
-      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NombreCompleto',
       label_i18n: 'nombre_autor',
       placeholder_i18n: 'nombre_autor',
@@ -21,7 +21,7 @@ export let NUEVO_AUTOR = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'TipoContribuyenteId',
       label_i18n: 'tipo_contribuyente',
       placeholder_i18n: 'tipo_contribuyente',
@@ -32,7 +32,7 @@ export let NUEVO_AUTOR = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-4 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'TipoDocumentoId',
       label_i18n: 'tipo_documento',
       placeholder_i18n: 'tipo_documento',
@@ -43,7 +43,7 @@ export let NUEVO_AUTOR = {
     },
     {
       etiqueta: 'input',
-      claseGrid: 'col-lg-5 col-md-12 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NumeroIdentificacion',
       label_i18n: 'documento',
       placeholder_i18n: 'nit',
