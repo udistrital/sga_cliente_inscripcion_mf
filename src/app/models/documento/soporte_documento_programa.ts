@@ -5,4 +5,5 @@ export class SoporteDocumentoPrograma {
   InscripcionId!: { Id: number; };
   DocumentoId!: number;
   DocumentoProgramaId!: { Id: number; };
+  Activo: boolean = true;
 }

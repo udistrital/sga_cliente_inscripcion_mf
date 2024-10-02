@@ -215,7 +215,7 @@ export class CrudDocumentoProgramaComponent implements OnInit {
                 this.documento_programa_id = 0;
                 this.info_documento_programa = undefined;
                 this.clean = !this.clean;
-                this.eventChange.emit(true);
+                this.eventChange.emit("actualizar");
               },
               (error:any) => {
                 this.popUpManager.showErrorToast(this.translate.instant('documento_programa.documento_programa_no_registrado'));
@@ -256,7 +256,7 @@ export class CrudDocumentoProgramaComponent implements OnInit {
                     this.documento_programa_id = 0;
                     this.info_documento_programa = undefined;
                     this.clean = !this.clean;
-                    this.eventChange.emit(true);
+                    this.eventChange.emit("actualizar");
                   },
                   (error:any) => {
                     this.popUpManager.showErrorToast(this.translate.instant('documento_programa.documento_programa_no_registrado'));
