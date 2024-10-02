@@ -46,7 +46,7 @@ export class CrudPropuestaGradoComponent implements OnInit {
   set info2(inscripcion_id: number) {
     if (inscripcion_id !== undefined && inscripcion_id !== 0 && inscripcion_id.toString() !== '') {
       this.inscripcion_id = inscripcion_id;
-      // this.loadPropuestaGrado();
+        this.loadPropuestaGrado();
       if (this.formData) {
         this.createPropuestaGrado(this.formData);
       }
