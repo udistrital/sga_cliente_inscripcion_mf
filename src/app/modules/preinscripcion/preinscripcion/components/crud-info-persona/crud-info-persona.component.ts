@@ -183,64 +183,83 @@ export class CrudInfoPersonaComponent implements OnInit {
     if (doc && verif && doc == verif && !this.aceptaTerminos) {
       this.terceroMidService.get('personas/existencia/' + doc).subscribe(
         (res) => {
-          res = res.data;
-          this.info_info_persona = res[0];
+          res = res.Data;
           this.datosEncontrados = { ...res[0] };
-          if (res[0].FechaNacimiento != null) {
-            res[0].FechaNacimiento = res[0].FechaNacimiento.replace('T00:00:00Z', 'T05:00:00Z');
-            this.formInfoPersona.campos[this.getIndexForm('FechaNacimiento')].valor = moment(res[0].FechaNacimiento, 'YYYY-MM-DDTHH:mm:ss').tz('America/Bogota').toDate();
-          }
-          if (res[0].FechaExpedicion != null) {
-            res[0].FechaExpedicion = res[0].FechaExpedicion.replace('T00:00:00Z', 'T05:00:00Z');
-            this.formInfoPersona.campos[this.getIndexForm('FechaExpedicion')].valor = moment(res[0].FechaExpedicion, 'YYYY-MM-DDTHH:mm:ss').tz('America/Bogota').toDate();
-          }
-          if (res[0].Genero.Nombre != 'NO APLICA') {
-            this.formInfoPersona.campos[this.getIndexForm('Genero')].valor = res[0].Genero;
-          }
 
-          this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
-
-          this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.persona_ya_existe'), this.translate.instant('inscripcion.info_persona_ya_existe'), 'info', false)
-            .then(() => {
-              let UsuarioExistente = <string>this.info_info_persona.UsuarioWSO2;
-              let correoActual = <string>this.userService.getPayload().email;
-              if (
-                UsuarioExistente.match(UtilidadesService.ListaPatrones.correo)
-              ) {
-                if (UsuarioExistente != correoActual) {
-                  this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.info_persona'), this.translate.instant(
-                        'inscripcion.ya_existe_usuarioCorreo'
-                      ) +
-                        '<br>' +
-                        this.translate.instant('inscripcion.correo_anterior') +
-                        ': ' +
-                        UsuarioExistente +
-                        '<br>' +
-                        this.translate.instant('inscripcion.correo_actual') +
-                        ': ' +
-                        correoActual,
-                      'info',
-                      true
-                    )
-                    .then((action) => {
-                      if (action.value) {
-                        this.forzarCambioUsuario = true;
-                      } else {
-                        // this.autenticationService.logout('from inscripcion');
-                      }
-                    });
+          // Si la persona ya existe
+          if(Object.keys(res[0]).length > 0) {
+            // Si la persona ya existe, entonces lleno los campos con la información encontrada
+            this.info_info_persona = res[0];
+            // Deshabilito los campos que ya existen
+            this.formInfoPersona.campos.forEach((campo: any) => {
+              // Si el campo existe en la respuesta entonces lo deshabilito
+              if (res[0].hasOwnProperty(campo.nombre)) {
+                // mirar que el campo tenga un valor
+                if (res[0][campo.nombre] != null) {
+                  campo.deshabilitar = true;
                 }
-              } else {
-                this.forzarCambioUsuario = true;
               }
-            });
-          this.existePersona = true;
+            })
+            // Formateo la fecha de nacimiento
+            if (res[0].FechaNacimiento != null) {
+              res[0].FechaNacimiento = res[0].FechaNacimiento.replace('T00:00:00Z', 'T05:00:00Z');
+              this.formInfoPersona.campos[this.getIndexForm('FechaNacimiento')].valor = moment(res[0].FechaNacimiento, 'YYYY-MM-DDTHH:mm:ss').tz('America/Bogota').toDate();
+            }
+            // Formateo la fecha de expedición
+            if (res[0].FechaExpedicion != null) {
+              res[0].FechaExpedicion = res[0].FechaExpedicion.replace('T00:00:00Z', 'T05:00:00Z');
+              this.formInfoPersona.campos[this.getIndexForm('FechaExpedicion')].valor = moment(res[0].FechaExpedicion, 'YYYY-MM-DDTHH:mm:ss').tz('America/Bogota').toDate();
+            }
+            
+            this.formInfoPersona.campos.splice(this.getIndexForm('VerificarNumeroIdentificacion'), 1);
+  
+            this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.persona_ya_existe'), this.translate.instant('inscripcion.info_persona_ya_existe'), 'info', false)
+              .then(() => {
+                let UsuarioExistente = <string>this.info_info_persona.UsuarioWSO2;
+                let correoActual = <string>this.userService.getPayload().email;
+                if (
+                  UsuarioExistente.match(UtilidadesService.ListaPatrones.correo)
+                ) {
+                  if (UsuarioExistente != correoActual) {
+                    this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.info_persona'), this.translate.instant(
+                          'inscripcion.ya_existe_usuarioCorreo'
+                        ) +
+                          '<br>' +
+                          this.translate.instant('inscripcion.correo_anterior') +
+                          ': ' +
+                          UsuarioExistente +
+                          '<br>' +
+                          this.translate.instant('inscripcion.correo_actual') +
+                          ': ' +
+                          correoActual,
+                        'info',
+                        true
+                      )
+                      .then((action) => {
+                        if (action.value) {
+                          this.forzarCambioUsuario = true;
+                        } else {
+                          this.cerrarSesion();
+                        }
+                      });
+                  }
+                } else {
+                  this.forzarCambioUsuario = true;
+                }
+              });
+            this.existePersona = true;
+          }
         },
         (error) => {
           console.error(error);
         }
       );
     }
+  }
+
+  cerrarSesion() {
+    const event = new CustomEvent('cerrar-sesion-mf');
+    window.dispatchEvent(event);
   }
 
   updateInfoPersona(infoPersona: any) {
