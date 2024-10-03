@@ -239,7 +239,7 @@ export class CrudInfoPersonaComponent implements OnInit {
                         if (action.value) {
                           this.forzarCambioUsuario = true;
                         } else {
-                          // this.autenticationService.logout('from inscripcion');
+                          this.cerrarSesion();
                         }
                       });
                   }
@@ -255,6 +255,11 @@ export class CrudInfoPersonaComponent implements OnInit {
         }
       );
     }
+  }
+
+  cerrarSesion() {
+    const event = new CustomEvent('cerrar-sesion-mf');
+    window.dispatchEvent(event);
   }
 
   updateInfoPersona(infoPersona: any) {
