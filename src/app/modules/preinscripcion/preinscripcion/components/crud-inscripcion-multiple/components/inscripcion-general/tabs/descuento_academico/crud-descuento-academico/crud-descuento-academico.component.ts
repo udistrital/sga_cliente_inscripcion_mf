@@ -235,7 +235,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
                   this.info_descuento_academico.DescuentoDependencia.Periodo = Number(window.sessionStorage.getItem('IdPeriodo'));
           
                   this.info_descuento_academico.DescuentosDependenciaId = this.info_descuento_academico.DescuentoDependencia;
-                  this.inscripcionMidService.put('academico/descuento/', this.info_descuento_academico)
+                  this.inscripcionMidService.put('academico/descuento', this.info_descuento_academico)
                     .subscribe(res => {
                       /* if (documentos_actualizados['SoporteDescuento'] !== undefined) {
                         this.info_descuento_academico.Documento = documentos_actualizados['SoporteDescuento'].url + '';
