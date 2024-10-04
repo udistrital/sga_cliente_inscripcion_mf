@@ -114,6 +114,7 @@ export class ListProduccionAcademicaComponent implements OnInit {
   }
 
   onEdit(event: any): void {
+    this.prod_selected = undefined;
     if (
       event.EstadoEnteAutorId.EstadoAutorProduccionId.Id === 1 ||
       event.EstadoEnteAutorId.EstadoAutorProduccionId.Id === 2

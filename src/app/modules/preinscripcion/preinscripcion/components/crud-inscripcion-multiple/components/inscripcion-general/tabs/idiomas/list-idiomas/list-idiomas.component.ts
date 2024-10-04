@@ -5,6 +5,7 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { IdiomaService } from 'src/app/services/idioma.service';
+import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { UserService } from 'src/app/services/users.service';
 
 @Component({
@@ -43,6 +44,7 @@ export class ListIdiomasComponent implements OnInit {
     private idiomaService: IdiomaService,
     private userService: UserService,
     private popUpManager: PopUpManager,
+    private inscripcionService: InscripcionService
   ) {
     
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -94,26 +96,49 @@ export class ListIdiomasComponent implements OnInit {
     });
   }
 
-  onDelete(event:any): void {
-    this.popUpManager.showConfirmAlert(this.translate.instant('idiomas.eliminar'))
-      .then((willDelete) => {
+  async onDelete(event: any): Promise<void> {
+    try {
+        const willDelete = await this.popUpManager.showConfirmAlert(this.translate.instant('idiomas.eliminar'));
         if (willDelete.value) {
-          event.Activo = false;
-          this.idiomaService.put('conocimiento_idioma', event).subscribe(res => {
-          //this.idiomaService.delete('conocimiento_idioma', event.data).subscribe(res => {
+            event.Activo = false;
+            const res = await this.idiomaService.put('conocimiento_idioma', event).toPromise();
             if (res !== null) {
-              this.loadData();
-              this.popUpManager.showInfoToast(
-                this.translate.instant('GLOBAL.idioma') + ' ' + this.translate.instant('GLOBAL.confirmarEliminar'), 5000
-              );
+                this.loadData();
+                this.popUpManager.showInfoToast(
+                    this.translate.instant('GLOBAL.idioma') + ' ' + this.translate.instant('GLOBAL.confirmarEliminar'), 5000
+                );
+
+                // Verificar si el idioma tiene el check de SeleccionExamen
+                if (event.SeleccionExamen === true) {
+                    const inscripcionId = Number(this.inscripcion_id);
+                    const resInscripcion = await this.inscripcionService.get(
+                        'inscripcion_posgrado/?query=InscripcionId:' + inscripcionId
+                    ).toPromise();
+
+                    const r = <any>resInscripcion;
+                    if (r !== null && r.Type !== 'error' && JSON.stringify(r[0]).toString() !== '{}') {
+                        // Actualizar el registro para setear el campo Idioma en null
+                        const examen = {
+                            Idioma: null,
+                            Activo: true,
+                            InscripcionId: { Id: inscripcionId },
+                        };
+                        await this.inscripcionService.put('inscripcion_posgrado/' + r[0].Id, examen).toPromise();
+                    }
+                }
             }
-          },
-            (error: HttpErrorResponse) => {
-              this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status))
-            });
         }
-      });
-  }
+    } catch (error) {
+        console.error(error);
+        if(error instanceof HttpErrorResponse){
+          
+            this.popUpManager.showErrorAlert(this.translate.instant('ERROR.' + error.status))
+         
+        }else{
+          this.popUpManager.showErrorAlert(this.translate.instant('GLOBAL.error'));
+        }
+    }
+}
 
   ngOnInit() {
     this.loadData();
