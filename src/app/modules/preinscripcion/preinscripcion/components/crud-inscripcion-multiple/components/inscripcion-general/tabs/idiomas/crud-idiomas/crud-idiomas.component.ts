@@ -148,7 +148,7 @@ export class CrudIdiomasComponent implements OnInit {
               r.Type !== 'error' &&
               JSON.stringify(res[0]).toString() !== '{}'
             ) {
-              this.idioma_examen = r.Idioma;
+              this.idioma_examen = r[0].Idioma;
             }
           },
           (error: HttpErrorResponse) => {
@@ -167,6 +167,7 @@ export class CrudIdiomasComponent implements OnInit {
   }
 
   createInfoIdioma(infoIdioma: any): void {
+    this.info_idioma = undefined;
     this.popUpManager
       .showConfirmAlert(
         this.translate.instant('idiomas.seguro_continuar_registrar'),
@@ -175,6 +176,7 @@ export class CrudIdiomasComponent implements OnInit {
       .then((willDelete) => {
         if (willDelete.value) {
           this.info_idioma = <InfoIdioma>infoIdioma;
+          console.log(this.info_idioma);
           if (this.info_idioma.Nativo != true) {
             this.info_idioma.Nativo = false;
           }
@@ -193,8 +195,11 @@ export class CrudIdiomasComponent implements OnInit {
             this.info_idioma.SeleccionExamen === true &&
             this.idioma_examen !== undefined
           ) {
+            console.log("idioma_examen",this.idioma_examen)
+            const nombre = this.formInfoIdioma.campos[this.getIndexForm('IdiomaId')].opciones.find((idioma: any) => idioma.Id === this.idioma_examen)?.Nombre;
+            console.log("idiomas",this.formInfoIdioma.campos[this.getIndexForm('IdiomaId')].opciones)
             this.popUpManager.showErrorAlert(
-              this.translate.instant('idiomas.error_doble_examen')
+              this.translate.instant('idiomas.error_doble_examen')+ " : "+ nombre
             );
           } else {
             this.idiomaService
