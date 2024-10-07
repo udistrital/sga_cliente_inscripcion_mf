@@ -165,10 +165,11 @@ export class ListExperienciaLaboralComponent implements OnInit {
   }
 
   onEdit(event: any): void {
+    this.detalleExp = undefined;
     this.id = event.Id;
     this.uid = event.Nit;
     this.indexSelect = event.index;
-    this.detalleExp = this.data[0];
+    this.detalleExp = event;
     this.crud = true;
     this.irAIndexTab(1);
   }
