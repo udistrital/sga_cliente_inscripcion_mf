@@ -84,6 +84,7 @@ import { AuthGuard } from 'src/_guards/auth.guard';
 import { ProgressBarComponent } from '../components/progress-bar/progress-bar.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -173,6 +174,7 @@ export function createTranslateLoader(http: HttpClient) {
     CommonModule,
     NgbModule,
     MatDividerModule,
+    MatButtonToggleModule,
     PreinscripcionRoutingModule,
     TranslateModule.forRoot({
       loader: {
