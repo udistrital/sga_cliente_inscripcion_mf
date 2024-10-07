@@ -72,6 +72,7 @@ import { LiquidacionMatriculaService } from './services/liquidacion_matricula.se
 import { CdkStepper } from '@angular/cdk/stepper';
 import { ImplicitAutenticationService } from './services/implicit_autentication.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -112,6 +113,7 @@ export function createTranslateLoader(http: HttpClient) {
     MatProgressSpinnerModule,
     MatButtonModule,
     MatMenuModule,
+    MatButtonToggleModule,
     StoreModule.forRoot(rootReducer),
     TranslateModule.forRoot({
       loader: {
