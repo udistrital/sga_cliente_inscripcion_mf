@@ -507,7 +507,6 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   setPercentage_total() {
-    console.log('CALCULANDO PORCENTAJE TOTAL');
     let conteoObligatorios = 0;
     let sumaPorcentajes = 0;
 
@@ -610,7 +609,6 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     }
 
     Promise.all(promises).then(() => {
-      console.log('SUMA: ', sumaPorcentajes);
       this.percentage_total = Math.round(sumaPorcentajes / conteoObligatorios);
 
       this.result.emit(this.percentage_total);
