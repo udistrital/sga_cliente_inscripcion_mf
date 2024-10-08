@@ -329,7 +329,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
       if (response2) {
         if (response2[0].NivelFormacionId.CodigoAbreviacion == 'PRE') {
-          console.log('Pregrado', response.TipoInscripcionId.Id);
           sessionStorage.setItem(
             'ProgramaAcademico',
             event.data.ProgramaAcademicoId
@@ -350,7 +349,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             this.loadInscriptionModule();
           }
         } else {
-          console.log('Posgrado', response.TipoInscripcionId.Id);
           sessionStorage.setItem(
             'ProgramaAcademico',
             event.data.ProgramaAcademicoId
@@ -418,7 +416,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       );
 
       if (!inscripciones || inscripciones.length === 0) {
-        console.log('No hay inscripciones disponibles.');
         this.dataSource = new MatTableDataSource<any>([]);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -434,7 +431,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         }
       }
 
-      console.log(dataInfo);
       this.dataSource = new MatTableDataSource(dataInfo);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -479,7 +475,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         )
         .subscribe(
           (response: any) => {
-            console.log('ESTADOS RECIBOS', response);
             if (response != null && response.Status == '400') {
               this.popUpManager.showErrorToast(
                 this.translate.instant('inscripcion.error')
@@ -839,7 +834,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       FechaPago: '',
       TipoCupo: this.tipoCupo,
     };
-    console.log(inscripcion);
 
     const resCalendario: any = await this.recuperarCalendarioProyecto(
       nivelId,
@@ -1368,7 +1362,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                   'legalizacion_admision.inscripciones_error'
                 )
               );
-              console.log(res.Message);
               reject([]);
             }
           },
@@ -1378,7 +1371,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
                 'legalizacion_admision.inscripciones_error'
               )
             );
-            console.log(error);
+            console.error(error);
             reject([]);
           }
         );
