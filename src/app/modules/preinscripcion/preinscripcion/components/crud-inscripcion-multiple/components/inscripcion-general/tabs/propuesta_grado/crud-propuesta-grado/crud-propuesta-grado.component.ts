@@ -80,11 +80,22 @@ export class CrudPropuestaGradoComponent implements OnInit {
     private utilidades: UtilidadesService,
     private userService: UserService,
     private snackBar: MatSnackBar) {
-      this.listService.findGrupoInvestigacion();
-      this.listService.findLineaInvestigacion();
-      this.listService.findTipoProyecto();
     this.formPropuestaGrado = FORM_PROPUESTA_GRADO;
+  }
+
+  ngOnInit() {
     this.construirForm();
+    this.cargarDatos();
+  }
+
+  async cargarDatos() {
+    try {
+      await this.cargarValores();
+      this.loadLists();
+      this.loadPropuestaGrado();
+    } catch (error) {
+      this.showRetryModal();
+    }
   }
 
   async cargarValores() {
@@ -93,7 +104,7 @@ export class CrudPropuestaGradoComponent implements OnInit {
       await this.listService.findLineaInvestigacion();
       await this.listService.findTipoProyecto();
     } catch (error) {
-      this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
+      throw error;
     }
   }
 
@@ -351,13 +362,6 @@ export class CrudPropuestaGradoComponent implements OnInit {
         });
   }
 
-  ngOnInit() {
-    this.cargarValores().then(aux => {
-      this.loadLists();
-      this.loadPropuestaGrado();
-    });
-  }
-
   validarForm(event:any) {
     if (event.valid) {
       this.formData = event.data.PropuestaGrado;
@@ -392,6 +396,15 @@ export class CrudPropuestaGradoComponent implements OnInit {
         this.formPropuestaGrado.campos[this.getIndexForm('TipoProyectoId')].opciones = list.listTipoProyecto[0];
       },
     );
+  }
+
+  showRetryModal(): void {
+    this.popUpManager.showConfirmAlert(this.translate.instant('GLOBAL.error'))
+      .then(result => {
+        if (result.isConfirmed) {
+          this.cargarDatos(); // volver a cargar datos
+        }
+      });
   }
 
 }

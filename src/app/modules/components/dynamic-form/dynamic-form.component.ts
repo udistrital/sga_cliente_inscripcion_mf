@@ -479,7 +479,7 @@ export class DynamicFormComponent implements OnInit, OnChanges{
       requeridos = d.requerido && !d.ocultar ? requeridos + 1 : requeridos;
       if (this.validCampo(d, false)) {
         if ((d.etiqueta === 'file' || d.etiqueta === 'fileRev') && !d.ocultar) {
-          result[d.nombre] = { nombre: d.nombre, file: d.File, url: d.url, IdDocumento: d.tipoDocumento };
+          result[d.nombre] = { nombre: d.nombre, file: d.File, url: d.url, IdDocumento: d.tipoDocumento, idFile: d.idFile };
           // result[d.nombre].push({ nombre: d.name, file: d.valor });
         } else if (d.etiqueta === 'select') {
           result[d.nombre] = d.relacion ? d.valor : d.valor.Id;

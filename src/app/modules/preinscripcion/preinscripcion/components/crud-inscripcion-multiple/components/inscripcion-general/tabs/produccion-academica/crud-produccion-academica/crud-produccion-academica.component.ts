@@ -772,6 +772,11 @@ export class CrudProduccionAcademicaComponent implements OnInit {
               // Archivo se debe subir a nuxeo
               if (tempMetadatos[keys[i]].file !== undefined) {
                 filesToUpload.push(tempMetadatos[keys[i]]);
+              } else if(tempMetadatos[keys[i]].idFile) {
+                metadatos.push({
+                  MetadatoSubtipoProduccionId: parseInt(keys[i], 10),
+                  Valor: tempMetadatos[keys[i]].idFile,
+                });
               }
             } else {
               metadatos.push({
