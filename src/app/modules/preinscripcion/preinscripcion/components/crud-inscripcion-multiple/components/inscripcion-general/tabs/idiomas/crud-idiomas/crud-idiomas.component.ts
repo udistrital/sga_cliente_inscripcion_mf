@@ -221,6 +221,9 @@ export class CrudIdiomasComponent implements OnInit {
                                           rex !== null &&
                                           rex.Type !== 'error'
                                         ) {
+                                          this.sharedStateService.setIdiomaExamen(
+                                            rex.Idioma
+                                          );
                                         }
                                       },
                                       (error: HttpErrorResponse) => {
@@ -251,6 +254,9 @@ export class CrudIdiomasComponent implements OnInit {
                                           rex !== null &&
                                           rex.Type !== 'error'
                                         ) {
+                                          this.sharedStateService.setIdiomaExamen(
+                                            rex.Idioma
+                                          );
                                         }
                                       },
                                       (error: HttpErrorResponse) => {
@@ -288,9 +294,6 @@ export class CrudIdiomasComponent implements OnInit {
                               }
                             );
                         }
-                        this.sharedStateService.setIdiomaExamen(
-                          this.info_idioma!.IdiomaId.Id
-                        );
                         this.canEmit = true;
                         this.setPercentage(1);
                         this.eventChange.emit(true);
