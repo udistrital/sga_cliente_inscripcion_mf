@@ -8,7 +8,7 @@ export let FORM_IDIOMAS = {
   campos: [
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'IdiomaId',
       label_i18n: 'idioma',
       placeholder_i18n: 'idioma',
@@ -19,7 +19,7 @@ export let FORM_IDIOMAS = {
     },
     {
       etiqueta: 'checkbox',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'Nativo',
       label_i18n: 'idioma_nativo_pregunta',
       placeholder_i18n: 'nativo',
@@ -28,7 +28,7 @@ export let FORM_IDIOMAS = {
     },
     {
       etiqueta: 'checkbox',
-      claseGrid: 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'SeleccionExamen',
       label_i18n: 'idioma_examen_pregunta',
       placeholder_i18n: 'idioma_examen',
@@ -37,7 +37,7 @@ export let FORM_IDIOMAS = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NivelEscribeId',
       label_i18n: 'nivel_escribe',
       placeholder_i18n: 'nivel_escribe',
@@ -48,7 +48,7 @@ export let FORM_IDIOMAS = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NivelEscuchaId',
       label_i18n: 'nivel_escucha',
       placeholder_i18n: 'nivel_escucha',
@@ -59,7 +59,7 @@ export let FORM_IDIOMAS = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NivelHablaId',
       label_i18n: 'nivel_habla',
       placeholder_i18n: 'nivel_habla',
@@ -70,7 +70,7 @@ export let FORM_IDIOMAS = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NivelLeeId',
       label_i18n: 'nivel_lee',
       placeholder_i18n: 'nivel_lee',
@@ -81,7 +81,7 @@ export let FORM_IDIOMAS = {
     },
     {
       etiqueta: 'select',
-      claseGrid: 'col-lg-3 col-md-6 col-sm-12 col-xs-12',
+      claseGrid: '',
       nombre: 'NivelId',
       label_i18n: 'clasificacion_nivel_idioma',
       placeholder_i18n: 'clasificacion_nivel_idioma',
