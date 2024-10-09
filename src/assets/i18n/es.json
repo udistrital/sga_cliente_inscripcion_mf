@@ -752,7 +752,10 @@
         "ac_examen_estado": "AC = Bachillerato normal",
         "vg_examen_estado": "VG = Validación de bachillerato",
         "no_proyectos_disponibles": "Actualmente no se encontraron proyectos curriculares disponibles para matricularse. Por favor, contacta con la administración o intenta más tarde.",
-        "error_idioma_existente": "El idioma ya existe en el registro."
+        "error_idioma_existente": "El idioma ya existe en el registro.",
+        "idioma_cambio_examen": "Para cambiar el idioma del examen, primero quite la selección del idioma actual desmarcando la opción '¿Desea usar este idioma para su examen?'. Luego, edite o registre el nuevo idioma que desea utilizar. También puede eliminar el idioma para quitar el idioma definido para el examen.",
+        "sin_definir": "Sin definir",
+        "idioma_examen" : "Idioma seleccionado para examen"
     },
     "examen_estado": {
         "orden": "Orden",
@@ -1259,6 +1262,7 @@
         "nombre_autor": "Nombre",
         "error_autor_ya_existe": "El autor ya está agregado.",
         "error_autor_borrar": "El autor no se puede borrar",
+        "error_autor_no_existe": "El autor no existe, por favor seleccione uno de la lista o cree uno nuevo",
         "datos_basicos": "Datos básicos",
         "alerta_llenar_campo": "Debe llenar este campo",
         "alerta_llenar_campos_datos_basicos": "Debe llenar todos los datos básicos",

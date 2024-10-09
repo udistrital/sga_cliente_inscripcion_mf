@@ -30,6 +30,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
+import { AnyService } from 'src/app/services/any.service';
 
 @Component({
   selector: 'ngx-crud-produccion-academica',
@@ -97,7 +98,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
     private tercerosService: TercerosService,
     private listService: ListService,
     private store: Store<IAppState>,
-    private http: HttpClient,
+    private anyService: AnyService,
     private newNuxeoService: NewNuxeoService,
     private terceroMidService: TerceroMidService,
     private inscripcionMidService: InscripcionMidService,
@@ -582,7 +583,7 @@ export class CrudProduccionAcademicaComponent implements OnInit {
                 title: error.status + '',
                 text: this.translate.instant('ERROR.' + error.status),
                 footer: this.translate.instant(
-                  'informacion_academica.informacion_academica_no_registrada'
+                  'produccion_academica.error_autor_no_existe'
                 ),
                 confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
               });
@@ -593,6 +594,15 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   }
 
   agregarAutor(mostrarError: boolean, estadoAutor: number): void {
+    if (this.autorSeleccionado === undefined) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ERROR',
+        text: this.translate.instant('produccion_academica.error_autor_vacio'),
+        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+      });
+      return;
+    }
     if (
       this.source_authors.find(
         (author) => author.PersonaId === this.autorSeleccionado!.Id
@@ -641,9 +651,9 @@ export class CrudProduccionAcademicaComponent implements OnInit {
         distinctUntilChanged(),
         debounceTime(1000),
         switchMap((value) =>
-          this.http.get(
-            environment.TERCEROS_SERVICE +
-              'tercero?query=NombreCompleto__icontains:' +
+          this.anyService.get(
+            environment.TERCEROS_SERVICE,
+            'tercero?query=NombreCompleto__icontains:' +
               value +
               ',TipoContribuyenteId.Id:1&fields=Id,NombreCompleto&limit=50'
           )
@@ -659,8 +669,9 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   }
 
   onSelected(event: any) {
+    console.log(event);
     this.formAutor.patchValue({
-      autorSeleccionadoV2: event.option.value.Nombre,
+      autorSeleccionadoV2: event.option.value.NombreCompleto,
     });
     this.autorSeleccionado = event.option.value;
   }
@@ -892,13 +903,23 @@ export class CrudProduccionAcademicaComponent implements OnInit {
   }
 
   validarFormNuevoAutor(event: any) {
+    console.log('CREANDO NUEVO TERCERO', event);
     if (event.valid) {
       const formData = event.data.Autor;
-      this.createInfoAutor(formData).then((newAutor) => {
-        let d: any = newAutor;
-        this.autorSeleccionado = d;
-        this.agregarAutor(true, 3);
-        this.NuevoAutor();
+      this.createInfoAutor(formData).then((newAutorResponse: any) => {
+        console.log('NUEVO TERCERO', newAutorResponse);
+        if (newAutorResponse.Data && newAutorResponse.Success) {
+          this.autorSeleccionado = newAutorResponse.Data;
+          this.agregarAutor(true, 3);
+          this.NuevoAutor();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'ERROR',
+            text: this.translate.instant('solicitudes.error'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+        }
       });
     }
   }

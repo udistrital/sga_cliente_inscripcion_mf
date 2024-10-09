@@ -1,16 +1,32 @@
 <mat-card>
   <mat-card-content>
     <div class="info alert margin-y">
-      <mat-icon>info alert</mat-icon>
+      <mat-icon class="icon">info</mat-icon>
       <span>{{ "inscripcion.alerta_idiomas" | translate }}</span>
     </div>
+    <section>
+      <p>
+        <b>{{ "inscripcion.idioma_examen" | translate }}: </b>
+        <span *ngIf="idiomaExamen; else sinDefinir">{{ getNombreIdioma(idiomaExamen) }}</span>
+        <ng-template #sinDefinir><span>{{ "inscripcion.sin_definir" | translate }}</span></ng-template>
+      </p>
+      <div *ngIf="idiomaExamen" class="warning alert">
+        <mat-icon class="icon">warning</mat-icon
+        >{{ "inscripcion.idioma_cambio_examen" | translate }}
+      </div>
+    </section>
     <mat-tab-group
       fullWidth
       [selectedIndex]="selected"
       (selectedTabChange)="tabChanged($event)"
     >
       <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
-        <button mat-flat-button color="accent" (click)="onCreate()" class="margin-y">
+        <button
+          mat-flat-button
+          color="accent"
+          (click)="onCreate()"
+          class="margin-y"
+        >
           <mat-icon>add</mat-icon>
           {{ "GLOBAL.agregar" | translate }}
         </button>

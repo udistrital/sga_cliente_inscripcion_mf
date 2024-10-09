@@ -78,6 +78,8 @@ export class ViewInscripcionComponent implements OnInit {
       const enfasis: any = await this.recuperarEnfasis(inscripcion.EnfasisId)
       this.inscripcion.Enfasis = enfasis.Nombre;
       this.addCargado(1);
+    }else {
+      this.addCargado(1);
     }
 
     this.inscripcion.idRecibo = inscripcion.ReciboInscripcion;

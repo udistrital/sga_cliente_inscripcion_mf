@@ -80,6 +80,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
   async loadData() {
     // Inicializar soporteDocumento y dataSource al principio del método
     this.soporteDocumento = [];
+    this.listAlreadyUploaded = [];
     this.dataSource.data = this.soporteDocumento;
     this.percentage = 0;
 

@@ -1,12 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
@@ -19,7 +12,7 @@ import { IAppState } from 'src/app/utils/reducers/app.state';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_IDIOMAS } from './form-idiomas';
-import { DynamicFormComponent } from 'src/app/modules/components/dynamic-form/dynamic-form.component';
+import { SharedStateService } from '../shared-state.service';
 
 @Component({
   selector: 'ngx-crud-idiomas',
@@ -44,7 +37,6 @@ export class CrudIdiomasComponent implements OnInit {
       inscripcion_id.toString() !== ''
     ) {
       this.inscripcion_id = inscripcion_id;
-      this.cargarIdiomaExamen();
       if (this.formData) {
         this.createInfoIdioma(this.formData);
       }
@@ -63,9 +55,9 @@ export class CrudIdiomasComponent implements OnInit {
   clean!: boolean;
   percentage!: number;
   terceroId!: number | null;
-  idioma_examen: any;
   idioma!: number | undefined;
   canEmit: boolean = false;
+  idioma_examen!: number | null;
 
   constructor(
     private translate: TranslateService,
@@ -74,7 +66,8 @@ export class CrudIdiomasComponent implements OnInit {
     private inscripcionService: InscripcionService,
     private store: Store<IAppState>,
     private listService: ListService,
-    private popUpManager: PopUpManager
+    private popUpManager: PopUpManager,
+    private sharedStateService: SharedStateService
   ) {
     this.formInfoIdioma = FORM_IDIOMAS;
     this.construirForm();
@@ -82,6 +75,13 @@ export class CrudIdiomasComponent implements OnInit {
     this.listService.findNivelIdioma();
     this.listService.findClasificacionNivelIdioma();
     this.loadLists();
+  }
+
+  async ngOnInit() {
+    this.sharedStateService.idiomaExamen$.subscribe((idioma) => {
+      this.idioma_examen = idioma;
+    });
+    await this.initializePersonaId();
   }
 
   construirForm() {
@@ -111,10 +111,6 @@ export class CrudIdiomasComponent implements OnInit {
     return 0;
   }
 
-  async ngOnInit() {
-    await this.initializePersonaId();
-  }
-
   async initializePersonaId() {
     try {
       this.terceroId = await this.users.getPersonaId();
@@ -132,41 +128,8 @@ export class CrudIdiomasComponent implements OnInit {
     }
   }
 
-  cargarIdiomaExamen(): void {
-    if (
-      this.inscripcion_id !== undefined &&
-      this.inscripcion_id !== 0 &&
-      this.inscripcion_id.toString() !== ''
-    ) {
-      this.inscripcionService
-        .get('inscripcion_posgrado/?query=InscripcionId:' + this.inscripcion_id)
-        .subscribe(
-          (res) => {
-            const r = <any>res;
-            if (
-              res !== null &&
-              r.Type !== 'error' &&
-              JSON.stringify(res[0]).toString() !== '{}'
-            ) {
-              this.idioma_examen = r.Idioma;
-            }
-          },
-          (error: HttpErrorResponse) => {
-            Swal.fire({
-              icon: 'error',
-              title: error.status + '',
-              text: this.translate.instant('ERROR.' + error.status),
-              footer: this.translate.instant(
-                'idiomas.error_cargar_informacion_idiomas'
-              ),
-              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-            });
-          }
-        );
-    }
-  }
-
   createInfoIdioma(infoIdioma: any): void {
+    this.info_idioma = undefined;
     this.popUpManager
       .showConfirmAlert(
         this.translate.instant('idiomas.seguro_continuar_registrar'),
@@ -175,6 +138,7 @@ export class CrudIdiomasComponent implements OnInit {
       .then((willDelete) => {
         if (willDelete.value) {
           this.info_idioma = <InfoIdioma>infoIdioma;
+          console.log(this.info_idioma);
           if (this.info_idioma.Nativo != true) {
             this.info_idioma.Nativo = false;
           }
@@ -191,10 +155,17 @@ export class CrudIdiomasComponent implements OnInit {
             );
           } else if (
             this.info_idioma.SeleccionExamen === true &&
-            this.idioma_examen !== undefined
+            this.idioma_examen
           ) {
+            const nombre = this.formInfoIdioma.campos[
+              this.getIndexForm('IdiomaId')
+            ].opciones.find(
+              (idioma: any) => idioma.Id === this.idioma_examen
+            )?.Nombre;
             this.popUpManager.showErrorAlert(
-              this.translate.instant('idiomas.error_doble_examen')
+              this.translate.instant('idiomas.error_doble_examen') +
+                ' : ' +
+                nombre
             );
           } else {
             this.idiomaService
@@ -250,6 +221,9 @@ export class CrudIdiomasComponent implements OnInit {
                                           rex !== null &&
                                           rex.Type !== 'error'
                                         ) {
+                                          this.sharedStateService.setIdiomaExamen(
+                                            rex.Idioma
+                                          );
                                         }
                                       },
                                       (error: HttpErrorResponse) => {
@@ -280,6 +254,9 @@ export class CrudIdiomasComponent implements OnInit {
                                           rex !== null &&
                                           rex.Type !== 'error'
                                         ) {
+                                          this.sharedStateService.setIdiomaExamen(
+                                            rex.Idioma
+                                          );
                                         }
                                       },
                                       (error: HttpErrorResponse) => {
@@ -317,7 +294,6 @@ export class CrudIdiomasComponent implements OnInit {
                               }
                             );
                         }
-                        this.idioma_examen = this.info_idioma!.IdiomaId.Id;
                         this.canEmit = true;
                         this.setPercentage(1);
                         this.eventChange.emit(true);
@@ -402,9 +378,9 @@ export class CrudIdiomasComponent implements OnInit {
             );
           } else if (
             this.info_idioma.SeleccionExamen === true &&
-            this.idioma_examen !== undefined
+            this.idioma_examen
           ) {
-            // this.info_idioma.Idioma.Id !== this.idioma_examen) {
+            console.log('YA TENGO UN IDIOMA', this.idioma_examen);
             this.popUpManager.showErrorAlert(
               this.translate.instant('idiomas.error_doble_examen')
             );
@@ -421,6 +397,219 @@ export class CrudIdiomasComponent implements OnInit {
                         'idiomas.informacion_idioma_actualizada'
                       )
                     );
+                    if (this.info_idioma!.SeleccionExamen === true) {
+                      const examen = {
+                        Idioma: this.info_idioma!.IdiomaId.Id,
+                        Activo: true,
+                        InscripcionId: { Id: Number(this.inscripcion_id) },
+                      };
+                      this.inscripcionService
+                        .get(
+                          'inscripcion_posgrado/?query=InscripcionId:' +
+                            examen.InscripcionId.Id
+                        )
+                        .subscribe(
+                          (res) => {
+                            const r = <any>res;
+                            if (
+                              r !== null &&
+                              r.Type !== 'error' &&
+                              JSON.stringify(r[0]).toString() !== '{}'
+                            ) {
+                              // El registro ya existe, realizar una actualización
+                              this.inscripcionService
+                                .put('inscripcion_posgrado/' + r[0].Id, examen)
+                                .subscribe(
+                                  (resexamen) => {
+                                    const rex = <any>resexamen;
+                                    if (rex !== null && rex.Type !== 'error') {
+                                      console.log(
+                                        'LA RESPUESTAAAAA IMPORTANTE',
+                                        rex
+                                      );
+                                      this.sharedStateService.setIdiomaExamen(
+                                        rex.Idioma
+                                      );
+                                    }
+                                  },
+                                  (error: HttpErrorResponse) => {
+                                    Swal.fire({
+                                      icon: 'error',
+                                      title: error.status + '',
+                                      text: this.translate.instant(
+                                        'ERROR.' + error.status
+                                      ),
+                                      footer: this.translate.instant(
+                                        'idiomas.informacion_idioma_no_actualizada'
+                                      ),
+                                      confirmButtonText:
+                                        this.translate.instant(
+                                          'GLOBAL.aceptar'
+                                        ),
+                                    });
+                                  }
+                                );
+                            } else {
+                              // El registro no existe, realizar una inserción
+                              this.inscripcionService
+                                .post('inscripcion_posgrado/', examen)
+                                .subscribe(
+                                  (resexamen) => {
+                                    const rex = <any>resexamen;
+                                    if (rex !== null && rex.Type !== 'error') {
+                                      this.sharedStateService.setIdiomaExamen(
+                                        this.info_idioma!.IdiomaId.Id
+                                      );
+                                    }
+                                  },
+                                  (error: HttpErrorResponse) => {
+                                    Swal.fire({
+                                      icon: 'error',
+                                      title: error.status + '',
+                                      text: this.translate.instant(
+                                        'ERROR.' + error.status
+                                      ),
+                                      footer: this.translate.instant(
+                                        'idiomas.informacion_idioma_no_registrada'
+                                      ),
+                                      confirmButtonText:
+                                        this.translate.instant(
+                                          'GLOBAL.aceptar'
+                                        ),
+                                    });
+                                  }
+                                );
+                            }
+                          },
+                          (error: HttpErrorResponse) => {
+                            Swal.fire({
+                              icon: 'error',
+                              title: error.status + '',
+                              text: this.translate.instant(
+                                'ERROR.' + error.status
+                              ),
+                              footer: this.translate.instant(
+                                'idiomas.informacion_idioma_no_verificada'
+                              ),
+                              confirmButtonText:
+                                this.translate.instant('GLOBAL.aceptar'),
+                            });
+                          }
+                        );
+                    } else {
+                      if (
+                        this.sharedStateService.getIdiomaExamen() ===
+                        this.info_idioma!.IdiomaId.Id
+                      ) {
+                        const examen = {
+                          Idioma: null,
+                          Activo: true,
+                          InscripcionId: { Id: Number(this.inscripcion_id) },
+                        };
+                        this.inscripcionService
+                          .get(
+                            'inscripcion_posgrado/?query=InscripcionId:' +
+                              examen.InscripcionId.Id
+                          )
+                          .subscribe(
+                            (res) => {
+                              const r = <any>res;
+                              if (
+                                r !== null &&
+                                r.Type !== 'error' &&
+                                JSON.stringify(r[0]).toString() !== '{}'
+                              ) {
+                                // El registro ya existe, realizar una actualización
+                                this.inscripcionService
+                                  .put(
+                                    'inscripcion_posgrado/' + r[0].Id,
+                                    examen
+                                  )
+                                  .subscribe(
+                                    (resexamen) => {
+                                      const rex = <any>resexamen;
+                                      if (
+                                        rex !== null &&
+                                        rex.Type !== 'error'
+                                      ) {
+                                        console.log(
+                                          'LA RESPUESTAAAAA IMPORTANTE',
+                                          rex
+                                        );
+                                        this.sharedStateService.setIdiomaExamen(
+                                          rex.Idioma
+                                        );
+                                      }
+                                    },
+                                    (error: HttpErrorResponse) => {
+                                      Swal.fire({
+                                        icon: 'error',
+                                        title: error.status + '',
+                                        text: this.translate.instant(
+                                          'ERROR.' + error.status
+                                        ),
+                                        footer: this.translate.instant(
+                                          'idiomas.informacion_idioma_no_actualizada'
+                                        ),
+                                        confirmButtonText:
+                                          this.translate.instant(
+                                            'GLOBAL.aceptar'
+                                          ),
+                                      });
+                                    }
+                                  );
+                              } else {
+                                // El registro no existe, realizar una inserción
+                                this.inscripcionService
+                                  .post('inscripcion_posgrado/', examen)
+                                  .subscribe(
+                                    (resexamen) => {
+                                      const rex = <any>resexamen;
+                                      if (
+                                        rex !== null &&
+                                        rex.Type !== 'error'
+                                      ) {
+                                        this.sharedStateService.setIdiomaExamen(
+                                          this.info_idioma!.IdiomaId.Id
+                                        );
+                                      }
+                                    },
+                                    (error: HttpErrorResponse) => {
+                                      Swal.fire({
+                                        icon: 'error',
+                                        title: error.status + '',
+                                        text: this.translate.instant(
+                                          'ERROR.' + error.status
+                                        ),
+                                        footer: this.translate.instant(
+                                          'idiomas.informacion_idioma_no_registrada'
+                                        ),
+                                        confirmButtonText:
+                                          this.translate.instant(
+                                            'GLOBAL.aceptar'
+                                          ),
+                                      });
+                                    }
+                                  );
+                              }
+                            },
+                            (error: HttpErrorResponse) => {
+                              Swal.fire({
+                                icon: 'error',
+                                title: error.status + '',
+                                text: this.translate.instant(
+                                  'ERROR.' + error.status
+                                ),
+                                footer: this.translate.instant(
+                                  'idiomas.informacion_idioma_no_verificada'
+                                ),
+                                confirmButtonText:
+                                  this.translate.instant('GLOBAL.aceptar'),
+                              });
+                            }
+                          );
+                      }
+                    }
                     this.eventChange.emit(true);
                   }
                 },
@@ -451,7 +640,6 @@ export class CrudIdiomasComponent implements OnInit {
           this.createInfoIdioma(this.formData);
         }
       }
-      //this.result.emit(event);
     }
   }
 
