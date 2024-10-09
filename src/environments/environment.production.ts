@@ -30,4 +30,14 @@ export const environment = {
   PLAN_ESTUDIOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/planes_estudios_crud/v1/',
   SGA_CALENDARIO_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/calendario_mid/v1/',
   SGA_INSCRIPCION_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/inscripcion_mid/v1/',
+  TOKEN: {
+    AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
+    CLIENTE_ID: 'RCNPr2bwv7JglsddAHe_zjLNblsa',
+    RESPONSE_TYPE: 'id_token token',
+    SCOPE: 'openid email role documento',
+    REDIRECT_URL: 'https://sgamicroclientes.portaloas.udistrital.edu.co',
+    SIGN_OUT_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oidc/logout',
+    SIGN_OUT_REDIRECT_URL: 'https://sgamicroclientes.portaloas.udistrital.edu.co',
+    AUTENTICACION_MID: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/autenticacion_mid/v1/token/userRol',
+  },
 };
