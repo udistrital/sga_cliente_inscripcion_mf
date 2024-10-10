@@ -145,7 +145,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   Campo3Control = new FormControl('', [Validators.required]);
 
   tipoCupos: any = [];
-  tipoCupo!: any;
+  tipoCupo: any = 0;
   mostrarSelectorCupos = true;
   tipoCupoControl = new FormControl('', [Validators.required]);
 

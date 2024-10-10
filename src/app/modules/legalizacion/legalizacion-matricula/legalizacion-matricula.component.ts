@@ -208,30 +208,32 @@ export class LegalizacionMatriculaComponent {
 
   async generarBusqueda(stepper: MatStepper) {
     const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
-    const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
+    // const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
     const tipoCiclos = this.firstFormGroup.get('validatorCiclos')?.value;
 
     this.inscritosData = [];
     this.inscripciones = [];
     let ordenCount = 0 ;
 
+    const periodo = 61;
     await this.recuperarCiclo(periodo);
     this.inscripciones = await this.buscarInscripciones(stepper, proyecto, periodo, tipoCiclos)
+    console.log("AAAAAAAAAAAAAAAAAAA", this.inscripciones)
     for (const inscripcion of this.inscripciones) {
       const persona: any = await this.consultarTercero(inscripcion.PersonaId);
       if (Array.isArray(persona) && persona.length === 0) {
         continue;
       }
       const proyecto = this.proyectosCurriculares.find((item: any) => item.Id === inscripcion.ProgramaAcademicoId)
-      const infoLegalizacion = await this.getLegalizacionMatricula(persona.Id)
-      if (infoLegalizacion == "No existe legalizacion") {
-        continue;
-      }
+      // const infoLegalizacion = await this.getLegalizacionMatricula(persona.Id)
+      // if (infoLegalizacion == "No existe legalizacion") {
+      //   continue;
+      // }
       ordenCount += 1;
-      this.infoLegalizacionAspirantes[persona.Id] = infoLegalizacion
-      const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
-      this.estadoDocumentosAspirantes[persona.Id] = estados;
-      const estadoRevision = this.revisarEstadosRevision(estados)
+      // this.infoLegalizacionAspirantes[persona.Id] = infoLegalizacion
+      // const estados = await this.retornasEstadosDocumentos(infoLegalizacion);
+      // this.estadoDocumentosAspirantes[persona.Id] = estados;
+      // const estadoRevision = this.revisarEstadosRevision(estados)
 
       const personaData = {
         "personaId": persona.Id,
@@ -246,7 +248,7 @@ export class LegalizacionMatriculaComponent {
         "tipo_documento": persona.TipoIdentificacion.Nombre,
         "documento": persona.NumeroIdentificacion,
         "estado_admision": inscripcion.EstadoInscripcionId.Nombre == "ADMITIDO" || inscripcion.EstadoInscripcionId.Nombre === "ADMITIDO CON OBSERVACIÓN" ? 'admision.estado_admitido' : 'admision.estado_admitido_legalizado',
-        "estado_revision": estadoRevision,
+        "estado_revision": "estadoRevision",
         "proyecto_admitido": proyecto.Nombre,
         "fecha_nacimiento": this.formatearFecha(persona.FechaNacimiento),
         "numero_celular": persona.Telefono,
@@ -269,7 +271,8 @@ export class LegalizacionMatriculaComponent {
     const responseCalendario: any = await this.buscarCalendariosPregradoPorPeriodo(periodo);
     const calendarioId = responseCalendario.Id;
     const responseEvento: any = await this.buscarEventosCiclosPorCalendario(calendarioId);
-    const tipoEventoId = responseEvento.Id
+    // const tipoEventoId = responseEvento.Id
+    const tipoEventoId = 189
     const responseCiclos: any = await this.buscarCiclosPorCalendario(tipoEventoId);
 
     for (const ciclo of responseCiclos) {
