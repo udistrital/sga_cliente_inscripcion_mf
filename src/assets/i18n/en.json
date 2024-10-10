@@ -577,7 +577,9 @@
         "experiencia_actual": "Current work",
         "paso": "Step",
         "ayuda": "Help",
-        "filtro": "Filter"
+        "filtro": "Filter",
+        "campos_invalidos": "Invalid fields",
+        "campos_invalidos_detalle": "There are invalid fields. Please review the form."
     },
     "inscripcion": {
         "cambiar_tab": "Attention! Remember to fill in the contact information found in this same tab",
@@ -749,7 +751,11 @@
         "alerta_examen_estado": "El saber T y T (Ecaes) is optional",
         "ac_examen_estado": "AC = Normal high school",
         "vg_examen_estado": "VG = Validation of high school diploma",
-        "no_proyectos_disponibles": "No available curricular projects were found for enrollment at this time. Please contact the administration or try again later."
+        "no_proyectos_disponibles": "No available curricular projects were found for enrollment at this time. Please contact the administration or try again later.",
+        "error_idioma_existente": "The language already exists in the record.",
+        "idioma_cambio_examen": "To change the exam language, first remove the selection of the current language by unchecking the option 'Do you want to use this language for your exam?'. Then, edit or register the new language you want to use. You can also delete the language to remove the defined language for the exam.",
+        "sin_definir": "Not defined",
+        "idioma_examen" : "Selected language for the exam"
     },
     "examen_estado": {
         "orden": "Order",
@@ -1258,6 +1264,7 @@
         "nombre_autor": "Name",
         "error_autor_ya_existe": "The author is already added.",
         "error_autor_borrar": "The author can't be deleted",
+        "error_autor_no_existe": "The author does not exist, please select one from the list or create a new one",
         "datos_basicos": "Basic data",
         "alerta_llenar_campo": "You must fill this field",
         "alerta_llenar_campos_datos_basicos": "You must fill all basic data fields",

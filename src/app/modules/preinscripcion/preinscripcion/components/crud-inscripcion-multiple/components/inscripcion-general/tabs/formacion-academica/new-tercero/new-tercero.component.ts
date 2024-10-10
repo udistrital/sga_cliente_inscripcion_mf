@@ -142,9 +142,16 @@ export class NewTerceroComponent implements OnInit {
         this.formInfoNuevoTercero.campos[this.getIndexFormNew('TipoTrecero')].opciones = this.listaTipoTercero[0];
 
         // Ajuste de nombre
-        this.formInfoNuevoTercero.campos[this.getIndexFormNew('TipoTrecero')].opciones.forEach((tipo:any) => {
-          tipo.Nombre = tipo.Nombre.charAt(0) + tipo.Nombre.slice(1).toLowerCase().replaceAll('_', ' ');
-        });
+        const tipoTerceroCampo = this.formInfoNuevoTercero.campos[this.getIndexFormNew('TipoTrecero')];
+        if (tipoTerceroCampo && tipoTerceroCampo.opciones) {
+            tipoTerceroCampo.opciones = tipoTerceroCampo.opciones.map((tipo: any) => {
+                // Crear una copia del objeto
+                const tipoCopia = { ...tipo };
+                // Modificar la propiedad Nombre en la copia
+                tipoCopia.Nombre = tipo.Nombre.charAt(0) + tipo.Nombre.slice(1).toLowerCase().replaceAll('_', ' ');
+                return tipoCopia;
+            });
+        }
 
         this.listaPaises = list.listPais;
         this.formInfoNuevoTercero.campos[this.getIndexFormNew('Pais')].opciones = list.listPais[0];

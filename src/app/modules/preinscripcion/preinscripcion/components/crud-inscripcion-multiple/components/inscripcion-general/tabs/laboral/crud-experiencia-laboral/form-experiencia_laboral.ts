@@ -108,7 +108,10 @@ export let FORM_EXPERIENCIA_LABORAL = {
       label_i18n: 'fecha_inicio',
       placeholder_i18n: 'fecha_inicio',
       requerido: true,
+      deshabilitar: false,
+      ocultar: false,
       tipo: 'date',
+      maxDate: new Date(),
     },
     {
       step: 2,
@@ -119,15 +122,23 @@ export let FORM_EXPERIENCIA_LABORAL = {
       placeholder_i18n: 'fecha_fin',
       requerido: true,
       tipo: 'date',
+      maxDate: new Date(),
     },
     {
       step: 2,
-      etiqueta: 'button',
-      claseGrid: 'col-lg-3 col-md-3 col-sm-12 col-xs-12',
+      etiqueta: 'button-toggle',
+      claseGrid: '',
       nombre: 'ExperienciaBoton',
-      claseBoton: 'btn btn-primary btn-sm',
+      claseBoton: '',
       icono: '',
       label_i18n: 'experiencia_actual',
+      deshabilitar: false,
+      ocultar: false,
+      valor: 'option2', // Valor por defecto
+      options: [
+        { value: 'option1', icono: '', label: 'Actual' },
+        { value: 'option2', icono: '', label: 'Finalizado' }
+      ]
     },
     {
       step: 2,

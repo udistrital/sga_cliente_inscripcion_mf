@@ -64,7 +64,7 @@ export class ListFormacionAcademicaComponent implements OnInit {
   }
 
   loadData(): void {
-    this.inscripcionMidService.get('academico/formacion/?Id=' + this.persona_id)
+    this.inscripcionMidService.get('academico/formacion?Id=' + this.persona_id)
     .subscribe(response => {
       if (response !== null && response.Status == '200') {
           if (Object.keys(response.Data).length > 0) {

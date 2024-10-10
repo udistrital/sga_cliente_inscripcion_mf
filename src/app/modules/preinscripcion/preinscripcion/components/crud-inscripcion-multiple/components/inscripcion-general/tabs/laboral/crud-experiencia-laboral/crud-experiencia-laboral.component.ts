@@ -137,18 +137,13 @@ export class CrudExperienciaLaboralComponent implements OnInit {
 
   updateFinishDate(data: any) {
     if (data.button == 'ExperienciaBoton' || data == 'EditOption') {
-      const fechaFinalizacion = this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')]
       this.formInfoExperienciaLaboral.campos[this.getIndexForm('Telefono')].ocultar = true
-      fechaFinalizacion.requerido = !fechaFinalizacion.requerido
-      fechaFinalizacion.deshabilitar = !fechaFinalizacion.deshabilitar
-      fechaFinalizacion.ocultar = !fechaFinalizacion.ocultar
-      if (fechaFinalizacion.deshabilitar) {
-        fechaFinalizacion.valor = ''
-        this.formInfoExperienciaLaboral.campos[this.getIndexForm('ExperienciaBoton')].icono = 'fa fa-check'
-      } else {
-        this.formInfoExperienciaLaboral.campos[this.getIndexForm('ExperienciaBoton')].icono = ''
-      }
-
+      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].requerido = !this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].requerido
+      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].deshabilitar = !this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].deshabilitar
+      this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].ocultar = !this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].ocultar
+      if (this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].deshabilitar) {
+        this.formInfoExperienciaLaboral.campos[this.getIndexForm('FechaFinalizacion')].valor = ''
+      } 
     }
   }
 
@@ -185,9 +180,17 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     const icargo = this.getIndexForm('Cargo');
     const iactividades = this.getIndexForm('Actividades');
     const isoporte = this.getIndexForm('Soporte');
+    const iExperienciaBoton = this.getIndexForm('ExperienciaBoton');
 
     if (this.detalleExp.FechaFinalizacion == '') {
-      this.updateFinishDate('EditOption')
+      this.formInfoExperienciaLaboral.campos[ifechaFin].deshabilitar = true;
+      this.formInfoExperienciaLaboral.campos[ifechaFin].requerido = false;
+      this.formInfoExperienciaLaboral.campos[iExperienciaBoton].valor = "option1";
+    }else {
+      this.formInfoExperienciaLaboral.campos[ifechaFin].valor = (this.detalleExp.FechaFinalizacion);
+      this.formInfoExperienciaLaboral.campos[ifechaFin].deshabilitar = false;
+      this.formInfoExperienciaLaboral.campos[ifechaFin].requerido = true;
+      this.formInfoExperienciaLaboral.campos[iExperienciaBoton].valor= "option2";
     }
 
     this.formInfoExperienciaLaboral.campos[init].valor = this.detalleExp.Nit;
@@ -201,7 +204,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
     this.formInfoExperienciaLaboral.campos[itipo].valor = (this.detalleExp.TipoTerceroId &&
       this.detalleExp.TipoTerceroId.Id) ? this.detalleExp.TipoTerceroId : { Id: 0, Nombre: 'No registrado' };
     this.formInfoExperienciaLaboral.campos[ifechaInicio].valor = (this.detalleExp.FechaInicio);
-    this.formInfoExperienciaLaboral.campos[ifechaFin].valor = (this.detalleExp.FechaFinalizacion);
     this.formInfoExperienciaLaboral.campos[itipoDedicacion].valor = (this.detalleExp.TipoDedicacion &&
       this.detalleExp.TipoDedicacion.Id) ? this.detalleExp.TipoDedicacion : { Id: 0, Nombre: 'No registrado' };
     this.formInfoExperienciaLaboral.campos[itipoVinculacion].valor = (this.detalleExp.TipoVinculacion &&
@@ -225,18 +227,6 @@ export class CrudExperienciaLaboralComponent implements OnInit {
             this.formInfoExperienciaLaboral.campos[isoporte].valor = filesResponse[0].url;
             let estadoDoc = this.utilidades.getEvaluacionDocumento(filesResponse[0].Metadatos);
             this.formInfoExperienciaLaboral.campos[isoporte].estadoDoc = estadoDoc;
-
-            [
-              this.formInfoExperienciaLaboral.campos[ifechaInicio],
-              this.formInfoExperienciaLaboral.campos[ifechaFin],
-              this.formInfoExperienciaLaboral.campos[itipoDedicacion],
-              this.formInfoExperienciaLaboral.campos[itipoVinculacion],
-              this.formInfoExperienciaLaboral.campos[icargo],
-              this.formInfoExperienciaLaboral.campos[iactividades],
-              this.formInfoExperienciaLaboral.campos[isoporte]]
-              .forEach(element => {
-                element.deshabilitar = false
-              });
           } else {
           }
         },
@@ -307,7 +297,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       let consultaEmpresa: Array<any> = [];
       const empresa: Array<any> = [];
       //todo: endpoint no existe?
-      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?nombre=' + nombre)
+      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa?nombre=' + nombre)
         .subscribe(res => {
           if (res !== null) {
             consultaEmpresa = <Array<InfoPersona>>res.Data;
@@ -342,7 +332,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       const itel = this.getIndexForm('Telefono');
       const icorreo = this.getIndexForm('Correo');
       const ipais = this.getIndexForm('Pais');
-      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa/?Id=' + nit)
+      this.inscripcionMidService.get('experiencia-laboral/informacion-empresa?Id=' + nit)
         .subscribe((response: any) => {
           const res = response.Data
           this.formInfoExperienciaLaboral.campos[init].valor = res.NumeroIdentificacion;
@@ -592,6 +582,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
   }
 
   validarForm(event: any) {
+    console.log(event)
     if (event.valid) {
       const formData = event.data.InfoExperienciaLaboral;
       const organizacionData = {
@@ -632,7 +623,7 @@ export class CrudExperienciaLaboralComponent implements OnInit {
         },
       }
       this.createInfoExperienciaLaboral(postData);
-      //this.result.emit(event);
+      // this.result.emit(event);
     }
   }
 

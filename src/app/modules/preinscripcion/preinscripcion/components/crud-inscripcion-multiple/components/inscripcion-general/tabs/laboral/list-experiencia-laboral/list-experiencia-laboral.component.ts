@@ -88,7 +88,7 @@ export class ListExperienciaLaboralComponent implements OnInit {
 
   loadData(): void {
     this.inscripcionMidService
-      .get('experiencia-laboral/tercero/?Id=' + this.persona_id)
+      .get('experiencia-laboral/tercero?Id=' + this.persona_id)
       .subscribe(
         (response: any) => {
           if (response.Data.length > 0 && response.Status == '200') {
@@ -165,10 +165,11 @@ export class ListExperienciaLaboralComponent implements OnInit {
   }
 
   onEdit(event: any): void {
+    this.detalleExp = undefined;
     this.id = event.Id;
     this.uid = event.Nit;
     this.indexSelect = event.index;
-    this.detalleExp = this.data[0];
+    this.detalleExp = event;
     this.crud = true;
     this.irAIndexTab(1);
   }
