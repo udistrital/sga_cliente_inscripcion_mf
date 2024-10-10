@@ -137,8 +137,8 @@
         <ng-container matColumnDef="soporte">
             <th mat-header-cell *matHeaderCellDef>{{ "solicitudes.soporte" | translate }}</th>
             <td mat-cell *matCellDef="let element">
-                <button mat-button type="button" (click)="verInfoCaracteristca(element)">
-                    <i class="nb-search" title="{{ 'GLOBAL.tooltip_ver_registro' | translate }}"></i>
+                <button mat-flat-button color="accent" type="button" (click)="verInfoCaracteristca(element)">
+                    <mat-icon fontIcon="search"></mat-icon>
                 </button>
             </td>
         </ng-container>
