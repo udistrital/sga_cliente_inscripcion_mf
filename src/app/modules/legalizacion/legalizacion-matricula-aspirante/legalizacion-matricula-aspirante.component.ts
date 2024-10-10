@@ -686,9 +686,11 @@ export class LegalizacionMatriculaAspiranteComponent {
         .subscribe(
           (res: any) => {
             const data = res.Data
-            const jsonObject = JSON.parse(data[0].Valor);
-            const valor: number = jsonObject.Valor;
-            this.valorSML = valor;
+            console.log("AAAAAAAAAAAAAAAAAAAA", data)
+            // const jsonObject = JSON.parse(data[0].Valor);
+            // const valor: number = jsonObject.Valor;
+            // this.valorSML = valor;
+            this.valorSML = 1300000;
             resolve(res);
           },
           (error: any) => {
