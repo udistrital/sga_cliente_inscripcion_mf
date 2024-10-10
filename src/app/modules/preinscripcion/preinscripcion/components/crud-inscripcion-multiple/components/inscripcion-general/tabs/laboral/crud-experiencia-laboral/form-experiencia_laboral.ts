@@ -136,8 +136,8 @@ export let FORM_EXPERIENCIA_LABORAL = {
       ocultar: false,
       valor: 'option2', // Valor por defecto
       options: [
-        { value: 'option1', icono: '', label: 'Actual' },
-        { value: 'option2', icono: '', label: 'Finalizado' }
+        { value: 'option1', icono: '', label: 'Finalizado' },
+        { value: 'option2', icono: '', label: 'Actual' }
       ]
     },
     {
