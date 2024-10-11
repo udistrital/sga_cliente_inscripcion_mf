@@ -13,6 +13,7 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { SgaMidService } from 'src/app/services/sga_mid.service'; 
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { MatStepper } from '@angular/material/stepper';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
@@ -95,6 +96,7 @@ export class LegalizacionMatriculaComponent {
     private oikosService: OikosService,
     private parametrosService: ParametrosService,
     private inscripcionService: InscripcionService,
+    private tercerosMidService: TercerosMidService,
     private sgamidService: SgaMidService,
     private inscripcionMidService: InscripcionMidService,
     private newNuxeoService: NewNuxeoService,
@@ -484,8 +486,8 @@ export class LegalizacionMatriculaComponent {
 
   async consultarTercero(personaId: any): Promise<any | []> {
     try {
-      const response = await this.sgamidService.get('persona/consultar_persona/' + personaId).toPromise();
-      return response;
+      const response = await this.tercerosMidService.get('personas/' + personaId).toPromise();
+      return response.Data;
     } catch (error) {
       console.error(error);
       return [];

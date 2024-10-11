@@ -30,12 +30,12 @@ const routes: Routes = [
   },
   {
     path: 'legalizacion-matricula-aspirante/:persona/:periodo/:programa',
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     component: LegalizacionMatriculaAspiranteComponent,
   },
   { 
     path: "legalizacion-matricula",
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     component: LegalizacionMatriculaComponent
   },
   {
