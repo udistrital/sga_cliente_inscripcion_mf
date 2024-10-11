@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from 'src/app/managers/popUpManager';
+import { APROBADO, NO_APROBADO } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
 
 @Component({
   selector: 'app-dialogo-documentos',
@@ -36,19 +37,22 @@ export class DialogoDocumentosComponent implements OnInit {
   ngOnInit() {
     this.isPDF = true;
     this.tabName = this.data.documento.tabName || "";
+    console.log("DOCUMENTOOOO", this.data.documento);
     if(this.data.documento.hasOwnProperty('nombreDocumento')){
       this.nombreDocumento = this.data.documento.nombreDocumento;
     } else {
       this.nombreDocumento = "";
     }
-    if(this.data.documento.aprobado != null) {
-      if(this.data.documento.aprobado){
+    switch (this.data.documento.estadoObservacion) {
+      case APROBADO:
         this.verEstado = this.translate.instant('GLOBAL.estado_aprobado');
-      } else {
+        break;
+      case NO_APROBADO:
         this.verEstado = this.translate.instant('GLOBAL.estado_no_aprobado');
-      }
-    } else {
-      this.verEstado = this.translate.instant('GLOBAL.estado_no_definido');
+        break;
+      default:
+        this.verEstado = this.translate.instant('GLOBAL.estado_no_definido');
+        break;
     }
     if (this.data.documento.Documento.changingThisBreaksApplicationSecurity) {
       this.documento = this.data.documento.Documento['changingThisBreaksApplicationSecurity'];
