@@ -12,6 +12,7 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
+import { POR_DEFINIR } from '../../constants';
 
 @Component({
   selector: 'ngx-view-produccion-academica',
@@ -104,7 +105,7 @@ export class ViewProduccionAcademicaComponent implements OnInit {
                       this.infoFalla();
                     } else {
                       let estadoDoc = this.utilidades.getEvaluacionDocumento(resp.Metadatos);
-                      if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== "Por definir") {
+                      if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== POR_DEFINIR) {
                         this.updateDocument = true;
                       }
                       this.docs_editados.emit(this.updateDocument);

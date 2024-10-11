@@ -94,8 +94,7 @@
 
         <ng-container matColumnDef="observacion">
             <th mat-header-cell *matHeaderCellDef>{{ "admision.observacion" | translate }}</th>
-            <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}}:
-                {{info_info_persona.NumeroIdentificacion}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}}</td>
         </ng-container>
 
         <ng-container matColumnDef="soporte">
@@ -130,8 +129,7 @@
 
         <ng-container matColumnDef="observacion">
             <th mat-header-cell *matHeaderCellDef>{{ "admision.observacion" | translate }}</th>
-            <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}}:
-                {{info_info_persona.NumeroIdentificacion}} </td>
+            <td mat-cell *matCellDef="let element"> {{ element.observacion ? element.observacion : ''}}</td>
         </ng-container>
 
         <ng-container matColumnDef="soporte">

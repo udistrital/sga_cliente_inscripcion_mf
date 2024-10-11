@@ -25,6 +25,7 @@ import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.se
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
+import { POR_DEFINIR } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
 
 
 @Component({
@@ -272,7 +273,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   retornarEstadoObservacion(estado: any) {
-    if (estado === "Por definir" || estado === "To be defined") {
+    if (estado === POR_DEFINIR || estado === "To be defined") {
       return 1
     } else if (estado === "No aprobado" || estado === "Not approved") {
       return 3
