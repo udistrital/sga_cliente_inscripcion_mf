@@ -30,6 +30,7 @@ export const environment = {
   PLAN_ESTUDIOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/planes_estudios_crud/v1/',
   SGA_CALENDARIO_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/calendario_mid/v1/',
   SGA_INSCRIPCION_MID_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/inscripcion_mid/v1/',
+  OIKOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/oikos_crud_api/v2/',
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
     CLIENTE_ID: 'RCNPr2bwv7JglsddAHe_zjLNblsa',
