@@ -147,6 +147,7 @@ export class PerfilComponent implements OnInit {
     this.hasObservations = false;
     this.selectedTags.forEach(tag => {
       if (this.SuiteTags[tag].observacion) {
+        console.log(tag,"-->",this.SuiteTags[tag].observacion)
         this.hasObservations = true;
       }
     });
@@ -175,6 +176,7 @@ export class PerfilComponent implements OnInit {
   }
 
   abrirDocumento(documento: any) {
+    console.log("DOCUMENTO A ABRIR", documento);
     if (this.en_revision) {
       this.revisar_doc.emit(documento)
     } else {

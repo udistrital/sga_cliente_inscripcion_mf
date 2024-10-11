@@ -9,6 +9,7 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
+import { POR_DEFINIR } from '../../constants';
 
 @Component({
   selector: 'ngx-view-documento-programa',
@@ -130,7 +131,7 @@ export class ViewDocumentoProgramaComponent implements OnInit {
                       if (f !== undefined) {
                         //doc.Documento = f["Documento"];
                         let estadoDoc = this.utilidades.getEvaluacionDocumento(f.Metadatos);
-                        if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== "Por definir") {
+                        if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== POR_DEFINIR) {
                           this.updateDocument = true;
                         }
                         this.docs_editados.emit(this.updateDocument);

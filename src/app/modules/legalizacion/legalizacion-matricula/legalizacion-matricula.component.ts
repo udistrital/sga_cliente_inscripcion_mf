@@ -28,6 +28,7 @@ import { UserService } from 'src/app/services/users.service';
 import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { POR_DEFINIR } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
 
 interface Proyecto {
   opcion: number;
@@ -382,7 +383,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   retornarEstadoObservacion(estado: any) {
-    if (estado === "Por definir" || estado === "To be defined") {
+    if (estado === POR_DEFINIR || estado === "To be defined") {
       return 1
     } else if (estado === "No aprobado" || estado === "Not approved") {
       return 3
