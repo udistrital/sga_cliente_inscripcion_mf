@@ -390,7 +390,7 @@
       {{ "GLOBAL.regresar" | translate }}
     </button>
     <button
-      *ngIf="estado_inscripcion == 'INSCRITO'"
+      *ngIf="estado_inscripcion == 'INSCRITO' || estado_inscripcion == 'ADMITIDO'"
       mat-flat-button
       color="accent"
       (click)="descargar_comprobante_inscription()"

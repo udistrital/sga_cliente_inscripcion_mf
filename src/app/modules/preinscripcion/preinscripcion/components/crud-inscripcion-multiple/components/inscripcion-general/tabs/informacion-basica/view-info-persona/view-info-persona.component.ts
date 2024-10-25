@@ -271,9 +271,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           }
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR.' + error.status));
             reject(false);
           });
     });
@@ -292,9 +290,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           }
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
             reject(false);
           });
     });
@@ -311,9 +307,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           }
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR: ' + error.status));
             resolve(false);
           });
     });
@@ -326,9 +320,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           resolve(res);
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
             reject(false);
           });
     });
