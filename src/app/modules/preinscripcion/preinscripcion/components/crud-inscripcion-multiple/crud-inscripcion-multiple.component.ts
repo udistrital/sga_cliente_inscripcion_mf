@@ -893,6 +893,31 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     });
   }
 
+  // funcion para obtener parámetros de costos pecuniarios, devuelve vector
+  async buscarParametrosPeriodo (parametroInscripcion: string ,anioConcepto: number): Promise<any[]> {
+    // máximo dos intentos hacia años anteriores
+    for (let intento=0; intento <= 2; intento ++){
+      let anioActual = anioConcepto - intento;
+      // revisa parametros hasta 2024, no tiene sentido ir más atras
+      if (anioActual<2024){ break }
+
+      try {
+        const parametros = await firstValueFrom(
+           this.parametrosService.get(
+            `parametro_periodo?query=ParametroId.TipoParametroId.Id:2,ParametroId.CodigoAbreviacion:${parametroInscripcion},PeriodoId.Year:${anioActual},PeriodoId.CodigoAbreviacion:VG`
+          )
+        );
+
+        if (parametros?.Data?.length > 0){
+          return parametros.Data;
+        }
+      } catch (error) {
+        console.error(`Error consultando ${anioActual}`, error);
+      }
+    }
+    throw new Error(this.translate.instant('ERROR.general'));
+  }
+
   async descargarReciboPago(data: any) {
     await this.itemSelect({ data: data });
     if (this.selectedLevel === undefined) {
@@ -903,100 +928,89 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         sessionStorage.getItem('ProgramaAcademicoId')!,
         10
       );
+
       this.recibo_pago = new ReciboPago();
       this.recibo_pago.NombreDelAspirante =
-        this.info_info_persona.PrimerNombre +
-        ' ' +
-        this.info_info_persona.SegundoNombre +
-        ' ' +
-        this.info_info_persona.PrimerApellido +
-        ' ' +
+        this.info_info_persona.PrimerNombre + ' ' +
+        this.info_info_persona.SegundoNombre + ' ' +
+        this.info_info_persona.PrimerApellido + ' ' +
         this.info_info_persona.SegundoApellido;
-      this.recibo_pago.DocumentoDelAspirante =
-        this.info_info_persona.NumeroIdentificacion;
+      this.recibo_pago.DocumentoDelAspirante =this.info_info_persona.NumeroIdentificacion;
       this.recibo_pago.Periodo = this.periodo.Nombre;
       this.recibo_pago.ProyectoAspirante = data['ProgramaAcademicoId'];
       this.recibo_pago.Comprobante = data['ReciboInscripcion'][0];
+
       if (this.selectedLevel === 1) {
         this.parametro = '13';
       } else if (this.selectedLevel === 2) {
         this.parametro = '12';
       }
       let periodo = localStorage.getItem('IdPeriodo');
-      this.calendarioMidService
-        .get(
-          'calendario-proyecto/calendario/proyecto?id-nivel=' +
-            this.selectedLevel +
-            '&id-periodo=' +
-            periodo
-        )
-        .subscribe(
-          (response: any) => {
-            if (response !== null && response.length !== 0) {
-              this.inscripcionProjects = response.Data;
-              this.inscripcionProjects.forEach((proyecto) => {
-                if (
-                  proyecto.ProyectoId === this.selectedProject &&
-                  proyecto.Evento != null
-                ) {
-                  this.recibo_pago.Fecha_pago = moment(
-                    proyecto.Evento.FechaFinEvento,
-                    'YYYY-MM-DD'
-                  ).format('DD/MM/YYYY');
-                }
-              });
 
-              const url = `parametro_periodo?query=ParametroId.TipoParametroId.Id:2,ParametroId.CodigoAbreviacion:${
-                this.parametro
-              },PeriodoId.Year:${
-                this.periodo.Ciclo === '1'
-                  ? this.periodo.Year - 1
-                  : this.periodo.Year
-              },PeriodoId.CodigoAbreviacion:VG`;
-
-              this.parametrosService.get(url).subscribe(
-                (response: any) => {
-                  const parametro = <any>response['Data'][0];
-                  this.recibo_pago.Descripcion =
-                    parametro['ParametroId']['Nombre'];
-                  const valor = JSON.parse(parametro['Valor']);
-                  this.recibo_pago.ValorDerecho = valor['Costo'];
-                  this.inscripcionMidService
-                    .post('recibos/estudiantes', this.recibo_pago)
-                    .subscribe(
-                      (response: any) => {
-                        const reciboData = new Uint8Array(
-                          atob(response['Data'])
-                            .split('')
-                            .map((char) => char.charCodeAt(0))
-                        );
-                        this.recibo_generado = window.URL.createObjectURL(
-                          new Blob([reciboData], { type: 'application/pdf' })
-                        );
-                        window.open(this.recibo_generado);
-                      },
-                      (error: any) => {
-                        this.popUpManager.showErrorToast(
-                          this.translate.instant('recibo_pago.no_generado')
-                        );
-                      }
-                    );
-                },
-                (error: any) => {
-                  this.popUpManager.showErrorToast(
-                    this.translate.instant('ERROR.general')
-                  );
-                }
-              );
-            }
-          },
-          (error: any) => {
-            this.popUpManager.showAlert(
-              this.translate.instant('GLOBAL.info'),
-              this.translate.instant('calendario.sin_proyecto_curricular')
-            );
-          }
+      const responseCalendario = await firstValueFrom(
+        this.calendarioMidService.get(
+          `calendario-proyecto/calendario/proyecto?id-nivel=${this.selectedLevel}&id-periodo=${periodo}`
+          )
+      );
+      if (!responseCalendario?.Data?.length) {
+        this.popUpManager.showAlert(
+          this.translate.instant('GLOBAL.info'),
+          this.translate.instant('calendario.sin_proyecto_curricular')
         );
+        return;
+      }      
+  
+      this.inscripcionProjects = responseCalendario.Data;
+      this.inscripcionProjects.forEach((proyecto) => {
+        if ( proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null ) {
+          this.recibo_pago.Fecha_pago = moment(
+            proyecto.Evento.FechaFinEvento,
+            'YYYY-MM-DD'
+          ).format('DD/MM/YYYY');
+        }
+      });
+
+      const parametro = await this.buscarParametrosPeriodo(this.parametro, this.periodo.Year);
+      this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre;
+
+      const valor = JSON.parse(parametro[0].Valor);
+      this.recibo_pago.ValorDerecho = valor.Costo;
+
+      const responseRecibo: any = await firstValueFrom(
+        this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago)
+      );
+      if (!responseRecibo) {
+        console.error('Respuesta vacía del servicio de recibos');
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      if (!responseRecibo.Data) {
+        console.error('Campo Data no encontrado en la respuesta:', responseRecibo);
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      // Verificar que Data no esté vacío
+      if (!responseRecibo.Data.trim()) {
+        console.error('Data está vacío');
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      
+      const reciboData = new Uint8Array(
+        atob(responseRecibo.Data)
+          .split('')
+          .map((char) => char.charCodeAt(0))
+      );
+      this.recibo_generado = window.URL.createObjectURL(
+        new Blob([reciboData], { type: 'application/pdf' })
+      );
+      window.open(this.recibo_generado);
     }
   }
 
