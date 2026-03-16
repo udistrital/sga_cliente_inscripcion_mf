@@ -151,6 +151,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   preinscripcionForm!: FormGroup;
 
+  private dialogoPagadorService: any;
+
   constructor(
     private projectService: ProyectoAcademicoService,
     private popUpManager: PopUpManager,
@@ -163,6 +165,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     private calendarioMidService: CalendarioMidService,
     private fb: FormBuilder
   ) {
+    this.dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
     this.showProyectoCurricular = false;
     this.showTipoInscripcion = false;
     this.showInfo = false;
@@ -434,7 +437,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.dataSource = new MatTableDataSource(dataInfo);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-     console.log(this.dataSource);
+    //  console.log(this.dataSource);
      
     }
   }
@@ -445,6 +448,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     );
     const auxRecibo = inscripcion.ReciboInscripcion;
     const NumRecibo = auxRecibo.split('/', 1);
+    inscripcion.AnioRecibo = auxRecibo;
     inscripcion.ReciboInscripcion = NumRecibo;
     inscripcion.FechaCreacion = momentTimezone
       .tz(inscripcion.FechaCreacion, 'America/Bogota')
@@ -976,45 +980,62 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       const valor = JSON.parse(parametro[0].Valor);
       this.recibo_pago.ValorDerecho = valor.Costo;
 
-      const responseRecibo: any = await firstValueFrom(
-        this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago)
-      );
-      if (!responseRecibo) {
-        console.error('Respuesta vacía del servicio de recibos');
-        this.popUpManager.showErrorToast(
-          this.translate.instant('recibo_pago.no_generado')
-        );
-        return;
+      const datosFormulario = {
+        accion: 'descargar',
+        persona_id: this.info_persona_id,
+        info_recibo: this.recibo_pago,
+        anioRecibo: data.AnioRecibo
       }
-      if (!responseRecibo.Data) {
-        console.error('Campo Data no encontrado en la respuesta:', responseRecibo);
-        this.popUpManager.showErrorToast(
-          this.translate.instant('recibo_pago.no_generado')
-        );
-        return;
-      }
-      // Verificar que Data no esté vacío
-      if (!responseRecibo.Data.trim()) {
-        console.error('Data está vacío');
-        this.popUpManager.showErrorToast(
-          this.translate.instant('recibo_pago.no_generado')
-        );
-        return;
-      }
-      
-      const reciboData = new Uint8Array(
-        atob(responseRecibo.Data)
-          .split('')
-          .map((char) => char.charCodeAt(0))
-      );
-      this.recibo_generado = window.URL.createObjectURL(
-        new Blob([reciboData], { type: 'application/pdf' })
-      );
-      window.open(this.recibo_generado);
+      this.abrirDialogoPagador(datosFormulario);
     }
   }
 
-  abrirPago(data: any) {
+  async abrirDialogoPagador(data: any): Promise<any> {
+    try {
+      // Obtener el servicio del core_mf_cliente que está expuesto globalmente
+      const dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
+      
+      if (!dialogoPagadorService) {
+        console.error('Servicio DialogoPagadorService no disponible en window[core-mf]');
+        console.warn('Verificar que core_mf_cliente esté correctamente cargado');
+        return null;
+      }
+    
+      const dialogRef = dialogoPagadorService.openDialogoPagador(data);
+
+      dialogRef.afterOpened().subscribe(() => {
+        // Forzar detección de cambios
+        dialogRef.componentInstance.cdr.detectChanges();
+        if (dialogRef.componentInstance.selects) {
+          dialogRef.componentInstance.selects.forEach((select: any) => select.updatePosition());
+        }
+      });
+
+      // Manejo de resultado cuando el diálogo se cierra
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      console.log('Diálogo cerrado con resultado:', result);
+
+      return result;
+      
+    } catch (error) {
+      console.error('Error al abrir el diálogo de pagador:', error);
+      return null;
+    }
+  }
+
+  async abrirPago(data: any) {
+    await this.itemSelect({ data: data });
+    const datosFormulario = {
+      accion: 'pagar',
+      persona_id: this.info_persona_id,
+      anioRecibo: data.AnioRecibo
+    }
+
+    const result = await this.abrirDialogoPagador(datosFormulario);
+    if (!result || !result.continuar) {
+      return;
+    }
+
     this.parametros_pago.NUM_DOC_IDEN =
       this.info_info_persona.NumeroIdentificacion;
     this.parametros_pago.REFERENCIA = data['ReciboInscripcion'][0];
