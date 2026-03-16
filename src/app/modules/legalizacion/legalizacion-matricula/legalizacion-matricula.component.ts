@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service'; 
+// import { SgaMidService } from 'src/app/services/sga_mid.service'; 
 import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { MatStepper } from '@angular/material/stepper';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
@@ -98,7 +98,7 @@ export class LegalizacionMatriculaComponent {
     private parametrosService: ParametrosService,
     private inscripcionService: InscripcionService,
     private tercerosMidService: TercerosMidService,
-    private sgamidService: SgaMidService,
+    // private sgamidService: SgaMidService,
     private inscripcionMidService: InscripcionMidService,
     private newNuxeoService: NewNuxeoService,
     private utilidades: UtilidadesService,

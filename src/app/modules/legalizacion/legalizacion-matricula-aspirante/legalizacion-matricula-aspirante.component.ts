@@ -13,7 +13,7 @@ import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service'
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+// import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { OikosService } from 'src/app/services/oikos.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { DocumentoService } from 'src/app/services/documento.service';
@@ -58,7 +58,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private oikosService: OikosService,
     private usuarioService: UserService,
     private inscripcionService: InscripcionService,
-    private sgamidService: SgaMidService,
+    // private sgamidService: SgaMidService,
     private documentoService: DocumentoService,
     private utilidadesService: UtilidadesService,
     private dialog: MatDialog,
@@ -355,19 +355,19 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   consultarTercero(personaId: any) {
-    return new Promise((resolve, reject) => {
-      this.sgamidService
-        .get('persona/consultar_persona/' + personaId)
-        .subscribe(
-          (res: any) => {
-            resolve(res);
-          },
-          (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
-            reject([]);
-          }
-        );
-    });
+    // return new Promise((resolve, reject) => {
+    //   this.sgamidService
+    //     .get('persona/consultar_persona/' + personaId)
+    //     .subscribe(
+    //       (res: any) => {
+    //         resolve(res);
+    //       },
+    //       (error: any) => {
+    //         this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+    //         reject([]);
+    //       }
+    //     );
+    // });
   }
 
   async recuperarTerceroId(userEmail: any) {
