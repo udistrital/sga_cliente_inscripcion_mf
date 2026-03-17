@@ -986,7 +986,47 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         info_recibo: this.recibo_pago,
         anioRecibo: data.AnioRecibo
       }
-      this.abrirDialogoPagador(datosFormulario);
+
+      const result = await this.abrirDialogoPagador(datosFormulario);
+      if (!result || !result.continuar) {
+        return;
+      }
+
+      console.log("Se completa con el CONTINUAR()");
+      const responseRecibo: any = await firstValueFrom(
+        this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago)
+      );
+      if (!responseRecibo) {
+        console.error('Respuesta vacía del servicio de recibos');
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      if (!responseRecibo.Data) {
+        console.error('Campo Data no encontrado en la respuesta:', responseRecibo);
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      // Verificar que Data no esté vacío
+      if (!responseRecibo.Data.trim()) {
+        console.error('Data está vacío');
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      const reciboData = new Uint8Array(
+        atob(responseRecibo.Data)
+          .split('')
+          .map((char) => char.charCodeAt(0))
+      );
+      this.recibo_generado = window.URL.createObjectURL(
+        new Blob([reciboData], { type: 'application/pdf' })
+      );
+      window.open(this.recibo_generado);
     }
   }
 
