@@ -23,7 +23,7 @@ export class LinkDownloadComponent implements OnInit{
       this.download = true;
       this.expired = false;
     } else if (this.rowData.Estado === 'Pago'){
-      this.download = true;
+      this.download = false;
       this.expired = false;
     } else{
       this.download = false;

@@ -152,11 +152,11 @@ export class TransferenciaComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.terceroMidService.get('personas/' + idPersona).subscribe(
           (res: any) => {
-            console.log(res);
+            // console.log(res);
             resolve(res.Data);
           },
           (error: any) => {
-            console.error(error);
+            // console.error(error);
             Swal.fire({
               icon: 'info',
               title: this.translate.instant('GLOBAL.info_persona'),
@@ -192,7 +192,7 @@ export class TransferenciaComponent implements OnInit {
         } else {
           inscripcion.Estado = inscripcion.EstadoInscripcion
         }
-        console.log(inscripcion.Estado)
+        // console.log(inscripcion.Estado)
 
         if (inscripcion.EstadoRecibo === 'Pendiente pago') {
           inscripcion.Opcion = {
@@ -240,7 +240,7 @@ export class TransferenciaComponent implements OnInit {
         dataInfo.push(inscripcion);
       }
     }
-    console.log(dataInfo)
+    // console.log(dataInfo)
     this.dataSource = new MatTableDataSource(dataInfo);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -249,7 +249,7 @@ export class TransferenciaComponent implements OnInit {
   recuperarEstadoRecibos(id: number) {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('transferencia/estado-recibos/' + id).subscribe((response: any) => {
-        console.log(response)
+        // console.log(response)
         if (response !== null && response.Status == '400') {
           this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
           reject(false);
@@ -494,8 +494,8 @@ export class TransferenciaComponent implements OnInit {
 
             this.codigosEstudiante.forEach(codigo => {
               this.proyectosCurriculares.forEach(opcion => {
-                if (opcion.Id == codigo.IdProyecto) {
-                  aux.push(opcion)
+                if (opcion.Codigo == codigo.IdProyectoCondor) {
+                  aux.push(opcion);
                 }
 
               });
@@ -598,11 +598,11 @@ export class TransferenciaComponent implements OnInit {
         (response: any) => {
           if (response !== null && response.Success == true) {
             this.inscripcionProjects = response.Data;  
-            console.log(this.inscripcionProjects)          
+            // console.log(this.inscripcionProjects)          
             this.inscripcionProjects.forEach(proyecto => {
               if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
                 inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                console.log(inscripcion.FechaPago)
+                // console.log(inscripcion.FechaPago)
                 this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
                   (response: any) => {
                     if (response.Status == '200') {

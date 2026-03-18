@@ -151,6 +151,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   preinscripcionForm!: FormGroup;
 
+  private dialogoPagadorService: any;
+
   constructor(
     private projectService: ProyectoAcademicoService,
     private popUpManager: PopUpManager,
@@ -163,6 +165,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     private calendarioMidService: CalendarioMidService,
     private fb: FormBuilder
   ) {
+    this.dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
     this.showProyectoCurricular = false;
     this.showTipoInscripcion = false;
     this.showInfo = false;
@@ -434,7 +437,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.dataSource = new MatTableDataSource(dataInfo);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-     console.log(this.dataSource);
+    //  console.log(this.dataSource);
      
     }
   }
@@ -445,6 +448,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     );
     const auxRecibo = inscripcion.ReciboInscripcion;
     const NumRecibo = auxRecibo.split('/', 1);
+    inscripcion.AnioRecibo = auxRecibo;
     inscripcion.ReciboInscripcion = NumRecibo;
     inscripcion.FechaCreacion = momentTimezone
       .tz(inscripcion.FechaCreacion, 'America/Bogota')
@@ -620,11 +624,45 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showNew = true;
   }
 
-  onSelectProyecto() {
+  async onSelectProyecto() {
     this.preinscripcionForm.patchValue({
       tipoInscripcion: '',
     });
-    this.loadTipoInscripcion();
+
+    // validar fecha limite para generar inscripcion
+    const tiempoActual = await firstValueFrom(
+      this.inscripcionMidService.get('time_bog')
+    );
+    const fechaActual = new Date(tiempoActual.Data.BOG);
+
+    let rawProyecto = this.preinscripcionForm.get('proyecto')?.value;
+    const proyecto = parseInt(rawProyecto, 10);
+    if ( isNaN(proyecto) ){
+      console.error("Fallo en obtención del proyecto: ", proyecto);
+    }
+    let fechaFinInsc: Date | undefined;
+    this.inscripcionProjects.forEach( (proy) => {
+      if (proy.ProyectoId === proyecto && proy.Evento != null) {
+        proy.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: string; }) => {
+          if (ev.Pago === false && ev.CodigoAbreviacion === "INSCR"){
+            fechaFinInsc = new Date(
+              ev.FechaFinEvento.replace('Z', '-05:00')
+            );
+          }
+        });
+      }
+    });
+
+    if (fechaFinInsc && fechaActual < fechaFinInsc) {
+      this.loadTipoInscripcion();
+    } else {
+      this.popUpManager.showAlert(
+        this.translate.instant('GLOBAL.info'),
+        this.translate.instant('inscripcion.no_proyectos_disponibles')
+      );
+      this.showTipoInscripcion = false;
+      return
+    }
   }
 
   onSelectTipoInscripcion(tipo: any) {
@@ -664,8 +702,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             '&id-periodo=' +
             idPeriodo
         )
-        .subscribe(
-          (response: any) => {
+        .subscribe({ 
+          next: (response: any) => {
             const r = <any>response;
             if (
               response !== null &&
@@ -685,7 +723,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
               this.showInfo = false;
             }
           },
-          (error: any) => {
+          error: (error: any) => {
             console.error(error);
             this.popUpManager.showAlert(
               this.translate.instant('GLOBAL.info'),
@@ -693,7 +731,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             );
             reject(false);
           }
-        );
+        });
     });
   }
 
@@ -835,38 +873,43 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       TipoCupo: this.tipoCupo,
     };
 
-    const resCalendario: any = await this.recuperarCalendarioProyecto(
-      nivelId,
-      this.periodo.Id
-    );
-    this.inscripcionProjects = resCalendario;
+    // const resCalendario: any = await this.recuperarCalendarioProyecto(
+    //   nivelId,
+    //   this.periodo.Id
+    // );
+    // this.inscripcionProjects = resCalendario;
 
     for (const proyecto of this.inscripcionProjects) {
       if (proyecto.ProyectoId === proyectoId && proyecto.Evento != null) {
-        inscripcion.FechaPago = moment(
-          proyecto.Evento.FechaFinEvento,
-          'YYYY-MM-DD'
-        ).format('DD/MM/YYYY');
-        const resInscripcion: any = await this.inscripcionNuevaPost(
-          inscripcion
-        );
-        if (resInscripcion) {
-          this.showProyectoCurricular = false;
-          this.showPeriodo = false;
-          this.showTipoInscripcion = false;
-          this.showInfo = false;
-          this.showNew = false;
-          this.preinscripcionForm.reset();
-          this.loadInfoInscripcion();
-        }
+        proyecto.Evento.forEach((ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput; }) => {
+          if (ev.Pago === true && ev.CodigoAbreviacion === "INSCR"){
+            inscripcion.FechaPago = moment(
+              ev.FechaFinEvento,'YYYY-MM-DD'
+            ).format('DD/MM/YYYY');
+          }
+        });
+        console.log("Genera una nueva inscripción correcta");
+        console.log(inscripcion);
+        // const resInscripcion: any = await this.inscripcionNuevaPost(
+        //   inscripcion
+        // );
+        // if (resInscripcion) {
+        //   this.showProyectoCurricular = false;
+        //   this.showPeriodo = false;
+        //   this.showTipoInscripcion = false;
+        //   this.showInfo = false;
+        //   this.showNew = false;
+        //   this.preinscripcionForm.reset();
+        //   this.loadInfoInscripcion();
+        // }
       }
     }
   }
 
   inscripcionNuevaPost(body: any) {
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.post('inscripciones/nueva', body).subscribe(
-        (response: any) => {
+      this.inscripcionMidService.post('inscripciones/nueva', body).subscribe({
+        next: (response: any) => {
           if (response.Status == 200 && response.Success) {
             this.popUpManager.showSuccessAlert(
               this.translate.instant('recibo_pago.generado')
@@ -882,15 +925,40 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             reject(false);
           }
         },
-        (error: any) => {
+        error: (error: any) => {
           console.error(error);
           this.popUpManager.showErrorToast(
             this.translate.instant(`ERROR.${error.status}`)
           );
           reject(false);
         }
-      );
+      });
     });
+  }
+
+  // funcion para obtener parámetros de costos pecuniarios, devuelve vector
+  async buscarParametrosPeriodo (parametroInscripcion: string ,anioConcepto: number): Promise<any[]> {
+    // máximo dos intentos hacia años anteriores
+    for (let intento=0; intento <= 2; intento ++){
+      let anioActual = anioConcepto - intento;
+      // revisa parametros hasta 2024, no tiene sentido ir más atras
+      if (anioActual<2024){ break }
+
+      try {
+        const parametros = await firstValueFrom(
+           this.parametrosService.get(
+            `parametro_periodo?query=ParametroId.TipoParametroId.Id:2,ParametroId.CodigoAbreviacion:${parametroInscripcion},PeriodoId.Year:${anioActual},PeriodoId.CodigoAbreviacion:VG`
+          )
+        );
+
+        if (parametros?.Data?.length > 0){
+          return parametros.Data;
+        }
+      } catch (error) {
+        console.error(`Error consultando ${anioActual}`, error);
+      }
+    }
+    throw new Error(this.translate.instant('ERROR.general'));
   }
 
   async descargarReciboPago(data: any) {
@@ -903,104 +971,143 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         sessionStorage.getItem('ProgramaAcademicoId')!,
         10
       );
+
       this.recibo_pago = new ReciboPago();
       this.recibo_pago.NombreDelAspirante =
-        this.info_info_persona.PrimerNombre +
-        ' ' +
-        this.info_info_persona.SegundoNombre +
-        ' ' +
-        this.info_info_persona.PrimerApellido +
-        ' ' +
+        this.info_info_persona.PrimerNombre + ' ' +
+        this.info_info_persona.SegundoNombre + ' ' +
+        this.info_info_persona.PrimerApellido + ' ' +
         this.info_info_persona.SegundoApellido;
-      this.recibo_pago.DocumentoDelAspirante =
-        this.info_info_persona.NumeroIdentificacion;
+      this.recibo_pago.DocumentoDelAspirante =this.info_info_persona.NumeroIdentificacion;
       this.recibo_pago.Periodo = this.periodo.Nombre;
       this.recibo_pago.ProyectoAspirante = data['ProgramaAcademicoId'];
       this.recibo_pago.Comprobante = data['ReciboInscripcion'][0];
+
       if (this.selectedLevel === 1) {
         this.parametro = '13';
       } else if (this.selectedLevel === 2) {
         this.parametro = '12';
       }
-      let periodo = localStorage.getItem('IdPeriodo');
-      this.calendarioMidService
-        .get(
-          'calendario-proyecto/calendario/proyecto?id-nivel=' +
-            this.selectedLevel +
-            '&id-periodo=' +
-            periodo
-        )
-        .subscribe(
-          (response: any) => {
-            if (response !== null && response.length !== 0) {
-              this.inscripcionProjects = response.Data;
-              this.inscripcionProjects.forEach((proyecto) => {
-                if (
-                  proyecto.ProyectoId === this.selectedProject &&
-                  proyecto.Evento != null
-                ) {
-                  this.recibo_pago.Fecha_pago = moment(
-                    proyecto.Evento.FechaFinEvento,
-                    'YYYY-MM-DD'
-                  ).format('DD/MM/YYYY');
-                }
-              });
 
-              const url = `parametro_periodo?query=ParametroId.TipoParametroId.Id:2,ParametroId.CodigoAbreviacion:${
-                this.parametro
-              },PeriodoId.Year:${
-                this.periodo.Ciclo === '1'
-                  ? this.periodo.Year - 1
-                  : this.periodo.Year
-              },PeriodoId.CodigoAbreviacion:VG`;
-
-              this.parametrosService.get(url).subscribe(
-                (response: any) => {
-                  const parametro = <any>response['Data'][0];
-                  this.recibo_pago.Descripcion =
-                    parametro['ParametroId']['Nombre'];
-                  const valor = JSON.parse(parametro['Valor']);
-                  this.recibo_pago.ValorDerecho = valor['Costo'];
-                  this.inscripcionMidService
-                    .post('recibos/estudiantes', this.recibo_pago)
-                    .subscribe(
-                      (response: any) => {
-                        const reciboData = new Uint8Array(
-                          atob(response['Data'])
-                            .split('')
-                            .map((char) => char.charCodeAt(0))
-                        );
-                        this.recibo_generado = window.URL.createObjectURL(
-                          new Blob([reciboData], { type: 'application/pdf' })
-                        );
-                        window.open(this.recibo_generado);
-                      },
-                      (error: any) => {
-                        this.popUpManager.showErrorToast(
-                          this.translate.instant('recibo_pago.no_generado')
-                        );
-                      }
-                    );
-                },
-                (error: any) => {
-                  this.popUpManager.showErrorToast(
-                    this.translate.instant('ERROR.general')
-                  );
-                }
-              );
+      const responseCalendario: any = await this.recuperarCalendarioProyecto(
+        this.selectedLevel, this.periodo.Id
+      );   
+  
+      this.inscripcionProjects = responseCalendario;
+      this.inscripcionProjects.forEach((proyecto) => {
+        if ( proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null ) {
+          proyecto.Evento.forEach((ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput; }) => {
+            if (ev.Pago === true && ev.CodigoAbreviacion === "INSCR"){
+              this.recibo_pago.Fecha_pago = moment(
+                ev.FechaFinEvento,'YYYY-MM-DD'
+              ).format('DD/MM/YYYY');
             }
-          },
-          (error: any) => {
-            this.popUpManager.showAlert(
-              this.translate.instant('GLOBAL.info'),
-              this.translate.instant('calendario.sin_proyecto_curricular')
-            );
-          }
+          });
+        }
+      });
+
+      const parametro = await this.buscarParametrosPeriodo(this.parametro, this.periodo.Year);
+      this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre;
+
+      const valor = JSON.parse(parametro[0].Valor);
+      this.recibo_pago.ValorDerecho = valor.Costo;
+
+      const datosFormulario = {
+        accion: 'descargar',
+        persona_id: this.info_persona_id,
+        info_recibo: this.recibo_pago,
+        anioRecibo: data.AnioRecibo
+      }
+
+      const result = await this.abrirDialogoPagador(datosFormulario);
+      if (!result || !result.continuar) {
+        return;
+      }
+
+      console.log("Se completa con el CONTINUAR()");
+      const responseRecibo: any = await firstValueFrom(
+        this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago)
+      );
+      if (!responseRecibo) {
+        console.error('Respuesta vacía del servicio de recibos');
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
         );
+        return;
+      }
+      if (!responseRecibo.Data) {
+        console.error('Campo Data no encontrado en la respuesta:', responseRecibo);
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      // Verificar que Data no esté vacío
+      if (!responseRecibo.Data.trim()) {
+        console.error('Data está vacío');
+        this.popUpManager.showErrorToast(
+          this.translate.instant('recibo_pago.no_generado')
+        );
+        return;
+      }
+      const reciboData = new Uint8Array(
+        atob(responseRecibo.Data)
+          .split('')
+          .map((char) => char.charCodeAt(0))
+      );
+      this.recibo_generado = window.URL.createObjectURL(
+        new Blob([reciboData], { type: 'application/pdf' })
+      );
+      window.open(this.recibo_generado);
     }
   }
 
-  abrirPago(data: any) {
+  async abrirDialogoPagador(data: any): Promise<any> {
+    try {
+      // Obtener el servicio del core_mf_cliente que está expuesto globalmente
+      const dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
+      
+      if (!dialogoPagadorService) {
+        console.error('Servicio DialogoPagadorService no disponible en window[core-mf]');
+        console.warn('Verificar que core_mf_cliente esté correctamente cargado');
+        return null;
+      }
+    
+      const dialogRef = dialogoPagadorService.openDialogoPagador(data);
+
+      dialogRef.afterOpened().subscribe(() => {
+        // Forzar detección de cambios
+        dialogRef.componentInstance.cdr.detectChanges();
+        if (dialogRef.componentInstance.selects) {
+          dialogRef.componentInstance.selects.forEach((select: any) => select.updatePosition());
+        }
+      });
+
+      // Manejo de resultado cuando el diálogo se cierra
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      console.log('Diálogo cerrado con resultado:', result);
+
+      return result;
+      
+    } catch (error) {
+      console.error('Error al abrir el diálogo de pagador:', error);
+      return null;
+    }
+  }
+
+  async abrirPago(data: any) {
+    await this.itemSelect({ data: data });
+    const datosFormulario = {
+      accion: 'pagar',
+      persona_id: this.info_persona_id,
+      anioRecibo: data.AnioRecibo
+    }
+
+    const result = await this.abrirDialogoPagador(datosFormulario);
+    if (!result || !result.continuar) {
+      return;
+    }
+
     this.parametros_pago.NUM_DOC_IDEN =
       this.info_info_persona.NumeroIdentificacion;
     this.parametros_pago.REFERENCIA = data['ReciboInscripcion'][0];

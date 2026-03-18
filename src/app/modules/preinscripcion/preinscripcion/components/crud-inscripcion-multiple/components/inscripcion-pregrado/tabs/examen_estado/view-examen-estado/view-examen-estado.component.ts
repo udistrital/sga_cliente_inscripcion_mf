@@ -10,7 +10,7 @@ import { FORM_EXAMEN_ESTADO } from './examen-estado';
 import { MatTableDataSource } from '@angular/material/table';
 import { EvaluacionInscripcionService } from 'src/app/services/evaluacion_inscripcion.service';
 import { MODALS } from 'src/app/models/informacion/diccionario';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+// import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
 import { co } from '@fullcalendar/core/internal-common';
 
@@ -125,7 +125,7 @@ export class ViewExamenEstadoComponent {
     private userService: UserService,
     private newNuxeoService: NewNuxeoService,
     private evaluacionInscripcionService: EvaluacionInscripcionService,
-    private sgamidService: SgaMidService,
+    // private sgamidService: SgaMidService,
     private tercerosService: TercerosService
   ) {
     this.formDocumentoPrograma = FORM_EXAMEN_ESTADO;
