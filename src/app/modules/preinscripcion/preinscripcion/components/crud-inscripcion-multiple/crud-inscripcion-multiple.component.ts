@@ -624,11 +624,45 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showNew = true;
   }
 
-  onSelectProyecto() {
+  async onSelectProyecto() {
     this.preinscripcionForm.patchValue({
       tipoInscripcion: '',
     });
-    this.loadTipoInscripcion();
+
+    // validar fecha limite para generar inscripcion
+    const tiempoActual = await firstValueFrom(
+      this.inscripcionMidService.get('time_bog')
+    );
+    const fechaActual = new Date(tiempoActual.Data.BOG);
+
+    let rawProyecto = this.preinscripcionForm.get('proyecto')?.value;
+    const proyecto = parseInt(rawProyecto, 10);
+    if ( isNaN(proyecto) ){
+      console.error("Fallo en obtención del proyecto: ", proyecto);
+    }
+    let fechaFinInsc: Date | undefined;
+    this.inscripcionProjects.forEach( (proy) => {
+      if (proy.ProyectoId === proyecto && proy.Evento != null) {
+        proy.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: string; }) => {
+          if (ev.Pago === false && ev.CodigoAbreviacion === "INSCR"){
+            fechaFinInsc = new Date(
+              ev.FechaFinEvento.replace('Z', '-05:00')
+            );
+          }
+        });
+      }
+    });
+
+    if (fechaFinInsc && fechaActual < fechaFinInsc) {
+      this.loadTipoInscripcion();
+    } else {
+      this.popUpManager.showAlert(
+        this.translate.instant('GLOBAL.info'),
+        this.translate.instant('inscripcion.no_proyectos_disponibles')
+      );
+      this.showTipoInscripcion = false;
+      return
+    }
   }
 
   onSelectTipoInscripcion(tipo: any) {
@@ -668,8 +702,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             '&id-periodo=' +
             idPeriodo
         )
-        .subscribe(
-          (response: any) => {
+        .subscribe({ 
+          next: (response: any) => {
             const r = <any>response;
             if (
               response !== null &&
@@ -689,7 +723,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
               this.showInfo = false;
             }
           },
-          (error: any) => {
+          error: (error: any) => {
             console.error(error);
             this.popUpManager.showAlert(
               this.translate.instant('GLOBAL.info'),
@@ -697,7 +731,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             );
             reject(false);
           }
-        );
+        });
     });
   }
 
@@ -839,38 +873,43 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       TipoCupo: this.tipoCupo,
     };
 
-    const resCalendario: any = await this.recuperarCalendarioProyecto(
-      nivelId,
-      this.periodo.Id
-    );
-    this.inscripcionProjects = resCalendario;
+    // const resCalendario: any = await this.recuperarCalendarioProyecto(
+    //   nivelId,
+    //   this.periodo.Id
+    // );
+    // this.inscripcionProjects = resCalendario;
 
     for (const proyecto of this.inscripcionProjects) {
       if (proyecto.ProyectoId === proyectoId && proyecto.Evento != null) {
-        inscripcion.FechaPago = moment(
-          proyecto.Evento.FechaFinEvento,
-          'YYYY-MM-DD'
-        ).format('DD/MM/YYYY');
-        const resInscripcion: any = await this.inscripcionNuevaPost(
-          inscripcion
-        );
-        if (resInscripcion) {
-          this.showProyectoCurricular = false;
-          this.showPeriodo = false;
-          this.showTipoInscripcion = false;
-          this.showInfo = false;
-          this.showNew = false;
-          this.preinscripcionForm.reset();
-          this.loadInfoInscripcion();
-        }
+        proyecto.Evento.forEach((ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput; }) => {
+          if (ev.Pago === true && ev.CodigoAbreviacion === "INSCR"){
+            inscripcion.FechaPago = moment(
+              ev.FechaFinEvento,'YYYY-MM-DD'
+            ).format('DD/MM/YYYY');
+          }
+        });
+        console.log("Genera una nueva inscripción correcta");
+        console.log(inscripcion);
+        // const resInscripcion: any = await this.inscripcionNuevaPost(
+        //   inscripcion
+        // );
+        // if (resInscripcion) {
+        //   this.showProyectoCurricular = false;
+        //   this.showPeriodo = false;
+        //   this.showTipoInscripcion = false;
+        //   this.showInfo = false;
+        //   this.showNew = false;
+        //   this.preinscripcionForm.reset();
+        //   this.loadInfoInscripcion();
+        // }
       }
     }
   }
 
   inscripcionNuevaPost(body: any) {
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.post('inscripciones/nueva', body).subscribe(
-        (response: any) => {
+      this.inscripcionMidService.post('inscripciones/nueva', body).subscribe({
+        next: (response: any) => {
           if (response.Status == 200 && response.Success) {
             this.popUpManager.showSuccessAlert(
               this.translate.instant('recibo_pago.generado')
@@ -886,14 +925,14 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             reject(false);
           }
         },
-        (error: any) => {
+        error: (error: any) => {
           console.error(error);
           this.popUpManager.showErrorToast(
             this.translate.instant(`ERROR.${error.status}`)
           );
           reject(false);
         }
-      );
+      });
     });
   }
 
@@ -949,28 +988,21 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       } else if (this.selectedLevel === 2) {
         this.parametro = '12';
       }
-      let periodo = localStorage.getItem('IdPeriodo');
 
-      const responseCalendario = await firstValueFrom(
-        this.calendarioMidService.get(
-          `calendario-proyecto/calendario/proyecto?id-nivel=${this.selectedLevel}&id-periodo=${periodo}`
-          )
-      );
-      if (!responseCalendario?.Data?.length) {
-        this.popUpManager.showAlert(
-          this.translate.instant('GLOBAL.info'),
-          this.translate.instant('calendario.sin_proyecto_curricular')
-        );
-        return;
-      }      
+      const responseCalendario: any = await this.recuperarCalendarioProyecto(
+        this.selectedLevel, this.periodo.Id
+      );   
   
-      this.inscripcionProjects = responseCalendario.Data;
+      this.inscripcionProjects = responseCalendario;
       this.inscripcionProjects.forEach((proyecto) => {
         if ( proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null ) {
-          this.recibo_pago.Fecha_pago = moment(
-            proyecto.Evento.FechaFinEvento,
-            'YYYY-MM-DD'
-          ).format('DD/MM/YYYY');
+          proyecto.Evento.forEach((ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput; }) => {
+            if (ev.Pago === true && ev.CodigoAbreviacion === "INSCR"){
+              this.recibo_pago.Fecha_pago = moment(
+                ev.FechaFinEvento,'YYYY-MM-DD'
+              ).format('DD/MM/YYYY');
+            }
+          });
         }
       });
 
