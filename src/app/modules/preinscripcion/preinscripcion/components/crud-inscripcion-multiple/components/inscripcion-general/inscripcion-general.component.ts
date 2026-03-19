@@ -85,8 +85,8 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   set name(inscripcion_id: number) {
     this.inscripcion_id = inscripcion_id;
     if (this.inscripcion_id === 0 || this.inscripcion_id.toString() === '0') {
-      this.selectedValue = undefined;
-      window.localStorage.setItem('programa', this.selectedValue);
+      this.selectedProgram = undefined;
+      window.localStorage.setItem('programa', this.selectedProgram);
     }
   }
 
@@ -161,7 +161,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   button_politica: boolean = true;
   programa_seleccionado: any;
   viewtag: any;
-  selectedValue: any;
+  selectedProgram: any;
   selectedTipo: any;
   tipo_inscripcion_selected: any;
   selectTipo: any;
@@ -250,8 +250,8 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
           '&id-periodo=' +
           periodo
       )
-      .subscribe(
-        (response) => {
+      .subscribe({
+        next: (response) => {
           const r = <any>response;
           if (
             response !== null &&
@@ -261,7 +261,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
           ) {
             const inscripcionP = <Array<any>>response.Data;
             this.posgrados = inscripcionP;
-            this.selectedValue = parseInt(
+            this.selectedProgram = parseInt(
               sessionStorage.getItem('ProgramaAcademicoId')!,
               10
             );
@@ -272,12 +272,12 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             );
           }
         },
-        (error) => {
+        error: (error) => {
           this.popUpManager.showErrorToast(
             this.translate.instant('ERROR.general')
           );
         }
-      );
+      });
   }
 
   loadNivel(IdPrograma: number) {
@@ -314,24 +314,24 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   }
 
   async checkEventoInscripcion() {
-    if (this.selectedValue) {
+    let fechafin: Date | undefined;
+
+    if (this.selectedProgram) {
       let EventosPrograma = this.posgrados.find(
-        (EventsProgram) => EventsProgram.ProyectoId == this.selectedValue
+        (EventsProgram) => EventsProgram.ProyectoId == this.selectedProgram
       );
       if (EventosPrograma) {
-        if (EventosPrograma.EventoInscripcion) {
-          let fechafin = moment(
-            EventosPrograma.EventoInscripcion.FechaFinEvento,
-            'YYYY-MM-DDTHH:mm:ss'
-          )
-            .tz('America/Bogota')
-            .toDate();
-          fechafin.setDate(fechafin.getDate() + 1);
+        EventosPrograma.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: string; }) => {
+          if (ev.Pago === false && ev.CodigoAbreviacion === "INSCR"){
+            fechafin = new Date(
+              ev.FechaFinEvento.replace('Z', '-05:00')
+            );
+          }
+        });
 
-          const realhora = await this.timeService.getDate('BOG');
-          let ahora = moment(realhora).tz('America/Bogota').toDate();
-
-          if (fechafin > ahora) {
+        if (EventosPrograma.Evento?.length > 0 && fechafin instanceof Date) {
+          const realhora = await this.timeService.getDate();
+          if (fechafin && fechafin > realhora) {
             this.puedeInscribirse = true;
           } else {
             if (!this.estaInscrito) {
@@ -391,7 +391,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     const info_inscripcion_temp = {
       Id: 0,
       PersonaId: this.info_persona_id || 4,
-      ProgramaAcademicoId: this.selectedValue.Id || 0, // Cambiar por el periodo
+      ProgramaAcademicoId: this.selectedProgram.Id || 0, // Cambiar por el periodo
       PeriodoId: this.periodo.Id,
       AceptaTerminos: true,
       FechaAceptaTerminos: new Date(),
@@ -1470,12 +1470,12 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         this.selectedTipo = 'Posgrado';
       }
 
-      if (this.selectedValue !== undefined) {
-        sessionStorage.setItem('ProgramaAcademicoId', this.selectedValue);
+      if (this.selectedProgram !== undefined) {
+        sessionStorage.setItem('ProgramaAcademicoId', this.selectedProgram);
         this.programaService
           .get(
             'proyecto_academico_enfasis/?query=Activo:true,ProyectoAcademicoInstitucionId.Id:' +
-              this.selectedValue +
+              this.selectedProgram +
               '&limit=0'
           )
           .subscribe((enfasis: any) => {
@@ -1535,7 +1535,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
           10
         );
         if (
-          await this.loadSuitePrograma(IdPeriodo, this.selectedValue, IdTipo)
+          await this.loadSuitePrograma(IdPeriodo, this.selectedProgram, IdTipo)
         ) {
           if (this.estado_inscripcion_nombre !== 'INSCRIPCIÓN SOLICITADA') {
             this.Campo1Control.disable();
@@ -1566,7 +1566,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   volverATabs() {
     const IdPeriodo = parseInt(sessionStorage.getItem('IdPeriodo')!, 10);
     const IdTipo = parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10);
-    this.loadSuitePrograma(IdPeriodo, this.selectedValue, IdTipo);
+    this.loadSuitePrograma(IdPeriodo, this.selectedProgram, IdTipo);
   }
 
   redirectBecauseObservations() {
