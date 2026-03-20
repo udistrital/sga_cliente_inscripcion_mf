@@ -873,12 +873,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       TipoCupo: this.tipoCupo,
     };
 
-    // const resCalendario: any = await this.recuperarCalendarioProyecto(
-    //   nivelId,
-    //   this.periodo.Id
-    // );
-    // this.inscripcionProjects = resCalendario;
-
     for (const proyecto of this.inscripcionProjects) {
       if (proyecto.ProyectoId === proyectoId && proyecto.Evento != null) {
         proyecto.Evento.forEach((ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput; }) => {
@@ -890,18 +884,18 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         });
         console.log("Genera una nueva inscripción correcta");
         console.log(inscripcion);
-        // const resInscripcion: any = await this.inscripcionNuevaPost(
-        //   inscripcion
-        // );
-        // if (resInscripcion) {
-        //   this.showProyectoCurricular = false;
-        //   this.showPeriodo = false;
-        //   this.showTipoInscripcion = false;
-        //   this.showInfo = false;
-        //   this.showNew = false;
-        //   this.preinscripcionForm.reset();
-        //   this.loadInfoInscripcion();
-        // }
+        const resInscripcion: any = await this.inscripcionNuevaPost(
+          inscripcion
+        );
+        if (resInscripcion) {
+          this.showProyectoCurricular = false;
+          this.showPeriodo = false;
+          this.showTipoInscripcion = false;
+          this.showInfo = false;
+          this.showNew = false;
+          this.preinscripcionForm.reset();
+          this.loadInfoInscripcion();
+        }
       }
     }
   }
