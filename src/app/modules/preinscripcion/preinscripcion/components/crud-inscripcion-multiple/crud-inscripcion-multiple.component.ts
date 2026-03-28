@@ -882,8 +882,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             ).format('DD/MM/YYYY');
           }
         });
-        console.log("Genera una nueva inscripción correcta");
-        console.log(inscripcion);
+        // console.log("Genera una nueva inscripción correcta");
+        // console.log(inscripcion);
         const resInscripcion: any = await this.inscripcionNuevaPost(
           inscripcion
         );
@@ -1010,7 +1010,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         accion: 'descargar',
         persona_id: this.info_persona_id,
         info_recibo: this.recibo_pago,
-        anioRecibo: data.AnioRecibo
+        anioRecibo: data.AnioRecibo,
+        tipo_usuario: 1,
+        info_info_persona: this.info_info_persona
       }
 
       const result = await this.abrirDialogoPagador(datosFormulario);
@@ -1018,7 +1020,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         return;
       }
 
-      console.log("Se completa con el CONTINUAR()");
+      // console.log("Se completa con el CONTINUAR()");
       const responseRecibo: any = await firstValueFrom(
         this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago)
       );
@@ -1094,7 +1096,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     const datosFormulario = {
       accion: 'pagar',
       persona_id: this.info_persona_id,
-      anioRecibo: data.AnioRecibo
+        info_recibo: this.recibo_pago,
+        anioRecibo: data.AnioRecibo,
+        tipo_usuario: 1,
+        info_info_persona: this.info_info_persona
     }
 
     const result = await this.abrirDialogoPagador(datosFormulario);
