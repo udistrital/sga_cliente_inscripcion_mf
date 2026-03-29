@@ -8,6 +8,7 @@ import * as momentTimezone from 'moment-timezone';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { TransferenciaInterna } from 'src/app/models/inscripcion/transferencia_interna';
+import { Reingreso } from 'src/app/models/inscripcion/reingreso';
 import { Periodo } from 'src/app/models/periodo/periodo';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
@@ -22,10 +23,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
-import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
+import { FORM_TRANSFERENCIA_INTERNA, FORM_REINTEGRO } from './forms-transferencia';
 import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-transferencia',
@@ -79,6 +81,7 @@ export class TransferenciaComponent implements OnInit {
     private _Activatedroute: ActivatedRoute
   ) {
     this.formTransferencia = FORM_TRANSFERENCIA_INTERNA;
+    // this.formReingreso = FORM_REINTEGRO;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -187,14 +190,17 @@ export class TransferenciaComponent implements OnInit {
         inscripcion.Periodo = this.periodo.Id;
 
         //todo: revisar este flujo
-        if (inscripcion.EstadoSolicitud) {
-          inscripcion.Estado = inscripcion.EstadoSolicitud
-        } else {
-          inscripcion.Estado = inscripcion.EstadoInscripcion
+        // if (inscripcion.EstadoSolicitud) {
+          // inscripcion.Estado = inscripcion.EstadoSolicitud;
+        // } else {
+        if (inscripcion.EstadoInscripcion) {
+          inscripcion.Estado = inscripcion.EstadoInscripcion.Nombre;
         }
-        // console.log(inscripcion.Estado)
+        console.log("Inscripcion recibida:        --------");
+        console.log(inscripcion.EstadoRecibo);
 
         if (inscripcion.EstadoRecibo === 'Pendiente pago') {
+          console.log("Entra a pendiente");
           inscripcion.Opcion = {
             icon: 'fa fa-arrow-circle-right fa-2x',
             label: 'Pagar',
@@ -202,6 +208,7 @@ export class TransferenciaComponent implements OnInit {
             disabled: false
           }
         } else if (inscripcion.EstadoRecibo === 'Pago') {
+          console.log("Entra a pago");
           inscripcion.Opcion = {
             icon: 'fa fa-pencil fa-2x',
             label: 'Inscribirme',
@@ -221,7 +228,8 @@ export class TransferenciaComponent implements OnInit {
           icon: 'fa fa-download fa-2x',
           label: 'Descargar',
           class: 'btn btn-primary',
-          documento: ''
+          documento: '',
+          disabled: false
         }
 
         if (inscripcion.SolicitudFinalizada) {
@@ -248,7 +256,8 @@ export class TransferenciaComponent implements OnInit {
 
   recuperarEstadoRecibos(id: number) {
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.get('transferencia/estado-recibos/' + id).subscribe((response: any) => {
+      this.inscripcionMidService.get('transferencia/estado-recibos/' + id).subscribe({
+        next: (response: any) => {
         // console.log(response)
         if (response !== null && response.Status == '400') {
           this.popUpManager.showErrorToast(this.translate.instant('inscripcion.error'));
@@ -260,11 +269,12 @@ export class TransferenciaComponent implements OnInit {
           resolve(response.Data)
         }
       },
-        (error: any) => {
+      error: (error: any) => {
           console.error(error);
           this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
           reject(false);
-        });
+        }
+      });
     });
   }
 
@@ -541,6 +551,87 @@ export class TransferenciaComponent implements OnInit {
 
   }
 
+  recuperarCalendarioproyecto(idNivel: number, idPeriodo: number) {
+    return new Promise( (resolve, reject) => {
+      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + idNivel + '&id-periodo=' + idPeriodo ).subscribe({
+        next: (response: any) => {
+          const r = <any>response;
+          if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
+            resolve(<Array<any>>response.Data);
+          } else {
+            this.popUpManager.showAlert(
+              this.translate.instant('GLOBAL.info'),
+              this.translate.instant('calendario.sin_proyecto_curricular')
+            );
+          }
+        },
+        error: (error: any) => {
+          console.error(error);
+          this.popUpManager.showAlert(
+            this.translate.instant('GLOBAL.info'),
+            this.translate.instant('calendario.sin_proyecto_curricular')
+          );
+          reject(false);
+        }
+      });
+    } );
+  }
+
+  async validarFechas(){
+    const tiempoActual = await firstValueFrom(
+      this.inscripcionMidService.get('time_bog')
+    );
+    const fechaActual = new Date(tiempoActual.Data.BOG);
+
+    let rawProyecto = this.dataTransferencia.ProyectoCurricular?.Id;
+    if (!rawProyecto) {
+      console.error("ProyectoCurricular no está definido");
+      return;
+    }
+    const proyecto = parseInt(rawProyecto.toString(), 10);
+    if ( isNaN(proyecto) ){
+      console.error("Fallo en obtención del proyecto: ", proyecto);
+    }
+
+    let periodo = this.periodo['Id'];
+    const resCalendario:any = await this.recuperarCalendarioproyecto(this.dataTransferencia.TipoInscripcion!.NivelId, periodo);
+
+    if (resCalendario === null || resCalendario.length === 0 || resCalendario === undefined) {
+      this.popUpManager.showAlert(
+        this.translate.instant('GLOBAL.info'),
+        this.translate.instant('inscripcion.no_proyectos_disponibles')
+      );
+      return;
+    }
+    this.inscripcionProjects = resCalendario;
+
+    let fechaFinInsc: Date | undefined;
+    this.inscripcionProjects.forEach( (proy) => {
+      if (proy.ProyectoId === proyecto && proy.Evento != null) {
+        proy.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: string; }) => {
+          if (ev.Pago === false && ev.CodigoAbreviacion === "INSCR"){
+            fechaFinInsc = new Date(
+              ev.FechaFinEvento.replace('Z', '-05:00')
+            );
+          }
+        });
+      }
+    });
+
+    // console.log(fechaActual);
+    // console.log(fechaFinInsc);
+
+    if (fechaFinInsc && fechaActual < fechaFinInsc) {
+      this.generarRecibo();
+    } else {
+      this.popUpManager.showAlert(
+        this.translate.instant('GLOBAL.info'),
+        this.translate.instant('inscripcion.no_proyectos_disponibles')
+      );
+      return;
+    }
+  }
+
   generarRecibo() {
     this.popUpManager.showConfirmAlert(this.translate.instant('inscripcion.seguro_inscribirse')).then(
       async ok => {
@@ -573,7 +664,7 @@ export class TransferenciaComponent implements OnInit {
     );
   }
 
-  generar_inscripcion() {
+  async generar_inscripcion() {
       const inscripcion = {
         Id: parseInt(this.info_info_persona.NumeroIdentificacion, 10),
         Nombre: `${this.info_info_persona.PrimerNombre} ${this.info_info_persona.SegundoNombre}`,
@@ -590,53 +681,66 @@ export class TransferenciaComponent implements OnInit {
         FechaPago: '',
       };
 
+      this.inscripcionProjects.forEach(async proyecto => {
+        if (proyecto.ProyectoId === inscripcion.ProgramaAcademicoId && proyecto.Evento != null) {
+          proyecto.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput;}) => {
+            if (ev.Pago === false && ev.CodigoAbreviacion === "REIN") {
+              inscripcion.FechaPago = moment(
+                ev.FechaFinEvento, 'YYYY-MM-DD'
+              ).format('DD/MM/YYYY');
+            }
+          });
 
-      let periodo = localStorage.getItem('IdPeriodo');
-      //TODO: parametros
-      
-      this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + this.dataTransferencia.TipoInscripcion!.NivelId + '&id-periodo=' + periodo).subscribe(
-        (response: any) => {
-          if (response !== null && response.Success == true) {
-            this.inscripcionProjects = response.Data;  
-            // console.log(this.inscripcionProjects)          
-            this.inscripcionProjects.forEach(proyecto => {
-              if (proyecto.ProyectoId === this.dataTransferencia.ProyectoCurricular!.Id && proyecto.Evento != null) {
-                inscripcion.FechaPago = moment(proyecto.Evento.FechaFinEvento, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                // console.log(inscripcion.FechaPago)
-                this.inscripcionMidService.post('inscripciones/nueva', inscripcion).subscribe(
-                  (response: any) => {
-                    if (response.Status == '200') {
-                      this.listadoSolicitudes = true;
+          console.log("Genera una nueva inscripción correcta");
+          console.log(inscripcion)
 
-                      this.clean();
+          // const resInscripcion: any = await this.inscripcionNuevaPost(inscripcion);
+          // if (resInscripcion){
+          //   this.listadoSolicitudes = true;
+          //   this.clean();
+          //   this.loadDataTercero(this.process);
 
-                      this.loadDataTercero(this.process);
-
-                      this.popUpManager.showSuccessAlert(this.translate.instant('recibo_pago.generado'));
-                    } else if (response.Status == '204') {
-                      this.popUpManager.showErrorAlert(this.translate.instant('recibo_pago.recibo_duplicado'));
-                    } else if (response.Status == '400') {
-                      this.popUpManager.showErrorToast(this.translate.instant('recibo_pago.no_generado'));
-                    }
-
-                    const resEstado: any = this.actualizarEstadoInscripcion(inscripcion);
-                    if (Object.keys(resEstado).length == 0) {
-                      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_error'));
-                    } else {
-                      this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
-                    }
-
-
-                  },
-                  (error: HttpErrorResponse) => {
-                    this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
-                  },
-                );
-              }
-            });
-          }
+          //   const resEstado: any = this.actualizarEstadoInscripcion(inscripcion);
+          //   if (Object.keys(resEstado).length == 0) {
+          //     this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_error'));
+          //   } else {
+          //     this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
+          //   }
+          // }
         }
-      );
+      });
+  }
+
+  inscripcionNuevaPost(body:any) {
+    return new Promise( (resolve, reject) => {
+      this.inscripcionMidService.post('inscripciones/nueva', body).subscribe({
+        next: (response: any) => {
+          if (response.Status == 200 && response.Success) {
+            this.popUpManager.showSuccessAlert(
+              this.translate.instant('recibo_pago.generado')
+            );
+            resolve(true);
+          } else if (response.Status == 204) {
+            this.popUpManager.showErrorAlert(
+              this.translate.instant('recibo_pago.recibo_duplicado')
+            );
+            resolve(false);
+          } else if (response.Status == 200 && !response.Success) {
+            this.popUpManager.showErrorAlert(response.Message);
+            reject(false); 
+          } else if (response.Status == 400 ) {
+            this.popUpManager.showErrorToast(
+              this.translate.instant('recibo_pago.no_generado')
+            );
+            resolve(false);
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error(error);
+          this.popUpManager.showErrorToast(this.translate.instant(`ERROR.${error.status}`));
+        }
+      });
+    } );
   }
 
   clean() {

@@ -44,6 +44,11 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.estado_recibo" | translate}} </th>
               <td mat-cell *matCellDef="let row"> {{row.EstadoRecibo}} </td>
             </ng-container>
+
+            <ng-container matColumnDef="descargar">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.estado_recibo" | translate}} </th>
+              <td mat-cell *matCellDef="let row"> {{row.Descargar}} </td>
+            </ng-container>
           
             <ng-container matColumnDef="acciones" stickyEnd>
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"GLOBAL.acciones" | translate}} </th>
@@ -94,7 +99,7 @@
       <button mat-flat-button color="warn" type="button" (click)="clean(); listadoSolicitudes = true">
         {{ "GLOBAL.cancelar" | translate }}
       </button>
-      <button mat-flat-button color="accent" (click)="generarRecibo()" *ngIf="recibo">
+      <button mat-flat-button color="accent" (click)="validarFechas()" *ngIf="recibo">
         {{ "derechos_pecuniarios.generar_recibo" | translate }}
       </button>
     </div>
