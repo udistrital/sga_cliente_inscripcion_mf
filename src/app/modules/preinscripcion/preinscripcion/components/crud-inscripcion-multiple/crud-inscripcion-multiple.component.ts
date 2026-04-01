@@ -640,25 +640,25 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     if ( isNaN(proyecto) ){
       console.error("Fallo en obtención del proyecto: ", proyecto);
     }
-    let fechaFinInsc: Date | undefined;
-    this.inscripcionProjects.forEach( (proy) => {
-      if (proy.ProyectoId === proyecto && proy.Evento != null) {
-        proy.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: string; }) => {
-          if (ev.Pago === false && ev.CodigoAbreviacion === "INSCR"){
-            fechaFinInsc = new Date(
-              ev.FechaFinEvento.replace('Z', '-05:00')
-            );
-          }
-        });
-      }
-    });
 
-    if (fechaFinInsc && fechaActual < fechaFinInsc) {
+    const evento = this.inscripcionProjects
+      .find( (p:any) => p.ProyectoId === proyecto )?.Evento
+      ?.find( (ev:any) => !ev.Pago && ev.CodigoAbreviacion === "INSCR" );
+    const fechaFinInsc = evento
+      ? new Date (evento.FechaFinEvento.replace('Z', '-05:00'))
+      : undefined;
+    if (fechaFinInsc) {
+      fechaFinInsc.setHours(23, 59, 59, 999);
+    }
+
+    // console.log(fechaActual);
+    // console.log(fechaFinInsc);
+    if (fechaFinInsc && fechaActual <= fechaFinInsc) {
       this.loadTipoInscripcion();
     } else {
       this.popUpManager.showAlert(
         this.translate.instant('GLOBAL.info'),
-        this.translate.instant('inscripcion.no_proyectos_disponibles')
+        this.translate.instant('inscripcion.no_fechas_inscripcion')
       );
       this.showTipoInscripcion = false;
       return
@@ -873,30 +873,35 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       TipoCupo: this.tipoCupo,
     };
 
-    for (const proyecto of this.inscripcionProjects) {
-      if (proyecto.ProyectoId === proyectoId && proyecto.Evento != null) {
-        proyecto.Evento.forEach((ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput; }) => {
-          if (ev.Pago === true && ev.CodigoAbreviacion === "INSCR"){
-            inscripcion.FechaPago = moment(
-              ev.FechaFinEvento,'YYYY-MM-DD'
-            ).format('DD/MM/YYYY');
-          }
-        });
-        // console.log("Genera una nueva inscripción correcta");
-        // console.log(inscripcion);
-        const resInscripcion: any = await this.inscripcionNuevaPost(
-          inscripcion
-        );
-        if (resInscripcion) {
-          this.showProyectoCurricular = false;
-          this.showPeriodo = false;
-          this.showTipoInscripcion = false;
-          this.showInfo = false;
-          this.showNew = false;
-          this.preinscripcionForm.reset();
-          this.loadInfoInscripcion();
-        }
-      }
+    const eventoPago = this.inscripcionProjects
+      .find( (p:any) => p.ProyectoId === proyectoId )?.Evento
+      ?.find( (ev:any) => ev.Pago && ev.CodigoAbreviacion === "INSCR" );
+    
+    if (eventoPago) {
+      inscripcion.FechaPago = moment(
+        eventoPago.FechaFinEvento,'YYYY-MM-DD'
+      ).format('DD/MM/YYYY');
+    } else {
+      this.popUpManager.showAlert(
+        this.translate.instant('GLOBAL.info'),
+        this.translate.instant('inscripcion.no_fechas_pago')
+      );
+      return;
+    }
+
+    // console.log("Genera una nueva inscripción correcta");
+    // console.log(inscripcion);
+    const resInscripcion: any = await this.inscripcionNuevaPost(
+      inscripcion
+    );
+    if (resInscripcion) {
+      this.showProyectoCurricular = false;
+      this.showPeriodo = false;
+      this.showTipoInscripcion = false;
+      this.showInfo = false;
+      this.showNew = false;
+      this.preinscripcionForm.reset();
+      this.loadInfoInscripcion();
     }
   }
 
@@ -967,38 +972,36 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       );
 
       this.recibo_pago = new ReciboPago();
-      this.recibo_pago.NombreDelAspirante =
-        this.info_info_persona.PrimerNombre + ' ' +
-        this.info_info_persona.SegundoNombre + ' ' +
-        this.info_info_persona.PrimerApellido + ' ' +
-        this.info_info_persona.SegundoApellido;
+      this.recibo_pago.NombreDelAspirante = [
+          this.info_info_persona.PrimerNombre,
+          this.info_info_persona.SegundoNombre,
+          this.info_info_persona.PrimerApellido,
+          this.info_info_persona.SegundoApellido
+        ].filter(Boolean).join(' ');
       this.recibo_pago.DocumentoDelAspirante =this.info_info_persona.NumeroIdentificacion;
       this.recibo_pago.Periodo = this.periodo.Nombre;
       this.recibo_pago.ProyectoAspirante = data['ProgramaAcademicoId'];
       this.recibo_pago.Comprobante = data['ReciboInscripcion'][0];
 
-      if (this.selectedLevel === 1) {
-        this.parametro = '13';
-      } else if (this.selectedLevel === 2) {
-        this.parametro = '12';
-      }
+      const nivelMap: Record<number, string> = {
+        1: '13',
+        2: '12'
+      };
+      this.parametro = nivelMap[this.selectedLevel];
 
       const responseCalendario: any = await this.recuperarCalendarioProyecto(
         this.selectedLevel, this.periodo.Id
       );   
   
       this.inscripcionProjects = responseCalendario;
-      this.inscripcionProjects.forEach((proyecto) => {
-        if ( proyecto.ProyectoId === this.selectedProject && proyecto.Evento != null ) {
-          proyecto.Evento.forEach((ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput; }) => {
-            if (ev.Pago === true && ev.CodigoAbreviacion === "INSCR"){
-              this.recibo_pago.Fecha_pago = moment(
-                ev.FechaFinEvento,'YYYY-MM-DD'
-              ).format('DD/MM/YYYY');
-            }
-          });
-        }
-      });
+      const eventoPago = this.inscripcionProjects
+        .find((pr: any) => pr.ProyectoId === this.selectedProject)?.Evento
+        ?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'INSCR');
+
+      if (eventoPago) {
+        this.recibo_pago.Fecha_pago = moment(eventoPago.FechaFinEvento, 'YYYY-MM-DD')
+          .format('DD/MM/YYYY');
+      }
 
       const parametro = await this.buscarParametrosPeriodo(this.parametro, this.periodo.Year);
       this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre;

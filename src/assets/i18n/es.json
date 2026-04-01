@@ -717,6 +717,8 @@
         "inscripcion_general": "Información general",
         "generar_matricula": "Generar recibo de matrícula",
         "no_fechas_inscripcion": "El proyecto curricular seleccionado no presenta fechas de inscripción",
+        "no_fechas_pago": "El proyecto curricular seleccionado no presenta fechas de pago establecidas",
+        "no_codigos_estudiante":"No se encuentran codigos del estudiante",
         "persona_ya_existe": "¡El sistema SGA ha encontrado información personal relacionada con el número de documento diligenciado!",
         "info_persona_ya_existe": "Con el fin de evitar duplicado de información se utilizarán los datos encontrados para continuar el proceso de inscripción.\nSi considera que los datos presentados no coinciden debe realizar una solicitud formal a la Oficina Asesora de Tecnologías e Información quien revisará la veracidad de los datos.",
         "no_hay_programa_evento": "El programa aún no ha sido asignado a un calendario o aún no se han definido fechas para la inscripción.",
