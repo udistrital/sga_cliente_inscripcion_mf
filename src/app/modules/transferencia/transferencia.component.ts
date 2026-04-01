@@ -7,8 +7,8 @@ import * as moment from 'moment';
 import * as momentTimezone from 'moment-timezone';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
+import { ReciboPago } from 'src/app/models/inscripcion/recibo_pago';
 import { TransferenciaInterna } from 'src/app/models/inscripcion/transferencia_interna';
-import { Reingreso } from 'src/app/models/inscripcion/reingreso';
 import { Periodo } from 'src/app/models/periodo/periodo';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
@@ -23,7 +23,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
-import { FORM_TRANSFERENCIA_INTERNA, FORM_REINTEGRO } from './forms-transferencia';
+import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -47,6 +47,7 @@ export class TransferenciaComponent implements OnInit {
   sub: any;
   process: string = '';
   info_info_persona!: InfoPersona;
+  recibo_pago: ReciboPago = new ReciboPago();
   inscripcionProjects!: any[];
   proyectosCurriculares!: any[];
   codigosEstudiante!: any[];
@@ -64,6 +65,9 @@ export class TransferenciaComponent implements OnInit {
     CodigoEstudiante: null,
     ProyectoCurricular: null,
   };
+  recibo_generado: any;
+
+  private dialogoPagadorService: any;
 
   constructor(
     private translate: TranslateService,
@@ -80,8 +84,8 @@ export class TransferenciaComponent implements OnInit {
     private router: Router,
     private _Activatedroute: ActivatedRoute
   ) {
+    this.dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
     this.formTransferencia = FORM_TRANSFERENCIA_INTERNA;
-    // this.formReingreso = FORM_REINTEGRO;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -188,27 +192,32 @@ export class TransferenciaComponent implements OnInit {
         inscripcion.IdPrograma = inscripcion.Programa;
         inscripcion.Programa = proyecto.Nombre;
         inscripcion.Periodo = this.periodo.Id;
+        inscripcion.AnioRecibo = auxRecibo;
 
-        //todo: revisar este flujo
-        // if (inscripcion.EstadoSolicitud) {
-          // inscripcion.Estado = inscripcion.EstadoSolicitud;
-        // } else {
         if (inscripcion.EstadoInscripcion) {
           inscripcion.Estado = inscripcion.EstadoInscripcion.Nombre;
         }
-        console.log("Inscripcion recibida:        --------");
-        console.log(inscripcion.EstadoRecibo);
+        // console.log("Inscripcion recibida:        --------");
+        // console.log(inscripcion);
+
+        inscripcion.Descargar = {
+          icon: 'fa fa-download fa-2x',
+          label: 'Descargar',
+          class: 'btn btn-primary',
+          documento: '',
+          disabled: true
+        }
 
         if (inscripcion.EstadoRecibo === 'Pendiente pago') {
-          console.log("Entra a pendiente");
           inscripcion.Opcion = {
             icon: 'fa fa-arrow-circle-right fa-2x',
             label: 'Pagar',
             class: "btn btn-primary",
             disabled: false
           }
+          inscripcion.Descargar.disabled = false;
+
         } else if (inscripcion.EstadoRecibo === 'Pago') {
-          console.log("Entra a pago");
           inscripcion.Opcion = {
             icon: 'fa fa-pencil fa-2x',
             label: 'Inscribirme',
@@ -224,25 +233,16 @@ export class TransferenciaComponent implements OnInit {
           }
         }
 
-        inscripcion.Descargar = {
-          icon: 'fa fa-download fa-2x',
-          label: 'Descargar',
-          class: 'btn btn-primary',
-          documento: '',
-          disabled: false
-        }
-
-        if (inscripcion.SolicitudFinalizada) {
+        if (inscripcion.EstadoInscripcion.Nombre === 'INSCRITO' || inscripcion.EstadoInscripcion.Nombre === 'ADMITIDO') {
           inscripcion.Descargar = {
             icon: 'fa fa-download fa-2x',
             label: 'Descargar',
             class: 'btn btn-primary',
-            documento: inscripcion.VerRespuesta.DocRespuesta,
-            disabled: false
+            // documento: inscripcion.VerRespuesta.DocRespuesta,
+            documento: '',
+            disabled: true
           }
           inscripcion.Opcion.disabled = true;
-        } else {
-          inscripcion.Descargar.disabled = true;
         }
 
         dataInfo.push(inscripcion);
@@ -394,8 +394,8 @@ export class TransferenciaComponent implements OnInit {
 
   cargarPeriodo() {
     return new Promise((resolve, reject) => {
-      this.parametrosService.get('periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=1')
-        .subscribe(res => {
+      this.parametrosService.get('periodo?query=Activo:true,CodigoAbreviacion:PA&sortby=Id&order=desc&limit=1').subscribe({
+        next: (res: any) => {
           const r = <any>res;
           if (res !== null && r.Status == '200') {
             this.periodo = <any>res['Data'][0];
@@ -407,17 +407,18 @@ export class TransferenciaComponent implements OnInit {
             resolve(this.periodo);
           }
         },
-          (error: HttpErrorResponse) => {
+        error:  (error: HttpErrorResponse) => {
             console.error(error);
             reject([]);
-          });
+        }
+      });
     });
   }
 
   loadPeriodo() {
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.get('transferencia/consultar-periodo').subscribe(
-        (response: any) => {
+      this.inscripcionMidService.get('transferencia/consultar-periodo').subscribe({
+        next: (response: any) => {
           if (response.Success) {
             this.formTransferencia.campos.forEach((campo: any) => {
               if (campo.etiqueta === 'select') {
@@ -442,12 +443,12 @@ export class TransferenciaComponent implements OnInit {
           }
           
         },
-        error => {
+        error: error => {
           console.error(error);
           this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
           reject(error);
         },
-      );
+      });
     });
   }
 
@@ -522,24 +523,33 @@ export class TransferenciaComponent implements OnInit {
 
   loadParams(calendarioId: any) {
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.get('transferencia/consultar-parametros/?id-calendario='+calendarioId+'&persona-id='+ this.uid).subscribe(
-        (response: any) => {
+      this.inscripcionMidService.get('transferencia/consultar-parametros/?id-calendario='+calendarioId+'&persona-id='+ this.uid).subscribe({
+        next: (response: any) => {
+          // console.log(response);
           if (response.Success) {
             resolve(response);
           } else {
             if (response.Message == 'No se encuentran proyectos') {
               this.popUpManager.showErrorAlert(this.translate.instant('admision.error_no_proyecto'));
+            } else if (response.Status == 404) {
+              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.no_codigos_estudiante'));
             } else {
               this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
             }
             reject();
           }
         },
-        error => {
-          this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
+        error: (error: any) => {
+          if (error.Message == 'No se encuentran proyectos') {
+              this.popUpManager.showErrorAlert(this.translate.instant('admision.error_no_proyecto'));
+            } else if (error.Status == 404) {
+              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.no_codigos_estudiante'));
+            } else {
+              this.popUpManager.showErrorToast(this.translate.instant('admision.error'));
+            }
           reject(error);
         },
-      );
+      });
     });
   }
 
@@ -551,7 +561,7 @@ export class TransferenciaComponent implements OnInit {
 
   }
 
-  recuperarCalendarioproyecto(idNivel: number, idPeriodo: number) {
+  recuperarCalendarioProyecto(idNivel: number, idPeriodo: number) {
     return new Promise( (resolve, reject) => {
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + idNivel + '&id-periodo=' + idPeriodo ).subscribe({
         next: (response: any) => {
@@ -577,6 +587,31 @@ export class TransferenciaComponent implements OnInit {
     } );
   }
 
+   // funcion para obtener parámetros de costos pecuniarios, devuelve vector
+  async buscarParametrosPeriodo (parametroInscripcion: string ,anioConcepto: number): Promise<any[]> {
+    // máximo dos intentos hacia años anteriores
+    for (let intento=0; intento <= 2; intento ++){
+      let anioActual = anioConcepto - intento;
+      // revisa parametros hasta 2024, no tiene sentido ir más atras
+      if (anioActual<2024){ break }
+
+      try {
+        const parametros = await firstValueFrom(
+           this.parametrosService.get(
+            `parametro_periodo?query=ParametroId.TipoParametroId.Id:2,ParametroId.CodigoAbreviacion:${parametroInscripcion},PeriodoId.Year:${anioActual},PeriodoId.CodigoAbreviacion:VG`
+          )
+        );
+
+        if (parametros?.Data?.length > 0){
+          return parametros.Data;
+        }
+      } catch (error) {
+        console.error(`Error consultando ${anioActual}`, error);
+      }
+    }
+    throw new Error(this.translate.instant('ERROR.general'));
+  }
+
   async validarFechas(){
     const tiempoActual = await firstValueFrom(
       this.inscripcionMidService.get('time_bog')
@@ -594,34 +629,30 @@ export class TransferenciaComponent implements OnInit {
     }
 
     let periodo = this.periodo['Id'];
-    const resCalendario:any = await this.recuperarCalendarioproyecto(this.dataTransferencia.TipoInscripcion!.NivelId, periodo);
+    const resCalendario:any = await this.recuperarCalendarioProyecto(this.dataTransferencia.TipoInscripcion!.NivelId, periodo);
 
     if (resCalendario === null || resCalendario.length === 0 || resCalendario === undefined) {
       this.popUpManager.showAlert(
         this.translate.instant('GLOBAL.info'),
-        this.translate.instant('inscripcion.no_proyectos_disponibles')
+        this.translate.instant('inscripcion.no_fechas_inscripcion')
       );
       return;
     }
     this.inscripcionProjects = resCalendario;
 
-    let fechaFinInsc: Date | undefined;
-    this.inscripcionProjects.forEach( (proy) => {
-      if (proy.ProyectoId === proyecto && proy.Evento != null) {
-        proy.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: string; }) => {
-          if (ev.Pago === false && ev.CodigoAbreviacion === "INSCR"){
-            fechaFinInsc = new Date(
-              ev.FechaFinEvento.replace('Z', '-05:00')
-            );
-          }
-        });
-      }
-    });
-
+    const evento = this.inscripcionProjects
+      .find( (p:any) => p.ProyectoId === proyecto )?.Evento
+      ?.find( (ev:any) => !ev.Pago && ev.CodigoAbreviacion === "REIN" );
+    const fechaFinInsc = evento
+      ? new Date (evento.FechaFinEvento.replace('Z', '-05:00'))
+      : undefined;
+    if (fechaFinInsc) {
+      fechaFinInsc.setHours(23, 59, 59, 999);
+    }
     // console.log(fechaActual);
     // console.log(fechaFinInsc);
 
-    if (fechaFinInsc && fechaActual < fechaFinInsc) {
+    if (fechaFinInsc && fechaActual <= fechaFinInsc) {
       this.generarRecibo();
     } else {
       this.popUpManager.showAlert(
@@ -681,34 +712,39 @@ export class TransferenciaComponent implements OnInit {
         FechaPago: '',
       };
 
-      this.inscripcionProjects.forEach(async proyecto => {
-        if (proyecto.ProyectoId === inscripcion.ProgramaAcademicoId && proyecto.Evento != null) {
-          proyecto.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: moment.MomentInput;}) => {
-            if (ev.Pago === false && ev.CodigoAbreviacion === "REIN") {
-              inscripcion.FechaPago = moment(
-                ev.FechaFinEvento, 'YYYY-MM-DD'
-              ).format('DD/MM/YYYY');
-            }
-          });
+      const eventoPago = this.inscripcionProjects
+        .find( (pr: any) => pr.ProyectoId === inscripcion.ProgramaAcademicoId )?.Evento
+        ?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'REIN');
 
-          console.log("Genera una nueva inscripción correcta");
-          console.log(inscripcion)
+      if (eventoPago){
+        inscripcion.FechaPago = moment(
+          eventoPago.FechaFinEvento, 'YYYY-MM-DD'
+        ).format('DD/MM/YYYY');
+      } else {
+        this.popUpManager.showAlert(
+          this.translate.instant('GLOBAL.info'),
+          this.translate.instant('inscripcion.no_fechas_pago')
+        );
+        return;
+      }
 
-          // const resInscripcion: any = await this.inscripcionNuevaPost(inscripcion);
-          // if (resInscripcion){
-          //   this.listadoSolicitudes = true;
-          //   this.clean();
-          //   this.loadDataTercero(this.process);
+      // console.log("Genera una nueva inscripción correcta");
+      // console.log(inscripcion)
 
-          //   const resEstado: any = this.actualizarEstadoInscripcion(inscripcion);
-          //   if (Object.keys(resEstado).length == 0) {
-          //     this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_error'));
-          //   } else {
-          //     this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
-          //   }
-          // }
+      const resInscripcion: any = await this.inscripcionNuevaPost(inscripcion);
+      if (resInscripcion){
+        this.listadoSolicitudes = true;
+        this.clean();
+        this.loadDataTercero(this.process);
+
+        const resEstado: any = this.actualizarEstadoInscripcion(inscripcion);
+        if (Object.keys(resEstado).length == 0) {
+          this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_error'));
+        } else {
+          this.popUpManager.showSuccessAlert(this.translate.instant('legalizacion_admision.cambio_estado_admitido_observaciones_ok'));
         }
-      });
+      }
+    
   }
 
   inscripcionNuevaPost(body:any) {
@@ -761,7 +797,27 @@ export class TransferenciaComponent implements OnInit {
     });
   }
 
-  abrirPago(data: any) {
+  async abrirPago(data: any) {
+
+    await this.llenadoReciboPago(data);
+
+    const datosFormulario = {
+      accion: 'pagar',
+      persona_id: this.info_info_persona.Id,
+      info_recibo: this.recibo_pago,
+      anioRecibo: data.AnioRecibo,
+      tipo_usuario: 1,
+      info_info_persona: this.info_info_persona
+    }
+
+    // console.log("Datos recibidos por boton pagar:");
+    // console.log(datosFormulario);
+
+    const result = await this.abrirDialogoPagador(datosFormulario);
+    if (!result || !result.continuar) {
+      return;
+    }
+
     this.parametros_pago.NUM_DOC_IDEN = this.info_info_persona.NumeroIdentificacion;
     this.parametros_pago.REFERENCIA = data['Recibo'];
     this.parametros_pago.TIPO_DOC_IDEN = this.info_info_persona.TipoIdentificacion.CodigoAbreviacion;
@@ -776,17 +832,159 @@ export class TransferenciaComponent implements OnInit {
     }, 5000);
   }
 
-  descargarArchivo(data:any){
-    this.nuxeo.get([{ 'Id': data.VerRespuesta.DocRespuesta }]).subscribe(
-      (documentos) => {
-        const assignConfig = new MatDialogConfig();
-        assignConfig.width = '1300px';
-        assignConfig.height = '800px';
-        let aux = { ...documentos[0], observacion: data.VerRespuesta.Observacion, fecha: data.VerRespuesta.FechaEvaluacion, terceroResponsable: data.VerRespuesta.TerceroResponsable }
-        assignConfig.data = { documento: aux, observando: true }
-        const dialogo = this.dialog.open(DialogoDocumentosTransferenciasComponent, assignConfig);
+  async descargarArchivo(data:any){
+    if (this.info_info_persona != null && data.Estado !== 'Vencido'){
+      await this.llenadoReciboPago(data);
+
+        const datosFormulario = {
+          accion: 'descargar',
+          persona_id: this.info_info_persona.Id,
+          info_recibo: this.recibo_pago,
+          anioRecibo: data.AnioRecibo,
+          tipo_usuario: 1,
+          info_info_persona: this.info_info_persona
+        }
+
+        // console.log("Datos recibidos por boton descargar:");
+        // console.log(datosFormulario);
+
+        const result = await this.abrirDialogoPagador(datosFormulario);
+        if (!result || !result.continuar) {
+          return;
+        }
+
+        const responseRecibo: any = await firstValueFrom(
+          this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago)
+        );
+        if (!responseRecibo) {
+          console.error('Respuesta vacía del servicio de recibos');
+          this.popUpManager.showErrorToast(
+            this.translate.instant('recibo_pago.no_generado')
+          );
+          return;
+        }
+        if (!responseRecibo.Data) {
+          console.error('Campo Data no encontrado en la respuesta:', responseRecibo);
+          this.popUpManager.showErrorToast(
+            this.translate.instant('recibo_pago.no_generado')
+          );
+          return;
+        }
+        // Verificar que Data no esté vacío
+        if (!responseRecibo.Data.trim()) {
+          console.error('Data está vacío');
+          this.popUpManager.showErrorToast(
+            this.translate.instant('recibo_pago.no_generado')
+          );
+          return;
+        }
+        const reciboData = new Uint8Array(
+          atob(responseRecibo.Data)
+            .split('')
+            .map((char) => char.charCodeAt(0))
+        );
+        this.recibo_generado = window.URL.createObjectURL(
+          new Blob([reciboData], { type: 'application/pdf' })
+        );
+        window.open(this.recibo_generado);
+    }
+
+    // this.nuxeo.get([{ 'Id': data.VerRespuesta.DocRespuesta }]).subscribe(
+    //   (documentos) => {
+    //     const assignConfig = new MatDialogConfig();
+    //     assignConfig.width = '1300px';
+    //     assignConfig.height = '800px';
+    //     let aux = { ...documentos[0], observacion: data.VerRespuesta.Observacion, fecha: data.VerRespuesta.FechaEvaluacion, terceroResponsable: data.VerRespuesta.TerceroResponsable }
+    //     assignConfig.data = { documento: aux, observando: true }
+    //     const dialogo = this.dialog.open(DialogoDocumentosTransferenciasComponent, assignConfig);
+    //   }
+    // );
+  }
+
+  async abrirDialogoPagador(data: any): Promise<any> {
+    try {
+      // Obtener el servicio del core_mf_cliente que está expuesto globalmente
+      const dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
+      
+      if (!dialogoPagadorService) {
+        console.error('Servicio DialogoPagadorService no disponible en window[core-mf]');
+        console.warn('Verificar que core_mf_cliente esté correctamente cargado');
+        return null;
       }
-    );
+    
+      const dialogRef = dialogoPagadorService.openDialogoPagador(data);
+
+      dialogRef.afterOpened().subscribe(() => {
+        // Forzar detección de cambios
+        dialogRef.componentInstance.cdr.detectChanges();
+        if (dialogRef.componentInstance.selects) {
+          dialogRef.componentInstance.selects.forEach((select: any) => select.updatePosition());
+        }
+      });
+
+      // Manejo de resultado cuando el diálogo se cierra
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      console.log('Diálogo cerrado con resultado:', result);
+
+      return result;
+      
+    } catch (error) {
+      console.error('Error al abrir el diálogo de pagador:', error);
+      return null;
+    }
+  }
+
+  async llenadoReciboPago (data: any) {
+    if (this.recibo_pago.Comprobante === data.Recibo && this.recibo_pago.ProyectoAspirante === data.Programa){
+      // se trata del mismo recibo
+      // console.log("Mismo recibo, no se hace nada");
+      return;
+    } else {
+      // console.log("Diferente, se llenan datos en momeria");
+      this.recibo_pago = new ReciboPago();
+        this.recibo_pago.NombreDelAspirante = [
+          this.info_info_persona.PrimerNombre,
+          this.info_info_persona.SegundoNombre,
+          this.info_info_persona.PrimerApellido,
+          this.info_info_persona.SegundoApellido
+        ].filter(Boolean).join(' ');
+        this.recibo_pago.DocumentoDelAspirante =this.info_info_persona.NumeroIdentificacion;
+        this.recibo_pago.Periodo = this.periodo.Nombre;
+        this.recibo_pago.ProyectoAspirante = data.Programa;
+        this.recibo_pago.Comprobante = data.Recibo;
+
+        const responseCalendario: any = await this.recuperarCalendarioProyecto(
+          data.Nivel, this.periodo.Id
+        );
+
+        const eventoPago = responseCalendario
+        .find((pr: any) => pr.ProyectoId === data.IdPrograma)?.Evento
+        ?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'REIN');
+
+        if (eventoPago) {
+          this.recibo_pago.Fecha_pago = moment(eventoPago.FechaFinEvento, 'YYYY-MM-DD')
+            .format('DD/MM/YYYY');
+        } else {
+          this.popUpManager.showAlert(
+            this.translate.instant('GLOBAL.info'),
+            this.translate.instant('inscripcion.no_fechas_pago')
+          );
+          return;
+        }
+
+
+        const nivelMap: Record<number, string> = {
+          1: '13',
+          2: '12'
+        };
+        const parametro_nivel = nivelMap[data.Nivel];
+
+        const parametro = await this.buscarParametrosPeriodo(parametro_nivel, this.periodo.Year);
+        this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre + ' - ' + (data.Concepto).toUpperCase();
+        const valor = JSON.parse(parametro[0].Valor);
+        this.recibo_pago.ValorDerecho = valor.Costo;
+        return;
+    }
   }
 
   solicitar(data:any){
