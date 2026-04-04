@@ -108,7 +108,7 @@ export let FORM_FORMACION_ACADEMICA = {
       placeholder_i18n: 'programa_academico',
       placeholder_i18n_2: 'programa_academico_autocomplete',
       path: environment.PARAMETROS_SERVICE,
-      query: "parametro?query=Nombre__icontains:ROLE_TEXT_HERE,TipoParametroId__Id:60&limit=0",
+      query: "parametro?query=Nombre__icontains:ROLE_TEXT_HERE,TipoParametroId__CodigoAbreviacion:PROACACO&limit=0",
       keyToFilter: 'ROLE_TEXT_HERE',
       requerido: true,
       tipo: 'text',
