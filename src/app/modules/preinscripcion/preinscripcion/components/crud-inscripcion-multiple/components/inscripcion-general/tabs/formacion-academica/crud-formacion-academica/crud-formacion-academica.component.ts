@@ -145,6 +145,8 @@ export class CrudFormacionAcademicaComponent implements OnInit{
   }
   
   getEvento(event:any) {
+    // console.log("Entra a evento");
+    // console.log(event);
     switch (event.name) {
       case "selected_value_autocomplete_Buscador":
         if(event.value != null){
@@ -177,10 +179,20 @@ export class CrudFormacionAcademicaComponent implements OnInit{
           }
           
         }
-        // if (event.nombre == "ProgramaAcademico" && event.noOpciones) {
-          
-          // }
+
+    if (event.nombre == "ProgramaAcademico" && event.noOpciones) {
+      this.popUpManager.showPopUpGeneric(this.translate.instant('GLOBAL.programa_academico_no_encontrado'),this.translate.instant('GLOBAL.crear_programa_academico'), "info", true).then(
+        accion => {
+          if (accion.value) {
+            this.nuevoPrograma = true;
+            this.NombreProgramaNuevo.setValue(event.valorBuscado.toUpperCase());
+            this.popUpManager.showAlert(this.translate.instant('GLOBAL.info'),this.translate.instant('inscripcion.alerta_veracidad_informacion'));
+          }
+        }
+      )
+    }
   }
+
   
   guardarProgramaNuevo(){
     if (this.NombreProgramaNuevo.valid) {
@@ -205,8 +217,8 @@ export class CrudFormacionAcademicaComponent implements OnInit{
       this.popUpManager.showConfirmAlert(this.translate.instant('GLOBAL.crear_programa_academico')).then(
         (Accion) => {
           if (Accion.value) {
-            this.parametrosService.post('parametro',ProgramaPost).subscribe(
-              (response:any) => {
+            this.parametrosService.post('parametro',ProgramaPost).subscribe({
+              next: (response:any) => {
                 if (response.Status == "201") {
                   this.popUpManager.showSuccessAlert(this.translate.instant('GLOBAL.programa_creado_ok'));
                   this.nuevoPrograma = false;
@@ -215,10 +227,10 @@ export class CrudFormacionAcademicaComponent implements OnInit{
                   this.popUpManager.showErrorAlert(this.translate.instant('GLOBAL.programa_creado_fail'))
                 }
               }, 
-              (error) => {
+              error: (error) => {
                 this.popUpManager.showErrorToast(this.translate.instant('ERROR.general'));
               }
-            );
+            });
           }
         }
       );

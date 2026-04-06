@@ -94,7 +94,7 @@
       <button mat-flat-button color="warn" type="button" (click)="clean(); listadoSolicitudes = true">
         {{ "GLOBAL.cancelar" | translate }}
       </button>
-      <button mat-flat-button color="accent" (click)="generarRecibo()" *ngIf="recibo">
+      <button mat-flat-button color="accent" (click)="validarFechas()" *ngIf="recibo">
         {{ "derechos_pecuniarios.generar_recibo" | translate }}
       </button>
     </div>
