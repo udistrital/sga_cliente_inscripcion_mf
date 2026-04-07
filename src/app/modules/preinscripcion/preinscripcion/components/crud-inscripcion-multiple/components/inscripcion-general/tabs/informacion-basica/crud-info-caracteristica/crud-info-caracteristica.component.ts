@@ -73,9 +73,9 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
     this.listService.findTipoDiscapacidad();
     this.listService.findFactorRh();
     this.listService.findGrupoSanguineo();
-    this.listService.findOrientacionSexual(),
-      this.listService.findIdentidadGenero(),
-      this.listService.findEstadoCivil();
+    // this.listService.findOrientacionSexual(),
+    //   this.listService.findIdentidadGenero(),
+    //   this.listService.findEstadoCivil();
     this.loadLists();
     // this.loadInfoCaracteristica();
   }
@@ -356,6 +356,8 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
           async (res) => {
             if (res !== null && res.status != '404') {
               this.datosGet = <InfoCaracteristicaGet>res.Data;
+              console.log("Datos complementarios recibidos:");
+              console.log(this.datosGet);
               this.info_info_caracteristica = <InfoCaracteristica>res.Data;
               this.info_info_caracteristica.Ente =
                 1 * this.info_caracteristica_id;
@@ -390,9 +392,9 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
                   ].opciones.filter((data: any) => data.Nombre === 'NO APLICA'),
                 ];
               }
-              this.formInfoCaracteristica.campos[
-                this.getIndexForm('EstadoCivil')
-              ].valor = [this.info_info_caracteristica.EstadoCivil];
+              // this.formInfoCaracteristica.campos[
+              //   this.getIndexForm('EstadoCivil')
+              // ].valor = [this.info_info_caracteristica.EstadoCivil];
               this.formInfoCaracteristica.campos[
                 this.getIndexForm('DepartamentoNacimiento')
               ].opciones = [
@@ -730,15 +732,15 @@ export class CrudInfoCaracteristicaComponent implements OnInit {
         ].opciones = list.listGrupoSanguineo[0];
         this.formInfoCaracteristica.campos[this.getIndexForm('Rh')].opciones =
           list.listFactorRh[0];
-        this.formInfoCaracteristica.campos[
-          this.getIndexForm('EstadoCivil')
-        ].opciones = list.listEstadoCivil[0];
-        this.formInfoCaracteristica.campos[
-          this.getIndexForm('IdentidadGenero')
-        ].opciones = list.listIdentidadGenero[0];
-        this.formInfoCaracteristica.campos[
-          this.getIndexForm('OrientacionSexual')
-        ].opciones = list.listOrientacionSexual[0];
+        // this.formInfoCaracteristica.campos[
+        //   this.getIndexForm('EstadoCivil')
+        // ].opciones = list.listEstadoCivil[0];
+        // this.formInfoCaracteristica.campos[
+        //   this.getIndexForm('IdentidadGenero')
+        // ].opciones = list.listIdentidadGenero[0];
+        // this.formInfoCaracteristica.campos[
+        //   this.getIndexForm('OrientacionSexual')
+        // ].opciones = list.listOrientacionSexual[0];
       });
   }
 }
