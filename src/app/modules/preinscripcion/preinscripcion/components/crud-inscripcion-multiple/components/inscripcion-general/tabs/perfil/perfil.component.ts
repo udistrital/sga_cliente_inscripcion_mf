@@ -11,7 +11,7 @@ import { ZipManagerService } from 'src/app/services/zip-manager.service';
 @Component({
   selector: 'ngx-perfil',
   templateUrl: './perfil.component.html',
-  styleUrls: ['./perfil.component.scss']
+  styleUrls: ['./perfil.component.scss'],
 })
 export class PerfilComponent implements OnInit {
   private onDestroy$ = new Subject<void>();
@@ -37,20 +37,20 @@ export class PerfilComponent implements OnInit {
 
   @Input('SuiteTags') SuiteTags: any;
 
-  @Input('reloadTagComponent') reloadTagComponent: string = "";
+  @Input('reloadTagComponent') reloadTagComponent: string = '';
 
   hasObservations: boolean = false;
   canUpdateDocument: boolean = false;
 
-  linkFolderWithTag:any = {
-    "Información Básica": "info_persona",
-    "Formación Académica": "formacion_academica",
-    "Experiencia Laboral": "experiencia_laboral",
-    "Producción Académica": "produccion_academica",
-    "Documentos Solicitados": "documento_programa",
-    "Descuentos de Matrícula": "descuento_matricula",
-    "Propuesta de Trabajo de Grado": "propuesta_grado"
-  }
+  linkFolderWithTag: any = {
+    'Información Básica': 'info_persona',
+    'Formación Académica': 'formacion_academica',
+    'Experiencia Laboral': 'experiencia_laboral',
+    'Producción Académica': 'produccion_academica',
+    'Documentos Solicitados': 'documento_programa',
+    'Descuentos de Matrícula': 'descuento_matricula',
+    'Propuesta de Trabajo de Grado': 'propuesta_grado',
+  };
 
   renderInscripcion: boolean = true;
 
@@ -60,10 +60,10 @@ export class PerfilComponent implements OnInit {
   contTag: number = 0;
   //reduceWhenloading: number = 0.9;
   data = {
-    "INSCRIPCION": {},
-    "ASPIRANTE": {},
-    "PAGO": {},
-    "DOCUMENTACION": {}
+    INSCRIPCION: {},
+    ASPIRANTE: {},
+    PAGO: {},
+    DOCUMENTACION: {},
   };
   showErrors = false;
   checkComplete: boolean = false;
@@ -76,17 +76,19 @@ export class PerfilComponent implements OnInit {
   // tslint:disable-next-line: no-output-rename
   @Output('revisar_doc') revisar_doc: EventEmitter<any> = new EventEmitter();
 
-  @Output('notificar_obs') notificar_obs: EventEmitter<any> = new EventEmitter();
+  @Output('notificar_obs') notificar_obs: EventEmitter<any> =
+    new EventEmitter();
 
-  constructor(private translate: TranslateService,
+  constructor(
+    private translate: TranslateService,
     public pivotDocument: PivotDocument,
     private zipManagerService: ZipManagerService,
     private popUpManager: PopUpManager,
     private inscripcionMidService: InscripcionMidService,
     private gestorDocumentalService: NewNuxeoService,
-    private inscripcionService: InscripcionService,) {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
+    private inscripcionService: InscripcionService
+  ) {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {});
   }
 
   useLanguage(language: string) {
@@ -99,7 +101,10 @@ export class PerfilComponent implements OnInit {
 
   ngOnInit() {
     this.zipManagerService.limpiarArchivos();
-    this.canUpdateDocument = <string>(sessionStorage.getItem('IdEstadoInscripcion') || "").toUpperCase() === "INSCRITO CON OBSERVACIÓN";
+    this.canUpdateDocument =
+      <string>(
+        (sessionStorage.getItem('IdEstadoInscripcion') || '').toUpperCase()
+      ) === 'INSCRITO CON OBSERVACIÓN';
   }
 
   ngOnChanges() {
@@ -107,12 +112,18 @@ export class PerfilComponent implements OnInit {
     this.en_revision = this.en_revision.toString() === 'true';
     this.manageSuiteTags(this.SuiteTags);
     if (this.imprimir) {
-      this.popUpManager.showPopUpGeneric(this.translate.instant('inscripcion.imprimir_comprobante'), this.translate.instant('inscripcion.info_impresion_auto'), 'info', false);
+      this.popUpManager.showPopUpGeneric(
+        this.translate.instant('inscripcion.imprimir_comprobante'),
+        this.translate.instant('inscripcion.info_impresion_auto'),
+        'info',
+        false
+      );
     }
-    if (this.reloadTagComponent != "") {
-      this.manageReloadComponent(this.linkFolderWithTag[this.reloadTagComponent]);
-    } 
-
+    if (this.reloadTagComponent != '') {
+      this.manageReloadComponent(
+        this.linkFolderWithTag[this.reloadTagComponent]
+      );
+    }
   }
 
   manageSuiteTags(Suite: any) {
@@ -121,12 +132,12 @@ export class PerfilComponent implements OnInit {
         this.suiteLoaded = false;
       } else {
         Object.keys(Suite).forEach((tag: string) => {
-          Suite[tag]["render"] = false;
-          Suite[tag]["observacion"] = false;
+          Suite[tag]['render'] = false;
+          Suite[tag]['observacion'] = false;
           if (Suite[tag].selected) {
             this.selectedTags = this.selectedTags.concat(tag);
           }
-        })
+        });
         this.SuiteTags = Suite;
         this.maxTags = this.selectedTags.length;
         this.suiteLoaded = true;
@@ -145,7 +156,7 @@ export class PerfilComponent implements OnInit {
 
   checkZeroObservations() {
     this.hasObservations = false;
-    this.selectedTags.forEach(tag => {
+    this.selectedTags.forEach((tag) => {
       if (this.SuiteTags[tag].observacion) {
         this.hasObservations = true;
       }
@@ -153,33 +164,49 @@ export class PerfilComponent implements OnInit {
   }
 
   changeToInscritoAgain() {
-    this.inscripcionService.get('inscripcion/' + this.info_inscripcion_id)
-      .subscribe((resG: any) => {
-        resG.EstadoInscripcionId.Id = 5; // id inscrito.
-        resG.TerceroId = this.info_persona_id;
-        this.inscripcionMidService.post('inscripciones/actualizar-inscripcion', resG)
-          .subscribe((res: any) => {
-            if (res !== null && res.Status != '400') {
-              sessionStorage.setItem('IdEstadoInscripcion', "");
-              this.editar("", 'salir_preinscripcion');
-              this.popUpManager.showSuccessAlert(this.translate.instant('inscripcion.cambio_estado_ok'));
-            } else {
-              this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
-            }
-          }, err => {
-            this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
-          })
-      }, err => {
-        this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
-      });
+    this.inscripcionService
+      .get('inscripcion/' + this.info_inscripcion_id)
+      .subscribe(
+        (resG: any) => {
+          resG.EstadoInscripcionId.Id = 5; // id inscrito.
+          resG.TerceroId = this.info_persona_id;
+          this.inscripcionMidService
+            .post('inscripciones/actualizar-inscripcion', resG)
+            .subscribe(
+              (res: any) => {
+                if (res !== null && res.Status != '400') {
+                  sessionStorage.setItem('IdEstadoInscripcion', '');
+                  this.editar('', 'salir_preinscripcion');
+                  this.popUpManager.showSuccessAlert(
+                    this.translate.instant('inscripcion.cambio_estado_ok')
+                  );
+                } else {
+                  this.popUpManager.showErrorAlert(
+                    this.translate.instant('inscripcion.fallo_carga_mensaje')
+                  );
+                }
+              },
+              (err) => {
+                this.popUpManager.showErrorAlert(
+                  this.translate.instant('inscripcion.fallo_carga_mensaje')
+                );
+              }
+            );
+        },
+        (err) => {
+          this.popUpManager.showErrorAlert(
+            this.translate.instant('inscripcion.fallo_carga_mensaje')
+          );
+        }
+      );
   }
 
   abrirDocumento(documento: any) {
     if (this.en_revision) {
-      this.revisar_doc.emit(documento)
+      this.revisar_doc.emit(documento);
     } else {
       documento.observando = true;
-      this.revisar_doc.emit(documento)
+      this.revisar_doc.emit(documento);
     }
   }
 
@@ -187,35 +214,47 @@ export class PerfilComponent implements OnInit {
     let nombre: any = sessionStorage.getItem('nameFolder');
     nombre = nombre.toUpperCase();
     this.zipManagerService.generarZip(nombre).then((zip: any) => {
-      this.guardar_archivo(zip, nombre, ".zip");
-    })
+      this.guardar_archivo(zip, nombre, '.zip');
+    });
   }
 
   descargar_comprobante_inscription() {
     let documentacion = this.zipManagerService.listarArchivos();
     let documentacionOrganizada: any = {};
-    documentacion.forEach(doc => {
-      documentacionOrganizada[doc.carpeta] = {}
-    })
-    documentacion.forEach(doc => {
-      documentacionOrganizada[doc.carpeta][doc.grupoDoc] = []
-    })
-    documentacion.forEach(doc => {
-      documentacionOrganizada[doc.carpeta][doc.grupoDoc].push(doc.nombreDocumento)
-    })
+    documentacion.forEach((doc) => {
+      documentacionOrganizada[doc.carpeta] = {};
+    });
+    documentacion.forEach((doc) => {
+      documentacionOrganizada[doc.carpeta][doc.grupoDoc] = [];
+    });
+    documentacion.forEach((doc) => {
+      documentacionOrganizada[doc.carpeta][doc.grupoDoc].push(
+        doc.nombreDocumento
+      );
+    });
     this.data.DOCUMENTACION = documentacionOrganizada;
 
-    this.inscripcionMidService.post('recibos/comprobante-inscripcion', this.data).subscribe(
-      (response: any) => {
-        const dataComprobante = new Uint8Array(atob(response['Data']).split('').map((char: any) => char.charCodeAt(0)));
-        let comprobante_generado = window.URL.createObjectURL(new Blob([dataComprobante], { type: 'application/pdf' }));
-        let nombre: any = sessionStorage.getItem('nameFolder');
-        this.guardar_archivo(comprobante_generado, nombre, ".pdf");
-      },
-      error => {
-        this.popUpManager.showErrorToast(this.translate.instant('inscripcion.fallo_carga_mensaje'));
-      },
-    );
+    this.inscripcionMidService
+      .post('recibos/comprobante-inscripcion', this.data)
+      .subscribe(
+        (response: any) => {
+          const dataComprobante = new Uint8Array(
+            atob(response['Data'])
+              .split('')
+              .map((char: any) => char.charCodeAt(0))
+          );
+          let comprobante_generado = window.URL.createObjectURL(
+            new Blob([dataComprobante], { type: 'application/pdf' })
+          );
+          let nombre: any = sessionStorage.getItem('nameFolder');
+          this.guardar_archivo(comprobante_generado, nombre, '.pdf');
+        },
+        (error) => {
+          this.popUpManager.showErrorToast(
+            this.translate.instant('inscripcion.fallo_carga_mensaje')
+          );
+        }
+      );
   }
 
   descargar_archivos() {
@@ -223,28 +262,32 @@ export class PerfilComponent implements OnInit {
       this.triggeredDownload = true;
       const lista = this.zipManagerService.listarArchivos();
       const limitQuery = lista.length;
-      let idsForQuery = "";
+      let idsForQuery = '';
       lista.forEach((f, i) => {
         idsForQuery += String(f.documentoId);
         if (i < limitQuery - 1) idsForQuery += '|';
       });
-      this.gestorDocumentalService.getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
-        .subscribe(r => {
-          if (r.downloadProgress) {
-            const progressBar = document.getElementById("progressbar");
-            if (progressBar) {
-              progressBar.scrollIntoView({ behavior: 'smooth' });
+      this.gestorDocumentalService
+        .getManyFiles('?query=Id__in:' + idsForQuery + '&limit=' + limitQuery)
+        .subscribe(
+          (r) => {
+            if (r.downloadProgress) {
+              const progressBar = document.getElementById('progressbar');
+              if (progressBar) {
+                progressBar.scrollIntoView({ behavior: 'smooth' });
+              }
+              this.progressDownloadDocs = r.downloadProgress;
             }
-            this.progressDownloadDocs = r.downloadProgress;
+          },
+          (e) => {
+            this.progressDownloadDocs = 0;
           }
-        }, e => {
-          this.progressDownloadDocs = 0;
-        });
+        );
     }
   }
 
   guardar_archivo(urlFile: string, nombre: string, extension: string) {
-    let download = document.createElement("a");
+    let download = document.createElement('a');
     download.href = urlFile;
     download.download = nombre + extension;
     document.body.appendChild(download);
@@ -272,8 +315,6 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  
-
   properlyCont(actualTag: any) {
     if (this.contTag > 0) {
       if (this.selectedTags[this.contTag - 1] == actualTag) {
@@ -285,48 +326,35 @@ export class PerfilComponent implements OnInit {
   }
 
   manageLoading(infoCarga: any, actualTag: string) {
-    if (infoCarga.status == "start") {
+    if (infoCarga.status == 'start') {
       this.checkComplete = false;
     }
-    if (infoCarga.status == "completed") {
-      if (actualTag == "inscripcion") {
+    if (infoCarga.status == 'completed') {
+      if (actualTag == 'inscripcion') {
         this.data.INSCRIPCION = infoCarga.outInfo;
       }
-      if (actualTag == "info_persona") {
+      if (actualTag == 'info_persona') {
         this.data.ASPIRANTE = infoCarga.outInfo;
       }
     }
 
-    if ((actualTag == "inscripcion") && infoCarga.EstadoInscripcion) {
-      this.estado_inscripcion = infoCarga.EstadoInscripcion
-      this.showErrors = infoCarga.EstadoInscripcion != "Inscripción solicitada";
+    if (actualTag == 'inscripcion' && infoCarga.EstadoInscripcion) {
+      this.estado_inscripcion = infoCarga.EstadoInscripcion;
+      this.showErrors = infoCarga.EstadoInscripcion != 'Inscripción solicitada';
     }
 
-    if (infoCarga.status == "failed") {
-      if (this.showErrors || this.en_revision) {
-        if (actualTag != "inscripcion") {
-          if (this.SuiteTags[actualTag].required) {
-            this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
-          }
-        } else {
-          this.popUpManager.showErrorAlert(this.translate.instant('inscripcion.fallo_carga_mensaje'));
-        }
-      }
-      if (!this.checkComplete) {
-        this.checkComplete = true;
-        this.siguienteTagDesde(actualTag);
-      }
-    }
-
-    if (infoCarga.status == "completed" && !this.checkComplete) {
+    if (infoCarga.status == 'failed') {
       this.checkComplete = true;
       this.siguienteTagDesde(actualTag);
     }
 
+    if (infoCarga.status == 'completed' && !this.checkComplete) {
+      this.checkComplete = true;
+      this.siguienteTagDesde(actualTag);
+    }
   }
 
   notificar_observaciones_aspirante() {
     this.notificar_obs.emit(this.zipManagerService.listarArchivos());
   }
-
 }

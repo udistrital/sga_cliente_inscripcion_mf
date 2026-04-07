@@ -13,6 +13,7 @@ import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
+import { POR_DEFINIR } from '../../constants';
 
 @Component({
   selector: 'ngx-view-info-persona',
@@ -174,7 +175,9 @@ export class ViewInfoPersonaComponent implements OnInit {
           this.dataSourceDiscapacidad = new MatTableDataSource();
         } else {
           let estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
-          if (estadoDoc.aprobado === false) {
+          //AQUIVOY1
+          console.log("ESTADO DOC", estadoDoc);
+          if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== POR_DEFINIR) {
             this.updateDocument = true;
           }
           this.docs_editados.emit(this.updateDocument);
@@ -213,7 +216,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           this.dataSourcePoblacion = new MatTableDataSource();
         } else {
           let estadoDoc = this.utilidades.getEvaluacionDocumento(documento.Metadatos);
-          if (estadoDoc.aprobado === false) {
+          if (estadoDoc.aprobado === false && estadoDoc.estadoObservacion !== POR_DEFINIR) {
             this.updateDocument = true;
           }
           this.docs_editados.emit(this.updateDocument);
@@ -235,8 +238,10 @@ export class ViewInfoPersonaComponent implements OnInit {
             tabName: this.translate.instant('GLOBAL.comprobante_poblacion'),
             carpeta: "Información Básica"
           }
+          console.log("ESTADO DOC", estadoDoc);
           this.zipManagerService.adjuntarArchivos([this.docPoblacion]);
           this.dataSourcePoblacion = new MatTableDataSource([this.docPoblacion]);
+          console.log("DATA SOURCE POBLACION", this.dataSourcePoblacion);
           this.addCargado(1);
         }
 
@@ -266,9 +271,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           }
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR.' + error.status));
             reject(false);
           });
     });
@@ -287,9 +290,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           }
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
             reject(false);
           });
     });
@@ -306,9 +307,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           }
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR: ' + error.status));
             resolve(false);
           });
     });
@@ -321,9 +320,7 @@ export class ViewInfoPersonaComponent implements OnInit {
           resolve(res);
         },
           (error: any) => {
-            console.error(error);
             this.infoFalla();
-            this.popUpManager.showErrorToast(this.translate.instant('ERROR' + error.status));
             reject(false);
           });
     });

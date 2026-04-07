@@ -1,58 +1,90 @@
-<div>
-  <form novalidate [formGroup]="revisionForm" class="form-horizontal">
-    <fieldset class="mt-4" [ngClass]="{'fieldseter': true} ">
-      <legend>
-        &nbsp; <b>{{ 'admision.revisar_docs' | translate }}</b>
-      </legend>
-      <div class="row contenedor-principal">
-        <div class="col-8 contenedor-documento">
-          <ngx-doc-viewer [url]="documento" viewer="pdf" style="width:100%;height:100%;"
-            *ngIf="isPDF"></ngx-doc-viewer>
-
-          <div class="viewer" *ngIf="!isPDF">
-            <img [src]="documento" [alt]="tabName">
-          </div>
-        </div>
-        <div class="col-4" style="padding: 5%;">
-          <div class="row d-flex justify-content-center">
-            <h5><mat-label><b>{{tabName}}</b></mat-label></h5>
-          </div><br>
-          <div class="row">
-            <mat-form-field style="width: 100%;" appearance="fill">
-              <mat-label>{{ 'GLOBAL.soporte_documento' | translate }}</mat-label>
-              <input matInput placeholder="{{ 'GLOBAL.placeholder_soporte_documento' | translate }}"
-                value="{{nombreDocumento | translate}}" readonly>
-            </mat-form-field>
-          </div>
-          <div class="row">
-            <mat-form-field style="width: 100%;" appearance="fill">
-              <mat-label>{{ 'GLOBAL.estado' | translate }}</mat-label>
-              <input matInput placeholder="{{ 'GLOBAL.estado' | translate }}" value="{{verEstado}}" readonly>
-            </mat-form-field>
-          </div>
-          <div class="row">
-            <mat-form-field style="width: 100%;" appearance="fill">
-              <mat-label>{{ 'GLOBAL.observacion' | translate }}</mat-label>
-              <textarea matInput rows="5" placeholder="{{ 'GLOBAL.placeholder_observacion' | translate }}"
-                formControlName="observacion" [readonly]="observando">
-                </textarea>
-            </mat-form-field>
-          </div>
-          <br><br><br>
-          <div class="row contenedor-botones" *ngIf="!observando">
-            <div class="col-6 d-flex justify-content-center">
-              <button mat-raised-button class="boton-accion boton-rechazar" (click)="guardarRevision('NoAprueba')">{{
-                'admision.btn_doc_No_aprobar' |
-                translate }}</button>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <button mat-raised-button class="boton-accion boton-aprobar" (click)="guardarRevision('Aprueba')">{{
-                'admision.btn_doc_aprobar' |
-                translate }}</button>
-            </div>
-          </div>
-        </div>
+<mat-card class="container">
+  <mat-card-header>
+    <mat-card-title> {{ "admision.revisar_docs" | translate }} </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form novalidate [formGroup]="revisionForm" class="form-horizontal">
+      <!-- VISOR DE PDF -->
+      <ngx-doc-viewer
+        [url]="documento"
+        viewer="pdf"
+        class="resizable"
+      ></ngx-doc-viewer>
+      <div class="viewer" *ngIf="!isPDF">
+        <img [src]="documento" [alt]="tabName" />
       </div>
-    </fieldset>
-  </form>
-</div>
+
+      <br/>
+
+      <!-- FORMULARIO DE REVISION -->
+      <mat-card id="form-revision">
+        <mat-card-header>
+          <mat-card-title>{{ tabName }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid2">
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>{{
+                "GLOBAL.soporte_documento" | translate
+              }}</mat-label>
+              <input
+                matInput
+                placeholder="{{
+                  'GLOBAL.placeholder_soporte_documento' | translate
+                }}"
+                value="{{ nombreDocumento }}"
+                readonly
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>{{ "GLOBAL.estado" | translate }}</mat-label>
+              <input
+                matInput
+                placeholder="{{ 'GLOBAL.estado' | translate }}"
+                value="{{ verEstado }}"
+                readonly
+              />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>{{ "GLOBAL.observacion" | translate }}</mat-label>
+              <textarea
+                matInput
+                rows="5"
+                placeholder="{{ 'GLOBAL.placeholder_observacion' | translate }}"
+                formControlName="observacion"
+                [readonly]="observando"
+              >
+              </textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  </mat-card-content>
+  <div #formElement></div> <!-- Elemento de referencia -->
+  <br/>
+  <div *ngIf="!observando" class="container-buttons">
+    <button mat-flat-button >
+      <mat-icon>arrow_downward</mat-icon>
+      {{ "GLOBAL.ir_observacion" | translate }}
+    </button>
+    <button
+      class="boton-primary-succes"
+      mat-flat-button
+      color="warn"
+      (click)="guardarRevision('NoAprueba')"
+    >
+      {{ "admision.btn_doc_No_aprobar" | translate }}
+    </button>
+    <button
+      class="boton-primary-warn"
+      mat-flat-button
+      color="primary"
+      (click)="guardarRevision('Aprueba')"
+    >
+      {{ "admision.btn_doc_aprobar" | translate }}
+    </button>
+  </div>
+</mat-card>

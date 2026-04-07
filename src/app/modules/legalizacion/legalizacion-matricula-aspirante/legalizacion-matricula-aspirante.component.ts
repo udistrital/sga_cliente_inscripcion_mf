@@ -13,7 +13,7 @@ import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service'
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
-import { SgaMidService } from 'src/app/services/sga_mid.service';
+// import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { OikosService } from 'src/app/services/oikos.service';
 import { ImplicitAutenticationService } from 'src/app/services/implicit_autentication.service';
 import { DocumentoService } from 'src/app/services/documento.service';
@@ -25,6 +25,7 @@ import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.se
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
+import { POR_DEFINIR } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
 
 
 @Component({
@@ -57,7 +58,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private oikosService: OikosService,
     private usuarioService: UserService,
     private inscripcionService: InscripcionService,
-    private sgamidService: SgaMidService,
+    // private sgamidService: SgaMidService,
     private documentoService: DocumentoService,
     private utilidadesService: UtilidadesService,
     private dialog: MatDialog,
@@ -272,7 +273,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   retornarEstadoObservacion(estado: any) {
-    if (estado === "Por definir" || estado === "To be defined") {
+    if (estado === POR_DEFINIR || estado === "To be defined") {
       return 1
     } else if (estado === "No aprobado" || estado === "Not approved") {
       return 3
@@ -354,19 +355,19 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   consultarTercero(personaId: any) {
-    return new Promise((resolve, reject) => {
-      this.sgamidService
-        .get('persona/consultar_persona/' + personaId)
-        .subscribe(
-          (res: any) => {
-            resolve(res);
-          },
-          (error: any) => {
-            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
-            reject([]);
-          }
-        );
-    });
+    // return new Promise((resolve, reject) => {
+    //   this.sgamidService
+    //     .get('persona/consultar_persona/' + personaId)
+    //     .subscribe(
+    //       (res: any) => {
+    //         resolve(res);
+    //       },
+    //       (error: any) => {
+    //         this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+    //         reject([]);
+    //       }
+    //     );
+    // });
   }
 
   async recuperarTerceroId(userEmail: any) {
@@ -686,9 +687,11 @@ export class LegalizacionMatriculaAspiranteComponent {
         .subscribe(
           (res: any) => {
             const data = res.Data
-            const jsonObject = JSON.parse(data[0].Valor);
-            const valor: number = jsonObject.Valor;
-            this.valorSML = valor;
+            console.log("AAAAAAAAAAAAAAAAAAAA", data)
+            // const jsonObject = JSON.parse(data[0].Valor);
+            // const valor: number = jsonObject.Valor;
+            // this.valorSML = valor;
+            this.valorSML = 1300000;
             resolve(res);
           },
           (error: any) => {
