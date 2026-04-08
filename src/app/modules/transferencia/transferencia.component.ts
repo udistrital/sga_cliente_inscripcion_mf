@@ -523,7 +523,7 @@ export class TransferenciaComponent implements OnInit {
 
   loadParams(calendarioId: any) {
     return new Promise((resolve, reject) => {
-      this.inscripcionMidService.get('transferencia/consultar-parametros/?id-calendario='+calendarioId+'&persona-id='+ this.uid).subscribe({
+      this.inscripcionMidService.get('transferencia/consultar-parametros?id-calendario='+calendarioId+'&persona-id='+ this.uid).subscribe({
         next: (response: any) => {
           // console.log(response);
           if (response.Success) {
