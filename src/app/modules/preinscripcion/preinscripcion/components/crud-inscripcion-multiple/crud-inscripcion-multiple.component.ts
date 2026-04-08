@@ -393,8 +393,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         (response: NivelFormacion[]) => {
           if (response !== null) {
             this.niveles = response.filter(
-              (nivel: NivelFormacion) => nivel.Id === 2 || nivel.Id === 1
-            );
+              (nivel: NivelFormacion) => nivel.Id === 2 );
           }
           resolve(response);
         },
@@ -450,9 +449,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     const NumRecibo = auxRecibo.split('/', 1);
     inscripcion.AnioRecibo = auxRecibo;
     inscripcion.ReciboInscripcion = NumRecibo;
-    inscripcion.FechaCreacion = momentTimezone
-      .tz(inscripcion.FechaCreacion, 'America/Bogota')
-      .format('DD-MM-YYYY hh:mm:ss');
+    // inscripcion.FechaCreacion = momentTimezone
+    //   .tz(inscripcion.FechaCreacion, 'America/Bogota')
+    //   .format('DD-MM-YYYY hh:mm:ss');
+    inscripcion.FechaCreacion = inscripcion.FechaCreacion.split('.')[0];
     inscripcion.ProgramaAcademicoId = proyecto.Nombre;
     let level = proyecto.NivelFormacionId.NivelFormacionPadreId;
     if (level == null || level == undefined) {
