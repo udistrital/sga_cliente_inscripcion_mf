@@ -803,7 +803,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
           parseInt(sessionStorage.getItem('IdTipoInscripcion')!, 10) +
           ',DocumentoProgramaId.PeriodoId:' +
           parseInt(sessionStorage.getItem('IdPeriodo')!, 10) +
-          ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true,Activo:true&limit=0'
+          ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true&limit=0'
       )
     );
 

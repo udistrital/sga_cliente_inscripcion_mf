@@ -94,7 +94,7 @@ export class ListDocumentoProgramaComponent implements OnInit {
           this.tipoInscripcion +
           ',DocumentoProgramaId.PeriodoId:' +
           parseInt(sessionStorage.getItem('IdPeriodo')!, 10) +
-          ',DocumentoProgramaId.Activo:true,Activo:true&limit=0'
+          ',DocumentoProgramaId.Activo:true,DocumentoProgramaId.Obligatorio:true&limit=0'
       )
       .subscribe(
         async (response: any[]) => {
