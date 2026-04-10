@@ -101,8 +101,6 @@ export class ViewDocumentoProgramaComponent implements OnInit {
   }
 
   loadData(): void {
-    console.log(".-.-.-.-.-.-.-.-.-.-.-.-.-");
-    console.log("Entra a revicisón de documento");
     this.info_documento_programa = <any>[];
     this.inscripcionService.get('soporte_documento_programa?query=InscripcionId.Id:' +
       this.inscripcion_id + ',DocumentoProgramaId.ProgramaId:' + this.programa_id + ',DocumentoProgramaId.TipoInscripcionId:' + this.tipoInscripcion_id + ',DocumentoProgramaId.PeriodoId:' + parseInt(sessionStorage.getItem('IdPeriodo')!, 10) + ',DocumentoProgramaId.Activo:true&limit=0').subscribe(
