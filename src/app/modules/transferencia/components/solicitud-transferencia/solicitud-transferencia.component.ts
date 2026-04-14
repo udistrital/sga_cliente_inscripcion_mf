@@ -8,6 +8,7 @@ import { TransferenciaInternaReintegro } from 'src/app/models/inscripcion/transf
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
+import { Location } from '@angular/common';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { FORM_SOLICITUD_TRANSFERENCIA, FORM_RESPUESTA_SOLICITUD, FORM_SOLICITUD_REINTEGRO } from '../../forms-transferencia';
@@ -59,7 +60,8 @@ export class SolicitudTransferenciaComponent implements OnInit {
     private terceroMidService: TerceroMidService,
     private translate: TranslateService,
     private userService: UserService,
-    private utilidades: UtilidadesService
+    private utilidades: UtilidadesService,
+    private location: Location
 
   ) {
     this.formTransferencia = FORM_SOLICITUD_TRANSFERENCIA;
@@ -490,7 +492,8 @@ export class SolicitudTransferenciaComponent implements OnInit {
   }
 
   goback() {
-    this.router.navigate([`transferencia`])
+    // this.router.navigate([`transferencia`])
+    this.location.back();
   }
 
   generarMatricula() {
