@@ -33,6 +33,7 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 import { firstValueFrom } from 'rxjs';
+import { ProduccionAcademicaService } from 'src/app/services/produccion_academica.service';
 
 @Component({
   selector: 'ngx-inscripcion-general',
@@ -49,6 +50,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   produccion_academica: boolean = false;
   es_transferencia: boolean = false;
   nivel: any;
+  metadato_error: any;
 
   tagsObject = { ...TAGS_INSCRIPCION_PROGRAMA };
 
@@ -194,7 +196,8 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
     private calendarioMidService: CalendarioMidService,
     private dialog: MatDialog,
     private evaluacionInscripcionService: EvaluacionInscripcionService,
-    private timeService: TimeService
+    private timeService: TimeService,
+    private produccionAcademicaService: ProduccionAcademicaService,
   ) {
     sessionStorage.setItem(
       'TerceroId',
@@ -782,6 +785,15 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         'academico/produccion/tercero/' + this.info_persona_id
       )
     );
+    const lista_productos = res.Data;
+    if (Array.isArray(lista_productos)) {
+      lista_productos.forEach(producto => {
+        if (producto.Metadatos.length < 1) {
+          console.log("Entra a error en metadato");
+          this.metadato_error = producto;
+        }
+      });
+    }
 
     if (res.Status == '200' && res.Data != null) {
       this.percentage_prod = 100;
@@ -1036,6 +1048,32 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
       this.Campo1Control.status == 'VALID' &&
       this.enfasisControl.status == 'VALID'
     ) {
+      if (this.metadato_error != undefined || this.metadato_error != null) {
+        // mensaje de error y desactivar producto en caso de subirse sin metadatos
+        Swal.fire({
+          icon: 'warning',
+          title: 'ERROR',
+          text: 'Uno de los productos academicos está incompleto, por favor vuelva a generarlo',
+          confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+        }).then( () => {
+          this.metadato_error.Activo = false;
+          this.produccionAcademicaService.put('produccion_academica', this.metadato_error)
+            .subscribe({
+            next: (response: any) => {
+              const id = response.Id
+              if (id == null || id == undefined){
+                this.popUpManager.showErrorAlert(this.translate.instant('produccion_academica.produccion_no_actualizada'));
+              } else {
+                delete this.metadato_error;
+              }
+            },
+            error: (error:any) => {
+              this.popUpManager.showErrorAlert(this.translate.instant('produccion_academica.produccion_no_actualizada'));
+            }
+            })
+        } );
+        return;
+      }
       this.inscripcionService
         .get('inscripcion/' + parseInt(sessionStorage['IdInscripcion'], 10))
         .subscribe(
