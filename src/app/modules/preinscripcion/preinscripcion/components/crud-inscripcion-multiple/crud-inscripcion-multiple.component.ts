@@ -436,7 +436,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.dataSource = new MatTableDataSource(dataInfo);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-    //  console.log(this.dataSource);
      
     }
   }
@@ -651,8 +650,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       fechaFinInsc.setHours(23, 59, 59, 999);
     }
 
-    // console.log(fechaActual);
-    // console.log(fechaFinInsc);
     if (fechaFinInsc && fechaActual <= fechaFinInsc) {
       this.loadTipoInscripcion();
     } else {
@@ -889,8 +886,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       return;
     }
 
-    // console.log("Genera una nueva inscripción correcta");
-    // console.log(inscripcion);
     const resInscripcion: any = await this.inscripcionNuevaPost(
       inscripcion
     );
@@ -966,48 +961,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.selectedLevel = parseInt(data.NivelPP, 10);
     }
     if (this.info_info_persona != null && data.Estado != 'Vencido') {
-      this.selectedProject = parseInt(
-        sessionStorage.getItem('ProgramaAcademicoId')!,
-        10
-      );
-
-      this.recibo_pago = new ReciboPago();
-      this.recibo_pago.NombreDelAspirante = [
-          this.info_info_persona.PrimerNombre,
-          this.info_info_persona.SegundoNombre,
-          this.info_info_persona.PrimerApellido,
-          this.info_info_persona.SegundoApellido
-        ].filter(Boolean).join(' ');
-      this.recibo_pago.DocumentoDelAspirante =this.info_info_persona.NumeroIdentificacion;
-      this.recibo_pago.Periodo = this.periodo.Nombre;
-      this.recibo_pago.ProyectoAspirante = data['ProgramaAcademicoId'];
-      this.recibo_pago.Comprobante = data['ReciboInscripcion'][0];
-
-      const nivelMap: Record<number, string> = {
-        1: '13',
-        2: '12'
-      };
-      this.parametro = nivelMap[this.selectedLevel];
-
-      const responseCalendario: any = await this.recuperarCalendarioProyecto(
-        this.selectedLevel, this.periodo.Id
-      );   
-  
-      this.inscripcionProjects = responseCalendario;
-      const eventoPago = this.inscripcionProjects
-        .find((pr: any) => pr.ProyectoId === this.selectedProject)?.Evento
-        ?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'INSCR');
-
-      if (eventoPago) {
-        this.recibo_pago.Fecha_pago = moment(eventoPago.FechaFinEvento, 'YYYY-MM-DD')
-          .format('DD/MM/YYYY');
-      }
-
-      const parametro = await this.buscarParametrosPeriodo(this.parametro, this.periodo.Year);
-      this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre;
-
-      const valor = JSON.parse(parametro[0].Valor);
-      this.recibo_pago.ValorDerecho = valor.Costo;
+      await this.prepararReciboPago(data);
 
       const datosFormulario = {
         accion: 'descargar',
@@ -1023,7 +977,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         return;
       }
 
-      // console.log("Se completa con el CONTINUAR()");
       const responseRecibo: any = await firstValueFrom(
         this.inscripcionMidService.post('recibos/estudiantes', this.recibo_pago)
       );
@@ -1061,6 +1014,60 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     }
   }
 
+  async prepararReciboPago(data: any): Promise<void> {
+    this.selectedProject = parseInt(
+      sessionStorage.getItem('ProgramaAcademicoId')!,
+      10
+    );
+
+    this.recibo_pago = new ReciboPago();
+    this.recibo_pago.NombreDelAspirante = [
+      this.info_info_persona.PrimerNombre,
+      this.info_info_persona.SegundoNombre,
+      this.info_info_persona.PrimerApellido,
+      this.info_info_persona.SegundoApellido,
+    ]
+      .filter(Boolean)
+      .join(' ');
+    this.recibo_pago.DocumentoDelAspirante =
+      this.info_info_persona.NumeroIdentificacion;
+    this.recibo_pago.Periodo = this.periodo.Nombre;
+    this.recibo_pago.ProyectoAspirante = data['ProgramaAcademicoId'];
+    this.recibo_pago.Comprobante = data['ReciboInscripcion'][0];
+
+    const nivelMap: Record<number, string> = {
+      1: '13',
+      2: '12',
+    };
+    this.parametro = nivelMap[this.selectedLevel];
+
+    const responseCalendario: any = await this.recuperarCalendarioProyecto(
+      this.selectedLevel,
+      this.periodo.Id
+    );
+
+    this.inscripcionProjects = responseCalendario;
+    const eventoPago = this.inscripcionProjects
+      .find((pr: any) => pr.ProyectoId === this.selectedProject)
+      ?.Evento?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'INSCR');
+
+    if (eventoPago) {
+      this.recibo_pago.Fecha_pago = moment(
+        eventoPago.FechaFinEvento,
+        'YYYY-MM-DD'
+      ).format('DD/MM/YYYY');
+    }
+
+    const parametro = await this.buscarParametrosPeriodo(
+      this.parametro,
+      this.periodo.Year
+    );
+    this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre;
+
+    const valor = JSON.parse(parametro[0].Valor);
+    this.recibo_pago.ValorDerecho = valor.Costo;
+  }
+
   async abrirDialogoPagador(data: any): Promise<any> {
     try {
       // Obtener el servicio del core_mf_cliente que está expuesto globalmente
@@ -1084,7 +1091,6 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
       // Manejo de resultado cuando el diálogo se cierra
       const result = await firstValueFrom(dialogRef.afterClosed());
-      console.log('Diálogo cerrado con resultado:', result);
 
       return result;
       
@@ -1096,6 +1102,12 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   async abrirPago(data: any) {
     await this.itemSelect({ data: data });
+    if (this.selectedLevel === undefined) {
+      this.selectedLevel = parseInt(data.NivelPP, 10);
+    }
+    if (this.info_info_persona != null) {
+      await this.prepararReciboPago(data);
+    }
     const datosFormulario = {
       accion: 'pagar',
       persona_id: this.info_persona_id,
