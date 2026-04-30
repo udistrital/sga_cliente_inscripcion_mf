@@ -624,6 +624,10 @@ export class CrudExperienciaLaboralComponent implements OnInit {
       }
       this.createInfoExperienciaLaboral(postData);
       // this.result.emit(event);
+    } else {
+      const title = this.translate.instant('GLOBAL.campos_invalidos');
+      const content = this.translate.instant('GLOBAL.campos_invalidos_detalle');
+      this.popUpManager.showAlert(title, content);
     }
   }
 
