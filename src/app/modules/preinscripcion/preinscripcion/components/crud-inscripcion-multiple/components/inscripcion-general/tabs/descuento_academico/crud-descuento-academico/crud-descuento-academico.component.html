@@ -1,3 +1,4 @@
 <ngx-dinamicform [normalform]="formDescuentoAcademico" [modeloData]="info_descuento_academico"
-    (result)="validarForm($event)" [clean]="clean">
+    (result)="validarForm($event)" [clean]="clean"
+    (interlaced)="selectorEvent($event)">
 </ngx-dinamicform>

@@ -109,6 +109,7 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
             return {
               Id: result.Id,
               Nombre: result.Id + '. ' + result.Nombre,
+              Descripcion: result.Descripcion
             }
           });
         }
@@ -407,6 +408,18 @@ export class CrudDescuentoAcademicoComponent implements OnInit {
         this.isEdit = false;
       }
       // this.result.emit(event);
+    }
+  }
+
+  selectorEvent(event:any) {
+    // console.log("Selector evento:");
+    // console.log(event);
+    if (event.nombre === 'DescuentoDependencia') {
+      const descripcionField =this.formDescuentoAcademico.campos[
+          this.getIndexForm('DescripcionDescuento')
+        ];
+
+      descripcionField.valor = event.valor?.Descripcion || '';
     }
   }
 
