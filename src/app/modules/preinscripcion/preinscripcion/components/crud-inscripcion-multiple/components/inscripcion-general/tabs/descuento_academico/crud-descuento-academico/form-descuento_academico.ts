@@ -16,6 +16,17 @@ export let FORM_DESCUENTO = {
       tipo: 'DescuentoDependencia',
       key: 'Nombre',
       opciones: [],
+      entrelazado:true
+    },
+    {
+      etiqueta: 'textarea',
+      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+      nombre: 'DescripcionDescuento',
+      label_i18n: 'detalle_descuento_matricula',
+      placeholder_i18n: 'detalle_descuento_matricula',
+      requerido: false,
+      deshabilitar: true,
+      tipo: 'text'
     },
     {
       etiqueta: 'fileRev',
