@@ -22,8 +22,8 @@ export let FORM_DESCUENTO = {
       etiqueta: 'textarea',
       claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
       nombre: 'DescripcionDescuento',
-      label_i18n: 'descripcion_trabajo_grado',
-      placeholder_i18n: 'descripcion_trabajo_grado',
+      label_i18n: 'detalle_descuento_matricula',
+      placeholder_i18n: 'detalle_descuento_matricula',
       requerido: false,
       deshabilitar: true,
       tipo: 'text'
