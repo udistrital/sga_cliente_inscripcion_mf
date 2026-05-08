@@ -346,6 +346,8 @@
         "placeholder_tipo_documento_programa": "Ej: Tarjeta profesional",
         "tipo_descuento_matricula": "Tipo de descuento",
         "placeholder_tipo_descuento_matricula": "Ej: Certificación electoral",
+        "detalle_descuento_matricula":"Descripción de descuento de matricula",
+        "placeholder_detalle_descuento_matricula":"Ej: Certificación electoral, 20%",
         "titulo_proyecto": "Título del proyecto",
         "placeholder_titulo_proyecto": "Ej: Inteligencia artificial aplicada a..",
         "grupo_investigacion": "Grupo de investigación",
