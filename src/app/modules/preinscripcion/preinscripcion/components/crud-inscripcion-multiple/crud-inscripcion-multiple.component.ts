@@ -62,6 +62,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     'activo',
     'descargar',
     'opcion',
+    'inactiva',
   ];
   dataSource!: MatTableDataSource<any>;
 
@@ -1439,6 +1440,24 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   ocultarBarraExterna(event: boolean) {
     this.ocultarBarra.emit(event);
+  }
+
+  inactivarRecibo(element: any) {
+    if (!confirm('¿Desea inactivar esta inscripción?')) {
+      return;
+    }
+    console.log('Fila seleccionada:', element);
+    this.inscripcionService.get("inscripcion/"+ element.Id).subscribe( (res) => {
+      console.log(res.Id);
+      res.Activo = false;
+      console.log("Modificado");
+      console.log(res);
+      this.inscripcionService.put("inscipcion/"+res.Id, res).subscribe( (r) => {
+        console.log("respuesta de incativación");
+        console.log(r);
+      });
+      
+    });
   }
 
   async handleInfoPersonaId(info_persona_id: number) {
