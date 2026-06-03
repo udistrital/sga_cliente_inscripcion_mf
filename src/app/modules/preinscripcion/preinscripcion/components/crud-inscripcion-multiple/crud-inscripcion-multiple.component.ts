@@ -39,7 +39,7 @@ import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, switchMap } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
@@ -1443,21 +1443,46 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   inactivarRecibo(element: any) {
-    if (!confirm('¿Desea inactivar esta inscripción?')) {
-      return;
-    }
     console.log('Fila seleccionada:', element);
-    this.inscripcionService.get("inscripcion/"+ element.Id).subscribe( (res) => {
-      console.log(res.Id);
-      res.Activo = false;
-      console.log("Modificado");
-      console.log(res);
-      this.inscripcionService.put("inscipcion/"+res.Id, res).subscribe( (r) => {
-        console.log("respuesta de incativación");
-        console.log(r);
+    this.inscripcionService.get(`inscripcion/${element.Id}`)
+      .pipe( 
+        switchMap( (ins: any)=>{
+          const payload = {...ins, Activo:false};
+          console.log("Incripcion modificada:");
+          console.log(payload);
+
+          return this.inscripcionService.put(`inscripcion/`, payload);
+        }) 
+      )
+      .subscribe({
+        next: (resp) => {
+          console.log("Inactivado exitosamente");
+          console.log(resp);
+          // AGREGAR MENSAJE EMERGENTE CON BOTÓN ACEPTAR ANTES DE CONTINUAR
+            this.dataSource.data = this.dataSource.data.filter(
+              x => x.Id !== element.Id
+            );
+            // actualiza la tabla que muestra el listado de inscripciones sin hacer recargar web o hacer nuevas peticiones al mid
+            this.dataSource._updateChangeSubscription();
+        },
+        error: (error) => {
+          // AGREGAR BOTÓN EMERGENTE EN CASO DE FALLAR INDICANDO EL FALLO
+          console.log("Error en inactivación");
+          console.log(error);
+        }
       });
+    
+    // .subscribe( (res) => {
+    //   console.log(res.Id);
+    //   res.Activo = false;
+    //   console.log("Modificado");
+    //   console.log(res);
+    //   this.inscripcionService.put("inscipcion/"+res.Id, res).subscribe( (r) => {
+    //     console.log("respuesta de incativación");
+    //     console.log(r);
+    //   });
       
-    });
+    // });
   }
 
   async handleInfoPersonaId(info_persona_id: number) {
