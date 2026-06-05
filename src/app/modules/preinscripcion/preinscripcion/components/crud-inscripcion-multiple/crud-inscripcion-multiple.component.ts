@@ -1443,22 +1443,19 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   inactivarRecibo(element: any) {
-    console.log('Fila seleccionada:', element);
     this.inscripcionService.get(`inscripcion/${element.Id}`)
       .pipe( 
         switchMap( (ins: any)=>{
           const payload = {...ins, Activo:false};
-          console.log("Incripcion modificada:");
-          console.log(payload);
-
           return this.inscripcionService.put(`inscripcion/`, payload);
         }) 
       )
       .subscribe({
         next: (resp) => {
-          console.log("Inactivado exitosamente");
-          console.log(resp);
-          // AGREGAR MENSAJE EMERGENTE CON BOTÓN ACEPTAR ANTES DE CONTINUAR
+          this.popUpManager.showAlert(
+            this.translate.instant('GLOBAL.info'),
+            this.translate.instant('inscripcion.actualizar')
+          );
             this.dataSource.data = this.dataSource.data.filter(
               x => x.Id !== element.Id
             );
@@ -1466,23 +1463,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
             this.dataSource._updateChangeSubscription();
         },
         error: (error) => {
-          // AGREGAR BOTÓN EMERGENTE EN CASO DE FALLAR INDICANDO EL FALLO
-          console.log("Error en inactivación");
-          console.log(error);
+          this.popUpManager.showErrorAlert(
+            this.translate.instant('inscripcion.error_registrar_informacion')
+          );
         }
       });
-    
-    // .subscribe( (res) => {
-    //   console.log(res.Id);
-    //   res.Activo = false;
-    //   console.log("Modificado");
-    //   console.log(res);
-    //   this.inscripcionService.put("inscipcion/"+res.Id, res).subscribe( (r) => {
-    //     console.log("respuesta de incativación");
-    //     console.log(r);
-    //   });
-      
-    // });
   }
 
   async handleInfoPersonaId(info_persona_id: number) {
