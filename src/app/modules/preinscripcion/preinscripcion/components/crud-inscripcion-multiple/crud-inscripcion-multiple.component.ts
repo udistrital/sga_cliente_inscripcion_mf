@@ -39,7 +39,7 @@ import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, switchMap } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
@@ -62,6 +62,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     'activo',
     'descargar',
     'opcion',
+    'inactiva',
   ];
   dataSource!: MatTableDataSource<any>;
 
@@ -1439,6 +1440,34 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   ocultarBarraExterna(event: boolean) {
     this.ocultarBarra.emit(event);
+  }
+
+  inactivarRecibo(element: any) {
+    this.inscripcionService.get(`inscripcion/${element.Id}`)
+      .pipe( 
+        switchMap( (ins: any)=>{
+          const payload = {...ins, Activo:false};
+          return this.inscripcionService.put(`inscripcion/`, payload);
+        }) 
+      )
+      .subscribe({
+        next: (resp) => {
+          this.popUpManager.showAlert(
+            this.translate.instant('GLOBAL.info'),
+            this.translate.instant('inscripcion.actualizar')
+          );
+            this.dataSource.data = this.dataSource.data.filter(
+              x => x.Id !== element.Id
+            );
+            // actualiza la tabla que muestra el listado de inscripciones sin hacer recargar web o hacer nuevas peticiones al mid
+            this.dataSource._updateChangeSubscription();
+        },
+        error: (error) => {
+          this.popUpManager.showErrorAlert(
+            this.translate.instant('inscripcion.error_registrar_informacion')
+          );
+        }
+      });
   }
 
   async handleInfoPersonaId(info_persona_id: number) {
