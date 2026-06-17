@@ -73,6 +73,7 @@ import { CdkStepper } from '@angular/cdk/stepper';
 import { ImplicitAutenticationService } from './services/implicit_autentication.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, environment.apiUrl + 'assets/i18n/', '.json');
@@ -169,6 +170,7 @@ export function createTranslateLoader(http: HttpClient) {
       provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
       useValue: MAT_SELECT_SCROLL_STRATEGY_PROVIDER,
      },
+     { provide: MAT_DATE_LOCALE, useValue: 'es-CO' },
   ],
   bootstrap: [AppComponent]
 })
