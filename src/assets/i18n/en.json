@@ -1538,6 +1538,7 @@
         "carga_eliminando_descuento": "Removing discount from project...",
         "tooltip_crear": "Create discount",
         "no_permite_borrar": "In this state, it is not possible to remove the discount.",
+        "no_borrar_solo_editar":"In this state, it is not possible to remove the discount, please edit it.",
         "seguro_borrar": "Are you sure you want to remove the discount?",
         "mensaje_eliminado": "The discount has been successfully deleted."
     },
