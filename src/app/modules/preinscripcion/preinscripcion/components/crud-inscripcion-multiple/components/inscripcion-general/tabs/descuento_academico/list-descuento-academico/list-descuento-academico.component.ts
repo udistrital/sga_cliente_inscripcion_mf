@@ -210,11 +210,22 @@ export class ListDescuentoAcademicoComponent implements OnInit {
   onDelete(event: any): void {
     let estado: string = event.EstadoObservacion;
     let esAprobado: boolean = estado === 'Aprobado';
+    let esRechazado: boolean = event.EstadoObservacion === "No aprobado";
 
     if (esAprobado) {
       const opt: any = {
         title: this.translate.instant('GLOBAL.eliminar'),
         text: this.translate.instant('descuento_academico.no_permite_borrar'),
+        icon: 'info',
+        dangerMode: true,
+        showCancelButton: false,
+        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+      };
+      Swal.fire(opt);
+    } else if (esRechazado){
+      const opt: any = {
+        title: this.translate.instant('GLOBAL.eliminar'),
+        text: this.translate.instant('descuento_academico.no_borrar_solo_editar'),
         icon: 'info',
         dangerMode: true,
         showCancelButton: false,
@@ -235,8 +246,8 @@ export class ListDescuentoAcademicoComponent implements OnInit {
           event.Activo = false;
           this.descuentoAcademicoService
             .put('solicitud_descuento', event)
-            .subscribe(
-              (res) => {
+            .subscribe({
+              next: (res) => {
                 if (res !== null) {
                   this.loadData();
                   Swal.fire({
@@ -251,7 +262,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
                   });
                 }
               },
-              (error: HttpErrorResponse) => {
+              error: (error: HttpErrorResponse) => {
                 Swal.fire({
                   icon: 'error',
                   title: error.status + '',
@@ -263,7 +274,7 @@ export class ListDescuentoAcademicoComponent implements OnInit {
                   confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
                 });
               }
-            );
+            });
         }
       });
     }
