@@ -329,12 +329,13 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
             fechafin = new Date(
               ev.FechaFinEvento.replace('Z', '-05:00')
             );
+            fechafin.setHours(23, 59, 59, 999);
           }
         });
 
         if (EventosPrograma.Evento?.length > 0 && fechafin instanceof Date) {
           const realhora = await this.timeService.getDate();
-          if (fechafin && fechafin > realhora) {
+          if (fechafin && fechafin >= realhora) {
             this.puedeInscribirse = true;
           } else {
             if (!this.estaInscrito) {
