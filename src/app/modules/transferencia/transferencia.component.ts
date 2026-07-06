@@ -565,8 +565,7 @@ export class TransferenciaComponent implements OnInit {
     return new Promise( (resolve, reject) => {
       this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + idNivel + '&id-periodo=' + idPeriodo ).subscribe({
         next: (response: any) => {
-          const r = <any>response;
-          if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
+          if (response?.Success && response?.Data?.length > 0) {
             resolve(<Array<any>>response.Data);
           } else {
             this.popUpManager.showAlert(
@@ -641,8 +640,9 @@ export class TransferenciaComponent implements OnInit {
     this.inscripcionProjects = resCalendario;
 
     const evento = this.inscripcionProjects
-      .find( (p:any) => p.ProyectoId === proyecto )?.Evento
-      ?.find( (ev:any) => !ev.Pago && ev.CodigoAbreviacion === "REIN" );
+      .find( (p:any) => p.ProyectoId === proyecto )
+      ?.Proceso?.flatMap((p: any) => p.Eventos)
+      ?.find( (ev:any) => ev.CodigoAbreviacion === "REIN" );
     const fechaFinInsc = evento
       ? new Date (evento.FechaFinEvento.replace('Z', '-05:00'))
       : undefined;
@@ -713,8 +713,9 @@ export class TransferenciaComponent implements OnInit {
       };
 
       const eventoPago = this.inscripcionProjects
-        .find( (pr: any) => pr.ProyectoId === inscripcion.ProgramaAcademicoId )?.Evento
-        ?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'REIN');
+        .find( (pr: any) => pr.ProyectoId === inscripcion.ProgramaAcademicoId )
+        ?.Proceso?.flatMap((p: any) => p.Eventos)
+        ?.find((ev: any) => ev.CodigoAbreviacion === 'PAGO_REIN');
 
       if (eventoPago){
         inscripcion.FechaPago = moment(
@@ -958,8 +959,9 @@ export class TransferenciaComponent implements OnInit {
         );
 
         const eventoPago = responseCalendario
-        .find((pr: any) => pr.ProyectoId === data.IdPrograma)?.Evento
-        ?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'REIN');
+        .find((pr: any) => pr.ProyectoId === data.IdPrograma)
+        ?.Proceso?.flatMap((p: any) => p.Eventos)
+        ?.find((ev: any) => ev.CodigoAbreviacion === 'PAGO_REIN');
 
         if (eventoPago) {
           this.recibo_pago.Fecha_pago = moment(eventoPago.FechaFinEvento, 'YYYY-MM-DD')

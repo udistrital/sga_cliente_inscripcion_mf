@@ -642,8 +642,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     }
 
     const evento = this.inscripcionProjects
-      .find( (p:any) => p.ProyectoId === proyecto )?.Evento
-      ?.find( (ev:any) => !ev.Pago && ev.CodigoAbreviacion === "INSCR" );
+      .find( (p:any) => p.ProyectoId === proyecto )
+      ?.Proceso?.flatMap((p: any) => p.Eventos)
+      ?.find( (ev:any) => ev.CodigoAbreviacion === "INSCR" );
     const fechaFinInsc = evento
       ? new Date (evento.FechaFinEvento.replace('Z', '-05:00'))
       : undefined;
@@ -702,13 +703,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         )
         .subscribe({ 
           next: (response: any) => {
-            const r = <any>response;
-            if (
-              response !== null &&
-              response !== '{}' &&
-              r.Type !== 'error' &&
-              r.length !== 0
-            ) {
+            if (response?.Success && response?.Data?.length > 0) {
               resolve(<Array<any>>response.Data);
             } else {
               this.popUpManager.showAlert(
@@ -872,8 +867,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     };
 
     const eventoPago = this.inscripcionProjects
-      .find( (p:any) => p.ProyectoId === proyectoId )?.Evento
-      ?.find( (ev:any) => ev.Pago && ev.CodigoAbreviacion === "INSCR" );
+      .find( (p:any) => p.ProyectoId === proyectoId )
+      ?.Proceso?.flatMap((p: any) => p.Eventos)
+      ?.find( (ev:any) => ev.CodigoAbreviacion === "PAGO_INSC" );
     
     if (eventoPago) {
       inscripcion.FechaPago = moment(
@@ -1050,7 +1046,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.inscripcionProjects = responseCalendario;
     const eventoPago = this.inscripcionProjects
       .find((pr: any) => pr.ProyectoId === this.selectedProject)
-      ?.Evento?.find((ev: any) => ev.Pago && ev.CodigoAbreviacion === 'INSCR');
+      ?.Proceso?.flatMap((p: any) => p.Eventos)
+      ?.find((ev: any) => ev.CodigoAbreviacion === 'PAGO_INSC');
 
     if (eventoPago) {
       this.recibo_pago.Fecha_pago = moment(
