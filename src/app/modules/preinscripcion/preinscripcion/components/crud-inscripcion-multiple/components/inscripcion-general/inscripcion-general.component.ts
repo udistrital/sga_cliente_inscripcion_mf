@@ -1104,6 +1104,10 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
                   inscripcionPut.EstadoInscripcionId = estadoInscripcio;
                   inscripcionPut.TerceroId = this.info_persona_id;
 
+                  if (this.percentage_total >= 100) {
+                    inscripcionPut.ValidacionRequisitos = true;
+                  }
+
                   this.inscripcionMidService
                     .post(
                       'inscripciones/actualizar-inscripcion',
@@ -1122,7 +1126,13 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
                         }
                       },
                       (error: any) => {
-                        if (error.System.Message.includes('duplicate')) {
+                        if (error?.Message?.includes('No se ha completado la validación de requisitos')) {
+                          Swal.fire({
+                            icon: 'warning',
+                            text: 'Debe completar todos los requisitos obligatorios antes de finalizar la inscripción',
+                            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+                          });
+                        } else if (error?.System?.Message?.includes('duplicate')) {
                           Swal.fire({
                             icon: 'info',
                             text: this.translate.instant(
