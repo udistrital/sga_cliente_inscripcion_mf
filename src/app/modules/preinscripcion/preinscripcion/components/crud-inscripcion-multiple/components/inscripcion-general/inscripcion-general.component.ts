@@ -115,7 +115,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   cambioTab = 0;
   nForms!: number;
   SelectedTipoBool: boolean = true;
-  Campo1Control = new FormControl('', [Validators.required]);
+  Campo1Control = new FormControl({ value: '', disabled: true });
   enfasisControl = new FormControl('', [Validators.required]);
 
   percentage_info: number = 0;
@@ -180,6 +180,13 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
   puedeInscribirse: boolean = false;
   soloPuedeVer: boolean = false;
+
+  get nombreProgramaSeleccionado(): string {
+    const prog = this.posgrados?.find(
+      (p: any) => p.ProyectoId === this.selectedProgram
+    );
+    return prog?.NombreProyecto ?? '';
+  }
 
   constructor(
     private listService: ListService,

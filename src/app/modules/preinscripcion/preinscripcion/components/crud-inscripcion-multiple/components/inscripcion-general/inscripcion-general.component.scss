@@ -56,6 +56,12 @@
     text-align: center;
 }
 
+.programa-readonly {
+  .mat-select-value {
+    font-weight: 700;
+  }
+}
+
 .container{
     display: grid;
     gap: 0.5rem;
