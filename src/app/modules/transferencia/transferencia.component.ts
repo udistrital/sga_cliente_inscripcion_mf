@@ -58,6 +58,22 @@ export class TransferenciaComponent implements OnInit {
   displayedColumns = ['recibo', 'concepto', 'programa', 'estadoInscripcion', 'fecha', 'estadoRecibo', 'acciones'];
   dataSource!: MatTableDataSource<any>;
 
+  /**
+   * Determina la clase CSS del indicador de estado del recibo.
+   * Verde solo cuando pagó Y completó la inscripción; amarillo mientras
+   * el usuario aún tenga una acción pendiente (pagar o inscribirse).
+   */
+  getEstadoReciboClass(row: any): string {
+    if (row.EstadoRecibo === 'Pago' && row.Estado?.toUpperCase() === 'INSCRITO') {
+      return 'pago-completo';
+    }
+    if (row.EstadoRecibo === 'Vencido') {
+      return 'vencido';
+    }
+    return 'pendiente-accion';
+  }
+
+
   dataTransferencia: TransferenciaInterna = {
     Periodo: null,
     CalendarioAcademico: null,
