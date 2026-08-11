@@ -114,6 +114,37 @@ mat-card-actions button {
     background-color: var(--color100);
 }
 
+/* Estilos para el indicador de estado de inscripción */
+.status-indicator {
+    margin-top: 0.3em;
+    font-weight: bold;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.3rem;
+    text-align: center;
+}
+.status-indicator.inscrito {
+    color: white;
+    background-color: var(--success-accent);
+}
+.status-indicator.inscripcion-solicitada {
+    color: black;
+    background-color: var(--warning-main, #d9c53a);
+}
+/* Estado del recibo: verde solo cuando el proceso finalizó (pagado + inscrito) */
+.status-indicator.pago-completo {
+    color: white;
+    background-color: var(--success-accent);
+}
+.status-indicator.pendiente-accion {
+    color: black;
+    background-color: var(--warning-main, #d9c53a);
+}
+.status-indicator.vencido {
+    color: white;
+    background-color: var(--danger-base);
+}
+
 @media(width < 550px) {
     mat-card-actions {
       flex-direction: column;
