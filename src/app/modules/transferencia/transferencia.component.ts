@@ -55,7 +55,7 @@ export class TransferenciaComponent implements OnInit {
   periodo!: Periodo;
   periodos: any[] = [];
 
-  displayedColumns = ['recibo', 'concepto', 'programa', 'estadoInscripcion', 'fecha', 'estadoRecibo', 'acciones'];
+  displayedColumns = ['progreso', 'recibo', 'concepto', 'programa', 'estadoInscripcion', 'fecha', 'estadoRecibo', 'descargar', 'acciones', 'inactivar'];
   dataSource!: MatTableDataSource<any>;
 
   /**
@@ -73,6 +73,20 @@ export class TransferenciaComponent implements OnInit {
     return 'pendiente-accion';
   }
 
+  /**
+   * Calcula el porcentaje de progreso del proceso de inscripción:
+   * 20% inscripción solicitada sin pagar, 50% pagado sin inscribirse,
+   * 100% inscrito (proceso finalizado).
+   */
+  getProgreso(row: any): number {
+    if (row.Estado?.toUpperCase() === 'INSCRITO') {
+      return 100;
+    }
+    if (row.EstadoRecibo === 'Pago') {
+      return 50;
+    }
+    return 20;
+  }
 
   dataTransferencia: TransferenciaInterna = {
     Periodo: null,

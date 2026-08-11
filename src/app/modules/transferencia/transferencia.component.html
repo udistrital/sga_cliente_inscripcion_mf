@@ -14,7 +14,19 @@
         </mat-form-field>
         <div class="mat-elevation-z8 contenedor-tabla">
           <table mat-table [dataSource]="dataSource" matSort>
-          
+
+            <ng-container matColumnDef="progreso">
+              <th mat-header-cell *matHeaderCellDef> {{"inscripcion.progreso" | translate}} </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-progress-spinner
+                  mode="determinate"
+                  [value]="getProgreso(row)"
+                  [diameter]="40"
+                  [ngClass]="{'progreso-completo': getProgreso(row) >= 90, 'progreso-pendiente': getProgreso(row) < 90}">
+                </mat-progress-spinner>
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="recibo">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.recibo" | translate}} </th>
               <td mat-cell *matCellDef="let row"> {{row.Recibo}} </td>
@@ -83,7 +95,7 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           
             <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="8">{{"admision.no_data" | translate}}</td>
+              <td class="mat-cell" colspan="10">{{"admision.no_data" | translate}}</td>
             </tr>
           </table>
       
