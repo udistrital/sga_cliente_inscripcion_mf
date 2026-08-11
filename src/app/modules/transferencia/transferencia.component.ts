@@ -22,12 +22,14 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { MatTableDataSource } from '@angular/material/table';
 import { CalendarioMidService } from 'src/app/services/sga_calendario_mid.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
+import { InscripcionService } from 'src/app/services/inscripcion.service';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { FORM_TRANSFERENCIA_INTERNA } from './forms-transferencia';
 import { DialogoDocumentosTransferenciasComponent } from 'src/app/modules/components/dialogo-documentos-transferencias/dialogo-documentos-transferencias.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { firstValueFrom } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-transferencia',
@@ -108,6 +110,7 @@ export class TransferenciaComponent implements OnInit {
     private dialog: MatDialog,
     private terceroMidService: TerceroMidService,
     private inscripcionMidService: InscripcionMidService,
+    private inscripcionService: InscripcionService,
     private calendarioMidService: CalendarioMidService,
     private popUpManager: PopUpManager,
     private userService: UserService,
@@ -1032,6 +1035,34 @@ export class TransferenciaComponent implements OnInit {
 
       this.router.navigate([`solicitud-transferencia/${idInscripcion}/${btoa(data)}`])
     }
+  }
+
+  inactivarRecibo(element: any) {
+    this.inscripcionService.get(`inscripcion/${element.Id}`)
+      .pipe(
+        switchMap((ins: any) => {
+          const payload = {...ins, Activo: false};
+          return this.inscripcionService.put(`inscripcion/`, payload);
+        })
+      )
+      .subscribe({
+        next: (resp) => {
+          this.popUpManager.showAlert(
+            this.translate.instant('GLOBAL.info'),
+            this.translate.instant('inscripcion.actualizar')
+          );
+          this.dataSource.data = this.dataSource.data.filter(
+            x => x.Id !== element.Id
+          );
+          // actualiza la tabla sin recargar la página ni hacer nuevas peticiones al mid
+          this.dataSource._updateChangeSubscription();
+        },
+        error: (error) => {
+          this.popUpManager.showErrorAlert(
+            this.translate.instant('inscripcion.error_registrar_informacion')
+          );
+        }
+      });
   }
 
   applyFilter(event: Event) {
