@@ -14,7 +14,19 @@
         </mat-form-field>
         <div class="mat-elevation-z8 contenedor-tabla">
           <table mat-table [dataSource]="dataSource" matSort>
-          
+
+            <ng-container matColumnDef="progreso">
+              <th mat-header-cell *matHeaderCellDef> {{"inscripcion.progreso" | translate}} </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-progress-spinner
+                  mode="determinate"
+                  [value]="getProgreso(row)"
+                  [diameter]="40"
+                  [ngClass]="{'progreso-completo': getProgreso(row) >= 90, 'progreso-pendiente': getProgreso(row) < 90}">
+                </mat-progress-spinner>
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="recibo">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.recibo" | translate}} </th>
               <td mat-cell *matCellDef="let row"> {{row.Recibo}} </td>
@@ -32,7 +44,14 @@
           
             <ng-container matColumnDef="estadoInscripcion">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.estado" | translate}} </th>
-              <td mat-cell *matCellDef="let row"> {{row.Estado}} </td>
+              <td mat-cell *matCellDef="let row">
+                <div class="status-indicator" [ngClass]="{
+                  'inscrito': row.Estado?.toUpperCase() === 'INSCRITO',
+                  'inscripcion-solicitada': row.Estado?.toUpperCase() === 'INSCRIPCIÓN SOLICITADA'
+                }">
+                  {{row.Estado}}
+                </div>
+              </td>
             </ng-container>
           
             <ng-container matColumnDef="fecha">
@@ -42,36 +61,54 @@
           
             <ng-container matColumnDef="estadoRecibo">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.estado_recibo" | translate}} </th>
-              <td mat-cell *matCellDef="let row"> {{row.EstadoRecibo}} </td>
-            </ng-container>
-          
-            <ng-container matColumnDef="acciones" stickyEnd>
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"GLOBAL.acciones" | translate}} </th>
               <td mat-cell *matCellDef="let row">
-                <div class="contenedor-acciones">
-                  <button mat-icon-button [matMenuTriggerFor]="menu" class="boton-acciones"
-                    aria-label="Example icon-button with a menu">
-                    <mat-icon>more_vert</mat-icon>
-                  </button>
-                  <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="descargarArchivo(row)" [disabled]="row.Descargar.disabled">
-                      <mat-icon>download</mat-icon>
-                      <span>{{"GLOBAL.tooltip_descargar" | translate}}</span>
-                    </button>
-                    <button mat-menu-item (click)="solicitar(row)" [disabled]="row.Opcion.disabled">
-                      <mat-icon>add_circle</mat-icon>
-                      <span>{{"inscripcion.inscribirse" | translate}}</span>
-                    </button>
-                  </mat-menu>
+                <div class="status-indicator" [ngClass]="getEstadoReciboClass(row)">
+                  {{row.EstadoRecibo}}
                 </div>
               </td>
             </ng-container>
           
+            <ng-container matColumnDef="descargar">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.descargar" | translate}} </th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button color="primary"
+                  [disabled]="row.Descargar.disabled"
+                  [matTooltip]="'GLOBAL.tooltip_descargar' | translate"
+                  (click)="descargarArchivo(row)">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="acciones" stickyEnd>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"GLOBAL.acciones" | translate}} </th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-flat-button color="accent" class="boton-accion"
+                  [disabled]="row.Opcion.disabled"
+                  (click)="solicitar(row)">
+                  <mat-icon>{{ row.EstadoRecibo === 'Pendiente pago' ? 'attach_money' : 'add_circle' }}</mat-icon>
+                  {{ (row.EstadoRecibo === 'Pendiente pago' ? 'inscripcion.pagar_recibo' : 'inscripcion.inscribirse') | translate }}
+                </button>
+              </td>
+            </ng-container>
+          
+            <ng-container matColumnDef="inactivar">
+              <th mat-header-cell *matHeaderCellDef> {{"inscripcion.inactivar" | translate}} </th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button color="warn"
+                  *ngIf="row.EstadoRecibo !== 'Pago'"
+                  [matTooltip]="'inscripcion.inactivar_tooltip' | translate"
+                  (click)="inactivarRecibo(row)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           
             <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="8">{{"admision.no_data" | translate}}</td>
+              <td class="mat-cell" colspan="10">{{"admision.no_data" | translate}}</td>
             </tr>
           </table>
       
