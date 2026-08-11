@@ -145,6 +145,14 @@ mat-card-actions button {
     background-color: var(--danger-base);
 }
 
+/* Colores del indicador de progreso del proceso */
+.progreso-pendiente ::ng-deep circle {
+    stroke: var(--danger-base);
+}
+.progreso-completo ::ng-deep circle {
+    stroke: var(--success-accent);
+}
+
 @media(width < 550px) {
     mat-card-actions {
       flex-direction: column;
