@@ -987,25 +987,9 @@ export class TransferenciaComponent implements OnInit {
         this.recibo_pago.ProyectoAspirante = data.Programa;
         this.recibo_pago.Comprobante = data.Recibo;
 
-        const responseCalendario: any = await this.recuperarCalendarioProyecto(
-          data.Nivel, this.periodo.Id
-        );
-
-        const eventoPago = responseCalendario
-        .find((pr: any) => pr.ProyectoId === data.IdPrograma)
-        ?.Proceso?.flatMap((p: any) => p.Eventos)
-        ?.find((ev: any) => ev.CodigoAbreviacion === 'PAGO_REIN');
-
-        if (eventoPago) {
-          this.recibo_pago.Fecha_pago = moment(eventoPago.FechaFinEvento, 'YYYY-MM-DD')
-            .format('DD/MM/YYYY');
-        } else {
-          this.popUpManager.showAlert(
-            this.translate.instant('GLOBAL.info'),
-            this.translate.instant('inscripcion.no_fechas_pago')
-          );
-          return;
-        }
+        this.recibo_pago.Fecha_pago = data.FechaExtraordinario
+          ? moment(data.FechaExtraordinario).format('DD/MM/YYYY')
+          : '';
 
 
         const nivelMap: Record<number, string> = {

@@ -1038,23 +1038,9 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     };
     this.parametro = nivelMap[this.selectedLevel];
 
-    const responseCalendario: any = await this.recuperarCalendarioProyecto(
-      this.selectedLevel,
-      this.periodo.Id
-    );
-
-    this.inscripcionProjects = responseCalendario;
-    const eventoPago = this.inscripcionProjects
-      .find((pr: any) => pr.ProyectoId === this.selectedProject)
-      ?.Proceso?.flatMap((p: any) => p.Eventos)
-      ?.find((ev: any) => ev.CodigoAbreviacion === 'PAGO_INSC');
-
-    if (eventoPago) {
-      this.recibo_pago.Fecha_pago = moment(
-        eventoPago.FechaFinEvento,
-        'YYYY-MM-DD'
-      ).format('DD/MM/YYYY');
-    }
+    this.recibo_pago.Fecha_pago = data.FechaExtraordinario
+      ? moment(data.FechaExtraordinario).format('DD/MM/YYYY')
+      : '';
 
     const parametro = await this.buscarParametrosPeriodo(
       this.parametro,
