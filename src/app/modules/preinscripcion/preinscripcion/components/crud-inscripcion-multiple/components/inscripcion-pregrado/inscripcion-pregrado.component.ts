@@ -354,8 +354,7 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
     let periodo = 59
     this.calendarioMidService.get('calendario-proyecto/calendario/proyecto?id-nivel=' + IdNivel + '&id-periodo=' + periodo).subscribe(
       response => {
-        const r = <any>response;
-        if (response !== null && response !== '{}' && r.Type !== 'error' && r.length !== 0) {
+        if (response?.Success && response?.Data?.length > 0) {
           const inscripcionP = <Array<any>>response.Data;
           this.posgrados = inscripcionP;
           this.selectedValue = parseInt(sessionStorage.getItem('ProgramaAcademicoId')!, 10);

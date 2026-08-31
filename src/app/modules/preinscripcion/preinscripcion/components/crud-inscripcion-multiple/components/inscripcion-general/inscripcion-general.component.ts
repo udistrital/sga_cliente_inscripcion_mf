@@ -115,7 +115,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
   cambioTab = 0;
   nForms!: number;
   SelectedTipoBool: boolean = true;
-  Campo1Control = new FormControl('', [Validators.required]);
+  Campo1Control = new FormControl({ value: '', disabled: true });
   enfasisControl = new FormControl('', [Validators.required]);
 
   percentage_info: number = 0;
@@ -180,6 +180,13 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
   puedeInscribirse: boolean = false;
   soloPuedeVer: boolean = false;
+
+  get nombreProgramaSeleccionado(): string {
+    const prog = this.posgrados?.find(
+      (p: any) => p.ProyectoId === this.selectedProgram
+    );
+    return prog?.NombreProyecto ?? '';
+  }
 
   constructor(
     private listService: ListService,
@@ -255,13 +262,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
       )
       .subscribe({
         next: (response) => {
-          const r = <any>response;
-          if (
-            response !== null &&
-            response !== '{}' &&
-            r.Type !== 'error' &&
-            r.length !== 0
-          ) {
+          if (response?.Success && response?.Data?.length > 0) {
             const inscripcionP = <Array<any>>response.Data;
             this.posgrados = inscripcionP;
             this.selectedProgram = parseInt(
@@ -324,8 +325,9 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
         (EventsProgram) => EventsProgram.ProyectoId == this.selectedProgram
       );
       if (EventosPrograma) {
-        EventosPrograma.Evento.forEach( (ev: { Pago: boolean; CodigoAbreviacion: string; FechaFinEvento: string; }) => {
-          if (ev.Pago === false && ev.CodigoAbreviacion === "INSCR"){
+        const eventos = EventosPrograma.Proceso?.flatMap((p: any) => p.Eventos) || [];
+        eventos.forEach( (ev: { CodigoAbreviacion: string; FechaFinEvento: string; }) => {
+          if (ev.CodigoAbreviacion === "INSCR"){
             fechafin = new Date(
               ev.FechaFinEvento.replace('Z', '-05:00')
             );
@@ -333,7 +335,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
           }
         });
 
-        if (EventosPrograma.Evento?.length > 0 && fechafin instanceof Date) {
+        if (eventos.length > 0 && fechafin instanceof Date) {
           const realhora = await this.timeService.getDate();
           if (fechafin && fechafin >= realhora) {
             this.puedeInscribirse = true;
