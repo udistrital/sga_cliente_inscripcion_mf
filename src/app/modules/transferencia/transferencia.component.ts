@@ -448,16 +448,22 @@ export class TransferenciaComponent implements OnInit {
     });
   }
 
-  loadPeriodo() {
+  loadPeriodo(conservarPeriodo?: boolean) {
     return new Promise((resolve, reject) => {
       this.inscripcionMidService.get('transferencia/consultar-periodo').subscribe({
         next: (response: any) => {
           if (response.Success) {
+            const periodoActual = conservarPeriodo
+              ? this.dataTransferencia.Periodo
+              : null;
             this.formTransferencia.campos.forEach((campo: any) => {
               if (campo.etiqueta === 'select') {
                 campo.opciones = response.Data[campo.nombre];
                 if (campo.nombre === 'Periodo') {
-                  campo.valor = campo.opciones[0];
+                  campo.valor = periodoActual ?? campo.opciones[0];
+                } else if (conservarPeriodo && campo.nombre === 'CalendarioAcademico') {
+                  campo.valor = null;
+                  campo.opciones = [];
                 }
               }
             });
@@ -492,6 +498,16 @@ export class TransferenciaComponent implements OnInit {
     this.formTransferencia.campos.forEach((campo: any) => {
       (this.dataTransferencia as any)[campo.nombre] = campo.valor;
     });
+
+    if (event.nombre === 'Periodo' && !this.recibo && event.valor != null) {
+      this.formTransferencia.campos.forEach((campo: any) => {
+        if (campo.nombre === 'ProyectoCurricular' || campo.nombre === 'TipoInscripcion') {
+          campo.opciones = null;
+          campo.ocultar = true;
+        }
+      });
+      await this.loadPeriodo(true);
+    }
 
     if (event.nombre === 'CalendarioAcademico' && !this.recibo && event.valor != null) {
 
@@ -660,8 +676,8 @@ export class TransferenciaComponent implements OnInit {
       console.error("Fallo en obtención del proyecto: ", proyecto);
     }
 
-    let periodo = this.periodo['Id'];
-    const resCalendario:any = await this.recuperarCalendarioProyecto(this.dataTransferencia.TipoInscripcion!.NivelId, periodo);
+    const periodoId = this.dataTransferencia.Periodo?.Id ?? this.periodo.Id;
+    const resCalendario:any = await this.recuperarCalendarioProyecto(this.dataTransferencia.TipoInscripcion!.NivelId, periodoId);
 
     if (resCalendario === null || resCalendario.length === 0 || resCalendario === undefined) {
       this.popUpManager.showAlert(
@@ -983,7 +999,8 @@ export class TransferenciaComponent implements OnInit {
           this.info_info_persona.SegundoApellido
         ].filter(Boolean).join(' ');
         this.recibo_pago.DocumentoDelAspirante =this.info_info_persona.NumeroIdentificacion;
-        this.recibo_pago.Periodo = this.periodo.Nombre;
+        const periodoSeleccionado = this.dataTransferencia.Periodo ?? this.periodo;
+        this.recibo_pago.Periodo = periodoSeleccionado.Nombre;
         this.recibo_pago.ProyectoAspirante = data.Programa;
         this.recibo_pago.Comprobante = data.Recibo;
 
@@ -998,7 +1015,7 @@ export class TransferenciaComponent implements OnInit {
         };
         const parametro_nivel = nivelMap[data.Nivel];
 
-        const parametro = await this.buscarParametrosPeriodo(parametro_nivel, this.periodo.Year);
+        const parametro = await this.buscarParametrosPeriodo(parametro_nivel, periodoSeleccionado.Year);
         this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre + ' - ' + (data.Concepto).toUpperCase();
         const valor = JSON.parse(parametro[0].Valor);
         this.recibo_pago.ValorDerecho = valor.Costo;

@@ -14,7 +14,7 @@ export const FORM_TRANSFERENCIA_INTERNA = {
             tipo: 'Periodo',
             key: 'Nombre',
             opciones: [],
-            deshabilitar: true,
+            deshabilitar: false,
         },
         {
             etiqueta: 'select',

@@ -16,7 +16,6 @@ import {
 import { MatSelect } from '@angular/material/select';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment-timezone';
-import * as momentTimezone from 'moment-timezone';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { Inscripcion } from 'src/app/models/inscripcion/inscripcion';
@@ -107,6 +106,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   showTipoInscripcion: boolean;
   showInfo: boolean;
   showNew: boolean;
+  showNivel: boolean;
   showSublevel: boolean;
   showPeriodo: boolean = false;
   showInscription: boolean;
@@ -135,6 +135,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   recibo_generado: any;
   recibos_pendientes!: number;
   parametros_pago: any;
+  periodos_activos: Periodo[] = [];
 
   arr_proyecto: InstitucionEnfasis[] = [];
 
@@ -171,6 +172,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showTipoInscripcion = false;
     this.showInfo = false;
     this.showNew = false;
+    this.showNivel = false;
     this.showSublevel = false;
     this.showInscription = true;
 
@@ -180,6 +182,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   async ngOnInit() {
     // Inicializando formulario de preinscripción
     this.preinscripcionForm = this.fb.group({
+      periodo: ['', Validators.required],
       nivel: ['', Validators.required],
       proyecto: ['', Validators.required],
       tipoInscripcion: ['', Validators.required],
@@ -453,6 +456,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     //   .tz(inscripcion.FechaCreacion, 'America/Bogota')
     //   .format('DD-MM-YYYY hh:mm:ss');
     inscripcion.FechaCreacion = inscripcion.FechaCreacion.split('.')[0];
+    inscripcion.FechaExtraordinario = inscripcion.FechaExtraordinario.split('T')[0];
     inscripcion.ProgramaAcademicoId = proyecto.Nombre;
     let level = proyecto.NivelFormacionId.NivelFormacionPadreId;
     if (level == null || level == undefined) {
@@ -532,15 +536,39 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       return false;
     }
   }
+  async onSelectPeriodo() {
+    const selectedPeriodo = this.preinscripcionForm.get('periodo')?.value;
+    this.preinscripcionForm.reset({
+      periodo: selectedPeriodo,
+      nivel: '',
+      proyecto: '',
+      tipoInscripcion: '',
+    });
+    this.showNivel = false;
+    this.showTipoInscripcion = false;
+    this.showInfo = false;
+
+    if (selectedPeriodo === undefined) {
+      this.popUpManager.showInfoToast(
+        this.translate.instant('inscripcion.erro_selec_nivel')
+      );
+    } else {
+      this.showNivel = true;
+    }
+  }
+
+  private getPeriodoSeleccionado(): Periodo {
+    const periodoId = this.preinscripcionForm.get('periodo')?.value;
+    return this.periodos_activos.find(p => p.Id === periodoId) ?? this.periodo;
+  }
 
   async onSelectLevel() {
     // Capturar el id del nivel
     const selectedLevel = this.preinscripcionForm.get('nivel')?.value;
 
     // Limpiar todos los controles del FormGroup y resetear valores
-    this.preinscripcionForm.reset({
-      nivel: selectedLevel,
-      subNivel: '',
+    this.preinscripcionForm.patchValue({
+      // subNivel: '',
       proyecto: '',
       tipoInscripcion: '',
     });
@@ -673,10 +701,11 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     this.showInfo = false;
 
     const selectedNivel = this.preinscripcionForm.get('nivel')?.value;
+    const selectedPeriodo = this.preinscripcionForm.get('periodo')?.value;
 
     const resCalendario: any = await this.recuperarCalendarioProyecto(
       selectedNivel,
-      this.periodo.Id
+      selectedPeriodo
     );
 
     if (
@@ -841,6 +870,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   async generar_inscripcion() {
     const nivelId = this.preinscripcionForm.get('nivel')?.value;
     const proyectoId = this.preinscripcionForm.get('proyecto')?.value;
+    const periodoSeleccionado = this.getPeriodoSeleccionado();
     const tipoInscripcionId =
       this.preinscripcionForm.get('tipoInscripcion')?.value;
 
@@ -851,7 +881,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       Correo: JSON.parse(atob(localStorage.getItem('id_token')!.split('.')[1]))
         .email,
       PersonaId: Number(this.info_persona_id),
-      PeriodoId: this.periodo.Id,
+      PeriodoId: periodoSeleccionado.Id,
       Nivel: parseInt(nivelId, 10),
       ProgramaAcademicoId: parseInt(proyectoId, 10),
       ProgramaAcademicoCodigo: parseInt(
@@ -860,8 +890,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
         10
       ),
       TipoInscripcionId: parseInt(tipoInscripcionId, 10),
-      Year: this.periodo.Year,
-      Periodo: parseInt(this.periodo.Ciclo, 10),
+      Year: periodoSeleccionado.Year,
+      Periodo: parseInt(periodoSeleccionado.Ciclo, 10),
       FechaPago: '',
       TipoCupo: this.tipoCupo,
     };
@@ -1028,7 +1058,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       .join(' ');
     this.recibo_pago.DocumentoDelAspirante =
       this.info_info_persona.NumeroIdentificacion;
-    this.recibo_pago.Periodo = this.periodo.Nombre;
+    const periodoSeleccionado = this.getPeriodoSeleccionado();
+    this.recibo_pago.Periodo = periodoSeleccionado.Nombre;
     this.recibo_pago.ProyectoAspirante = data['ProgramaAcademicoId'];
     this.recibo_pago.Comprobante = data['ReciboInscripcion'][0];
 
@@ -1044,7 +1075,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
     const parametro = await this.buscarParametrosPeriodo(
       this.parametro,
-      this.periodo.Year
+      periodoSeleccionado.Year
     );
     this.recibo_pago.Descripcion = parametro[0].ParametroId.Nombre;
 
@@ -1214,6 +1245,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
           (response: any) => {
             if (response.Status && response.Data) {
               this.periodo = response['Data'][0];
+              this.periodos_activos = response['Data'];
               window.localStorage.setItem(
                 'IdPeriodo',
                 String(this.periodo['Id'])
