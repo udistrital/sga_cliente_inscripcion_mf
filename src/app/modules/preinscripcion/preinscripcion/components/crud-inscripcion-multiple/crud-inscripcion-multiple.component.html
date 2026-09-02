@@ -116,8 +116,16 @@
     <mat-card *ngIf="showNew">
       <mat-card-content>
         <form [formGroup]="preinscripcionForm">
-          <!-- select Nivel -->
+          <!-- select periodo -->
           <mat-form-field *ngIf="showNew">
+            <mat-select formControlName="periodo" placeholder="{{ 'GLOBAL.periodo' | translate }}" (selectionChange)="onSelectPeriodo()">
+              <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
+              <mat-option *ngFor="let periodo of periodos" [value]="periodo.Id">{{ periodo.Nombre }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="preinscripcionForm.get('periodo')?.hasError('required')">{{ "inscripcion.erro_selec_nivel" | translate }}</mat-error>
+          </mat-form-field>
+          <!-- select Nivel -->
+          <mat-form-field *ngIf="showNivel">
             <mat-select formControlName="nivel" placeholder="{{ 'calendario.para' | translate }}" (selectionChange)="onSelectLevel()">
               <mat-option>--{{ "GLOBAL.seleccionar" | translate }}--</mat-option>
               <mat-option *ngFor="let nivel of niveles" [value]="nivel.Id">{{ nivel.Nombre }}</mat-option>

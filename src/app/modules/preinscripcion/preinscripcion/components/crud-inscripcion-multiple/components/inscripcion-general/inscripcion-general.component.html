@@ -47,7 +47,7 @@
 
         <div class="form-grid2">
           <div class="form-col1">
-            <mat-form-field class="form-field">
+            <mat-form-field class="form-field programa-readonly">
               <mat-label>{{
                 "inscripcion.aviso_programa" | translate
               }}</mat-label>
@@ -56,11 +56,12 @@
                 [(ngModel)]="selectedProgram"
                 placeholder="{{ 'inscripcion.aviso_programa' | translate }}"
                 (ngModelChange)="tipo_inscripcion('programa')"
+                [disabled]="true"
               >
-                <mat-option>--Seleccionar--</mat-option>
                 <mat-option
                   *ngFor="let item of posgrados"
                   [value]="item.ProyectoId"
+                  disabled="true"
                 >
                   {{ item.NombreProyecto }}
                 </mat-option>
