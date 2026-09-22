@@ -1048,8 +1048,7 @@ export class InscripcionGeneralComponent implements OnInit, OnChanges {
 
   realizarInscripcion() {
     if (
-      this.Campo1Control.status == 'VALID' &&
-      this.enfasisControl.status == 'VALID'
+      !this.tieneEnfasis || this.enfasisControl.status === 'VALID'
     ) {
       if (this.metadato_error != undefined || this.metadato_error != null) {
         // mensaje de error y desactivar producto en caso de subirse sin metadatos
