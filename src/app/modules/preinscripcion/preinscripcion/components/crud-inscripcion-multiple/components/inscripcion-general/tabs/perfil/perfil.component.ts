@@ -7,6 +7,8 @@ import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 import { PivotDocument } from 'src/app/services/pivot_document.service';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { ZipManagerService } from 'src/app/services/zip-manager.service';
+// @ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
   selector: 'ngx-perfil',
@@ -170,6 +172,7 @@ export class PerfilComponent implements OnInit {
         (resG: any) => {
           resG.EstadoInscripcionId.Id = 5; // id inscrito.
           resG.TerceroId = this.info_persona_id;
+          resG.ValidacionRequisitos = true;
           this.inscripcionMidService
             .post('inscripciones/actualizar-inscripcion', resG)
             .subscribe(
@@ -186,10 +189,18 @@ export class PerfilComponent implements OnInit {
                   );
                 }
               },
-              (err) => {
-                this.popUpManager.showErrorAlert(
-                  this.translate.instant('inscripcion.fallo_carga_mensaje')
-                );
+              (err: any) => {
+                if (err?.Message?.includes('No se ha completado la validación de requisitos')) {
+                  Swal.fire({
+                    icon: 'warning',
+                    text: 'Debe completar todos los requisitos obligatorios antes de finalizar la inscripción',
+                    confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+                  });
+                } else {
+                  this.popUpManager.showErrorAlert(
+                    this.translate.instant('inscripcion.fallo_carga_mensaje')
+                  );
+                }
               }
             );
         },
