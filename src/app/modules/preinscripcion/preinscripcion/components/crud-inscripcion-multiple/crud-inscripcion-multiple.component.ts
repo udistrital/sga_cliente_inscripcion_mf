@@ -396,8 +396,13 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       this.projectService.get('nivel_formacion').subscribe(
         (response: NivelFormacion[]) => {
           if (response !== null) {
+            const codigosNivel = ['PRE', 'POS'];
             this.niveles = response.filter(
-              (nivel: NivelFormacion) => nivel.Id === 2 );
+              (nivel: NivelFormacion) =>
+                nivel.CodigoAbreviacion
+                  ? codigosNivel.includes(nivel.CodigoAbreviacion)
+                  : [1, 2].includes(nivel.Id)
+            );
           }
           resolve(response);
         },
