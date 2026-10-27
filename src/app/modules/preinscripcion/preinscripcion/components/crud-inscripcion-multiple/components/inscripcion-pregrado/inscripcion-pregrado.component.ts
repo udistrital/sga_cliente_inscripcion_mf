@@ -1113,6 +1113,10 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
               inscripcionPut.EstadoInscripcionId = estadoInscripcio;
               inscripcionPut.TerceroId = this.info_persona_id;
 
+              if (this.percentage_total >= 100) {
+                inscripcionPut.ValidacionRequisitos = true;
+              }
+
               console.log("Inscripcionnnnnnnnnnnnnnnnnnn", response[0])
               console.log("Inscripcionnnnnnnnnnnnnnnnnnn", inscripcionPut)
 
@@ -1127,7 +1131,13 @@ export class InscripcionPregradoComponent implements OnInit, OnChanges{
                   }
                 },
                   (error: any) => {
-                    if (error.System.Message.includes('duplicate')) {
+                    if (error?.Message?.includes('No se ha completado la validación de requisitos')) {
+                      Swal.fire({
+                        icon: 'warning',
+                        text: 'Debe completar todos los requisitos obligatorios antes de finalizar la inscripción',
+                        confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+                      });
+                    } else if (error?.System?.Message?.includes('duplicate')) {
                       Swal.fire({
                         icon: 'info',
                         text: this.translate.instant('inscripcion.error_update_programa_seleccionado'),

@@ -763,6 +763,7 @@
         "placeholder_motivo_retiro_reintegro": "Describe the reason for your withdrawal from the academic program",
         "no_documentos_proyecto": "El proyecto no tiene documentos definidos, contacte al proyecto",
         "tu_progreso": "Your progress",
+        "carga_documentos_expediente": "Loading application documents",
         "examen_estado": "State exam",
         "informacion_academica": "Academic Information",
         "datos_acudiente": "Data on guardians/family",
