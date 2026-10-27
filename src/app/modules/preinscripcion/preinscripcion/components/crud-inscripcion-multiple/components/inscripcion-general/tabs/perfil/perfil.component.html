@@ -308,7 +308,13 @@
 </main>
 
 <footer class="margin-y">
-  <progress-bar class="margin-y" [value]="progressDownloadDocs"> </progress-bar>
+  <div class="margin-y" *ngIf="triggeredDownload && progressDownloadDocs < 100">
+    <p>{{ "inscripcion.carga_documentos_expediente" | translate }}: {{ progressDownloadDocs }}%</p>
+    <mat-progress-bar
+      [value]="progressDownloadDocs"
+      [attr.aria-label]="'inscripcion.carga_documentos_expediente' | translate"
+    ></mat-progress-bar>
+  </div>
 
   <!-- SECCION DE ALERTAS INFORMATIVAS -->
   <section *ngIf="estado_inscripcion == 'INSCRITO'">
