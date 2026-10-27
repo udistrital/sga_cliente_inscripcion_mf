@@ -292,6 +292,7 @@ export class PerfilComponent implements OnInit {
           },
           (e) => {
             this.progressDownloadDocs = 0;
+            this.triggeredDownload = false;
           }
         );
     }
