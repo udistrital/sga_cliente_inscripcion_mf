@@ -33,9 +33,10 @@ import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 import { AnyService } from 'src/app/services/any.service';
 
 @Component({
-  selector: 'ngx-crud-produccion-academica',
-  templateUrl: './crud-produccion-academica.component.html',
-  styleUrls: ['./crud-produccion-academica.component.scss'],
+    selector: 'ngx-crud-produccion-academica',
+    templateUrl: './crud-produccion-academica.component.html',
+    styleUrls: ['./crud-produccion-academica.component.scss'],
+    standalone: false
 })
 export class CrudProduccionAcademicaComponent implements OnInit {
   produccion_academica_selected!: ProduccionAcademicaPost;

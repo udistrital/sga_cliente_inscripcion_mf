@@ -12,9 +12,10 @@ import { ZipManagerService } from 'src/app/services/zip-manager.service';
 import { POR_DEFINIR } from '../../constants';
 
 @Component({
-  selector: 'ngx-view-documento-programa',
-  templateUrl: './view-documento-programa.component.html',
-  styleUrls: ['./view-documento-programa.component.scss']
+    selector: 'ngx-view-documento-programa',
+    templateUrl: './view-documento-programa.component.html',
+    styleUrls: ['./view-documento-programa.component.scss'],
+    standalone: false
 })
 export class ViewDocumentoProgramaComponent implements OnInit {
   displayedColumns: string[] = ['documento', 'estado', 'observacion', 'soporte'];

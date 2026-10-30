@@ -16,9 +16,10 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
-  selector: 'ngx-crud-informacion-familiar',
-  templateUrl: './crud-informacion-familiar.component.html',
-  styleUrls: ['./crud-informacion-familiar.component.scss'],
+    selector: 'ngx-crud-informacion-familiar',
+    templateUrl: './crud-informacion-familiar.component.html',
+    styleUrls: ['./crud-informacion-familiar.component.scss'],
+    standalone: false
 })
 export class CrudInformacionFamiliarComponent implements OnInit {
   informacion_contacto_id!: number;

@@ -1,20 +1,28 @@
 <div class="margin-y">
-    <div *ngIf="!denied_acces">
-        <ngx-dinamicform [normalform]="formInfoCaracteristica" [modeloData]="info_info_caracteristica"
-            (result)="validarForm($event)" [clean]="clean" (interlaced)="getSeleccion($event)"
-            (percentage)="setPercentage($event)">
-        </ngx-dinamicform>
-        <div class="alert info margin-y" *ngIf="mensaje_discapcidades && !mensaje_poblacion_discapcidades">
-            <mat-icon class="icon">info</mat-icon>
-            {{ 'inscripcion.alerta_discapacidades' | translate }}
+  @if (!denied_acces) {
+    <div>
+      <ngx-dinamicform [normalform]="formInfoCaracteristica" [modeloData]="info_info_caracteristica"
+        (result)="validarForm($event)" [clean]="clean" (interlaced)="getSeleccion($event)"
+        (percentage)="setPercentage($event)">
+      </ngx-dinamicform>
+      @if (mensaje_discapcidades && !mensaje_poblacion_discapcidades) {
+        <div class="alert info margin-y">
+          <mat-icon class="icon">info</mat-icon>
+          {{ 'inscripcion.alerta_discapacidades' | translate }}
         </div>
-        <div class="alert info margin-y" *ngIf="mensaje_poblacion && !mensaje_poblacion_discapcidades">
-            <mat-icon class="icon">info</mat-icon>
-            {{ 'inscripcion.alerta_poblacion' | translate }}
+      }
+      @if (mensaje_poblacion && !mensaje_poblacion_discapcidades) {
+        <div class="alert info margin-y">
+          <mat-icon class="icon">info</mat-icon>
+          {{ 'inscripcion.alerta_poblacion' | translate }}
         </div>
-        <div class="alert info margin-y" *ngIf="mensaje_poblacion_discapcidades">
-            <mat-icon class="icon">info</mat-icon>
-            {{ 'inscripcion.alerta_poblacion_discapacidades' | translate }}
+      }
+      @if (mensaje_poblacion_discapcidades) {
+        <div class="alert info margin-y">
+          <mat-icon class="icon">info</mat-icon>
+          {{ 'inscripcion.alerta_poblacion_discapacidades' | translate }}
         </div>
+      }
     </div>
+  }
 </div>

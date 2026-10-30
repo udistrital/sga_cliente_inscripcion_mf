@@ -5,7 +5,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { validateLang } from 'src/app/app.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 //import { ModalComponent } from './components/modal/modal.component';
-//import multiMonthPlugin from '@fullcalendar/multimonth'
 import { OikosService } from 'src/app/services/oikos.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import Swal from 'sweetalert2';
@@ -36,9 +35,10 @@ interface Proyecto {
 }
 
 @Component({
-  selector: 'ngx-legalizacion-matricula',
-  templateUrl: './legalizacion-matricula.component.html',
-  styleUrls: ['./legalizacion-matricula.component.scss']
+    selector: 'ngx-legalizacion-matricula',
+    templateUrl: './legalizacion-matricula.component.html',
+    styleUrls: ['./legalizacion-matricula.component.scss'],
+    standalone: false
 })
 export class LegalizacionMatriculaComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;

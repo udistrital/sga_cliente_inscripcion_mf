@@ -11,9 +11,10 @@ import { ZipManagerService } from 'src/app/services/zip-manager.service';
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
-  selector: 'ngx-perfil',
-  templateUrl: './perfil.component.html',
-  styleUrls: ['./perfil.component.scss'],
+    selector: 'ngx-perfil',
+    templateUrl: './perfil.component.html',
+    styleUrls: ['./perfil.component.scss'],
+    standalone: false
 })
 export class PerfilComponent implements OnInit {
   private onDestroy$ = new Subject<void>();

@@ -29,9 +29,10 @@ import { POR_DEFINIR } from '../../preinscripcion/preinscripcion/components/crud
 
 
 @Component({
-  selector: 'app-legalizacion-matricula-aspirante',
-  templateUrl: './legalizacion-matricula-aspirante.component.html',
-  styleUrls: ['./legalizacion-matricula-aspirante.component.scss'],
+    selector: 'app-legalizacion-matricula-aspirante',
+    templateUrl: './legalizacion-matricula-aspirante.component.html',
+    styleUrls: ['./legalizacion-matricula-aspirante.component.scss'],
+    standalone: false
 })
 export class LegalizacionMatriculaAspiranteComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;

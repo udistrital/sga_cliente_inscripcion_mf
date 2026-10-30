@@ -8,14 +8,14 @@
       fullWidth
       [selectedIndex]="selected"
       (selectedTabChange)="tabChanged($event)"
-    >
+      >
       <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
         <button
           class="margin-y"
           (click)="onCreate()"
           mat-flat-button
           color="accent"
-        >
+          >
           <mat-icon>add</mat-icon>
           {{ "GLOBAL.agregar" | translate }}
         </button>
@@ -110,22 +110,24 @@
         </div>
       </mat-tab>
       <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
-        <div *ngIf="selected == 1">
-          <ngx-crud-formacion-academica
-            [info_formacion_academica_id]="uid"
-            [info_proyecto_id]="pid"
-            [info_id_formacion]="id"
-            [edit_status]="UpdateInfo"
-            (eventChange)="onChange($event)"
-            (result)="getPercentage($event)"
-            (updateFormacion)="ngOnInit()"
-          >
-          </ngx-crud-formacion-academica>
-          <button (click)="irAIndexTab(0)" mat-flat-button color="primary">
-            <mat-icon>arrow_back_ios</mat-icon>
-            <p class="mt-1">{{ "GLOBAL.regresar" | translate }}</p>
-          </button>
-        </div>
+        @if (selected == 1) {
+          <div>
+            <ngx-crud-formacion-academica
+              [info_formacion_academica_id]="uid"
+              [info_proyecto_id]="pid"
+              [info_id_formacion]="id"
+              [edit_status]="UpdateInfo"
+              (eventChange)="onChange($event)"
+              (result)="getPercentage($event)"
+              (updateFormacion)="ngOnInit()"
+              >
+            </ngx-crud-formacion-academica>
+            <button (click)="irAIndexTab(0)" mat-flat-button color="primary">
+              <mat-icon>arrow_back_ios</mat-icon>
+              <p class="mt-1">{{ "GLOBAL.regresar" | translate }}</p>
+            </button>
+          </div>
+        }
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>

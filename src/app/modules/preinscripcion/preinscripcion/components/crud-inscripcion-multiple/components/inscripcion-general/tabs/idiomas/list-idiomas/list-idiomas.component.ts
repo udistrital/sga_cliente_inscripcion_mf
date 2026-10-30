@@ -12,9 +12,10 @@ import { Store } from '@ngrx/store';
 import { IAppState } from 'src/app/utils/reducers/app.state';
 
 @Component({
-  selector: 'ngx-list-idiomas',
-  templateUrl: './list-idiomas.component.html',
-  styleUrls: ['./list-idiomas.component.scss'],
+    selector: 'ngx-list-idiomas',
+    templateUrl: './list-idiomas.component.html',
+    styleUrls: ['./list-idiomas.component.scss'],
+    standalone: false
 })
 export class ListIdiomasComponent implements OnInit {
   uid!: number;

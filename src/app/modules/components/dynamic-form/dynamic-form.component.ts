@@ -9,9 +9,10 @@ import { AnyService } from 'src/app/services/any.service';
 import { DialogPreviewFileComponent } from '../dialog-preview-file/dialog-preview-file.component';
 
 @Component({
-  selector: 'ngx-dinamicform',
-  templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.scss']
+    selector: 'ngx-dinamicform',
+    templateUrl: './dynamic-form.component.html',
+    styleUrls: ['./dynamic-form.component.scss'],
+    standalone: false
 })
 export class DynamicFormComponent implements OnInit, OnChanges{
   

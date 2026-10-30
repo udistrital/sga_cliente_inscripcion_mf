@@ -9,9 +9,10 @@ import { UserService } from 'src/app/services/users.service';
 import { FORM_DOCUMENTO_PROGRAMA } from './form-documento_programa';
 
 @Component({
-  selector: 'ngx-crud-documento-programa',
-  templateUrl: './crud-documento-programa.component.html',
-  styleUrls: ['./crud-documento-programa.component.scss']
+    selector: 'ngx-crud-documento-programa',
+    templateUrl: './crud-documento-programa.component.html',
+    styleUrls: ['./crud-documento-programa.component.scss'],
+    standalone: false
 })
 export class CrudDocumentoProgramaComponent implements OnInit {
   documento_programa_id!: number;

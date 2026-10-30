@@ -11,8 +11,8 @@ import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { HttpErrorResponse } from '@angular/common/http';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
-import * as moment from 'moment-timezone';
-import * as momentTimezone from 'moment-timezone';
+import moment from 'moment-timezone';
+import momentTimezone from 'moment-timezone';
 import { VideoModalComponent } from 'src/app/modules/components/video-modal.component/video-modal.component.component';
 import { validateLang } from 'src/app/app.component';
 import { environment } from 'src/environments/environment';
@@ -22,9 +22,10 @@ import { UserService } from 'src/app/services/users.service';
 import { ROLES } from 'src/app/models/diccionario/diccionario';
 
 @Component({
-  selector: 'ngx-crud-info-persona',
-  templateUrl: './crud-info-persona.component.html',
-  styleUrls: ['./crud-info-persona.component.scss'],
+    selector: 'ngx-crud-info-persona',
+    templateUrl: './crud-info-persona.component.html',
+    styleUrls: ['./crud-info-persona.component.scss'],
+    standalone: false
 })
 export class CrudInfoPersonaComponent implements OnInit {
   filesUp: any;
