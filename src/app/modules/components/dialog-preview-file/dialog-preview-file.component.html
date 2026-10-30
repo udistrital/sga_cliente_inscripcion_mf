@@ -1,14 +1,18 @@
-<object [data]="ulrfileSafe" type="application/pdf" *ngIf="validsafe"></object>
-<div class="nofile" *ngIf="!validsafe">
-  {{ "ERROR.error_previsualizar_doc" | translate }}
-</div>
+@if (validsafe) {
+  <object [data]="ulrfileSafe" type="application/pdf"></object>
+}
+@if (!validsafe) {
+  <div class="nofile">
+    {{ "ERROR.error_previsualizar_doc" | translate }}
+  </div>
+}
 <mat-dialog-actions align="center">
   <button
     mat-flat-button
     mat-dialog-close
     color="warn"
     matTooltip="{{ 'GLOBAL.cerrar_visualizador' | translate }}"
-  >
+    >
     {{ "GLOBAL.cerrar_visualizador" | translate }}
   </button>
 </mat-dialog-actions>

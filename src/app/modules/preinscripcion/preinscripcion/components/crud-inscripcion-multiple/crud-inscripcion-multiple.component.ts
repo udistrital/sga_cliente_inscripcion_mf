@@ -15,7 +15,7 @@ import {
 } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { InfoPersona } from 'src/app/models/informacion/info_persona';
 import { Inscripcion } from 'src/app/models/inscripcion/inscripcion';

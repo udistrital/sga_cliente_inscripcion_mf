@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TransferenciaInternaReintegro } from 'src/app/models/inscripcion/transferencia_reintegro';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';

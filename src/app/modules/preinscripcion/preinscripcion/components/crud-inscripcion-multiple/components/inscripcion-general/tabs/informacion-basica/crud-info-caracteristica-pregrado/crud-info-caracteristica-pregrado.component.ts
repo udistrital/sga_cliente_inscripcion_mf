@@ -15,7 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as momentTimezone from 'moment-timezone';
+import momentTimezone from 'moment-timezone';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
