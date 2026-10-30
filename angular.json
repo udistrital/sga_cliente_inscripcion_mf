@@ -109,7 +109,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sga-cliente-inscripcion-mf:build"
+            "buildTarget": "sga-cliente-inscripcion-mf:build"
           }
         },
         "test": {
