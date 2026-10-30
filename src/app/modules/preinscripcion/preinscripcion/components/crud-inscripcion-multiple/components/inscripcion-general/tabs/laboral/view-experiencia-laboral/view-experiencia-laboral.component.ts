@@ -13,9 +13,10 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { POR_DEFINIR } from '../../constants';
 
 @Component({
-  selector: 'ngx-view-experiencia-laboral',
-  templateUrl: './view-experiencia-laboral.component.html',
-  styleUrls: ['./view-experiencia-laboral.component.scss']
+    selector: 'ngx-view-experiencia-laboral',
+    templateUrl: './view-experiencia-laboral.component.html',
+    styleUrls: ['./view-experiencia-laboral.component.scss'],
+    standalone: false
 })
 export class ViewExperienciaLaboralComponent implements OnInit {
   persona_id!: number;

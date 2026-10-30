@@ -15,9 +15,10 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { POR_DEFINIR } from '../../constants';
 
 @Component({
-  selector: 'ngx-view-produccion-academica',
-  templateUrl: './view-produccion-academica.component.html',
-  styleUrls: ['./view-produccion-academica.component.scss']
+    selector: 'ngx-view-produccion-academica',
+    templateUrl: './view-produccion-academica.component.html',
+    styleUrls: ['./view-produccion-academica.component.scss'],
+    standalone: false
 })
 export class ViewProduccionAcademicaComponent implements OnInit {
   info_produccion_academica!: any;

@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-video-modal',
-  templateUrl: './video-modal.component.component.html',
-  styleUrls: ['./video-modal.component.component.scss']
+    selector: 'app-video-modal',
+    templateUrl: './video-modal.component.component.html',
+    styleUrls: ['./video-modal.component.component.scss'],
+    standalone: false
 })
 export class VideoModalComponent {
 videoIframe: SafeHtml;

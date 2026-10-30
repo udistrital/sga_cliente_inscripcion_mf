@@ -32,9 +32,10 @@ import { firstValueFrom } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-transferencia',
-  templateUrl: './transferencia.component.html',
-  styleUrls: ['./transferencia.component.scss']
+    selector: 'app-transferencia',
+    templateUrl: './transferencia.component.html',
+    styleUrls: ['./transferencia.component.scss'],
+    standalone: false
 })
 export class TransferenciaComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;

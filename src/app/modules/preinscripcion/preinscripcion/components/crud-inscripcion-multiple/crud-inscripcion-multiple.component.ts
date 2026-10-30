@@ -43,9 +43,10 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
 @Component({
-  selector: 'ngx-crud-inscripcion-multiple',
-  templateUrl: './crud-inscripcion-multiple.component.html',
-  styleUrls: ['./crud-inscripcion-multiple.component.scss'],
+    selector: 'ngx-crud-inscripcion-multiple',
+    templateUrl: './crud-inscripcion-multiple.component.html',
+    styleUrls: ['./crud-inscripcion-multiple.component.scss'],
+    standalone: false
 })
 export class CrudInscripcionMultipleComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;

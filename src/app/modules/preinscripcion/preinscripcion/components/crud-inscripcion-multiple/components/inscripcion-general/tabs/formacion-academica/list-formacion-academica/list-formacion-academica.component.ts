@@ -15,9 +15,10 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
-  selector: 'ngx-list-formacion-academica',
-  templateUrl: './list-formacion-academica.component.html',
-  styleUrls: ['./list-formacion-academica.component.scss']
+    selector: 'ngx-list-formacion-academica',
+    templateUrl: './list-formacion-academica.component.html',
+    styleUrls: ['./list-formacion-academica.component.scss'],
+    standalone: false
 })
 export class ListFormacionAcademicaComponent implements OnInit {
   uid!: number;

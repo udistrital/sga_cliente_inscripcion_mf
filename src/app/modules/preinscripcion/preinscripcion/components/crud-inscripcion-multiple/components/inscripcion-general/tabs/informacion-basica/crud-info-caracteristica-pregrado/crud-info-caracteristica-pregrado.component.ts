@@ -19,9 +19,10 @@ import * as momentTimezone from 'moment-timezone';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
-  selector: 'ngx-crud-info-caracteristica_pregrado',
-  templateUrl: './crud-info-caracteristica-pregrado.component.html',
-  styleUrls: ['./crud-info-caracteristica-pregrado.component.scss']
+    selector: 'ngx-crud-info-caracteristica_pregrado',
+    templateUrl: './crud-info-caracteristica-pregrado.component.html',
+    styleUrls: ['./crud-info-caracteristica-pregrado.component.scss'],
+    standalone: false
 })
 export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   //config: ToasterConfig;

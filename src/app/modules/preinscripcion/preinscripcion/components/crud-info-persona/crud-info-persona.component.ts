@@ -22,9 +22,10 @@ import { UserService } from 'src/app/services/users.service';
 import { ROLES } from 'src/app/models/diccionario/diccionario';
 
 @Component({
-  selector: 'ngx-crud-info-persona',
-  templateUrl: './crud-info-persona.component.html',
-  styleUrls: ['./crud-info-persona.component.scss'],
+    selector: 'ngx-crud-info-persona',
+    templateUrl: './crud-info-persona.component.html',
+    styleUrls: ['./crud-info-persona.component.scss'],
+    standalone: false
 })
 export class CrudInfoPersonaComponent implements OnInit {
   filesUp: any;

@@ -26,9 +26,10 @@ interface Examen {
 }
 
 @Component({
-  selector: 'ngx-view-examen-estado',
-  templateUrl: './view-examen-estado.component.html',
-  styleUrls: ['./view-examen-estado.component.scss']
+    selector: 'ngx-view-examen-estado',
+    templateUrl: './view-examen-estado.component.html',
+    styleUrls: ['./view-examen-estado.component.scss'],
+    standalone: false
 })
 export class ViewExamenEstadoComponent {
 

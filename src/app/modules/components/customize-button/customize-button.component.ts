@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'ngx-customize-button',
-  templateUrl: './customize-button.component.html',
-  styleUrls: ['./customize-button.component.scss']
+    selector: 'ngx-customize-button',
+    templateUrl: './customize-button.component.html',
+    styleUrls: ['./customize-button.component.scss'],
+    standalone: false
 })
 export class CustomizeButtonComponent implements OnInit{
 

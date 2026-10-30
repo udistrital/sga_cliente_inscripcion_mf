@@ -15,9 +15,10 @@ import { FORM_IDIOMAS } from './form-idiomas';
 import { SharedStateService } from '../shared-state.service';
 
 @Component({
-  selector: 'ngx-crud-idiomas',
-  templateUrl: './crud-idiomas.component.html',
-  styleUrls: ['./crud-idiomas.component.scss'],
+    selector: 'ngx-crud-idiomas',
+    templateUrl: './crud-idiomas.component.html',
+    styleUrls: ['./crud-idiomas.component.scss'],
+    standalone: false
 })
 export class CrudIdiomasComponent implements OnInit {
   info_idioma_id!: number;

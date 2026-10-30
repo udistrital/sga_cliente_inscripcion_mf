@@ -36,9 +36,10 @@ import { firstValueFrom } from 'rxjs';
 import { ProduccionAcademicaService } from 'src/app/services/produccion_academica.service';
 
 @Component({
-  selector: 'ngx-inscripcion-general',
-  templateUrl: './inscripcion-general.component.html',
-  styleUrls: ['./inscripcion-general.component.scss'],
+    selector: 'ngx-inscripcion-general',
+    templateUrl: './inscripcion-general.component.html',
+    styleUrls: ['./inscripcion-general.component.scss'],
+    standalone: false
 })
 export class InscripcionGeneralComponent implements OnInit, OnChanges {
   hide_header_labels!: boolean;

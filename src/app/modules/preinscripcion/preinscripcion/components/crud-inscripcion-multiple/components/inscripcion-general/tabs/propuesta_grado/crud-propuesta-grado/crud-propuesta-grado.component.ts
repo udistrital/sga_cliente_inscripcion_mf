@@ -17,9 +17,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from 'src/app/services/users.service';
 
 @Component({
-  selector: 'ngx-crud-propuesta-grado',
-  templateUrl: './crud-propuesta-grado.component.html',
-  styleUrls: ['./crud-propuesta-grado.component.scss']
+    selector: 'ngx-crud-propuesta-grado',
+    templateUrl: './crud-propuesta-grado.component.html',
+    styleUrls: ['./crud-propuesta-grado.component.scss'],
+    standalone: false
 })
 export class CrudPropuestaGradoComponent implements OnInit {
   propuesta_grado_id!: number;

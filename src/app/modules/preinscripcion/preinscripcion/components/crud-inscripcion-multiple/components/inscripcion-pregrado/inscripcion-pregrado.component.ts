@@ -29,9 +29,10 @@ import { CrudInfoCaracteristicaPregradoComponent } from '../inscripcion-general/
 import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
-  selector: 'ngx-inscripcion-pregrado',
-  templateUrl: './inscripcion-pregrado.component.html',
-  styleUrls: ['./inscripcion-pregrado.component.scss']
+    selector: 'ngx-inscripcion-pregrado',
+    templateUrl: './inscripcion-pregrado.component.html',
+    styleUrls: ['./inscripcion-pregrado.component.scss'],
+    standalone: false
 })
 export class InscripcionPregradoComponent implements OnInit, OnChanges{
   hide_header_labels!: boolean;

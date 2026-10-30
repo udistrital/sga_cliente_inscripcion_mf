@@ -15,9 +15,10 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { POR_DEFINIR } from '../../constants';
 
 @Component({
-  selector: 'ngx-view-propuesta-grado',
-  templateUrl: './view-propuesta-grado.component.html',
-  styleUrls: ['./view-propuesta-grado.component.scss']
+    selector: 'ngx-view-propuesta-grado',
+    templateUrl: './view-propuesta-grado.component.html',
+    styleUrls: ['./view-propuesta-grado.component.scss'],
+    standalone: false
 })
 export class ViewPropuestaGradoComponent implements OnInit {
   info_propuesta_grado!: any;

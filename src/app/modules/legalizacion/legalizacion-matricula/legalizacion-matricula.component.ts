@@ -35,9 +35,10 @@ interface Proyecto {
 }
 
 @Component({
-  selector: 'ngx-legalizacion-matricula',
-  templateUrl: './legalizacion-matricula.component.html',
-  styleUrls: ['./legalizacion-matricula.component.scss']
+    selector: 'ngx-legalizacion-matricula',
+    templateUrl: './legalizacion-matricula.component.html',
+    styleUrls: ['./legalizacion-matricula.component.scss'],
+    standalone: false
 })
 export class LegalizacionMatriculaComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
