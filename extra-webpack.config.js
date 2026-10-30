@@ -3,6 +3,8 @@ const singleSpaAngularWebpack = require('single-spa-angular/lib/webpack').defaul
 module.exports = (config, options) => {
   const singleSpaWebpackConfig = singleSpaAngularWebpack(config, options);
 
-  // Feel free to modify this webpack config however you'd like to
+  // Prevent source map conflict: Angular 20+ handles source maps via SourceMapDevToolPlugin
+  singleSpaWebpackConfig.devtool = false;
+
   return singleSpaWebpackConfig;
 };
