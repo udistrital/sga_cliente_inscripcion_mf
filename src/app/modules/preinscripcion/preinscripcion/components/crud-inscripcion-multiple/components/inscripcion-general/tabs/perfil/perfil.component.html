@@ -17,6 +17,15 @@
 </header>
 
 <main>
+  <div class="alert warning margin-y" *ngIf="failedTags.length > 0">
+    <mat-icon class="icon">warning</mat-icon>
+    <span>
+      {{ "inscripcion.fallo_carga_mensaje" | translate }}:
+      <ng-container *ngFor="let tag of failedTags; let last = last">
+        {{ sectionLabels[tag] | translate }}{{ last ? "" : ", " }}
+      </ng-container>
+    </span>
+  </div>
   <div *ngIf="suiteLoaded">
     <mat-accordion multi>
       <mat-expansion-panel [expanded]="true" hideToggle>
@@ -61,7 +70,6 @@
             SuiteTags.info_persona.observacion = $event; checkZeroObservations()
           "
           persona_id="{{ info_persona_id }}"
-          *ngIf="SuiteTags.info_persona.render"
         >
         </ngx-view-info-persona>
       </mat-expansion-panel>
@@ -95,7 +103,6 @@
             checkZeroObservations()
           "
           persona_id="{{ info_persona_id }}"
-          *ngIf="SuiteTags.formacion_academica.render"
         >
         </ngx-view-formacion-academica>
       </mat-expansion-panel>
@@ -125,7 +132,6 @@
           (estadoCarga)="manageLoading($event, 'idiomas')"
           persona_id="{{ info_persona_id }}"
           inscripcion_id="{{ info_inscripcion_id }}"
-          *ngIf="SuiteTags.idiomas.render"
         >
         </ngx-view-idiomas>
       </mat-expansion-panel>
@@ -159,7 +165,6 @@
             checkZeroObservations()
           "
           persona_id="{{ info_persona_id }}"
-          *ngIf="SuiteTags.experiencia_laboral.render"
         >
         </ngx-view-experiencia-laboral>
       </mat-expansion-panel>
@@ -193,7 +198,6 @@
             checkZeroObservations()
           "
           persona_id="{{ info_persona_id }}"
-          *ngIf="SuiteTags.produccion_academica.render"
         >
         </ngx-view-produccion-academica>
       </mat-expansion-panel>
@@ -228,7 +232,6 @@
           "
           inscripcion_id="{{ info_inscripcion_id }}"
           persona_id="{{ info_persona_id }}"
-          *ngIf="SuiteTags.documento_programa.render"
         >
         </ngx-view-documento-programa>
       </mat-expansion-panel>
@@ -263,7 +266,6 @@
           "
           inscripcion_id="{{ info_inscripcion_id }}"
           persona_id="{{ info_persona_id }}"
-          *ngIf="SuiteTags.descuento_matricula.render"
         >
         </ngx-view-descuento-academico>
       </mat-expansion-panel>
@@ -298,7 +300,6 @@
           "
           inscripcion_id="{{ info_inscripcion_id }}"
           persona_id="{{ info_persona_id }}"
-          *ngIf="SuiteTags.propuesta_grado.render"
         >
         </ngx-view-propuesta-grado>
       </mat-expansion-panel>
