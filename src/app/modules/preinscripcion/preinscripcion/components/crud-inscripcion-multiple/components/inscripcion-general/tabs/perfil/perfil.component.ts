@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Subject, Subscription } from 'rxjs';
 import { PopUpManager } from 'src/app/managers/popUpManager';
@@ -15,7 +22,7 @@ import Swal from 'sweetalert2/dist/sweetalert2';
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss'],
 })
-export class PerfilComponent implements OnInit {
+export class PerfilComponent implements OnInit, OnDestroy {
   private onDestroy$ = new Subject<void>();
 
   info_persona_id!: number;
@@ -60,6 +67,21 @@ export class PerfilComponent implements OnInit {
   selectedTags: string[] = [];
   maxTags: number = 0;
   contTag: number = 0;
+  failedTags: string[] = [];
+  sectionLabels: { [key: string]: string } = {
+    info_persona: 'inscripcion.info_basica',
+    formacion_academica: 'inscripcion.formacion_academica',
+    idiomas: 'inscripcion.idiomas',
+    experiencia_laboral: 'inscripcion.experiencia_laboral',
+    produccion_academica: 'inscripcion.produccion_academica',
+    documento_programa: 'inscripcion.documento_programa',
+    descuento_matricula: 'inscripcion.descuento_matricula',
+    propuesta_grado: 'inscripcion.propuesta_grado',
+  };
+  private sectionStatus: { [key: string]: string } = {};
+  private sectionTimers: { [key: string]: any } = {};
+  private expansionStarted: boolean = false;
+  private readonly sectionTimeoutMs: number = 20000;
   //reduceWhenloading: number = 0.9;
   data = {
     INSCRIPCION: {},
@@ -68,7 +90,6 @@ export class PerfilComponent implements OnInit {
     DOCUMENTACION: {},
   };
   showErrors = false;
-  checkComplete: boolean = false;
   progressDownloadDocs: number = 0;
   triggeredDownload: boolean = false;
 
@@ -109,6 +130,10 @@ export class PerfilComponent implements OnInit {
       ) === 'INSCRITO CON OBSERVACIÓN';
   }
 
+  ngOnDestroy() {
+    this.clearSectionTimers();
+  }
+
   ngOnChanges() {
     this.imprimir = this.imprimir.toString() === 'true';
     this.en_revision = this.en_revision.toString() === 'true';
@@ -133,16 +158,23 @@ export class PerfilComponent implements OnInit {
       if (Suite == undefined) {
         this.suiteLoaded = false;
       } else {
+        this.clearSectionTimers();
+        this.selectedTags = [];
+        this.sectionStatus = {};
+        this.failedTags = [];
+        this.contTag = 0;
+        this.expansionStarted = false;
         Object.keys(Suite).forEach((tag: string) => {
           Suite[tag]['render'] = false;
           Suite[tag]['observacion'] = false;
-          if (Suite[tag].selected) {
+          if (Suite[tag].selected && this.sectionLabels[tag]) {
             this.selectedTags = this.selectedTags.concat(tag);
           }
         });
         this.SuiteTags = Suite;
         this.maxTags = this.selectedTags.length;
         this.suiteLoaded = true;
+        this.startExpansion();
       }
     }
   }
@@ -307,40 +339,89 @@ export class PerfilComponent implements OnInit {
     document.body.removeChild(download);
   }
 
-  siguienteTagDesde(actualTag: string) {
-    if (this.contTag < this.maxTags - 1) {
-      /*       if (actualTag != undefined) {
-              this.SuiteTags[actualTag].buttonNext = false;
-            } */
-      this.SuiteTags[this.selectedTags[this.contTag]].render = true;
-      //this.SuiteTags[this.selectedTags[this.contTag]].buttonNext = true;
-      // HAHHAHAHAHAHAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA HAY QUE SOLUCIONAR!! document.getElementById(this.selectedTags[this.contTag]).scrollIntoView({ behavior: 'smooth' })
-      this.properlyCont(actualTag);
-    } else if (this.contTag < this.maxTags) {
-      //this.SuiteTags[this.selectedTags[this.contTag-1]].buttonNext = false;
-      this.properlyCont(actualTag);
-      this.descargar_archivos();
+  private startExpansion() {
+    if (this.expansionStarted || this.selectedTags.length === 0) {
+      return;
+    }
+    this.expansionStarted = true;
+    this.selectedTags.forEach((tag: string) => this.armSectionTimer(tag));
+    this.SuiteTags[this.selectedTags[0]].render = true;
+  }
 
-      if (this.imprimir) {
-        this.descargar_comprobante_inscription();
+  private advanceExpansion() {
+    if (!this.expansionStarted) {
+      return;
+    }
+    while (this.contTag < this.selectedTags.length) {
+      const tag = this.selectedTags[this.contTag];
+      const status = this.sectionStatus[tag];
+      if (status !== 'completed' && status !== 'failed') {
+        return;
+      }
+      this.contTag++;
+      if (this.contTag < this.selectedTags.length) {
+        this.SuiteTags[this.selectedTags[this.contTag]].render = true;
+      } else {
+        this.onAllSectionsFinished();
       }
     }
   }
 
-  properlyCont(actualTag: any) {
-    if (this.contTag > 0) {
-      if (this.selectedTags[this.contTag - 1] == actualTag) {
-        this.contTag++;
+  private onAllSectionsFinished() {
+    this.descargar_archivos();
+    if (this.imprimir) {
+      this.descargar_comprobante_inscription();
+    }
+  }
+
+  private armSectionTimer(tag: string) {
+    this.clearSectionTimer(tag);
+    this.sectionTimers[tag] = setTimeout(() => {
+      if (
+        this.sectionStatus[tag] === 'completed' ||
+        this.sectionStatus[tag] === 'failed'
+      ) {
+        return;
       }
-    } else {
-      this.contTag++;
+      console.warn('[perfil] Tiempo de espera agotado en la sección:', tag);
+      this.updateSectionStatus(tag, 'failed');
+    }, this.sectionTimeoutMs);
+  }
+
+  private clearSectionTimer(tag: string) {
+    if (this.sectionTimers[tag]) {
+      clearTimeout(this.sectionTimers[tag]);
+      delete this.sectionTimers[tag];
+    }
+  }
+
+  private clearSectionTimers() {
+    Object.keys(this.sectionTimers).forEach((tag: string) =>
+      this.clearSectionTimer(tag)
+    );
+    this.sectionTimers = {};
+  }
+
+  private updateSectionStatus(tag: string, status: string) {
+    if (!this.sectionLabels[tag]) {
+      return;
+    }
+    this.sectionStatus[tag] = status;
+    if (status === 'failed') {
+      if (!this.failedTags.includes(tag)) {
+        this.failedTags = this.failedTags.concat(tag);
+      }
+      console.error('[perfil] No se pudo cargar la sección:', tag);
+    } else if (status === 'completed') {
+      this.failedTags = this.failedTags.filter((failedTag: string) => failedTag !== tag);
+    }
+    if (status === 'completed' || status === 'failed') {
+      this.clearSectionTimer(tag);
+      this.advanceExpansion();
     }
   }
 
   manageLoading(infoCarga: any, actualTag: string) {
-    if (infoCarga.status == 'start') {
-      this.checkComplete = false;
-    }
     if (infoCarga.status == 'completed') {
       if (actualTag == 'inscripcion') {
         this.data.INSCRIPCION = infoCarga.outInfo;
@@ -355,14 +436,17 @@ export class PerfilComponent implements OnInit {
       this.showErrors = infoCarga.EstadoInscripcion != 'Inscripción solicitada';
     }
 
-    if (infoCarga.status == 'failed') {
-      this.checkComplete = true;
-      this.siguienteTagDesde(actualTag);
+    if (actualTag == 'inscripcion' || !this.sectionLabels[actualTag]) {
+      return;
     }
 
-    if (infoCarga.status == 'completed' && !this.checkComplete) {
-      this.checkComplete = true;
-      this.siguienteTagDesde(actualTag);
+    if (infoCarga.status == 'start') {
+      this.sectionStatus[actualTag] = 'loading';
+      return;
+    }
+
+    if (infoCarga.status == 'completed' || infoCarga.status == 'failed') {
+      this.updateSectionStatus(actualTag, infoCarga.status);
     }
   }
 
