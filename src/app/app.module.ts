@@ -36,7 +36,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentoService } from './services/documento.service';
 import { ProduccionAcademicaService } from './services/produccion_academica.service';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatListModule } from '@angular/material/list';
@@ -164,8 +163,9 @@ export function createTranslateLoader(http: HttpClient) {
     },
     {
       provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
-      useValue: MAT_SELECT_SCROLL_STRATEGY_PROVIDER,
-     },
+      deps: [Overlay],
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.reposition(),
+    },
      { provide: MAT_DATE_LOCALE, useValue: 'es-CO' },
   ],
   bootstrap: [AppComponent]
