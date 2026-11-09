@@ -539,32 +539,36 @@ export class TransferenciaComponent implements OnInit {
     }
 
     if (event.nombre === 'TipoInscripcion' && !this.recibo && event.valor != null) {
+      if (event.valor.Nombre === 'Transferencia interna' || event.valor.Nombre === 'Reingreso') {
+        Swal.fire({
+          icon: 'warning',
+          html: this.translate.instant('inscripcion.alerta_recibo_transferencia'),
+          confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+        });
+      }
+
       this.formTransferencia.campos.forEach((campo: any) => {
-
-        if (event.valor.Nombre === 'Transferencia interna' || event.valor.Nombre === 'Reingreso') {
-          Swal.fire({
-            icon: 'warning',
-            html: this.translate.instant('inscripcion.alerta_recibo_transferencia'),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-          })
-        }
-
         if (campo.nombre === 'ProyectoCurricular') {
-          if (event.valor.Nombre === 'Reingreso') {
-            let aux: any[] = [];
+          const proyectos = Array.isArray(this.proyectosCurriculares) ? this.proyectosCurriculares : [];
 
-            this.codigosEstudiante.forEach(codigo => {
-              this.proyectosCurriculares.forEach(opcion => {
-                if (opcion.Codigo == codigo.IdProyectoCondor) {
+          if (event.valor.Nombre === 'Reingreso') {
+            const aux: any[] = [];
+            const codigos = Array.isArray(this.codigosEstudiante) ? this.codigosEstudiante : [];
+
+            codigos.forEach(codigo => {
+              proyectos.forEach(opcion => {
+                const codigoProyecto = String(opcion.Codigo ?? '').trim();
+                const codigoCondor = String(codigo.IdProyectoCondor ?? '').trim();
+                if (codigoProyecto !== '' && codigoProyecto === codigoCondor) {
                   aux.push(opcion);
                 }
-
               });
             });
             campo.valor = null;
-            campo.opciones = aux;
+            (this.dataTransferencia as any).ProyectoCurricular = null;
+            campo.opciones = aux.length > 0 ? aux : proyectos;
           } else {
-            campo.opciones = this.proyectosCurriculares;
+            campo.opciones = proyectos;
           }
         }
       });
