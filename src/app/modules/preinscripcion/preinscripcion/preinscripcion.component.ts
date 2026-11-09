@@ -7,9 +7,10 @@ import { UserService } from 'src/app/services/users.service';
 import { UtilidadesService } from 'src/app/services/utilidades.service';
 
 @Component({
-  selector: 'app-preinscripcion',
-  templateUrl: './preinscripcion.component.html',
-  styleUrls: ['./preinscripcion.component.scss'],
+    selector: 'app-preinscripcion',
+    templateUrl: './preinscripcion.component.html',
+    styleUrls: ['./preinscripcion.component.scss'],
+    standalone: false
 })
 export class PreinscripcionComponent implements OnInit {
   @Input('inscripcion_id')

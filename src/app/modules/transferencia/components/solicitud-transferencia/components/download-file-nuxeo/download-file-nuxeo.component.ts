@@ -3,9 +3,10 @@ import { DocumentoService } from 'src/app/services/documento.service';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
 
 @Component({
-  selector: 'ngx-download-file-nuxeo',
-  templateUrl: './download-file-nuxeo.component.html',
-  styleUrls: ['./download-file-nuxeo.component.scss']
+    selector: 'ngx-download-file-nuxeo',
+    templateUrl: './download-file-nuxeo.component.html',
+    styleUrls: ['./download-file-nuxeo.component.scss'],
+    standalone: false
 })
 export class DownloadFileNuxeoComponent implements  OnInit {
   

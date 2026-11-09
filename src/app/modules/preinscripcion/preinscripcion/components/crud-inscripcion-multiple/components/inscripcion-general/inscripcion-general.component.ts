@@ -10,7 +10,7 @@ import {
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Inscripcion } from 'src/app/models/inscripcion/inscripcion';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
@@ -36,9 +36,10 @@ import { firstValueFrom } from 'rxjs';
 import { ProduccionAcademicaService } from 'src/app/services/produccion_academica.service';
 
 @Component({
-  selector: 'ngx-inscripcion-general',
-  templateUrl: './inscripcion-general.component.html',
-  styleUrls: ['./inscripcion-general.component.scss'],
+    selector: 'ngx-inscripcion-general',
+    templateUrl: './inscripcion-general.component.html',
+    styleUrls: ['./inscripcion-general.component.scss'],
+    standalone: false
 })
 export class InscripcionGeneralComponent implements OnInit, OnChanges {
   hide_header_labels!: boolean;

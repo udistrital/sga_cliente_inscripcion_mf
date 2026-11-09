@@ -16,9 +16,10 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
-  selector: 'ngx-crud-icfes',
-  templateUrl: './crud-icfes.component.html',
-  styleUrls: ['./crud-icfes.component.scss']
+    selector: 'ngx-crud-icfes',
+    templateUrl: './crud-icfes.component.html',
+    styleUrls: ['./crud-icfes.component.scss'],
+    standalone: false
 })
 export class CrudIcfesComponent implements OnInit {
   info_formacion_academica_id!: number;

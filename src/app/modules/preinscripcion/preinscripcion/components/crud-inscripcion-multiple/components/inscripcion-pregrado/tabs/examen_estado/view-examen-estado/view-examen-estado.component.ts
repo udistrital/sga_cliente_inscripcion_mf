@@ -12,8 +12,6 @@ import { EvaluacionInscripcionService } from 'src/app/services/evaluacion_inscri
 import { MODALS } from 'src/app/models/informacion/diccionario';
 // import { SgaMidService } from 'src/app/services/sga_mid.service';
 import { TercerosService } from 'src/app/services/terceros.service';
-import { co } from '@fullcalendar/core/internal-common';
-
 interface Examen {
   orden: number;
   examen: string;
@@ -28,9 +26,10 @@ interface Examen {
 }
 
 @Component({
-  selector: 'ngx-view-examen-estado',
-  templateUrl: './view-examen-estado.component.html',
-  styleUrls: ['./view-examen-estado.component.scss']
+    selector: 'ngx-view-examen-estado',
+    templateUrl: './view-examen-estado.component.html',
+    styleUrls: ['./view-examen-estado.component.scss'],
+    standalone: false
 })
 export class ViewExamenEstadoComponent {
 

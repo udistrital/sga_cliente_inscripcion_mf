@@ -2,29 +2,33 @@
   <mat-card-content>
     <mat-tab-group fullWidth>
       <mat-tab label="{{ 'inscripcion.info_persona' | translate }}">
-        <div *ngIf="!isBarraOculta" class="progress-bar margin-y">
-          <progress-bar [value]="percentage_info"></progress-bar>
-        </div>
-        <ngx-crud-info-persona
-          *ngIf="!isLoading"
-          [info_persona_id]="info_persona_id"
-          [inscripcion_id]="inscripcion_id"
-          (eventChange)="perfil_editar('info_preinscripcion')"
-          (success)="cambioTab()"
-          (result)="setPercentage_info($event, 0)"
-        >
-        </ngx-crud-info-persona>
+        @if (!isBarraOculta) {
+          <div class="progress-bar margin-y">
+            <progress-bar [value]="percentage_info"></progress-bar>
+          </div>
+        }
+        @if (!isLoading) {
+          <ngx-crud-info-persona
+            [info_persona_id]="info_persona_id"
+            [inscripcion_id]="inscripcion_id"
+            (eventChange)="perfil_editar('info_preinscripcion')"
+            (success)="cambioTab()"
+            (result)="setPercentage_info($event, 0)"
+            >
+          </ngx-crud-info-persona>
+        }
       </mat-tab>
       <mat-tab label="{{ 'inscripcion.preinscripcion' | translate }}">
-        <ngx-crud-inscripcion-multiple
-          *ngIf="!isLoading"
-          [info_persona_id]="info_persona_id"
-          [inscripcion_id]="inscripcion_id"
-          (eventChange)="perfil_editar('default')"
-          (result)="setPercentage_info(1, 1)"
-          (ocultarBarra)="ocultarBarra($event)"
-        >
-        </ngx-crud-inscripcion-multiple>
+        @if (!isLoading) {
+          <ngx-crud-inscripcion-multiple
+            [info_persona_id]="info_persona_id"
+            [inscripcion_id]="inscripcion_id"
+            (eventChange)="perfil_editar('default')"
+            (result)="setPercentage_info(1, 1)"
+            (ocultarBarra)="ocultarBarra($event)"
+            >
+          </ngx-crud-inscripcion-multiple>
+        }
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>

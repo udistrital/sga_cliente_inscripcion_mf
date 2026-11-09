@@ -13,9 +13,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
-  selector: 'ngx-crud-preguntas',
-  templateUrl: './crud-preguntas.component.html',
-  styleUrls: ['./crud-preguntas.component.scss']
+    selector: 'ngx-crud-preguntas',
+    templateUrl: './crud-preguntas.component.html',
+    styleUrls: ['./crud-preguntas.component.scss'],
+    standalone: false
 })
 export class CrudPreguntasComponent implements OnInit {
   info_formacion_academica_id!: number | null;

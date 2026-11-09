@@ -15,13 +15,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 // @ts-ignore
 import Swal from 'sweetalert2/dist/sweetalert2';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as momentTimezone from 'moment-timezone';
+import momentTimezone from 'moment-timezone';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
-  selector: 'ngx-crud-info-caracteristica_pregrado',
-  templateUrl: './crud-info-caracteristica-pregrado.component.html',
-  styleUrls: ['./crud-info-caracteristica-pregrado.component.scss']
+    selector: 'ngx-crud-info-caracteristica_pregrado',
+    templateUrl: './crud-info-caracteristica-pregrado.component.html',
+    styleUrls: ['./crud-info-caracteristica-pregrado.component.scss'],
+    standalone: false
 })
 export class CrudInfoCaracteristicaPregradoComponent implements OnInit {
   //config: ToasterConfig;

@@ -1,19 +1,24 @@
 <header class="header">
-  <h2 *ngIf="imprimir">
-    {{ "inscripcion.comprobante_inscripcion" | translate }}
-  </h2>
-  <h2 *ngIf="!imprimir">
-    {{ "inscripcion.perfil" | translate }}
-  </h2>
+  @if (imprimir) {
+    <h2>
+      {{ "inscripcion.comprobante_inscripcion" | translate }}
+    </h2>
+  }
+  @if (!imprimir) {
+    <h2>
+      {{ "inscripcion.perfil" | translate }}
+    </h2>
+  }
 
-  <button
-    *ngIf="!en_revision && !imprimir"
-    mat-icon-button
-    color="warn"
-    (click)="editar($event, 'salir_perfil')"
-  >
-    <mat-icon>close</mat-icon>
-  </button>
+  @if (!en_revision && !imprimir) {
+    <button
+      mat-icon-button
+      color="warn"
+      (click)="editar($event, 'salir_perfil')"
+      >
+      <mat-icon>close</mat-icon>
+    </button>
+  }
 </header>
 
 <main>
@@ -309,100 +314,112 @@
 </main>
 
 <footer class="margin-y">
-  <div class="margin-y" *ngIf="triggeredDownload && progressDownloadDocs < 100">
-    <p>{{ "inscripcion.carga_documentos_expediente" | translate }}: {{ progressDownloadDocs }}%</p>
-    <mat-progress-bar
-      [value]="progressDownloadDocs"
-      [attr.aria-label]="'inscripcion.carga_documentos_expediente' | translate"
-    ></mat-progress-bar>
-  </div>
+  @if (triggeredDownload && progressDownloadDocs < 100) {
+    <div class="margin-y">
+      <p>{{ "inscripcion.carga_documentos_expediente" | translate }}: {{ progressDownloadDocs }}%</p>
+      <mat-progress-bar
+        [value]="progressDownloadDocs"
+        [attr.aria-label]="'inscripcion.carga_documentos_expediente' | translate"
+      ></mat-progress-bar>
+    </div>
+  }
 
   <!-- SECCION DE ALERTAS INFORMATIVAS -->
-  <section *ngIf="estado_inscripcion == 'INSCRITO'">
-    <div class="alert warning margin-y">
-      <mat-icon class="icon">info</mat-icon>
-      <span>{{ "inscripcion.info_impresion_auto" | translate }}</span>
-    </div>
+  @if (estado_inscripcion == 'INSCRITO') {
+    <section>
+      <div class="alert warning margin-y">
+        <mat-icon class="icon">info</mat-icon>
+        <span>{{ "inscripcion.info_impresion_auto" | translate }}</span>
+      </div>
+      <div class="alert info margin-y">
+        <mat-icon class="icon">info</mat-icon>
+        <span>{{ "inscripcion.info_comprobante" | translate }}</span>
+      </div>
+    </section>
+  }
+
+  @if (!en_revision && canUpdateDocument) {
+    <button
+      mat-flat-button
+      type="button"
+      color="accent"
+      (click)="changeToInscritoAgain()"
+      [disabled]="hasObservations"
+      >
+      {{ "inscripcion.confirmar_ajuste_documentos_observacion" | translate }}
+    </button>
+  }
+
+  @if (!en_revision && canUpdateDocument) {
     <div class="alert info margin-y">
-      <mat-icon class="icon">info</mat-icon>
-      <span>{{ "inscripcion.info_comprobante" | translate }}</span>
+      <mat-icon class="icon">info</mat-icon> &nbsp;
+      <span>{{ "inscripcion.nota_confirmar_ajuste" | translate }}</span>
     </div>
-  </section>
-
-  <button
-    *ngIf="!en_revision && canUpdateDocument"
-    mat-flat-button
-    type="button"
-    color="accent"
-    (click)="changeToInscritoAgain()"
-    [disabled]="hasObservations"
-  >
-    {{ "inscripcion.confirmar_ajuste_documentos_observacion" | translate }}
-  </button>
-
-  <div class="alert info margin-y" *ngIf="!en_revision && canUpdateDocument">
-    <mat-icon class="icon">info</mat-icon> &nbsp;
-    <span>{{ "inscripcion.nota_confirmar_ajuste" | translate }}</span>
-  </div>
+  }
 
   <!--<ngx-view-info-caracteristica
-              (url_editar)="editar($event,'info_caracteristica')"
-              info_caracteristica_id="{{info_persona_id}}" class="col-md-6"></ngx-view-info-caracteristica>
-            <ngx-view-informacion-contacto
-              (url_editar)="editar($event,'info_contacto')"
-              persona_id="{{info_persona_id}}" class="col-md-6"></ngx-view-informacion-contacto>-->
-  <!--<ngx-view-libro (url_editar)="editar($event,'default')"
-              persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-libro>
-            <ngx-view-articulo (url_editar)="editar($event,'default')"
-              persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-articulo>
-            <ngx-view-traduccion (url_editar)="editar($event,'default')"
-              persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-traduccion>
-            <ngx-view-otra-publicacion (url_editar)="editar($event,'default')"
-              persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-otra-puRegresarblicacion>
-            <ngx-view-otro-documento (url_editar)="editar($event,'default')"
-              persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-otro-documento>
-            <ngx-view-produccion-tecnica (url_editar)="editar($event,'default')"
-              persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-produccion-tecnica>
-            <ngx-view-produccion-artes-arqu-diseno (url_editar)="editar($event,'default')"
-              persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-produccion-artes-arqu-diseno>-->
+  (url_editar)="editar($event,'info_caracteristica')"
+info_caracteristica_id="{{info_persona_id}}" class="col-md-6"></ngx-view-info-caracteristica>
+<ngx-view-informacion-contacto
+  (url_editar)="editar($event,'info_contacto')"
+persona_id="{{info_persona_id}}" class="col-md-6"></ngx-view-informacion-contacto>-->
+<!--<ngx-view-libro (url_editar)="editar($event,'default')"
+persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-libro>
+<ngx-view-articulo (url_editar)="editar($event,'default')"
+persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-articulo>
+<ngx-view-traduccion (url_editar)="editar($event,'default')"
+persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-traduccion>
+<ngx-view-otra-publicacion (url_editar)="editar($event,'default')"
+persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-otra-puRegresarblicacion>
+<ngx-view-otro-documento (url_editar)="editar($event,'default')"
+persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-otro-documento>
+<ngx-view-produccion-tecnica (url_editar)="editar($event,'default')"
+persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-produccion-tecnica>
+<ngx-view-produccion-artes-arqu-diseno (url_editar)="editar($event,'default')"
+persona_id="{{info_persona_id}}" class="col-md-12"></ngx-view-produccion-artes-arqu-diseno>-->
 
-  <!-- <div class="col-md-12" *ngIf="(contTag >= maxTags)"> -->
+<!-- <div class="col-md-12" *ngIf="(contTag >= maxTags)"> -->
+@if (progressDownloadDocs >= 100) {
   <div
-    *ngIf="progressDownloadDocs >= 100"
     style="column-gap: 10px; display: flex; justify-content: center"
-  >
-    <button
-      *ngIf="en_revision"
-      mat-flat-button
-      color="accent"
-      (click)="descargar_compilado_zip()"
     >
-      {{ "admision.descargar_zip" | translate }}
-    </button>
-    <button
-      *ngIf="estado_inscripcion == 'INSCRITO con Observación' && en_revision"
-      mat-flat-button
-      color="accent"
-      (click)="notificar_observaciones_aspirante()"
-    >
-      {{ "admision.notificar_observaciones" | translate }}
-    </button>
-    <button
-      *ngIf="estado_inscripcion == 'INSCRITO'"
-      class="boton-primary"
-      mat-flat-button
-      color="accent"
-      (click)="editar($event, 'salir_preinscripcion')"
-    >
-      {{ "GLOBAL.regresar" | translate }}
-    </button>
-    <button
-      *ngIf="estado_inscripcion == 'INSCRITO' || estado_inscripcion == 'ADMITIDO'"
-      mat-flat-button
-      color="accent"
-      (click)="descargar_comprobante_inscription()"
-    >
-      {{ "inscripcion.generar_comprobante" | translate }}
-    </button>
+    @if (en_revision) {
+      <button
+        mat-flat-button
+        color="accent"
+        (click)="descargar_compilado_zip()"
+        >
+        {{ "admision.descargar_zip" | translate }}
+      </button>
+    }
+    @if (estado_inscripcion == 'INSCRITO con Observación' && en_revision) {
+      <button
+        mat-flat-button
+        color="accent"
+        (click)="notificar_observaciones_aspirante()"
+        >
+        {{ "admision.notificar_observaciones" | translate }}
+      </button>
+    }
+    @if (estado_inscripcion == 'INSCRITO') {
+      <button
+        class="boton-primary"
+        mat-flat-button
+        color="accent"
+        (click)="editar($event, 'salir_preinscripcion')"
+        >
+        {{ "GLOBAL.regresar" | translate }}
+      </button>
+    }
+    @if (estado_inscripcion == 'INSCRITO' || estado_inscripcion == 'ADMITIDO') {
+      <button
+        mat-flat-button
+        color="accent"
+        (click)="descargar_comprobante_inscription()"
+        >
+        {{ "inscripcion.generar_comprobante" | translate }}
+      </button>
+    }
   </div>
+}
 </footer>

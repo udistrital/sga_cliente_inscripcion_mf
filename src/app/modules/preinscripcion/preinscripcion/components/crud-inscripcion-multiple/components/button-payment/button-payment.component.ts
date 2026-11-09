@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-button-payment',
-  templateUrl: './button-payment.component.html',
-  styleUrls: ['./button-payment.component.scss']
+    selector: 'app-button-payment',
+    templateUrl: './button-payment.component.html',
+    styleUrls: ['./button-payment.component.scss'],
+    standalone: false
 })
 export class ButtonPaymentComponent implements OnInit {
 

@@ -5,9 +5,10 @@ import { getCookie } from './utils/cookie';
 import { UserService } from './services/users.service';
 
 @Component({
-  selector: 'sga-inscripcion-mf',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'sga-inscripcion-mf',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
   title = 'sga-cliente-inscripcion-mf';
