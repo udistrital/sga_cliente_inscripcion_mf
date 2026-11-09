@@ -16,9 +16,10 @@ import { ZipManagerService } from 'src/app/services/zip-manager.service';
 import { POR_DEFINIR } from '../../constants';
 
 @Component({
-  selector: 'ngx-view-info-persona',
-  templateUrl: './view-info-persona.component.html',
-  styleUrls: ['./view-info-persona.component.scss']
+    selector: 'ngx-view-info-persona',
+    templateUrl: './view-info-persona.component.html',
+    styleUrls: ['./view-info-persona.component.scss'],
+    standalone: false
 })
 export class ViewInfoPersonaComponent implements OnInit {
   displayedColumnsBasica: string[] = ['nombres', 'apellidos', 'documento'];

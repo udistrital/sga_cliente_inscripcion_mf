@@ -8,9 +8,10 @@ import { UserService } from 'src/app/services/users.service';
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
-  selector: 'ngx-view-idiomas',
-  templateUrl: './view-idiomas.component.html',
-  styleUrls: ['./view-idiomas.component.scss']
+    selector: 'ngx-view-idiomas',
+    templateUrl: './view-idiomas.component.html',
+    styleUrls: ['./view-idiomas.component.scss'],
+    standalone: false
 })
 export class ViewIdiomasComponent implements OnInit {
   persona_id: number;

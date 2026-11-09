@@ -110,9 +110,10 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 
 @Component({
-  selector: 'ngx-list-informacion-academica',
-  templateUrl: './list-informacion-academica.component.html',
-  styleUrls: ['./list-informacion-academica.component.scss']
+    selector: 'ngx-list-informacion-academica',
+    templateUrl: './list-informacion-academica.component.html',
+    styleUrls: ['./list-informacion-academica.component.scss'],
+    standalone: false
 })
 export class ListInformacionAcademicaComponent {
   localidades: any[] = [];

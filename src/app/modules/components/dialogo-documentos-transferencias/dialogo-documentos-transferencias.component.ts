@@ -5,9 +5,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-dialogo-documentos-transferencias',
-  templateUrl: './dialogo-documentos-transferencias.component.html',
-  styleUrls: ['./dialogo-documentos-transferencias.component.scss']
+    selector: 'app-dialogo-documentos-transferencias',
+    templateUrl: './dialogo-documentos-transferencias.component.html',
+    styleUrls: ['./dialogo-documentos-transferencias.component.scss'],
+    standalone: false
 })
 export class DialogoDocumentosTransferenciasComponent implements OnInit {
 

@@ -1,726 +1,841 @@
-<mat-card *ngIf="estaAutorizado">
+@if (estaAutorizado) {
+  <mat-card>
     <div [class.loader-div]="loading">
-        <mat-spinner *ngIf="loading" diameter="100" color="primary"></mat-spinner>
+      @if (loading) {
+        <mat-spinner diameter="100" color="primary"></mat-spinner>
+      }
     </div>
     <mat-card-header>
-        <div class="contenedor-label titulo-principal color-primario mx-auto my-md">
-            {{ 'legalizacion_admision.titulo' | translate }}
-        </div>
-        <div class="contenedor-label contenedor-informacion mx-auto my-md">
-            {{ 'legalizacion_admision.contenido-informativo' | translate }}
-        </div>
+      <div class="contenedor-label titulo-principal color-primario mx-auto my-md">
+        {{ 'legalizacion_admision.titulo' | translate }}
+      </div>
+      <div class="contenedor-label contenedor-informacion mx-auto my-md">
+        {{ 'legalizacion_admision.contenido-informativo' | translate }}
+      </div>
     </mat-card-header>
     <mat-card-content>
-        <div class="contenedor-label credencial color-primario mx-auto my-md">
-            {{ 'admision.credencial' | translate }}
-        </div>
-        <mat-card *ngIf="persona && inscripcion">
-            <mat-card-content>
-                <mat-card class="info-personal">
-                    <mat-card-header>
-                        <mat-card-title>{{ 'legalizacion_admision.proyecto_admitido' | translate }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content class="parametros-proyecto">
-                        <div>
-                            <b>{{ 'inscripcion.opcion' | translate }}:</b> {{ opcionPrograma }}
-                        </div>
-                        <div>
-                            <b>{{ 'GLOBAL.nombre' | translate }}:</b> {{ proyectoAcademico }}
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-                <mat-card class="info-personal">
-                    <mat-card-header>
-                        <mat-card-title>{{ 'legalizacion_admision.titulo_informacion_personal' | translate }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <ul>
-                            <li><span>{{ 'legalizacion_admision.tipo_identificacion' | translate }}: </span>{{ persona.TipoIdentificacion.Nombre }}</li>
-                            <li><span>{{ 'GLOBAL.documento_identificacion' | translate }}: </span>{{ persona.NumeroIdentificacion }}</li>
-                            <li><span>{{ 'GLOBAL.primer_nombre' | translate }}: </span>{{ persona.PrimerNombre }}</li>
-                            <li><span>{{ 'GLOBAL.segundo_nombre' | translate }}: </span>{{ persona.SegundoNombre }}</li>
-                            <li><span>{{ 'GLOBAL.primer_apellido' | translate }}: </span>{{ persona.PrimerApellido }}</li>
-                            <li><span>{{ 'GLOBAL.segundo_apellido' | translate }}: </span>{{ persona.SegundoApellido }}</li>
-                            <li><span>{{ 'GLOBAL.fecha_nacimiento' | translate }}: </span>{{ persona.FechaNacimiento }}</li>
-                            <li><span>{{ 'GLOBAL.telefono' | translate }}: </span>{{ persona.Telefono }}</li>
-                            <li><span>{{ 'GLOBAL.correo_principal' | translate }}: </span>{{ persona.UsuarioWSO2 }}</li>
-                            <li><span>{{ 'GLOBAL.genero' | translate }}: </span>{{ persona.Genero.Nombre }}</li>
-                        </ul>
-                    </mat-card-content>
-                </mat-card>
-                <mat-card class="info-personal" *ngIf="yaHizoProceso">
-                    <mat-card-header>
-                        <mat-card-title>{{ 'legalizacion_admision.titulo_estado_legalizacion' | translate
-                            }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 2">
-                            <p>{{ 'legalizacion_admision.estado_legalización_sin_revision' | translate }}</p>
-                            <mat-icon class="icono color-primary">pending_actions</mat-icon>
-                        </div>
-                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 4">
-                            <p>{{ 'legalizacion_admision.estado_legalización_rechazado' | translate }}</p>
-                            <mat-icon class="icono color-rojo">cancel</mat-icon>
-                        </div>
-                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 8">
-                            <p>{{ 'legalizacion_admision.estado_legalización_aprobado' | translate }}</p>
-                            <mat-icon class="icono color-verde">check_circle</mat-icon>
-                        </div>
-                        <div class="estado_inscripcion" *ngIf="estadoInscripcion == 10">
-                            <p>{{ 'legalizacion_admision.estado_legalización_requiere_cambio' | translate }}</p>
-                            <mat-icon class="icono color-primary">change_circle</mat-icon>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-                <mat-card class="info-personal" *ngIf="yaHizoProceso && estadoInscripcion == 10">
-                    <mat-card-header>
-                        <mat-card-title>{{ 'legalizacion_admision.titulo_legalizacion_requiere_cambios' | translate
-                            }}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div> {{ 'legalizacion_admision.legalizacion_requiere_cambios' | translate}} </div>
-                        
-                        <mat-form-field class="filtro">
-                            <mat-label>{{"GLOBAL.filtro" | translate}}</mat-label>
-                            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
-                        </mat-form-field>
-                
-                        <div class="contenedor-tabla">
-                            <table mat-table [dataSource]="dataSource" matSort>
-                
-                                <ng-container matColumnDef="Nombre">
-                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"legalizacion_admision.nombre_soporte" | translate}} </th>
-                                    <td mat-cell *matCellDef="let row"> {{row.Nombre | translate}} </td>
-                                </ng-container>
-                
-                                <ng-container matColumnDef="NuevoDcoumento">
-                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"legalizacion_admision.nuevo_documento" | translate}} </th>
-                                    <td mat-cell *matCellDef="let row">
-                                        <span *ngIf="!row.HayNuevoDoc">{{ row.NuevoDoc | translate }}</span>
-                                        <span *ngIf="row.HayNuevoDoc" class="enlace-documento" (click)="previewFile(row.LinkNuevoDoc)" title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}">{{ row.NuevoDoc }}</span>
-                                    </td>
-                                </ng-container>
-                
-                                <ng-container matColumnDef="Acciones" stickyEnd>
-                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"GLOBAL.acciones" | translate}} </th>
-                                    <td mat-cell *matCellDef="let row">
-                                        <div class="contenedor-acciones">
-                                            <button mat-icon-button [matMenuTriggerFor]="menu" class="boton-acciones" aria-label="Example icon-button with a menu">
-                                                <mat-icon>more_vert</mat-icon>
-                                            </button>
-                                            <mat-menu #menu="matMenu">
-                                                <button mat-menu-item (click)="openModal(row.Soporte)">
-                                                    <mat-icon>visibility</mat-icon>
-                                                    <span>{{ 'legalizacion_admision.ver_documento' | translate }}</span>
-                                                </button>
-                                                <button mat-menu-item (click)="fileInput.click()">
-                                                    <mat-icon>cloud_upload</mat-icon>
-                                                    <span>{{ 'legalizacion_admision.subir_documento' | translate }}</span>
-                                                </button>
-                                            </mat-menu>
-                                            <input type="file" #fileInput style="display: none;" (change)="onFileSelected(row.Soporte, $event)">
-                                        </div>
-                                    </td>
-                                </ng-container>
-                
-                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                
-                                <tr class="mat-row" *matNoDataRow>
-                                    <td class="mat-cell" colspan="3">No data matching the filter "{{input.value}}"</td>
-                                </tr>
-                            </table>
-                
-                            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
-                        </div>
-                        
-                        <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados}">{{'GLOBAL.guardar' | translate }}</button>
-                    </mat-card-content>
-                </mat-card>
-            </mat-card-content>
-        </mat-card>
-        
-        <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
-            <mat-step [stepControl]="formInfoSocioEconomicaPersonal">
-                <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_informacion_socioeconomica_personal' |
-                    translate }}</ng-template>
-                <form [formGroup]="formInfoSocioEconomicaPersonal" class="my-25">
-                    <div class="form-grid3">
-                        <div class="form-col2">
-                            <mat-form-field>
-                                <mat-label>{{ 'GLOBAL.direccion_residencia' | translate }}</mat-label>
-                                <input matInput formControlName="direccion_residencia" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field *ngIf="!yaHizoProceso">
-                                <mat-label>{{ 'GLOBAL.localidad_residencia' | translate }}</mat-label>
-                                <mat-select formControlName="localidad">
-                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
-                                    <mat-option *ngFor="let localidad of localidades" value="{{ localidad.Id }}">{{
-                                        localidad.Nombre }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-form-field *ngIf="yaHizoProceso">
-                                <mat-label>{{ 'GLOBAL.localidad_residencia' | translate }}</mat-label>
-                                <input matInput formControlName="localidad" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col2">
-                            <mat-form-field>
-                                <mat-label>{{ 'GLOBAL.colegio' | translate }}</mat-label>
-                                <input matInput formControlName="colegio" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1 archivo">
-                            <mat-form-field floatLabel="always" *ngIf="!yaHizoProceso">
-                                <input #documentoBachiller type="file" multiple
-                                    (change)="onChangeSelectFiles('diplomaBachiller', $event)" style="display: none;" />
-                                <input matInput formControlName="diploma_bachiller" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.diploma_bachiller' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button" #selectFiles type="button" mat-raised-button
-                                                (click)="documentoBachiller.click()">{{'GLOBAL.seleccionar_archivo' |
-                                                translate}}</button>
-                                        </div>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivo of soportes['diplomaBachiller'].archivosLocal"
-                                            (click)="previewFile(archivo.urlTemp)"
-                                            title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
-                                            [ngClass]="{'archivo_invalido': archivo.err}">
-                                            {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true"
-                                                *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar' | translate}}"
-                                                (click)="deleteSelectedFile('diplomaBachiller', archivo.file.name)">close</mat-icon>
-                                        </span>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivoLinea of soportes['diplomaBachiller'].archivosLinea"
-                                            (click)="previewFile(archivoLinea.url)"
-                                            title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
-                                            <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
-                                            archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon class="icon-boton"
-                                                aria-hidden="true" *ngIf="!selectFiles.disabled"
-                                                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
-                                                (click)="deleteSelectedFileLinea('diplomaBachiller', archivoLinea.Id)">close</mat-icon>
-                                        </span>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                            <mat-form-field floatLabel="always" *ngIf="yaHizoProceso">
-                                <input matInput formControlName="diploma_bachiller" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.diploma_bachiller' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button boton-visualizar" type="button" mat-raised-button
-                                                (click)="openModal('soporteColegio')">{{'legalizacion_admision.visualizar_documento'
-                                                | translate}}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field>
-                                <mat-label>{{ 'legalizacion_admision.valor_pension' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="pension_valor" [(ngModel)]="valorPension"
-                                    (ngModelChange)="onPensionValorChange()" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field>
-                                <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="pension_valor_smv"
-                                    [(ngModel)]="valorPensionSML" [readonly]="true">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1 archivo">
-                            <mat-form-field floatLabel="always" *ngIf="!yaHizoProceso">
-                                <input #documentoPension type="file" multiple
-                                    (change)="onChangeSelectFiles('soportePension', $event)" style="display: none;" />
-                                <input matInput formControlName="soporte_pension_valor" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_valor_pension' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button" #selectFiles type="button" mat-raised-button
-                                                (click)="documentoPension.click()">{{'GLOBAL.seleccionar_archivo' |
-                                                translate}}</button>
-                                        </div>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivo of soportes['soportePension'].archivosLocal"
-                                            (click)="previewFile(archivo.urlTemp)"
-                                            title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
-                                            [ngClass]="{'archivo_invalido': archivo.err}">
-                                            {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true"
-                                                *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar' | translate}}"
-                                                (click)="deleteSelectedFile('soportePension', archivo.file.name)">close</mat-icon>
-                                        </span>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivoLinea of soportes['soportePension'].archivosLinea"
-                                            (click)="previewFile(archivoLinea.url)"
-                                            title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
-                                            <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
-                                            archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon class="icon-boton"
-                                                aria-hidden="true" *ngIf="!selectFiles.disabled"
-                                                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
-                                                (click)="deleteSelectedFileLinea('soportePension', archivoLinea.Id)">close</mat-icon>
-                                        </span>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                            <mat-form-field floatLabel="always" *ngIf="yaHizoProceso">
-                                <input matInput formControlName="soporte_pension_valor" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_valor_pension' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button boton-visualizar" type="button" mat-raised-button
-                                                (click)="openModal('soportePensionGrado11')">{{'legalizacion_admision.visualizar_documento'
-                                                | translate}}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field *ngIf="!yaHizoProceso">
-                                <mat-label>{{ 'legalizacion_admision.nucleo_familiar' | translate }}</mat-label>
-                                <mat-select formControlName="nucleo_familiar">
-                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
-                                    <mat-option *ngFor="let nucleo of nuceloFamiliar" value="{{ nucleo.Id }}">{{
-                                        nucleo.Nombre }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-form-field *ngIf="yaHizoProceso">
-                                <mat-label>{{ 'legalizacion_admision.nucleo_familiar' | translate }}</mat-label>
-                                <input matInput formControlName="nucleo_familiar" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1 archivo">
-                            <mat-form-field floatLabel="always" *ngIf="!yaHizoProceso">
-                                <input #documentoNucleo type="file" multiple
-                                    (change)="onChangeSelectFiles('soporteNucleo', $event)" style="display: none;" />
-                                <input matInput formControlName="soporte_nucleo_familiar" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_nucleo_familiar' | translate
-                                    }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button" #selectFiles type="button" mat-raised-button
-                                                (click)="documentoNucleo.click()">{{'GLOBAL.seleccionar_archivo' |
-                                                translate}}</button>
-                                        </div>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivo of soportes['soporteNucleo'].archivosLocal"
-                                            (click)="previewFile(archivo.urlTemp)"
-                                            title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
-                                            [ngClass]="{'archivo_invalido': archivo.err}">
-                                            {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true"
-                                                *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar' | translate}}"
-                                                (click)="deleteSelectedFile('soporteNucleo', archivo.file.name)">close</mat-icon>
-                                        </span>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivoLinea of soportes['soporteNucleo'].archivosLinea"
-                                            (click)="previewFile(archivoLinea.url)"
-                                            title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
-                                            <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
-                                            archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon class="icon-boton"
-                                                aria-hidden="true" *ngIf="!selectFiles.disabled"
-                                                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
-                                                (click)="deleteSelectedFileLinea('soporteNucleo', archivoLinea.Id)">close</mat-icon>
-                                        </span>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                            <mat-form-field floatLabel="always" *ngIf="yaHizoProceso">
-                                <input matInput formControlName="soporte_nucleo_familiar" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_nucleo_familiar' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button boton-visualizar" type="button" mat-raised-button
-                                                (click)="openModal('soporteNucleoFamiliar')">{{'legalizacion_admision.visualizar_documento'
-                                                | translate}}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field *ngIf="!yaHizoProceso">
-                                <mat-label>{{ 'legalizacion_admision.situacion_laboral' | translate }}</mat-label>
-                                <mat-select formControlName="situacion_laboral" (selectionChange)="onSituacionLaboralChange($event)">
-                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
-                                    <mat-option *ngFor="let situacion of situacionesLaboral"
-                                        value="{{ situacion.Id }}">{{ situacion.Nombre }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-form-field *ngIf="yaHizoProceso">
-                                <mat-label>{{ 'legalizacion_admision.situacion_laboral' | translate }}</mat-label>
-                                <input matInput formControlName="situacion_laboral" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1 archivo">
-                            <mat-form-field floatLabel="always" *ngIf="!yaHizoProceso">
-                                <input #documentoSituacionLaboral type="file" multiple
-                                    (change)="onChangeSelectFiles('soporteSituacionLaboral', $event)"
-                                    style="display: none;" />
-                                <input matInput formControlName="soporte_situacion_laboral" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_situacion_laboral' | translate
-                                    }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button" #selectFiles type="button" mat-raised-button
-                                                (click)="documentoSituacionLaboral.click()" [disabled]="estadoLaboralAspiranteActual == 'Desempleado'"
-                                                [ngClass]="{'button-disabled': estadoLaboralAspiranteActual == 'Desempleado'}">{{'GLOBAL.seleccionar_archivo'
-                                                | translate}}</button>
-                                        </div>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivo of soportes['soporteSituacionLaboral'].archivosLocal"
-                                            (click)="previewFile(archivo.urlTemp)"
-                                            title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
-                                            [ngClass]="{'archivo_invalido': archivo.err}">
-                                            {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true"
-                                                *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar' | translate}}"
-                                                (click)="deleteSelectedFile('soporteSituacionLaboral', archivo.file.name)">close</mat-icon>
-                                        </span>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivoLinea of soportes['soporteSituacionLaboral'].archivosLinea"
-                                            (click)="previewFile(archivoLinea.url)"
-                                            title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
-                                            <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
-                                            archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon class="icon-boton"
-                                                aria-hidden="true" *ngIf="!selectFiles.disabled"
-                                                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
-                                                (click)="deleteSelectedFileLinea('soporteSituacionLaboral', archivoLinea.Id)">close</mat-icon>
-                                        </span>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                            <mat-form-field floatLabel="always" *ngIf="yaHizoProceso">
-                                <input matInput formControlName="soporte_situacion_laboral" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_situacion_laboral' | translate
-                                    }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button boton-visualizar" type="button" mat-raised-button
-                                                (click)="openModal('soporteSituacionLaboral')" [disabled]="estadoLaboralAspiranteActual == 'Desempleado'"
-                                                [ngClass]="{'button-disabled': estadoLaboralAspiranteActual == 'Desempleado'}">{{'legalizacion_admision.visualizar_documento'
-                                                | translate}}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="botones-step">
-                        <div class="contenedor-boton">
-                            <button class="contenedor-label color-primario my-md" mat-raised-button
-                                matStepperPrevious>{{
-                                'GLOBAL.regresar' |
-                                translate }}</button>
-                        </div>
-                        <div class="contenedor-boton">
-                            <button class="contenedor-label color-primario my-md" mat-raised-button matStepperNext>{{
-                                'GLOBAL.siguiente' |
-                                translate }}</button>
-                        </div>
-                    </div>
-                </form>
-            </mat-step>
-            <mat-step [stepControl]="formInfoSocioEconomicaCosteara">
-                <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_informacion_socioeconomica_costeara' |
-                    translate }}</ng-template>
-                <form [formGroup]="formInfoSocioEconomicaCosteara" class="my-25">
-                    <div class="form-grid3">
-                        <div class="form-col3">
-                            <mat-form-field>
-                                <mat-label>{{ 'GLOBAL.direccion_residencia' | translate }}</mat-label>
-                                <input matInput formControlName="direccion_residencia_costeara"
-                                    [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field *ngIf="!yaHizoProceso">
-                                <mat-label>{{ 'GLOBAL.estrato_costea' | translate }}</mat-label>
-                                <mat-select formControlName="estrato">
-                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
-                                    <mat-option *ngFor="let estrato of estratos" value="{{ estrato.Id }}">{{
-                                        estrato.Nombre }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-form-field *ngIf="yaHizoProceso">
-                                <mat-label>{{ 'GLOBAL.estrato_costea' | translate }}</mat-label>
-                                <input matInput formControlName="estrato" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field *ngIf="!yaHizoProceso">
-                                <mat-label>{{ 'legalizacion_admision.ubicacion_residencia' | translate }}</mat-label>
-                                <mat-select formControlName="ubicacion_residencia">
-                                    <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
-                                    <mat-option *ngFor="let ubicacion of ubicacionesResidencia"
-                                        value="{{ ubicacion.Id }}">{{ ubicacion.Nombre }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-form-field *ngIf="yaHizoProceso">
-                                <mat-label>{{ 'legalizacion_admision.ubicacion_residencia' | translate }}</mat-label>
-                                <input matInput formControlName="ubicacion_residencia" [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1 archivo">
-                            <mat-form-field floatLabel="always" *ngIf="!yaHizoProceso">
-                                <input #documentoEstrato type="file" multiple
-                                    (change)="onChangeSelectFiles('soporteEstrato', $event)" style="display: none;" />
-                                <input matInput formControlName="soporte_estrato" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_estrato' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap contenedor-archivos-grid">
-                                        <div class="b-center">
-                                            <button class="my-button" #selectFiles type="button" mat-raised-button
-                                                (click)="documentoEstrato.click()">{{'GLOBAL.seleccionar_archivo' |
-                                                translate}}</button>
-                                        </div>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivo of soportes['soporteEstrato'].archivosLocal"
-                                            (click)="previewFile(archivo.urlTemp)"
-                                            title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
-                                            [ngClass]="{'archivo_invalido': archivo.err}">
-                                            {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true"
-                                                *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar' | translate}}"
-                                                (click)="deleteSelectedFile('soporteEstrato', archivo.file.name)">close</mat-icon>
-                                        </span>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivoLinea of soportes['soporteEstrato'].archivosLinea"
-                                            (click)="previewFile(archivoLinea.url)"
-                                            title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
-                                            <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
-                                            archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon class="icon-boton"
-                                                aria-hidden="true" *ngIf="!selectFiles.disabled"
-                                                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
-                                                (click)="deleteSelectedFileLinea('soporteEstrato', archivoLinea.Id)">close</mat-icon>
-                                        </span>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                            <mat-form-field floatLabel="always" *ngIf="yaHizoProceso">
-                                <input matInput formControlName="soporte_estrato" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_estrato' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button boton-visualizar" type="button" mat-raised-button
-                                                (click)="openModal('soporteEstratoCostea')">{{'legalizacion_admision.visualizar_documento'
-                                                | translate}}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field>
-                                <mat-label>{{ 'legalizacion_admision.ingresos_costea' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="ingresos_ano_anterior"
-                                    [(ngModel)]="valorIngresos" (ngModelChange)="onIngresosValorChange()"
-                                    [readonly]="yaHizoProceso">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1">
-                            <mat-form-field>
-                                <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
-                                <input type="number" matInput formControlName="ingresos_ano_anterior_sm"
-                                    [(ngModel)]="valorIngresosSML" [readonly]="true">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-col1 archivo">
-                            <mat-form-field floatLabel="always" *ngIf="!yaHizoProceso">
-                                <input #documentoIngresos type="file" multiple
-                                    (change)="onChangeSelectFiles('soporteIngresos', $event)" style="display: none;" />
-                                <input matInput formControlName="soporte_ingresos_ano_anterior" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_ingresos_costea' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap contenedor-archivos-grid">
-                                        <div class="b-center">
-                                            <button class="my-button" #selectFiles type="button" mat-raised-button
-                                                (click)="documentoIngresos.click()">{{'GLOBAL.seleccionar_archivo' |
-                                                translate}}</button>
-                                        </div>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivo of soportes['soporteIngresos'].archivosLocal"
-                                            (click)="previewFile(archivo.urlTemp)"
-                                            title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
-                                            [ngClass]="{'archivo_invalido': archivo.err}">
-                                            {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true"
-                                                *ngIf="!selectFiles.disabled" title="{{'GLOBAL.eliminar' | translate}}"
-                                                (click)="deleteSelectedFile('soporteIngresos', archivo.file.name)">close</mat-icon>
-                                        </span>
-                                        <span class="enlace-documento"
-                                            *ngFor="let archivoLinea of soportes['soporteIngresos'].archivosLinea"
-                                            (click)="previewFile(archivoLinea.url)"
-                                            title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
-                                            <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
-                                            archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon class="icon-boton"
-                                                aria-hidden="true" *ngIf="!selectFiles.disabled"
-                                                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
-                                                (click)="deleteSelectedFileLinea('soporteIngresos', archivoLinea.Id)">close</mat-icon>
-                                        </span>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                            <mat-form-field floatLabel="always" *ngIf="yaHizoProceso">
-                                <input matInput formControlName="soporte_ingresos_ano_anterior" [type]="'text'"
-                                    style="display: none;">
-                                <mat-label>{{ 'legalizacion_admision.soporte_ingresos_costea' | translate }}</mat-label>
-                                <div class="row">
-                                    <div class="col-12 d-flex flex-wrap">
-                                        <div class="b-center">
-                                            <button class="my-button boton-visualizar" type="button" mat-raised-button
-                                                (click)="openModal('soporteIngresosCostea')">{{'legalizacion_admision.visualizar_documento'
-                                                | translate}}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="botones-step">
-                        <div class="contenedor-boton">
-                            <button class="contenedor-label color-primario my-md" mat-raised-button
-                                matStepperPrevious>{{
-                                'GLOBAL.regresar' |
-                                translate }}</button>
-                        </div>
-                        <div class="contenedor-boton">
-                            <button class="contenedor-label color-primario my-md" mat-raised-button matStepperNext>{{
-                                'GLOBAL.siguiente' |
-                                translate }}</button>
-                        </div>
-                    </div>
-                </form>
-            </mat-step>
-            <mat-step [stepControl]="formDocsGenerales">
-                <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_documentos' | translate }}</ng-template>
-                <div class="my-25">
-                    <h6>{{ 'legalizacion_admision.info_documentos' | translate }}</h6>
-                    <ol>
-                        <li>{{ 'legalizacion_admision.comprobante_admision' | translate
-                            }}</li>
-                        <li>{{ 'legalizacion_admision.certificado_colegio' | translate
-                            }}</li>
-                        <li>{{ 'legalizacion_admision.certificado_estrato' | translate
-                            }}</li>
-                        <li>{{ 'legalizacion_admision.declaracion_renta' | translate
-                            }}</li>
-                        <li>{{ 'legalizacion_admision.fotocopia_documento' | translate
-                            }}</li>
-                        <li>{{ 'legalizacion_admision.copia_examen' | translate
-                            }}</li>
-                        <li>{{ 'legalizacion_admision.copia_registro_civil' | translate
-                            }}</li>
-                        <li>{{ 'legalizacion_admision.certificado_medico' | translate
-                            }}</li>
-                    </ol>
-                    <form [formGroup]="formDocsGenerales">
-                        <div class="form-grid3">
-                            <div class="form-col1 archivo">
-                                <mat-form-field floatLabel="always" *ngIf="!yaHizoProceso">
-                                    <input #documentoGeneral type="file" multiple
-                                        (change)="onChangeSelectFiles('documentosGeneral', $event)"
-                                        style="display: none;" />
-                                    <input matInput formControlName="documentos" [type]="'text'" style="display: none;">
-                                    <mat-label>{{ 'legalizacion_admision.soporte_documento' | translate }}</mat-label>
-                                    <div class="row">
-                                        <div class="col-12 d-flex flex-wrap">
-                                            <div class="b-center">
-                                                <button class="my-button" #selectFiles type="button" mat-raised-button
-                                                    (click)="documentoGeneral.click()">{{'GLOBAL.seleccionar_archivo' |
-                                                    translate}}</button>
-                                            </div>
-                                            <span class="enlace-documento"
-                                                *ngFor="let archivo of soportes['documentosGeneral'].archivosLocal"
-                                                (click)="previewFile(archivo.urlTemp)"
-                                                title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
-                                                [ngClass]="{'archivo_invalido': archivo.err}">
-                                                {{ archivo.file.name }} <mat-icon class="icon-boton" aria-hidden="true"
-                                                    *ngIf="!selectFiles.disabled"
-                                                    title="{{'GLOBAL.eliminar' | translate}}"
-                                                    (click)="deleteSelectedFile('documentosGeneral', archivo.file.name)">close</mat-icon>
-                                            </span>
-                                            <span class="enlace-documento"
-                                                *ngFor="let archivoLinea of soportes['documentosGeneral'].archivosLinea"
-                                                (click)="previewFile(archivoLinea.url)"
-                                                title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
-                                                <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
-                                                archivoLinea.nombre }}{{ archivoLinea.type }} <mat-icon
-                                                    class="icon-boton" aria-hidden="true" *ngIf="!selectFiles.disabled"
-                                                    title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
-                                                    (click)="deleteSelectedFileLinea('documentosGeneral', archivoLinea.Id)">close</mat-icon>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </mat-form-field>
-                                <mat-form-field floatLabel="always" *ngIf="yaHizoProceso">
-                                    <input matInput formControlName="documentos" [type]="'text'" style="display: none;">
-                                    <mat-label>{{ 'legalizacion_admision.soporte_documento' | translate }}</mat-label>
-                                    <div class="row">
-                                        <div class="col-12 d-flex flex-wrap">
-                                            <div class="b-center">
-                                                <button class="my-button boton-visualizar" type="button"
-                                                    mat-raised-button
-                                                    (click)="openModal('soporteGeneral')">{{'legalizacion_admision.visualizar_documento'
-                                                    | translate}}</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="botones-step">
-                        <div class="contenedor-boton">
-                            <button class="contenedor-label color-primario my-md" mat-raised-button
-                                matStepperPrevious>{{
-                                'GLOBAL.regresar' |
-                                translate }}</button>
-                        </div>
-                        <div class="contenedor-boton" *ngIf="!yaHizoProceso">
-                            <button (click)="guardar()" class="contenedor-label color-primario my-md" mat-raised-button
-                                [disabled]="!formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos()"
-                                [ngClass]="{'button-disabled': !formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos()}">{{
-                                'GLOBAL.guardar' |
-                                translate }}</button>
-                        </div>
-                    </div>
+      <div class="contenedor-label credencial color-primario mx-auto my-md">
+        {{ 'admision.credencial' | translate }}
+      </div>
+      @if (persona && inscripcion) {
+        <mat-card>
+          <mat-card-content>
+            <mat-card class="info-personal">
+              <mat-card-header>
+                <mat-card-title>{{ 'legalizacion_admision.proyecto_admitido' | translate }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content class="parametros-proyecto">
+                <div>
+                  <b>{{ 'inscripcion.opcion' | translate }}:</b> {{ opcionPrograma }}
                 </div>
-            </mat-step>
-        </mat-stepper>
-    </mat-card-content>
-</mat-card>
-
-<mat-card *ngIf="!estaAutorizado">
-    <mat-card-content>
-        <mat-card class="contendedor-no-autorizado">
-            <mat-card-header>
-                <h1>{{'ERROR.rol_insuficiente_titulo' | translate}}</h1>
-            </mat-card-header>
-            <mat-card-content>
-                <p>{{'ERROR.rol_insuficiente' | translate}}</p>
-            </mat-card-content>
+                <div>
+                  <b>{{ 'GLOBAL.nombre' | translate }}:</b> {{ proyectoAcademico }}
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="info-personal">
+              <mat-card-header>
+                <mat-card-title>{{ 'legalizacion_admision.titulo_informacion_personal' | translate }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <ul>
+                  <li><span>{{ 'legalizacion_admision.tipo_identificacion' | translate }}: </span>{{ persona.TipoIdentificacion.Nombre }}</li>
+                  <li><span>{{ 'GLOBAL.documento_identificacion' | translate }}: </span>{{ persona.NumeroIdentificacion }}</li>
+                  <li><span>{{ 'GLOBAL.primer_nombre' | translate }}: </span>{{ persona.PrimerNombre }}</li>
+                  <li><span>{{ 'GLOBAL.segundo_nombre' | translate }}: </span>{{ persona.SegundoNombre }}</li>
+                  <li><span>{{ 'GLOBAL.primer_apellido' | translate }}: </span>{{ persona.PrimerApellido }}</li>
+                  <li><span>{{ 'GLOBAL.segundo_apellido' | translate }}: </span>{{ persona.SegundoApellido }}</li>
+                  <li><span>{{ 'GLOBAL.fecha_nacimiento' | translate }}: </span>{{ persona.FechaNacimiento }}</li>
+                  <li><span>{{ 'GLOBAL.telefono' | translate }}: </span>{{ persona.Telefono }}</li>
+                  <li><span>{{ 'GLOBAL.correo_principal' | translate }}: </span>{{ persona.UsuarioWSO2 }}</li>
+                  <li><span>{{ 'GLOBAL.genero' | translate }}: </span>{{ persona.Genero.Nombre }}</li>
+                </ul>
+              </mat-card-content>
+            </mat-card>
+            @if (yaHizoProceso) {
+              <mat-card class="info-personal">
+                <mat-card-header>
+                  <mat-card-title>{{ 'legalizacion_admision.titulo_estado_legalizacion' | translate
+                  }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  @if (estadoInscripcion == 2) {
+                    <div class="estado_inscripcion">
+                      <p>{{ 'legalizacion_admision.estado_legalización_sin_revision' | translate }}</p>
+                      <mat-icon class="icono color-primary">pending_actions</mat-icon>
+                    </div>
+                  }
+                  @if (estadoInscripcion == 4) {
+                    <div class="estado_inscripcion">
+                      <p>{{ 'legalizacion_admision.estado_legalización_rechazado' | translate }}</p>
+                      <mat-icon class="icono color-rojo">cancel</mat-icon>
+                    </div>
+                  }
+                  @if (estadoInscripcion == 8) {
+                    <div class="estado_inscripcion">
+                      <p>{{ 'legalizacion_admision.estado_legalización_aprobado' | translate }}</p>
+                      <mat-icon class="icono color-verde">check_circle</mat-icon>
+                    </div>
+                  }
+                  @if (estadoInscripcion == 10) {
+                    <div class="estado_inscripcion">
+                      <p>{{ 'legalizacion_admision.estado_legalización_requiere_cambio' | translate }}</p>
+                      <mat-icon class="icono color-primary">change_circle</mat-icon>
+                    </div>
+                  }
+                </mat-card-content>
+              </mat-card>
+            }
+            @if (yaHizoProceso && estadoInscripcion == 10) {
+              <mat-card class="info-personal">
+                <mat-card-header>
+                  <mat-card-title>{{ 'legalizacion_admision.titulo_legalizacion_requiere_cambios' | translate
+                  }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div> {{ 'legalizacion_admision.legalizacion_requiere_cambios' | translate}} </div>
+                  <mat-form-field class="filtro">
+                    <mat-label>{{"GLOBAL.filtro" | translate}}</mat-label>
+                    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                  </mat-form-field>
+                  <div class="contenedor-tabla">
+                    <table mat-table [dataSource]="dataSource" matSort>
+                      <ng-container matColumnDef="Nombre">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"legalizacion_admision.nombre_soporte" | translate}} </th>
+                        <td mat-cell *matCellDef="let row"> {{row.Nombre | translate}} </td>
+                      </ng-container>
+                      <ng-container matColumnDef="NuevoDcoumento">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"legalizacion_admision.nuevo_documento" | translate}} </th>
+                        <td mat-cell *matCellDef="let row">
+                          @if (!row.HayNuevoDoc) {
+                            <span>{{ row.NuevoDoc | translate }}</span>
+                          }
+                          @if (row.HayNuevoDoc) {
+                            <span class="enlace-documento" (click)="previewFile(row.LinkNuevoDoc)" title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}">{{ row.NuevoDoc }}</span>
+                          }
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="Acciones" stickyEnd>
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"GLOBAL.acciones" | translate}} </th>
+                        <td mat-cell *matCellDef="let row">
+                          <div class="contenedor-acciones">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" class="boton-acciones" aria-label="Example icon-button with a menu">
+                              <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                              <button mat-menu-item (click)="openModal(row.Soporte)">
+                                <mat-icon>visibility</mat-icon>
+                                <span>{{ 'legalizacion_admision.ver_documento' | translate }}</span>
+                              </button>
+                              <button mat-menu-item (click)="fileInput.click()">
+                                <mat-icon>cloud_upload</mat-icon>
+                                <span>{{ 'legalizacion_admision.subir_documento' | translate }}</span>
+                              </button>
+                            </mat-menu>
+                            <input type="file" #fileInput style="display: none;" (change)="onFileSelected(row.Soporte, $event)">
+                          </div>
+                        </td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                      <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell" colspan="3">No data matching the filter "{{input.value}}"</td>
+                      </tr>
+                    </table>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+                  </div>
+                  <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados}">{{'GLOBAL.guardar' | translate }}</button>
+                </mat-card-content>
+              </mat-card>
+            }
+          </mat-card-content>
         </mat-card>
-    </mat-card-content>
+      }
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="formInfoSocioEconomicaPersonal">
+          <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_informacion_socioeconomica_personal' |
+          translate }}</ng-template>
+          <form [formGroup]="formInfoSocioEconomicaPersonal" class="my-25">
+            <div class="form-grid3">
+              <div class="form-col2">
+                <mat-form-field>
+                  <mat-label>{{ 'GLOBAL.direccion_residencia' | translate }}</mat-label>
+                  <input matInput formControlName="direccion_residencia" [readonly]="yaHizoProceso">
+                </mat-form-field>
+              </div>
+              <div class="form-col1">
+                @if (!yaHizoProceso) {
+                  <mat-form-field>
+                    <mat-label>{{ 'GLOBAL.localidad_residencia' | translate }}</mat-label>
+                    <mat-select formControlName="localidad">
+                      <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+                      @for (localidad of localidades; track localidad) {
+                        <mat-option value="{{ localidad.Id }}">{{
+                        localidad.Nombre }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                }
+                @if (yaHizoProceso) {
+                  <mat-form-field>
+                    <mat-label>{{ 'GLOBAL.localidad_residencia' | translate }}</mat-label>
+                    <input matInput formControlName="localidad" [readonly]="yaHizoProceso">
+                  </mat-form-field>
+                }
+              </div>
+              <div class="form-col2">
+                <mat-form-field>
+                  <mat-label>{{ 'GLOBAL.colegio' | translate }}</mat-label>
+                  <input matInput formControlName="colegio" [readonly]="yaHizoProceso">
+                </mat-form-field>
+              </div>
+              <div class="form-col1 archivo">
+                @if (!yaHizoProceso) {
+                  <mat-form-field floatLabel="always">
+                    <input #documentoBachiller type="file" multiple
+                      (change)="onChangeSelectFiles('diplomaBachiller', $event)" style="display: none;" />
+                    <input matInput formControlName="diploma_bachiller" [type]="'text'"
+                      style="display: none;">
+                    <mat-label>{{ 'legalizacion_admision.diploma_bachiller' | translate }}</mat-label>
+                    <div class="row">
+                      <div class="col-12 d-flex flex-wrap">
+                        <div class="b-center">
+                          <button class="my-button" #selectFiles type="button" mat-raised-button
+                            (click)="documentoBachiller.click()">{{'GLOBAL.seleccionar_archivo' |
+                          translate}}</button>
+                        </div>
+                        @for (archivo of soportes['diplomaBachiller'].archivosLocal; track archivo) {
+                          <span class="enlace-documento"
+                            (click)="previewFile(archivo.urlTemp)"
+                            title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
+                            [ngClass]="{'archivo_invalido': archivo.err}">
+                            {{ archivo.file.name }} @if (!selectFiles.disabled) {
+                            <mat-icon class="icon-boton" aria-hidden="true"
+                              title="{{'GLOBAL.eliminar' | translate}}"
+                            (click)="deleteSelectedFile('diplomaBachiller', archivo.file.name)">close</mat-icon>
+                          }
+                        </span>
+                      }
+                      @for (archivoLinea of soportes['diplomaBachiller'].archivosLinea; track archivoLinea) {
+                        <span class="enlace-documento"
+                          (click)="previewFile(archivoLinea.url)"
+                          title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+                          <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
+                          archivoLinea.nombre }}{{ archivoLinea.type }} @if (!selectFiles.disabled) {
+                          <mat-icon class="icon-boton"
+                            aria-hidden="true"
+                            title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
+                          (click)="deleteSelectedFileLinea('diplomaBachiller', archivoLinea.Id)">close</mat-icon>
+                        }
+                      </span>
+                    }
+                  </div>
+                </div>
+              </mat-form-field>
+            }
+            @if (yaHizoProceso) {
+              <mat-form-field floatLabel="always">
+                <input matInput formControlName="diploma_bachiller" [type]="'text'"
+                  style="display: none;">
+                <mat-label>{{ 'legalizacion_admision.diploma_bachiller' | translate }}</mat-label>
+                <div class="row">
+                  <div class="col-12 d-flex flex-wrap">
+                    <div class="b-center">
+                      <button class="my-button boton-visualizar" type="button" mat-raised-button
+                        (click)="openModal('soporteColegio')">{{'legalizacion_admision.visualizar_documento'
+                      | translate}}</button>
+                    </div>
+                  </div>
+                </div>
+              </mat-form-field>
+            }
+          </div>
+          <div class="form-col1">
+            <mat-form-field>
+              <mat-label>{{ 'legalizacion_admision.valor_pension' | translate }}</mat-label>
+              <input type="number" matInput formControlName="pension_valor" [(ngModel)]="valorPension"
+                (ngModelChange)="onPensionValorChange()" [readonly]="yaHizoProceso">
+            </mat-form-field>
+          </div>
+          <div class="form-col1">
+            <mat-form-field>
+              <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
+              <input type="number" matInput formControlName="pension_valor_smv"
+                [(ngModel)]="valorPensionSML" [readonly]="true">
+            </mat-form-field>
+          </div>
+          <div class="form-col1 archivo">
+            @if (!yaHizoProceso) {
+              <mat-form-field floatLabel="always">
+                <input #documentoPension type="file" multiple
+                  (change)="onChangeSelectFiles('soportePension', $event)" style="display: none;" />
+                <input matInput formControlName="soporte_pension_valor" [type]="'text'"
+                  style="display: none;">
+                <mat-label>{{ 'legalizacion_admision.soporte_valor_pension' | translate }}</mat-label>
+                <div class="row">
+                  <div class="col-12 d-flex flex-wrap">
+                    <div class="b-center">
+                      <button class="my-button" #selectFiles type="button" mat-raised-button
+                        (click)="documentoPension.click()">{{'GLOBAL.seleccionar_archivo' |
+                      translate}}</button>
+                    </div>
+                    @for (archivo of soportes['soportePension'].archivosLocal; track archivo) {
+                      <span class="enlace-documento"
+                        (click)="previewFile(archivo.urlTemp)"
+                        title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
+                        [ngClass]="{'archivo_invalido': archivo.err}">
+                        {{ archivo.file.name }} @if (!selectFiles.disabled) {
+                        <mat-icon class="icon-boton" aria-hidden="true"
+                          title="{{'GLOBAL.eliminar' | translate}}"
+                        (click)="deleteSelectedFile('soportePension', archivo.file.name)">close</mat-icon>
+                      }
+                    </span>
+                  }
+                  @for (archivoLinea of soportes['soportePension'].archivosLinea; track archivoLinea) {
+                    <span class="enlace-documento"
+                      (click)="previewFile(archivoLinea.url)"
+                      title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+                      <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
+                      archivoLinea.nombre }}{{ archivoLinea.type }} @if (!selectFiles.disabled) {
+                      <mat-icon class="icon-boton"
+                        aria-hidden="true"
+                        title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
+                      (click)="deleteSelectedFileLinea('soportePension', archivoLinea.Id)">close</mat-icon>
+                    }
+                  </span>
+                }
+              </div>
+            </div>
+          </mat-form-field>
+        }
+        @if (yaHizoProceso) {
+          <mat-form-field floatLabel="always">
+            <input matInput formControlName="soporte_pension_valor" [type]="'text'"
+              style="display: none;">
+            <mat-label>{{ 'legalizacion_admision.soporte_valor_pension' | translate }}</mat-label>
+            <div class="row">
+              <div class="col-12 d-flex flex-wrap">
+                <div class="b-center">
+                  <button class="my-button boton-visualizar" type="button" mat-raised-button
+                    (click)="openModal('soportePensionGrado11')">{{'legalizacion_admision.visualizar_documento'
+                  | translate}}</button>
+                </div>
+              </div>
+            </div>
+          </mat-form-field>
+        }
+      </div>
+      <div class="form-col1">
+        @if (!yaHizoProceso) {
+          <mat-form-field>
+            <mat-label>{{ 'legalizacion_admision.nucleo_familiar' | translate }}</mat-label>
+            <mat-select formControlName="nucleo_familiar">
+              <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+              @for (nucleo of nuceloFamiliar; track nucleo) {
+                <mat-option value="{{ nucleo.Id }}">{{
+                nucleo.Nombre }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        @if (yaHizoProceso) {
+          <mat-form-field>
+            <mat-label>{{ 'legalizacion_admision.nucleo_familiar' | translate }}</mat-label>
+            <input matInput formControlName="nucleo_familiar" [readonly]="yaHizoProceso">
+          </mat-form-field>
+        }
+      </div>
+      <div class="form-col1 archivo">
+        @if (!yaHizoProceso) {
+          <mat-form-field floatLabel="always">
+            <input #documentoNucleo type="file" multiple
+              (change)="onChangeSelectFiles('soporteNucleo', $event)" style="display: none;" />
+            <input matInput formControlName="soporte_nucleo_familiar" [type]="'text'"
+              style="display: none;">
+            <mat-label>{{ 'legalizacion_admision.soporte_nucleo_familiar' | translate
+            }}</mat-label>
+            <div class="row">
+              <div class="col-12 d-flex flex-wrap">
+                <div class="b-center">
+                  <button class="my-button" #selectFiles type="button" mat-raised-button
+                    (click)="documentoNucleo.click()">{{'GLOBAL.seleccionar_archivo' |
+                  translate}}</button>
+                </div>
+                @for (archivo of soportes['soporteNucleo'].archivosLocal; track archivo) {
+                  <span class="enlace-documento"
+                    (click)="previewFile(archivo.urlTemp)"
+                    title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
+                    [ngClass]="{'archivo_invalido': archivo.err}">
+                    {{ archivo.file.name }} @if (!selectFiles.disabled) {
+                    <mat-icon class="icon-boton" aria-hidden="true"
+                      title="{{'GLOBAL.eliminar' | translate}}"
+                    (click)="deleteSelectedFile('soporteNucleo', archivo.file.name)">close</mat-icon>
+                  }
+                </span>
+              }
+              @for (archivoLinea of soportes['soporteNucleo'].archivosLinea; track archivoLinea) {
+                <span class="enlace-documento"
+                  (click)="previewFile(archivoLinea.url)"
+                  title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+                  <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
+                  archivoLinea.nombre }}{{ archivoLinea.type }} @if (!selectFiles.disabled) {
+                  <mat-icon class="icon-boton"
+                    aria-hidden="true"
+                    title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
+                  (click)="deleteSelectedFileLinea('soporteNucleo', archivoLinea.Id)">close</mat-icon>
+                }
+              </span>
+            }
+          </div>
+        </div>
+      </mat-form-field>
+    }
+    @if (yaHizoProceso) {
+      <mat-form-field floatLabel="always">
+        <input matInput formControlName="soporte_nucleo_familiar" [type]="'text'"
+          style="display: none;">
+        <mat-label>{{ 'legalizacion_admision.soporte_nucleo_familiar' | translate }}</mat-label>
+        <div class="row">
+          <div class="col-12 d-flex flex-wrap">
+            <div class="b-center">
+              <button class="my-button boton-visualizar" type="button" mat-raised-button
+                (click)="openModal('soporteNucleoFamiliar')">{{'legalizacion_admision.visualizar_documento'
+              | translate}}</button>
+            </div>
+          </div>
+        </div>
+      </mat-form-field>
+    }
+  </div>
+  <div class="form-col1">
+    @if (!yaHizoProceso) {
+      <mat-form-field>
+        <mat-label>{{ 'legalizacion_admision.situacion_laboral' | translate }}</mat-label>
+        <mat-select formControlName="situacion_laboral" (selectionChange)="onSituacionLaboralChange($event)">
+          <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+          @for (situacion of situacionesLaboral; track situacion) {
+            <mat-option
+            value="{{ situacion.Id }}">{{ situacion.Nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+    @if (yaHizoProceso) {
+      <mat-form-field>
+        <mat-label>{{ 'legalizacion_admision.situacion_laboral' | translate }}</mat-label>
+        <input matInput formControlName="situacion_laboral" [readonly]="yaHizoProceso">
+      </mat-form-field>
+    }
+  </div>
+  <div class="form-col1 archivo">
+    @if (!yaHizoProceso) {
+      <mat-form-field floatLabel="always">
+        <input #documentoSituacionLaboral type="file" multiple
+          (change)="onChangeSelectFiles('soporteSituacionLaboral', $event)"
+          style="display: none;" />
+        <input matInput formControlName="soporte_situacion_laboral" [type]="'text'"
+          style="display: none;">
+        <mat-label>{{ 'legalizacion_admision.soporte_situacion_laboral' | translate
+        }}</mat-label>
+        <div class="row">
+          <div class="col-12 d-flex flex-wrap">
+            <div class="b-center">
+              <button class="my-button" #selectFiles type="button" mat-raised-button
+                (click)="documentoSituacionLaboral.click()" [disabled]="estadoLaboralAspiranteActual == 'Desempleado'"
+                [ngClass]="{'button-disabled': estadoLaboralAspiranteActual == 'Desempleado'}">{{'GLOBAL.seleccionar_archivo'
+              | translate}}</button>
+            </div>
+            @for (archivo of soportes['soporteSituacionLaboral'].archivosLocal; track archivo) {
+              <span class="enlace-documento"
+                (click)="previewFile(archivo.urlTemp)"
+                title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
+                [ngClass]="{'archivo_invalido': archivo.err}">
+                {{ archivo.file.name }} @if (!selectFiles.disabled) {
+                <mat-icon class="icon-boton" aria-hidden="true"
+                  title="{{'GLOBAL.eliminar' | translate}}"
+                (click)="deleteSelectedFile('soporteSituacionLaboral', archivo.file.name)">close</mat-icon>
+              }
+            </span>
+          }
+          @for (archivoLinea of soportes['soporteSituacionLaboral'].archivosLinea; track archivoLinea) {
+            <span class="enlace-documento"
+              (click)="previewFile(archivoLinea.url)"
+              title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+              <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
+              archivoLinea.nombre }}{{ archivoLinea.type }} @if (!selectFiles.disabled) {
+              <mat-icon class="icon-boton"
+                aria-hidden="true"
+                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
+              (click)="deleteSelectedFileLinea('soporteSituacionLaboral', archivoLinea.Id)">close</mat-icon>
+            }
+          </span>
+        }
+      </div>
+    </div>
+  </mat-form-field>
+}
+@if (yaHizoProceso) {
+  <mat-form-field floatLabel="always">
+    <input matInput formControlName="soporte_situacion_laboral" [type]="'text'"
+      style="display: none;">
+    <mat-label>{{ 'legalizacion_admision.soporte_situacion_laboral' | translate
+    }}</mat-label>
+    <div class="row">
+      <div class="col-12 d-flex flex-wrap">
+        <div class="b-center">
+          <button class="my-button boton-visualizar" type="button" mat-raised-button
+            (click)="openModal('soporteSituacionLaboral')" [disabled]="estadoLaboralAspiranteActual == 'Desempleado'"
+            [ngClass]="{'button-disabled': estadoLaboralAspiranteActual == 'Desempleado'}">{{'legalizacion_admision.visualizar_documento'
+          | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </mat-form-field>
+}
+</div>
+</div>
+<div class="botones-step">
+  <div class="contenedor-boton">
+    <button class="contenedor-label color-primario my-md" mat-raised-button
+      matStepperPrevious>{{
+      'GLOBAL.regresar' |
+    translate }}</button>
+  </div>
+  <div class="contenedor-boton">
+    <button class="contenedor-label color-primario my-md" mat-raised-button matStepperNext>{{
+      'GLOBAL.siguiente' |
+    translate }}</button>
+  </div>
+</div>
+</form>
+</mat-step>
+<mat-step [stepControl]="formInfoSocioEconomicaCosteara">
+  <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_informacion_socioeconomica_costeara' |
+  translate }}</ng-template>
+  <form [formGroup]="formInfoSocioEconomicaCosteara" class="my-25">
+    <div class="form-grid3">
+      <div class="form-col3">
+        <mat-form-field>
+          <mat-label>{{ 'GLOBAL.direccion_residencia' | translate }}</mat-label>
+          <input matInput formControlName="direccion_residencia_costeara"
+            [readonly]="yaHizoProceso">
+        </mat-form-field>
+      </div>
+      <div class="form-col1">
+        @if (!yaHizoProceso) {
+          <mat-form-field>
+            <mat-label>{{ 'GLOBAL.estrato_costea' | translate }}</mat-label>
+            <mat-select formControlName="estrato">
+              <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+              @for (estrato of estratos; track estrato) {
+                <mat-option value="{{ estrato.Id }}">{{
+                estrato.Nombre }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        @if (yaHizoProceso) {
+          <mat-form-field>
+            <mat-label>{{ 'GLOBAL.estrato_costea' | translate }}</mat-label>
+            <input matInput formControlName="estrato" [readonly]="yaHizoProceso">
+          </mat-form-field>
+        }
+      </div>
+      <div class="form-col1">
+        @if (!yaHizoProceso) {
+          <mat-form-field>
+            <mat-label>{{ 'legalizacion_admision.ubicacion_residencia' | translate }}</mat-label>
+            <mat-select formControlName="ubicacion_residencia">
+              <mat-option value="">{{ 'GLOBAL.seleccionar' | translate }}</mat-option>
+              @for (ubicacion of ubicacionesResidencia; track ubicacion) {
+                <mat-option
+                value="{{ ubicacion.Id }}">{{ ubicacion.Nombre }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        @if (yaHizoProceso) {
+          <mat-form-field>
+            <mat-label>{{ 'legalizacion_admision.ubicacion_residencia' | translate }}</mat-label>
+            <input matInput formControlName="ubicacion_residencia" [readonly]="yaHizoProceso">
+          </mat-form-field>
+        }
+      </div>
+      <div class="form-col1 archivo">
+        @if (!yaHizoProceso) {
+          <mat-form-field floatLabel="always">
+            <input #documentoEstrato type="file" multiple
+              (change)="onChangeSelectFiles('soporteEstrato', $event)" style="display: none;" />
+            <input matInput formControlName="soporte_estrato" [type]="'text'"
+              style="display: none;">
+            <mat-label>{{ 'legalizacion_admision.soporte_estrato' | translate }}</mat-label>
+            <div class="row">
+              <div class="col-12 d-flex flex-wrap contenedor-archivos-grid">
+                <div class="b-center">
+                  <button class="my-button" #selectFiles type="button" mat-raised-button
+                    (click)="documentoEstrato.click()">{{'GLOBAL.seleccionar_archivo' |
+                  translate}}</button>
+                </div>
+                @for (archivo of soportes['soporteEstrato'].archivosLocal; track archivo) {
+                  <span class="enlace-documento"
+                    (click)="previewFile(archivo.urlTemp)"
+                    title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
+                    [ngClass]="{'archivo_invalido': archivo.err}">
+                    {{ archivo.file.name }} @if (!selectFiles.disabled) {
+                    <mat-icon class="icon-boton" aria-hidden="true"
+                      title="{{'GLOBAL.eliminar' | translate}}"
+                    (click)="deleteSelectedFile('soporteEstrato', archivo.file.name)">close</mat-icon>
+                  }
+                </span>
+              }
+              @for (archivoLinea of soportes['soporteEstrato'].archivosLinea; track archivoLinea) {
+                <span class="enlace-documento"
+                  (click)="previewFile(archivoLinea.url)"
+                  title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+                  <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
+                  archivoLinea.nombre }}{{ archivoLinea.type }} @if (!selectFiles.disabled) {
+                  <mat-icon class="icon-boton"
+                    aria-hidden="true"
+                    title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
+                  (click)="deleteSelectedFileLinea('soporteEstrato', archivoLinea.Id)">close</mat-icon>
+                }
+              </span>
+            }
+          </div>
+        </div>
+      </mat-form-field>
+    }
+    @if (yaHizoProceso) {
+      <mat-form-field floatLabel="always">
+        <input matInput formControlName="soporte_estrato" [type]="'text'"
+          style="display: none;">
+        <mat-label>{{ 'legalizacion_admision.soporte_estrato' | translate }}</mat-label>
+        <div class="row">
+          <div class="col-12 d-flex flex-wrap">
+            <div class="b-center">
+              <button class="my-button boton-visualizar" type="button" mat-raised-button
+                (click)="openModal('soporteEstratoCostea')">{{'legalizacion_admision.visualizar_documento'
+              | translate}}</button>
+            </div>
+          </div>
+        </div>
+      </mat-form-field>
+    }
+  </div>
+  <div class="form-col1">
+    <mat-form-field>
+      <mat-label>{{ 'legalizacion_admision.ingresos_costea' | translate }}</mat-label>
+      <input type="number" matInput formControlName="ingresos_ano_anterior"
+        [(ngModel)]="valorIngresos" (ngModelChange)="onIngresosValorChange()"
+        [readonly]="yaHizoProceso">
+    </mat-form-field>
+  </div>
+  <div class="form-col1">
+    <mat-form-field>
+      <mat-label>{{ 'legalizacion_admision.valor_sm' | translate }}</mat-label>
+      <input type="number" matInput formControlName="ingresos_ano_anterior_sm"
+        [(ngModel)]="valorIngresosSML" [readonly]="true">
+    </mat-form-field>
+  </div>
+  <div class="form-col1 archivo">
+    @if (!yaHizoProceso) {
+      <mat-form-field floatLabel="always">
+        <input #documentoIngresos type="file" multiple
+          (change)="onChangeSelectFiles('soporteIngresos', $event)" style="display: none;" />
+        <input matInput formControlName="soporte_ingresos_ano_anterior" [type]="'text'"
+          style="display: none;">
+        <mat-label>{{ 'legalizacion_admision.soporte_ingresos_costea' | translate }}</mat-label>
+        <div class="row">
+          <div class="col-12 d-flex flex-wrap contenedor-archivos-grid">
+            <div class="b-center">
+              <button class="my-button" #selectFiles type="button" mat-raised-button
+                (click)="documentoIngresos.click()">{{'GLOBAL.seleccionar_archivo' |
+              translate}}</button>
+            </div>
+            @for (archivo of soportes['soporteIngresos'].archivosLocal; track archivo) {
+              <span class="enlace-documento"
+                (click)="previewFile(archivo.urlTemp)"
+                title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
+                [ngClass]="{'archivo_invalido': archivo.err}">
+                {{ archivo.file.name }} @if (!selectFiles.disabled) {
+                <mat-icon class="icon-boton" aria-hidden="true"
+                  title="{{'GLOBAL.eliminar' | translate}}"
+                (click)="deleteSelectedFile('soporteIngresos', archivo.file.name)">close</mat-icon>
+              }
+            </span>
+          }
+          @for (archivoLinea of soportes['soporteIngresos'].archivosLinea; track archivoLinea) {
+            <span class="enlace-documento"
+              (click)="previewFile(archivoLinea.url)"
+              title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+              <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
+              archivoLinea.nombre }}{{ archivoLinea.type }} @if (!selectFiles.disabled) {
+              <mat-icon class="icon-boton"
+                aria-hidden="true"
+                title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
+              (click)="deleteSelectedFileLinea('soporteIngresos', archivoLinea.Id)">close</mat-icon>
+            }
+          </span>
+        }
+      </div>
+    </div>
+  </mat-form-field>
+}
+@if (yaHizoProceso) {
+  <mat-form-field floatLabel="always">
+    <input matInput formControlName="soporte_ingresos_ano_anterior" [type]="'text'"
+      style="display: none;">
+    <mat-label>{{ 'legalizacion_admision.soporte_ingresos_costea' | translate }}</mat-label>
+    <div class="row">
+      <div class="col-12 d-flex flex-wrap">
+        <div class="b-center">
+          <button class="my-button boton-visualizar" type="button" mat-raised-button
+            (click)="openModal('soporteIngresosCostea')">{{'legalizacion_admision.visualizar_documento'
+          | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </mat-form-field>
+}
+</div>
+</div>
+<div class="botones-step">
+  <div class="contenedor-boton">
+    <button class="contenedor-label color-primario my-md" mat-raised-button
+      matStepperPrevious>{{
+      'GLOBAL.regresar' |
+    translate }}</button>
+  </div>
+  <div class="contenedor-boton">
+    <button class="contenedor-label color-primario my-md" mat-raised-button matStepperNext>{{
+      'GLOBAL.siguiente' |
+    translate }}</button>
+  </div>
+</div>
+</form>
+</mat-step>
+<mat-step [stepControl]="formDocsGenerales">
+  <ng-template matStepLabel>{{ 'legalizacion_admision.titulo_documentos' | translate }}</ng-template>
+  <div class="my-25">
+    <h6>{{ 'legalizacion_admision.info_documentos' | translate }}</h6>
+    <ol>
+      <li>{{ 'legalizacion_admision.comprobante_admision' | translate
+      }}</li>
+      <li>{{ 'legalizacion_admision.certificado_colegio' | translate
+      }}</li>
+      <li>{{ 'legalizacion_admision.certificado_estrato' | translate
+      }}</li>
+      <li>{{ 'legalizacion_admision.declaracion_renta' | translate
+      }}</li>
+      <li>{{ 'legalizacion_admision.fotocopia_documento' | translate
+      }}</li>
+      <li>{{ 'legalizacion_admision.copia_examen' | translate
+      }}</li>
+      <li>{{ 'legalizacion_admision.copia_registro_civil' | translate
+      }}</li>
+      <li>{{ 'legalizacion_admision.certificado_medico' | translate
+      }}</li>
+    </ol>
+    <form [formGroup]="formDocsGenerales">
+      <div class="form-grid3">
+        <div class="form-col1 archivo">
+          @if (!yaHizoProceso) {
+            <mat-form-field floatLabel="always">
+              <input #documentoGeneral type="file" multiple
+                (change)="onChangeSelectFiles('documentosGeneral', $event)"
+                style="display: none;" />
+              <input matInput formControlName="documentos" [type]="'text'" style="display: none;">
+              <mat-label>{{ 'legalizacion_admision.soporte_documento' | translate }}</mat-label>
+              <div class="row">
+                <div class="col-12 d-flex flex-wrap">
+                  <div class="b-center">
+                    <button class="my-button" #selectFiles type="button" mat-raised-button
+                      (click)="documentoGeneral.click()">{{'GLOBAL.seleccionar_archivo' |
+                    translate}}</button>
+                  </div>
+                  @for (archivo of soportes['documentosGeneral'].archivosLocal; track archivo) {
+                    <span class="enlace-documento"
+                      (click)="previewFile(archivo.urlTemp)"
+                      title="{{'GLOBAL.tooltip_previsualizar_archivo' | translate}}"
+                      [ngClass]="{'archivo_invalido': archivo.err}">
+                      {{ archivo.file.name }} @if (!selectFiles.disabled) {
+                      <mat-icon class="icon-boton" aria-hidden="true"
+                        title="{{'GLOBAL.eliminar' | translate}}"
+                      (click)="deleteSelectedFile('documentosGeneral', archivo.file.name)">close</mat-icon>
+                    }
+                  </span>
+                }
+                @for (archivoLinea of soportes['documentosGeneral'].archivosLinea; track archivoLinea) {
+                  <span class="enlace-documento"
+                    (click)="previewFile(archivoLinea.url)"
+                    title="{{'GLOBAL.tooltip_descargar_arhivo' | translate}}">
+                    <mat-icon class="icon-boton" aria-hidden="true">download</mat-icon> {{
+                    archivoLinea.nombre }}{{ archivoLinea.type }} @if (!selectFiles.disabled) {
+                    <mat-icon
+                      class="icon-boton" aria-hidden="true"
+                      title="{{'GLOBAL.eliminar_temporalmente' | translate}}"
+                    (click)="deleteSelectedFileLinea('documentosGeneral', archivoLinea.Id)">close</mat-icon>
+                  }
+                </span>
+              }
+            </div>
+          </div>
+        </mat-form-field>
+      }
+      @if (yaHizoProceso) {
+        <mat-form-field floatLabel="always">
+          <input matInput formControlName="documentos" [type]="'text'" style="display: none;">
+          <mat-label>{{ 'legalizacion_admision.soporte_documento' | translate }}</mat-label>
+          <div class="row">
+            <div class="col-12 d-flex flex-wrap">
+              <div class="b-center">
+                <button class="my-button boton-visualizar" type="button"
+                  mat-raised-button
+                  (click)="openModal('soporteGeneral')">{{'legalizacion_admision.visualizar_documento'
+                | translate}}</button>
+              </div>
+            </div>
+          </div>
+        </mat-form-field>
+      }
+    </div>
+  </div>
+</form>
+<div class="botones-step">
+  <div class="contenedor-boton">
+    <button class="contenedor-label color-primario my-md" mat-raised-button
+      matStepperPrevious>{{
+      'GLOBAL.regresar' |
+    translate }}</button>
+  </div>
+  @if (!yaHizoProceso) {
+    <div class="contenedor-boton">
+      <button (click)="guardar()" class="contenedor-label color-primario my-md" mat-raised-button
+        [disabled]="!formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos()"
+        [ngClass]="{'button-disabled': !formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos()}">{{
+        'GLOBAL.guardar' |
+      translate }}</button>
+    </div>
+  }
+</div>
+</div>
+</mat-step>
+</mat-stepper>
+</mat-card-content>
 </mat-card>
+}
+
+@if (!estaAutorizado) {
+  <mat-card>
+    <mat-card-content>
+      <mat-card class="contendedor-no-autorizado">
+        <mat-card-header>
+          <h1>{{'ERROR.rol_insuficiente_titulo' | translate}}</h1>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{'ERROR.rol_insuficiente' | translate}}</p>
+        </mat-card-content>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
+}

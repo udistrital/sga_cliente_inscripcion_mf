@@ -6,9 +6,10 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { MODALS } from './modals';
 
 @Component({
-  selector: 'app-dialog-preview-file',
-  templateUrl: './dialog-preview-file.component.html',
-  styleUrls: ['./dialog-preview-file.component.scss']
+    selector: 'app-dialog-preview-file',
+    templateUrl: './dialog-preview-file.component.html',
+    styleUrls: ['./dialog-preview-file.component.scss'],
+    standalone: false
 })
 export class DialogPreviewFileComponent implements OnInit {
   validsafe: boolean = false;

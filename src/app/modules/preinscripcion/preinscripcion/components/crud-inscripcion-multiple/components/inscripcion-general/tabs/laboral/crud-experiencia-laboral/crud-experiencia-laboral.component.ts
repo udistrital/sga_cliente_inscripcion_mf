@@ -16,9 +16,10 @@ import { Organizacion } from 'src/app/models/ente/organizacion';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
-  selector: 'ngx-crud-experiencia-laboral',
-  templateUrl: './crud-experiencia-laboral.component.html',
-  styleUrls: ['./crud-experiencia-laboral.component.scss']
+    selector: 'ngx-crud-experiencia-laboral',
+    templateUrl: './crud-experiencia-laboral.component.html',
+    styleUrls: ['./crud-experiencia-laboral.component.scss'],
+    standalone: false
 })
 export class CrudExperienciaLaboralComponent implements OnInit {
   info_experiencia_laboral_id!: number;

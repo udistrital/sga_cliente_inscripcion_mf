@@ -1,62 +1,68 @@
 <div class="contenedor-tabla">
-    <table mat-table [dataSource]="dataSource">
+  <table mat-table [dataSource]="dataSource">
 
     <ng-container matColumnDef="institucion">
-        <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.institucion" | translate }}</th>
-        <td mat-cell *matCellDef="let element"> {{element.NombreCompleto}} </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.institucion" | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{element.NombreCompleto}} </td>
     </ng-container>
 
     <ng-container matColumnDef="programa">
-        <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.programa" | translate }}</th>
-        <td mat-cell *matCellDef="let element"> {{element.ProgramaAcademico.Nombre}} </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.programa" | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{element.ProgramaAcademico.Nombre}} </td>
     </ng-container>
 
 
     <ng-container matColumnDef="nivel">
-        <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.nivel" | translate }}</th>
-        <td mat-cell *matCellDef="let element">  </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.nivel" | translate }}</th>
+      <td mat-cell *matCellDef="let element">  </td>
     </ng-container>
 
     <ng-container matColumnDef="fechaInicio">
-        <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.fecha_inicio" | translate }}</th>
-        <td mat-cell *matCellDef="let element"> {{element.FechaInicio}} </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.fecha_inicio" | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{element.FechaInicio}} </td>
     </ng-container>
 
     <ng-container matColumnDef="fechaFin">
-        <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.fecha_fin" | translate }}</th>
-        <td mat-cell *matCellDef="let element"> {{element.FechaFinalizacion}} </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "GLOBAL.fecha_fin" | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{element.FechaFinalizacion}} </td>
     </ng-container>
 
     <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef>{{ "admision.estado" | translate }}</th>
-        <td mat-cell *matCellDef="let element"> {{element.estadoObservacion?element.estadoObservacion:''}} </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "admision.estado" | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{element.estadoObservacion?element.estadoObservacion:''}} </td>
     </ng-container>
 
     <ng-container matColumnDef="observacion">
-        <th mat-header-cell *matHeaderCellDef>{{ "admision.observacion" | translate }}</th>
-        <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}} </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "admision.observacion" | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{element.observacion?element.observacion:''}} </td>
     </ng-container>
 
     <ng-container matColumnDef="soporte">
-        <th mat-header-cell *matHeaderCellDef>{{ "solicitudes.soporte" | translate }}</th>
-        <td mat-cell *matCellDef="let element">
-            <button *ngIf="element.Documento !== undefined" color="accent" mat-flat-button type="button" (click)="abrirDocumento(element)">
-                <mat-icon fontIcon="search"></mat-icon>
-            </button>
-            <div *ngIf="element.Documento === undefined">
-                {{ 'GLOBAL.no_informacion_registrada' | translate }}
-            </div>
-        </td>
+      <th mat-header-cell *matHeaderCellDef>{{ "solicitudes.soporte" | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        @if (element.Documento !== undefined) {
+          <button color="accent" mat-flat-button type="button" (click)="abrirDocumento(element)">
+            <mat-icon fontIcon="search"></mat-icon>
+          </button>
+        }
+        @if (element.Documento === undefined) {
+          <div>
+            {{ 'GLOBAL.no_informacion_registrada' | translate }}
+          </div>
+        }
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
     <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="8">{{ "admision.no_data" | translate }}</td>
+      <td class="mat-cell" colspan="8">{{ "admision.no_data" | translate }}</td>
     </tr>
-    </table>
+  </table>
 </div>
-<div class="contenedor-actualizar" *ngIf="(url_editar && gotoEdit) || (updateDocument && canUpdateDocument)">
+@if ((url_editar && gotoEdit) || (updateDocument && canUpdateDocument)) {
+  <div class="contenedor-actualizar">
     <span (click)="editar()" class="link"><mat-icon>edit</mat-icon> {{"GLOBAL.actualizar" | translate}}</span>
-</div>
+  </div>
+}

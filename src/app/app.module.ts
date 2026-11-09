@@ -7,7 +7,7 @@ import { PreinscripcionModule } from './modules/preinscripcion/preinscripcion.mo
 import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { StoreModule } from '@ngrx/store';
 import { rootReducer } from './utils/reducers/rootReducer';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { environment } from 'src/environments/environment';
 import { PopUpManager } from './managers/popUpManager';
@@ -35,10 +35,7 @@ import { UtilidadesService } from './services/utilidades.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentoService } from './services/documento.service';
 import { ProduccionAcademicaService } from './services/produccion_academica.service';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SpinnerUtilInterceptor, SpinnerUtilModule } from 'spinner-util';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatListModule } from '@angular/material/list';
@@ -123,8 +120,6 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    HttpClientModule,
-    SpinnerUtilModule,
   ],
   providers: [
     AnyService,
@@ -159,7 +154,7 @@ export function createTranslateLoader(http: HttpClient) {
     // SgaMidService,
     LiquidacionMatriculaService,
     ImplicitAutenticationService,
-    { provide: HTTP_INTERCEPTORS, useClass: SpinnerUtilInterceptor, multi: true },
+    provideHttpClient(withInterceptorsFromDi()),
     { provide: MatDialogRef, useValue: {} },
     {
       provide: MAT_TOOLTIP_SCROLL_STRATEGY, 
@@ -168,8 +163,9 @@ export function createTranslateLoader(http: HttpClient) {
     },
     {
       provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
-      useValue: MAT_SELECT_SCROLL_STRATEGY_PROVIDER,
-     },
+      deps: [Overlay],
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.reposition(),
+    },
      { provide: MAT_DATE_LOCALE, useValue: 'es-CO' },
   ],
   bootstrap: [AppComponent]

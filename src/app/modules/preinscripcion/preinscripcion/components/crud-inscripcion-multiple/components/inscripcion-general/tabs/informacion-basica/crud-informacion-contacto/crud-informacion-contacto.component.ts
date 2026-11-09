@@ -16,9 +16,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
-  selector: 'ngx-crud-informacion-contacto',
-  templateUrl: './crud-informacion-contacto.component.html',
-  styleUrls: ['./crud-informacion-contacto.component.scss']
+    selector: 'ngx-crud-informacion-contacto',
+    templateUrl: './crud-informacion-contacto.component.html',
+    styleUrls: ['./crud-informacion-contacto.component.scss'],
+    standalone: false
 })
 export class CrudInformacionContactoComponent implements OnInit {
   terceroId!: number | null;

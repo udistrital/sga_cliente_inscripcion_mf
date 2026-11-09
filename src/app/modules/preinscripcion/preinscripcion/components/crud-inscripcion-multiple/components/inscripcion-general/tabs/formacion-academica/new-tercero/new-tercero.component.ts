@@ -10,9 +10,10 @@ import { NUEVO_TERCERO } from './form_new_tercero';
 import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 
 @Component({
-  selector: 'ngx-new-tercero',
-  templateUrl: './new-tercero.component.html',
-  styleUrls: ['./new-tercero.component.scss']
+    selector: 'ngx-new-tercero',
+    templateUrl: './new-tercero.component.html',
+    styleUrls: ['./new-tercero.component.scss'],
+    standalone: false
 })
 export class NewTerceroComponent implements OnInit {
   nuevoTercero: boolean = false;

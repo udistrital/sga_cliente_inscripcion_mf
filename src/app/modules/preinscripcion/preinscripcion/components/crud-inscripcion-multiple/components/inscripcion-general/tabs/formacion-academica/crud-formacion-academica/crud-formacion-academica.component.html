@@ -4,63 +4,71 @@
     <span>{{ "inscripcion.alerta_formacion_academica" | translate }}</span>
   </div>
 
-  <ngx-dinamicform
-    *ngIf="!nuevoTercero && !nuevoPrograma"
-    [normalform]="formInfoFormacionAcademica"
-    [modeloData]="info_formacion_academica"
-    (result)="validarForm($event)"
-    (resultAux)="searchDoc($event); updateFinishDate($event)"
-    (dateChange)="onChangeDate()"
-    [clean]="clean"
-    (percentage)="setPercentage($event)"
-    (interlaced)="getEvento($event)"
-  >
-  </ngx-dinamicform>
+  @if (!nuevoTercero && !nuevoPrograma) {
+    <ngx-dinamicform
+      [normalform]="formInfoFormacionAcademica"
+      [modeloData]="info_formacion_academica"
+      (result)="validarForm($event)"
+      (resultAux)="searchDoc($event); updateFinishDate($event)"
+      (dateChange)="onChangeDate()"
+      [clean]="clean"
+      (percentage)="setPercentage($event)"
+      (interlaced)="getEvento($event)"
+      >
+    </ngx-dinamicform>
+  }
 
-  <ngx-new-tercero *ngIf="nuevoTercero" (result)="NuevoTercero($event)" [nit]="nit">
-  </ngx-new-tercero>
+  @if (nuevoTercero) {
+    <ngx-new-tercero (result)="NuevoTercero($event)" [nit]="nit">
+    </ngx-new-tercero>
+  }
 
-  <fieldset [ngClass]="{ fieldseter: true }" *ngIf="nuevoPrograma">
-    <legend>
-      {{ "GLOBAL.programa_academico" | translate }}
-    </legend>
-    <div class="row">
-      <div class="col-12">
-        <mat-form-field style="width: 100%; padding: 5%">
-          <input
-            matInput
-            type="text"
-            [formControl]="NombreProgramaNuevo"
+  @if (nuevoPrograma) {
+    <fieldset [ngClass]="{ fieldseter: true }">
+      <legend>
+        {{ "GLOBAL.programa_academico" | translate }}
+      </legend>
+      <div class="row">
+        <div class="col-12">
+          <mat-form-field style="width: 100%; padding: 5%">
+            <input
+              matInput
+              type="text"
+              [formControl]="NombreProgramaNuevo"
             placeholder="{{
               'GLOBAL.placeholder_programa_academico' | translate
             }}"
-            required
-          />
-          <mat-error *ngIf="NombreProgramaNuevo.invalid">
-            {{ "GLOBAL.alerta_llenar_campo" | translate }}
-          </mat-error>
-        </mat-form-field>
+              required
+              />
+            @if (NombreProgramaNuevo.invalid) {
+              <mat-error>
+                {{ "GLOBAL.alerta_llenar_campo" | translate }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-12 d-flex justify-content-center">
-        <button mat-button type="button" (click)="guardarProgramaNuevo()">
-          {{ "GLOBAL.guardar" | translate }}
-        </button>
+      <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+          <button mat-button type="button" (click)="guardarProgramaNuevo()">
+            {{ "GLOBAL.guardar" | translate }}
+          </button>
+        </div>
       </div>
-    </div>
-  </fieldset>
+    </fieldset>
+  }
   <br />
 
-  <button
-    *ngIf="nuevoTercero || nuevoPrograma"
-    class="margin-y"
-    mat-flat-button
-    color="primary"
-    (click)="nuevoTercero = false; nuevoPrograma = false"
-  >
-    {{ "GLOBAL.cancelar" | translate }}
-  </button>
+  @if (nuevoTercero || nuevoPrograma) {
+    <button
+      class="margin-y"
+      mat-flat-button
+      color="primary"
+      (click)="nuevoTercero = false; nuevoPrograma = false"
+      >
+      {{ "GLOBAL.cancelar" | translate }}
+    </button>
+  }
 
   <mat-divider class="margin-y"/>
   <br/>

@@ -12,9 +12,10 @@ import { UserService } from 'src/app/services/users.service';
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
-  selector: 'ngx-list-produccion-academica',
-  templateUrl: './list-produccion-academica.component.html',
-  styleUrls: ['./list-produccion-academica.component.scss'],
+    selector: 'ngx-list-produccion-academica',
+    templateUrl: './list-produccion-academica.component.html',
+    styleUrls: ['./list-produccion-academica.component.scss'],
+    standalone: false
 })
 export class ListProduccionAcademicaComponent implements OnInit {
   prod_selected: ProduccionAcademicaPost | undefined;
