@@ -73,6 +73,7 @@ export class TransferenciaComponent implements OnInit {
 
   permisos: Record<string, boolean> = TransferenciaComponent.OPCIONES_TRANSFERENCIA
     .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
+  permisosListos = false;
 
   /**
    * Determina la clase CSS del indicador de estado del recibo.
@@ -163,7 +164,10 @@ export class TransferenciaComponent implements OnInit {
   async ngOnInit() {
     const roles = this.userService.getRoles();
     this.permisosUtils.obtenerPermisos(roles, [...TransferenciaComponent.OPCIONES_TRANSFERENCIA])
-      .subscribe(p => { this.permisos = p; });
+      .subscribe({
+        next: p => { this.permisos = p; this.permisosListos = true; },
+        error: () => { this.permisosListos = true; }
+      });
 
     this.parametros_pago = {
       recibo: '',

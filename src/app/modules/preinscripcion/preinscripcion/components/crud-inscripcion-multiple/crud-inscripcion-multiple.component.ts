@@ -148,6 +148,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
   permisos: Record<string, boolean> = CrudInscripcionMultipleComponent.OPCIONES_PREINSCRIPCION
     .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
+  permisosListos = false;
 
   arr_proyecto: InstitucionEnfasis[] = [];
 
@@ -203,7 +204,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
 
     const roles = this.userService.getRoles();
     this.permisosUtils.obtenerPermisos(roles, [...CrudInscripcionMultipleComponent.OPCIONES_PREINSCRIPCION])
-      .subscribe(p => { this.permisos = p; });
+      .subscribe({
+        next: p => { this.permisos = p; this.permisosListos = true; },
+        error: () => { this.permisosListos = true; }
+      });
 
     sessionStorage.setItem('EstadoInscripcion', 'false');
     // Inicializaciones sincrónicas

@@ -83,6 +83,7 @@ export class LegalizacionMatriculaComponent {
 
   permisos: Record<string, boolean> = LegalizacionMatriculaComponent.OPCIONES_LEGALIZACION_ADMIN
     .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
+  permisosListos = false;
   puedeAprobar: boolean = false;
   puedeRechazar: boolean = true;
   puedePedirMod: boolean = false;
@@ -137,7 +138,10 @@ export class LegalizacionMatriculaComponent {
 
     const roles = this.usuarioService.getRoles();
     this.permisosUtils.obtenerPermisos(roles, [...LegalizacionMatriculaComponent.OPCIONES_LEGALIZACION_ADMIN])
-      .subscribe(p => { this.permisos = p; });
+      .subscribe({
+        next: p => { this.permisos = p; this.permisosListos = true; },
+        error: () => { this.permisosListos = true; }
+      });
     validateLang(this.translate);
     await this.cargarSelects();
   }

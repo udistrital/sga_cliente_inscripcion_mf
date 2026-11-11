@@ -89,6 +89,7 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   permisos: Record<string, boolean> = LegalizacionMatriculaAspiranteComponent.OPCIONES_LEGALIZACION_ASPIRANTE
     .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
+  permisosListos = false;
   info_persona_id: any;
   infoLegalizacionPersona: any;
   persona: any;
@@ -187,7 +188,10 @@ export class LegalizacionMatriculaAspiranteComponent {
     });
     const roles = this.usuarioService.getRoles();
     this.permisosUtils.obtenerPermisos(roles, [...LegalizacionMatriculaAspiranteComponent.OPCIONES_LEGALIZACION_ASPIRANTE])
-      .subscribe(p => { this.permisos = p; });
+      .subscribe({
+        next: p => { this.permisos = p; this.permisosListos = true; },
+        error: () => { this.permisosListos = true; }
+      });
 
     this.initFormularios();
     this.cargarDatosFormularios();

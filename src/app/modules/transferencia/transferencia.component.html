@@ -106,14 +106,12 @@
           </div>
         </mat-card-content>
         <mat-card-actions>
-          @if (listadoSolicitudes) {
+          @if (listadoSolicitudes && permisosListos && permisos['descargar_normativa']) {
             <button mat-flat-button color="accent" type="button"
-              [disabled]="!permisos['descargar_normativa']"
               (click)="descargarNormativa()"> {{ "inscripcion.btn_descargar_normativa" | translate }} </button>
           }
-          @if (listadoSolicitudes) {
+          @if (listadoSolicitudes && permisosListos && permisos['nueva_solicitud_transferencia']) {
             <button mat-flat-button color="accent" type="button"
-              [disabled]="!permisos['nueva_solicitud_transferencia']"
               (click)="nuevaSolicitud()"> {{ "inscripcion.btn_nueva_solicitud" | translate }} </button>
           }
         </mat-card-actions>
@@ -135,9 +133,8 @@
         <button mat-flat-button color="warn" type="button" (click)="clean(); listadoSolicitudes = true">
           {{ "GLOBAL.cancelar" | translate }}
         </button>
-        @if (recibo) {
+        @if (recibo && permisosListos && permisos['generar_recibo_transferencia']) {
           <button mat-flat-button color="accent"
-            [disabled]="!permisos['generar_recibo_transferencia']"
             (click)="validarFechas()">
             {{ "derechos_pecuniarios.generar_recibo" | translate }}
           </button>

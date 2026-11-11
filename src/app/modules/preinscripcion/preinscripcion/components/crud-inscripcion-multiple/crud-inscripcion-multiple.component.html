@@ -98,13 +98,14 @@
             </table>
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
           </div>
-          <div class="contenedor-boton">
-            <button mat-flat-button color="accent" type="button"
-              [disabled]="!permisos['nueva_preinscripcion']"
-              (click)="nuevaPreinscripcion()">
-              {{ "inscripcion.nueva" | translate }}
-            </button>
-          </div>
+          @if (permisosListos && permisos['nueva_preinscripcion']) {
+            <div class="contenedor-boton">
+              <button mat-flat-button color="accent" type="button"
+                (click)="nuevaPreinscripcion()">
+                {{ "inscripcion.nueva" | translate }}
+              </button>
+            </div>
+          }
         </mat-card-content>
       </mat-card>
       <br />
@@ -169,9 +170,8 @@
                 </mat-form-field>
               }
               <!-- Botón para generar recibo -->
-              @if (this.preinscripcionForm.valid) {
+              @if (this.preinscripcionForm.valid && permisosListos && permisos['generar_recibo_preinscripcion']) {
                 <button mat-flat-button color="accent" style="display: grid"
-                  [disabled]="!permisos['generar_recibo_preinscripcion']"
                   (click)="generarRecibo()">
                   {{ "inscripcion.generar_recibo" | translate }}
                   <i class="fa fa-barcode fa-5x"></i>
