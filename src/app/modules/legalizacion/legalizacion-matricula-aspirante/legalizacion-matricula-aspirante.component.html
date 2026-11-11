@@ -144,7 +144,7 @@
                     </table>
                     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
                   </div>
-                  <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados}">{{'GLOBAL.guardar' | translate }}</button>
+                  <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados || !permisos['reenviar_documentos_aspirante']" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados || !permisos['reenviar_documentos_aspirante']}">{{'GLOBAL.guardar' | translate }}</button>
                 </mat-card-content>
               </mat-card>
             }
@@ -811,8 +811,8 @@
   @if (!yaHizoProceso) {
     <div class="contenedor-boton">
       <button (click)="guardar()" class="contenedor-label color-primario my-md" mat-raised-button
-        [disabled]="!formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos()"
-        [ngClass]="{'button-disabled': !formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos()}">{{
+        [disabled]="!formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos() || !permisos['guardar_legalizacion_aspirante']"
+        [ngClass]="{'button-disabled': !formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos() || !permisos['guardar_legalizacion_aspirante']}">{{
         'GLOBAL.guardar' |
       translate }}</button>
     </div>

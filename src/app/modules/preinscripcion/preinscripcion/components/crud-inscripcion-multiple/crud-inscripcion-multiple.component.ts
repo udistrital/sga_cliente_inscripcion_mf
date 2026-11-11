@@ -41,6 +41,7 @@ import { decrypt } from 'src/app/utils/util-encrypt';
 import { firstValueFrom, switchMap } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { PermisosUtils } from 'src/app/utils/role-permissions';
 
 @Component({
     selector: 'ngx-crud-inscripcion-multiple',
@@ -138,6 +139,16 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   parametros_pago: any;
   periodos_activos: Periodo[] = [];
 
+  static readonly OPCIONES_PREINSCRIPCION = [
+    'nueva_preinscripcion',
+    'generar_recibo_preinscripcion',
+    'descargar_recibo_preinscripcion',
+    'inactivar_recibo_preinscripcion',
+  ] as const;
+
+  permisos: Record<string, boolean> = CrudInscripcionMultipleComponent.OPCIONES_PREINSCRIPCION
+    .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
+
   arr_proyecto: InstitucionEnfasis[] = [];
 
   proyectos = [];
@@ -166,7 +177,8 @@ export class CrudInscripcionMultipleComponent implements OnInit {
     private terceroMidService: TerceroMidService,
     private inscripcionMidService: InscripcionMidService,
     private calendarioMidService: CalendarioMidService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private permisosUtils: PermisosUtils
   ) {
     this.dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
     this.showProyectoCurricular = false;
@@ -188,6 +200,10 @@ export class CrudInscripcionMultipleComponent implements OnInit {
       proyecto: ['', Validators.required],
       tipoInscripcion: ['', Validators.required],
     });
+
+    const roles = this.userService.getRoles();
+    this.permisosUtils.obtenerPermisos(roles, [...CrudInscripcionMultipleComponent.OPCIONES_PREINSCRIPCION])
+      .subscribe(p => { this.permisos = p; });
 
     sessionStorage.setItem('EstadoInscripcion', 'false');
     // Inicializaciones sincrónicas
@@ -655,6 +671,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   nuevaPreinscripcion() {
+    if (!this.permisos['nueva_preinscripcion']) return;
     this.showNew = true;
   }
 
@@ -764,6 +781,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   async generarRecibo() {
+    if (!this.permisos['generar_recibo_preinscripcion']) return;
     if (this.recibos_pendientes >= 3) {
       this.popUpManager.showErrorAlert(
         this.translate.instant('recibo_pago.maximo_recibos')
@@ -989,6 +1007,7 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   async descargarReciboPago(data: any) {
+    if (!this.permisos['descargar_recibo_preinscripcion']) return;
     await this.itemSelect({ data: data });
     if (this.selectedLevel === undefined) {
       this.selectedLevel = parseInt(data.NivelPP, 10);
@@ -1464,12 +1483,13 @@ export class CrudInscripcionMultipleComponent implements OnInit {
   }
 
   inactivarRecibo(element: any) {
+    if (!this.permisos['inactivar_recibo_preinscripcion']) return;
     this.inscripcionService.get(`inscripcion/${element.Id}`)
-      .pipe( 
+      .pipe(
         switchMap( (ins: any)=>{
           const payload = {...ins, Activo:false};
           return this.inscripcionService.put(`inscripcion/`, payload);
-        }) 
+        })
       )
       .subscribe({
         next: (resp) => {

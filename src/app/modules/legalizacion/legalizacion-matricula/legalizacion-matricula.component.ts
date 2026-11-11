@@ -28,6 +28,7 @@ import { ProyectoAcademicoService } from 'src/app/services/proyecto_academico.se
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { POR_DEFINIR } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
+import { PermisosUtils } from 'src/app/utils/role-permissions';
 
 interface Proyecto {
   opcion: number;
@@ -71,6 +72,17 @@ export class LegalizacionMatriculaComponent {
 
   aspirante: any
   estaAutorizado: boolean = false;
+
+  static readonly OPCIONES_LEGALIZACION_ADMIN = [
+    'buscar_aspirante_legalizacion',
+    'editar_aspirante',
+    'aprobar_aspirante',
+    'rechazar_aspirante',
+    'solicitar_cambios_aspirante',
+  ] as const;
+
+  permisos: Record<string, boolean> = LegalizacionMatriculaComponent.OPCIONES_LEGALIZACION_ADMIN
+    .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
   puedeAprobar: boolean = false;
   puedeRechazar: boolean = true;
   puedePedirMod: boolean = false;
@@ -108,19 +120,24 @@ export class LegalizacionMatriculaComponent {
     private eventosService: EventoService,
     private liquidacionMatriculaService: LiquidacionMatriculaService,
     private projectService: ProyectoAcademicoService,
-    private popUpManager: PopUpManager
+    private popUpManager: PopUpManager,
+    private permisosUtils: PermisosUtils
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
   }
 
   async ngOnInit() {
-    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES]
+    const rolesRequeridos = [ROLES.ADMIN_SGA, ROLES.ASISTENTE_ADMISIONES];
     this.usuarioService.esAutorizado(rolesRequeridos).then((esAutorizado: any) => {
       if (esAutorizado) this.estaAutorizado = true;
-    }).catch( (error: any) => {
-      console.error('Error al validar autorización', error)
+    }).catch((error: any) => {
+      console.error('Error al validar autorización', error);
     });
+
+    const roles = this.usuarioService.getRoles();
+    this.permisosUtils.obtenerPermisos(roles, [...LegalizacionMatriculaComponent.OPCIONES_LEGALIZACION_ADMIN])
+      .subscribe(p => { this.permisos = p; });
     validateLang(this.translate);
     await this.cargarSelects();
   }
@@ -210,6 +227,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   async generarBusqueda(stepper: MatStepper) {
+    if (!this.permisos['buscar_aspirante_legalizacion']) return;
     const proyecto = this.firstFormGroup.get('validatorProyecto')?.value;
     // const periodo = this.firstFormGroup.get('validatorPeriodo')?.value;
     const tipoCiclos = this.firstFormGroup.get('validatorCiclos')?.value;
@@ -1011,6 +1029,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   editar = async (data: any) => {
+    if (!this.permisos['editar_aspirante']) return;
     this.aspirante = data;
     this.aspiranteActualId = this.aspirante.personaId;
     this.infoAspiranteDataSource = new MatTableDataSource<any>([this.aspirante]);
@@ -1090,6 +1109,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   async aprobarAspirante() {
+    if (!this.permisos['aprobar_aspirante']) return;
     this.popUpManager.showPopUpGeneric(
       this.translate.instant('legalizacion_admision.titulo_aprobacion_aspirante'),
       this.translate.instant('legalizacion_admision.aprobacion_aspirante'),
@@ -1121,6 +1141,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   async rechazarAspirante() {
+    if (!this.permisos['rechazar_aspirante']) return;
     this.popUpManager.showPopUpGeneric(
       this.translate.instant('legalizacion_admision.titulo_rechazo_aspirante'),
       this.translate.instant('legalizacion_admision.rechazo_aspirante'),
@@ -1145,6 +1166,7 @@ export class LegalizacionMatriculaComponent {
   }
 
   async solicitarcambiosAspirante() {
+    if (!this.permisos['solicitar_cambios_aspirante']) return;
     this.popUpManager.showPopUpGeneric(
       this.translate.instant('legalizacion_admision.titulo_modificaciones_aspirante'),
       this.translate.instant('legalizacion_admision.modificaciones_aspirante'),

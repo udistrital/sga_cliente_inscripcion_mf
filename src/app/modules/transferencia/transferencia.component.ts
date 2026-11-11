@@ -30,6 +30,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { firstValueFrom } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { PermisosUtils } from 'src/app/utils/role-permissions';
 
 @Component({
     selector: 'app-transferencia',
@@ -60,6 +61,18 @@ export class TransferenciaComponent implements OnInit {
 
   displayedColumns = ['progreso', 'recibo', 'concepto', 'programa', 'estadoInscripcion', 'fecha', 'estadoRecibo', 'descargar', 'acciones', 'inactivar'];
   dataSource!: MatTableDataSource<any>;
+
+  static readonly OPCIONES_TRANSFERENCIA = [
+    'nueva_solicitud_transferencia',
+    'generar_recibo_transferencia',
+    'solicitar_inscripcion_transferencia',
+    'inactivar_recibo_transferencia',
+    'descargar_archivo_transferencia',
+    'descargar_normativa',
+  ] as const;
+
+  permisos: Record<string, boolean> = TransferenciaComponent.OPCIONES_TRANSFERENCIA
+    .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
 
   /**
    * Determina la clase CSS del indicador de estado del recibo.
@@ -116,7 +129,8 @@ export class TransferenciaComponent implements OnInit {
     private popUpManager: PopUpManager,
     private userService: UserService,
     private router: Router,
-    private _Activatedroute: ActivatedRoute
+    private _Activatedroute: ActivatedRoute,
+    private permisosUtils: PermisosUtils
   ) {
     this.dialogoPagadorService = (window as any)['core-mf']?.DialogoPagadorService;
     this.formTransferencia = FORM_TRANSFERENCIA_INTERNA;
@@ -147,6 +161,10 @@ export class TransferenciaComponent implements OnInit {
   }
 
   async ngOnInit() {
+    const roles = this.userService.getRoles();
+    this.permisosUtils.obtenerPermisos(roles, [...TransferenciaComponent.OPCIONES_TRANSFERENCIA])
+      .subscribe(p => { this.permisos = p; });
+
     this.parametros_pago = {
       recibo: '',
       REFERENCIA: '',
@@ -417,10 +435,12 @@ export class TransferenciaComponent implements OnInit {
   // }
 
   descargarNormativa() {
+    if (!this.permisos['descargar_normativa']) return;
     window.open('https://www.udistrital.edu.co/admisiones-pregrado', '_blank');
   }
 
   async nuevaSolicitud() {
+    if (!this.permisos['nueva_solicitud_transferencia']) return;
     this.listadoSolicitudes = false;
     await this.loadPeriodo();
     this.construirForm();
@@ -718,6 +738,7 @@ export class TransferenciaComponent implements OnInit {
   }
 
   generarRecibo() {
+    if (!this.permisos['generar_recibo_transferencia']) return;
     this.popUpManager.showConfirmAlert(this.translate.instant('inscripcion.seguro_inscribirse')).then(
       async ok => {
         if (ok.value) {
@@ -888,6 +909,7 @@ export class TransferenciaComponent implements OnInit {
   }
 
   async descargarArchivo(data:any){
+    if (!this.permisos['descargar_archivo_transferencia']) return;
     if (this.info_info_persona != null && data.Estado !== 'Vencido'){
       await this.llenadoReciboPago(data);
 
@@ -1029,6 +1051,7 @@ export class TransferenciaComponent implements OnInit {
   }
 
   solicitar(data:any){
+    if (!this.permisos['solicitar_inscripcion_transferencia']) return;
     if (data.EstadoRecibo == 'Pendiente pago') {
       this.abrirPago(data)
     } else {
@@ -1046,6 +1069,7 @@ export class TransferenciaComponent implements OnInit {
   }
 
   inactivarRecibo(element: any) {
+    if (!this.permisos['inactivar_recibo_transferencia']) return;
     this.inscripcionService.get(`inscripcion/${element.Id}`)
       .pipe(
         switchMap((ins: any) => {

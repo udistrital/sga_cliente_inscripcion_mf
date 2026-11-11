@@ -65,7 +65,10 @@
               <ng-container matColumnDef="descargar">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.descargar" | translate}} </th>
                 <td mat-cell *matCellDef="let row">
-                  <app-link-download (click)="descargarReciboPago(row)" [rowData]="row"></app-link-download>
+                  <app-link-download (click)="descargarReciboPago(row)" [rowData]="row"
+                    [style.pointer-events]="permisos['descargar_recibo_preinscripcion'] ? 'auto' : 'none'"
+                    [style.opacity]="permisos['descargar_recibo_preinscripcion'] ? '1' : '0.4'">
+                  </app-link-download>
                 </td>
               </ng-container>
               <ng-container matColumnDef="opcion" stickyEnd>
@@ -80,6 +83,7 @@
                   @if (element.Estado !== 'Pago') {
                     <button mat-icon-button color="primary"
                       [matTooltip]="'inscripcion.inactivar_tooltip' | translate"
+                      [disabled]="!permisos['inactivar_recibo_preinscripcion']"
                       (click)="inactivarRecibo(element)">
                       <mat-icon>delete_outline</mat-icon>
                     </button>
@@ -95,7 +99,9 @@
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
           </div>
           <div class="contenedor-boton">
-            <button mat-flat-button color="accent" type="button" (click)="nuevaPreinscripcion()">
+            <button mat-flat-button color="accent" type="button"
+              [disabled]="!permisos['nueva_preinscripcion']"
+              (click)="nuevaPreinscripcion()">
               {{ "inscripcion.nueva" | translate }}
             </button>
           </div>
@@ -164,7 +170,9 @@
               }
               <!-- Botón para generar recibo -->
               @if (this.preinscripcionForm.valid) {
-                <button mat-flat-button color="accent" style="display: grid" (click)="generarRecibo()">
+                <button mat-flat-button color="accent" style="display: grid"
+                  [disabled]="!permisos['generar_recibo_preinscripcion']"
+                  (click)="generarRecibo()">
                   {{ "inscripcion.generar_recibo" | translate }}
                   <i class="fa fa-barcode fa-5x"></i>
                 </button>

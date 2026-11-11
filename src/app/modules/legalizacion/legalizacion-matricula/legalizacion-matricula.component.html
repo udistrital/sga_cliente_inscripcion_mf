@@ -66,7 +66,7 @@
               </div>
             </form>
             <div class="button-stepper">
-              <button mat-stroked-button matStepperNext class="boton-general btn boton-primary" (click)="generarBusqueda(stepper)" [disabled]="!firstFormGroup.valid" [ngClass]="{'button-disabled': !firstFormGroup.valid}">{{ 'legalizacion_admision.consultar' | translate }}</button>
+              <button mat-stroked-button matStepperNext class="boton-general btn boton-primary" (click)="generarBusqueda(stepper)" [disabled]="!firstFormGroup.valid || !permisos['buscar_aspirante_legalizacion']" [ngClass]="{'button-disabled': !firstFormGroup.valid || !permisos['buscar_aspirante_legalizacion']}">{{ 'legalizacion_admision.consultar' | translate }}</button>
             </div>
           </mat-card-content>
         </mat-card>
@@ -122,7 +122,7 @@
                         <mat-icon>more_vert</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="editar(row)">
+                        <button mat-menu-item [disabled]="!permisos['editar_aspirante']" (click)="editar(row)">
                           <mat-icon>edit</mat-icon>
                           <span>{{"GLOBAL.editar" | translate}}</span>
                         </button>
@@ -403,9 +403,9 @@
           </mat-card-content>
         </mat-card>
         <div class="botones-contenedor">
-          <button mat-stroked-button matStepperNext class="btn boton-primary primario" [ngClass]="{'disabled': !puedeAprobar}" (click)="aprobarAspirante()">{{ 'legalizacion_admision.aprobar_aspirante' | translate }}</button>
-          <button mat-stroked-button matStepperNext class="btn boton-primary rechazado" [ngClass]="{'disabled': !puedeRechazar}" (click)="rechazarAspirante()">{{ 'legalizacion_admision.rechazar_aspirante' | translate }}</button>
-          <button mat-stroked-button matStepperNext class="btn boton-primary primario" [ngClass]="{'disabled': !puedePedirMod}" (click)="solicitarcambiosAspirante()">{{ 'legalizacion_admision.solicitar_modificaciones_aspirante' | translate }}</button>
+          <button mat-stroked-button matStepperNext class="btn boton-primary primario" [disabled]="!puedeAprobar || !permisos['aprobar_aspirante']" [ngClass]="{'disabled': !puedeAprobar || !permisos['aprobar_aspirante']}" (click)="aprobarAspirante()">{{ 'legalizacion_admision.aprobar_aspirante' | translate }}</button>
+          <button mat-stroked-button matStepperNext class="btn boton-primary rechazado" [disabled]="!puedeRechazar || !permisos['rechazar_aspirante']" [ngClass]="{'disabled': !puedeRechazar || !permisos['rechazar_aspirante']}" (click)="rechazarAspirante()">{{ 'legalizacion_admision.rechazar_aspirante' | translate }}</button>
+          <button mat-stroked-button matStepperNext class="btn boton-primary primario" [disabled]="!puedePedirMod || !permisos['solicitar_cambios_aspirante']" [ngClass]="{'disabled': !puedePedirMod || !permisos['solicitar_cambios_aspirante']}" (click)="solicitarcambiosAspirante()">{{ 'legalizacion_admision.solicitar_modificaciones_aspirante' | translate }}</button>
         </div>
       </mat-card-content>
     </mat-card>

@@ -26,6 +26,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
 import { POR_DEFINIR } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
+import { PermisosUtils } from 'src/app/utils/role-permissions';
 
 
 @Component({
@@ -64,7 +65,8 @@ export class LegalizacionMatriculaAspiranteComponent {
     private utilidadesService: UtilidadesService,
     private dialog: MatDialog,
     private projectService: ProyectoAcademicoService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private permisosUtils: PermisosUtils
   ) {}
 
   isLinear = false;
@@ -79,6 +81,14 @@ export class LegalizacionMatriculaAspiranteComponent {
 
   estaAutorizado: boolean = false;
   yaHizoProceso: boolean = false;
+
+  static readonly OPCIONES_LEGALIZACION_ASPIRANTE = [
+    'guardar_legalizacion_aspirante',
+    'reenviar_documentos_aspirante',
+  ] as const;
+
+  permisos: Record<string, boolean> = LegalizacionMatriculaAspiranteComponent.OPCIONES_LEGALIZACION_ASPIRANTE
+    .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
   info_persona_id: any;
   infoLegalizacionPersona: any;
   persona: any;
@@ -175,6 +185,10 @@ export class LegalizacionMatriculaAspiranteComponent {
       this.proyectoAcademicoId = programaId
       this.periodoId = periodoId
     });
+    const roles = this.usuarioService.getRoles();
+    this.permisosUtils.obtenerPermisos(roles, [...LegalizacionMatriculaAspiranteComponent.OPCIONES_LEGALIZACION_ASPIRANTE])
+      .subscribe(p => { this.permisos = p; });
+
     this.initFormularios();
     this.cargarDatosFormularios();
 
@@ -424,6 +438,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   // MANJEO ARCHIVOS //
 
   async reEnviarDocumnetos() {
+    if (!this.permisos['reenviar_documentos_aspirante']) return;
     this.popUpManager.showPopUpGeneric(
       this.translate.instant('legalizacion_admision.titulo'),
       this.translate.instant('legalizacion_admision.actualizar_legalizacion'),
@@ -795,6 +810,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   guardar() {
+    if (!this.permisos['guardar_legalizacion_aspirante']) return;
     if (this.validarFormulario()) {
       this.popUpManager.showPopUpGeneric(
         this.translate.instant('legalizacion_admision.titulo'),

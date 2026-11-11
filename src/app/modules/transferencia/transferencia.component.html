@@ -65,7 +65,7 @@
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"inscripcion.descargar" | translate}} </th>
                 <td mat-cell *matCellDef="let row">
                   <button mat-icon-button color="primary"
-                    [disabled]="row.Descargar.disabled"
+                    [disabled]="row.Descargar.disabled || !permisos['descargar_archivo_transferencia']"
                     [matTooltip]="'GLOBAL.tooltip_descargar' | translate"
                     (click)="descargarArchivo(row)">
                     <mat-icon>download</mat-icon>
@@ -76,7 +76,7 @@
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> {{"GLOBAL.acciones" | translate}} </th>
                 <td mat-cell *matCellDef="let row">
                   <button mat-flat-button color="accent" class="boton-accion"
-                    [disabled]="row.Opcion.disabled"
+                    [disabled]="row.Opcion.disabled || !permisos['solicitar_inscripcion_transferencia']"
                     (click)="solicitar(row)">
                     <mat-icon>{{ row.EstadoRecibo === 'Pendiente pago' ? 'attach_money' : 'add_circle' }}</mat-icon>
                     {{ (row.EstadoRecibo === 'Pendiente pago' ? 'inscripcion.pagar_recibo' : 'inscripcion.inscribirse') | translate }}
@@ -89,6 +89,7 @@
                   @if (row.EstadoRecibo !== 'Pago') {
                     <button mat-icon-button color="warn"
                       [matTooltip]="'inscripcion.inactivar_tooltip' | translate"
+                      [disabled]="!permisos['inactivar_recibo_transferencia']"
                       (click)="inactivarRecibo(row)">
                       <mat-icon>delete_outline</mat-icon>
                     </button>
@@ -106,10 +107,14 @@
         </mat-card-content>
         <mat-card-actions>
           @if (listadoSolicitudes) {
-            <button mat-flat-button color="accent" type="button" (click)="descargarNormativa()"> {{ "inscripcion.btn_descargar_normativa" | translate }} </button>
+            <button mat-flat-button color="accent" type="button"
+              [disabled]="!permisos['descargar_normativa']"
+              (click)="descargarNormativa()"> {{ "inscripcion.btn_descargar_normativa" | translate }} </button>
           }
           @if (listadoSolicitudes) {
-            <button mat-flat-button color="accent" type="button" (click)="nuevaSolicitud()"> {{ "inscripcion.btn_nueva_solicitud" | translate }} </button>
+            <button mat-flat-button color="accent" type="button"
+              [disabled]="!permisos['nueva_solicitud_transferencia']"
+              (click)="nuevaSolicitud()"> {{ "inscripcion.btn_nueva_solicitud" | translate }} </button>
           }
         </mat-card-actions>
       </mat-card>
@@ -131,7 +136,9 @@
           {{ "GLOBAL.cancelar" | translate }}
         </button>
         @if (recibo) {
-          <button mat-flat-button color="accent" (click)="validarFechas()">
+          <button mat-flat-button color="accent"
+            [disabled]="!permisos['generar_recibo_transferencia']"
+            (click)="validarFechas()">
             {{ "derechos_pecuniarios.generar_recibo" | translate }}
           </button>
         }
