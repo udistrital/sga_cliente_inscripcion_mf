@@ -77,7 +77,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   numDocumentosRechazadosCargados = 0;
   numDocumentosRechazados = 0;
 
-  estaAutorizado: boolean = true;
+  estaAutorizado: boolean = false;
   yaHizoProceso: boolean = false;
   info_persona_id: any;
   infoLegalizacionPersona: any;
