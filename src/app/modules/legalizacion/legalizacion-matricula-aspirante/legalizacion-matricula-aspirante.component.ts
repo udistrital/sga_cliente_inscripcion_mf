@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MODALS, ROLES } from 'src/app/models/informacion/diccionario';
 import { LegalizacionMatricula } from 'src/app/models/legalizacion/legalizacion_matricula';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
