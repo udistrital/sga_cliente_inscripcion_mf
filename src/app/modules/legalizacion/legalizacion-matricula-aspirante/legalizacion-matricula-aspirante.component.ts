@@ -83,6 +83,8 @@ export class LegalizacionMatriculaAspiranteComponent {
   numDocumentosRechazados = 0;
 
   estaAutorizado: boolean = false;
+  sinInscripcion: boolean = false;
+  mensajeSinInscripcion: string = '';
   yaHizoProceso: boolean = false;
 
   static readonly OPCIONES_LEGALIZACION_ASPIRANTE = [
@@ -202,8 +204,22 @@ export class LegalizacionMatriculaAspiranteComponent {
       // Modo sesión: resolver datos desde el usuario logueado
       this.info_persona_id = await this.usuarioService.getPersonaId();
 
+      const roles = this.usuarioService.getRoles();
+      const esAdmin = roles.some((r: string) => r === ROLES.ADMIN_SGA || r === ROLES.ASISTENTE_ADMISIONES);
+      if (esAdmin) {
+        this.sinInscripcion = true;
+        this.mensajeSinInscripcion = 'legalizacion_admision.admin_sin_params';
+        this.popUpManager.showAlert(
+          this.translate.instant('legalizacion_admision.titulo'),
+          this.translate.instant('legalizacion_admision.admin_sin_params')
+        );
+        return;
+      }
+
       const inscripcionesAdmitidas = await this.buscarInscripcionesAdmitidasPorPersona(this.info_persona_id);
       if (inscripcionesAdmitidas.length === 0) {
+        this.sinInscripcion = true;
+        this.mensajeSinInscripcion = 'legalizacion_admision.sin_inscripcion_admitida';
         this.popUpManager.showAlert(
           this.translate.instant('legalizacion_admision.titulo'),
           this.translate.instant('legalizacion_admision.sin_inscripcion_admitida')
