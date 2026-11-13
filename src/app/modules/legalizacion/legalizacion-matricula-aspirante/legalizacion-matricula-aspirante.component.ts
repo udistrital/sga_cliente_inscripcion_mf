@@ -4,6 +4,7 @@ import { SoporteParams } from 'src/app/models/forms/define-form-fields';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { TercerosService } from 'src/app/services/terceros.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { MODALS, ROLES } from 'src/app/models/informacion/diccionario';
@@ -52,6 +53,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private ubicacionService: UbicacionService,
     private parametrosService: ParametrosService,
     private tercerosService: TercerosService,
+    private tercerosMidService: TercerosMidService,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
     private gestorDocumentalService: NewNuxeoService,
@@ -373,20 +375,15 @@ export class LegalizacionMatriculaAspiranteComponent {
     });
   }
 
-  consultarTercero(personaId: any) {
-    // return new Promise((resolve, reject) => {
-    //   this.sgamidService
-    //     .get('persona/consultar_persona/' + personaId)
-    //     .subscribe(
-    //       (res: any) => {
-    //         resolve(res);
-    //       },
-    //       (error: any) => {
-    //         this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
-    //         reject([]);
-    //       }
-    //     );
-    // });
+  async consultarTercero(personaId: any): Promise<any> {
+    try {
+      const response = await this.tercerosMidService.get('personas/' + personaId).toPromise();
+      return response.Data;
+    } catch (error) {
+      console.error(error);
+      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+      return [];
+    }
   }
 
   async recuperarTerceroId(userEmail: any) {
