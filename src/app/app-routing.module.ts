@@ -28,6 +28,11 @@ const routes: Routes = [
     component: SolicitudTransferenciaComponent,
   },
   {
+    path: 'legalizacion-matricula-aspirante',
+    canActivate: [AuthGuard],
+    component: LegalizacionMatriculaAspiranteComponent,
+  },
+  {
     path: 'legalizacion-matricula-aspirante/:persona/:periodo/:programa',
     component: LegalizacionMatriculaAspiranteComponent,
   },
