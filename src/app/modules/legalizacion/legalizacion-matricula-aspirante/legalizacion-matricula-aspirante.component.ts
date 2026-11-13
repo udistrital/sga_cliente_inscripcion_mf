@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SoporteParams } from 'src/app/models/forms/define-form-fields';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
@@ -175,19 +176,46 @@ export class LegalizacionMatriculaAspiranteComponent {
   documentosRechazados: any[] = [];
 
   async ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const personaId = params.get('persona');
-      const periodoId = params.get('periodo');
-      const programaId = params.get('programa');
+    // --- Determinar modo: params (administrador) o sesión (aspirante) ---
+    const params = await firstValueFrom(this.route.paramMap);
+    const personaParam = params.get('persona');
+    const hayParams = personaParam !== null;
 
-      console.log('Persona ID:', personaId);
-      console.log('Periodo ID:', periodoId);
-      console.log('Programa ID:', programaId);
+    if (hayParams) {
+      // Modo administrador: usar parámetros de la URL
+      this.info_persona_id = personaParam;
+      this.periodoId = params.get('periodo');
+      this.proyectoAcademicoId = params.get('programa');
 
-      this.info_persona_id = personaId
-      this.proyectoAcademicoId = programaId
-      this.periodoId = periodoId
-    });
+      // Verificación de identidad: sin rol administrativo solo se puede
+      // abrir la propia legalización
+      const roles = this.usuarioService.getRoles();
+      const esAdmin = roles.some((r: string) => r === ROLES.ADMIN_SGA || r === ROLES.ASISTENTE_ADMISIONES);
+      if (!esAdmin) {
+        const sessionPersonaId = await this.usuarioService.getPersonaId();
+        if (String(this.info_persona_id) !== String(sessionPersonaId)) {
+          this.estaAutorizado = false;
+          return;
+        }
+      }
+    } else {
+      // Modo sesión: resolver datos desde el usuario logueado
+      this.info_persona_id = await this.usuarioService.getPersonaId();
+
+      const inscripcionesAdmitidas = await this.buscarInscripcionesAdmitidasPorPersona(this.info_persona_id);
+      if (inscripcionesAdmitidas.length === 0) {
+        this.popUpManager.showAlert(
+          this.translate.instant('legalizacion_admision.titulo'),
+          this.translate.instant('legalizacion_admision.sin_inscripcion_admitida')
+        );
+        return;
+      }
+      // Tomar la inscripción más reciente (orden desc por Id)
+      const inscripcionActiva = inscripcionesAdmitidas[0];
+      this.proyectoAcademicoId = inscripcionActiva.ProgramaAcademicoId;
+      this.periodoId = inscripcionActiva.PeriodoId;
+    }
+
     const roles = this.usuarioService.getRoles();
     this.permisosUtils.obtenerPermisos(roles, [...LegalizacionMatriculaAspiranteComponent.OPCIONES_LEGALIZACION_ASPIRANTE])
       .subscribe({
@@ -200,7 +228,6 @@ export class LegalizacionMatriculaAspiranteComponent {
 
     await this.cargarSalarioMinimo(this.periodoId)
     this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)
-    console.log(this.inscripcion)
     this.estadoInscripcion = this.inscripcion.EstadoInscripcionId.Id
     this.opcionPrograma = this.inscripcion.Opcion
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.proyectoAcademicoId);
@@ -242,7 +269,7 @@ export class LegalizacionMatriculaAspiranteComponent {
             }
           } else if (this.infoLegalizacionPersona == 'No existe legalizacion') {
             this.yaHizoProceso = false;
-          } 
+          }
           this.loading = false;
         } else {
           this.estaAutorizado = false;
@@ -357,6 +384,30 @@ export class LegalizacionMatriculaAspiranteComponent {
     } else {
       return false;
     }
+  }
+
+  buscarInscripcionesAdmitidasPorPersona(personaId: any): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService
+        .get('inscripcion?query=Activo:true,PersonaId:' + personaId + '&sortby=Id&order=desc&limit=0')
+        .subscribe(
+          (res: any) => {
+            if (!res || !Array.isArray(res)) {
+              resolve([]);
+              return;
+            }
+            const admitidas = res.filter((i: any) =>
+              i.EstadoInscripcionId && [2, 8, 10].includes(i.EstadoInscripcionId.Id)
+            );
+            resolve(admitidas);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.error(error);
+            reject([]);
+          }
+        );
+    });
   }
 
   buscarInscripcionAspirante(personaId: any, programaId: any, periodoId: any) {

@@ -1926,7 +1926,8 @@
         "nuevo_documento": "Nuevo documento",
         "actualizar_legalizacion": "¿Actualizar la legalización de matricula?",
         "legalizacion_actualizacion_ok": "Los datos de legalización se actualizaron correctamente",
-        "legalizacion_actualizacion_error": "Ocurrio un error al actualizar los datos de legalización"
+        "legalizacion_actualizacion_error": "Ocurrio un error al actualizar los datos de legalización",
+        "sin_inscripcion_admitida": "No tienes inscripciones activas en estado admitido. Si crees que esto es un error, comunícate con la oficina de admisiones."
     },
     "informacion_acudientes": {
         "titulo": "Datos de contacto del primer acudiente",
