@@ -144,7 +144,9 @@
                     </table>
                     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
                   </div>
-                  <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados}">{{'GLOBAL.guardar' | translate }}</button>
+                  @if (permisosListos && permisos['reenviar_documentos_aspirante']) {
+                    <button class="color-primario my-md" mat-raised-button (click)="reEnviarDocumnetos()" [disabled]="numDocumentosRechazadosCargados != numDocumentosRechazados" [ngClass]="{'button-disabled': numDocumentosRechazadosCargados != numDocumentosRechazados}">{{'GLOBAL.guardar' | translate }}</button>
+                  }
                 </mat-card-content>
               </mat-card>
             }
@@ -808,7 +810,7 @@
       'GLOBAL.regresar' |
     translate }}</button>
   </div>
-  @if (!yaHizoProceso) {
+  @if (!yaHizoProceso && permisosListos && permisos['guardar_legalizacion_aspirante']) {
     <div class="contenedor-boton">
       <button (click)="guardar()" class="contenedor-label color-primario my-md" mat-raised-button
         [disabled]="!formInfoSocioEconomicaPersonal.valid || !formInfoSocioEconomicaCosteara.valid || !formDocsGenerales.valid || !validarArchivos()"
@@ -825,7 +827,7 @@
 </mat-card>
 }
 
-@if (!estaAutorizado) {
+@if (!estaAutorizado && !sinInscripcion) {
   <mat-card>
     <mat-card-content>
       <mat-card class="contendedor-no-autorizado">
@@ -834,6 +836,21 @@
         </mat-card-header>
         <mat-card-content>
           <p>{{'ERROR.rol_insuficiente' | translate}}</p>
+        </mat-card-content>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (sinInscripcion) {
+  <mat-card>
+    <mat-card-content>
+      <mat-card class="contenedor-sin-inscripcion">
+        <mat-card-header>
+          <h1>{{'legalizacion_admision.titulo' | translate}}</h1>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ mensajeSinInscripcion | translate }}</p>
         </mat-card-content>
       </mat-card>
     </mat-card-content>

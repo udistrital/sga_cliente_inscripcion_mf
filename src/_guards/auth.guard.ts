@@ -16,15 +16,11 @@ export class AuthGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const menuInfo = localStorage.getItem('menu');
     const menuPermisos = menuInfo ? JSON.parse(atob(menuInfo)) : null;
-    const fullUrl = window.location.href;
-    const url = new URL(fullUrl);
-    const path = url.pathname;
-
-    // Obtener parámetros de la ruta
+    // state.url es relativo al base href (/inscripcion/); se reconstruye la ruta completa
+    const path = '/inscripcion' + state.url.split('?')[0];
     const params = route.params;
 
     if (menuPermisos != null) {
-      // Pasar tanto la URL como los parámetros a la función de verificación
       if (checkUrlExists(menuPermisos, path, params)) {
         return true;
       }

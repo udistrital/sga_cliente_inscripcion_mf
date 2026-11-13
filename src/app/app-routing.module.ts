@@ -25,17 +25,20 @@ const routes: Routes = [
   },
   {
     path: 'solicitud-transferencia/:id/:process',
-    canActivate: [AuthGuard],
     component: SolicitudTransferenciaComponent,
   },
   {
-    path: 'legalizacion-matricula-aspirante/:persona/:periodo/:programa',
-    // canActivate: [AuthGuard],
+    path: 'legalizacion-matricula-aspirante',
+    canActivate: [AuthGuard],
     component: LegalizacionMatriculaAspiranteComponent,
   },
-  { 
+  {
+    path: 'legalizacion-matricula-aspirante/:persona/:periodo/:programa',
+    component: LegalizacionMatriculaAspiranteComponent,
+  },
+  {
     path: "legalizacion-matricula",
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     component: LegalizacionMatriculaComponent
   },
   {
