@@ -1,15 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SoporteParams } from 'src/app/models/forms/define-form-fields';
 import { UbicacionService } from 'src/app/services/ubicacion.service';
 import { ParametrosService } from 'src/app/services/parametros.service';
 import { TercerosService } from 'src/app/services/terceros.service';
+import { TercerosMidService } from 'src/app/services/terceros_mid.service';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { MODALS, ROLES } from 'src/app/models/informacion/diccionario';
 import { LegalizacionMatricula } from 'src/app/models/legalizacion/legalizacion_matricula';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
-import { InscripcionMidService } from 'src/app/services/inscripcion_mid.service';
+import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from 'src/app/services/users.service';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
@@ -26,6 +28,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
 import { POR_DEFINIR } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
+import { PermisosUtils } from 'src/app/utils/role-permissions';
 
 
 @Component({
@@ -51,6 +54,7 @@ export class LegalizacionMatriculaAspiranteComponent {
     private ubicacionService: UbicacionService,
     private parametrosService: ParametrosService,
     private tercerosService: TercerosService,
+    private tercerosMidService: TercerosMidService,
     private popUpManager: PopUpManager,
     private translate: TranslateService,
     private gestorDocumentalService: NewNuxeoService,
@@ -64,7 +68,8 @@ export class LegalizacionMatriculaAspiranteComponent {
     private utilidadesService: UtilidadesService,
     private dialog: MatDialog,
     private projectService: ProyectoAcademicoService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private permisosUtils: PermisosUtils
   ) {}
 
   isLinear = false;
@@ -77,8 +82,19 @@ export class LegalizacionMatriculaAspiranteComponent {
   numDocumentosRechazadosCargados = 0;
   numDocumentosRechazados = 0;
 
-  estaAutorizado: boolean = true;
+  estaAutorizado: boolean = false;
+  sinInscripcion: boolean = false;
+  mensajeSinInscripcion: string = '';
   yaHizoProceso: boolean = false;
+
+  static readonly OPCIONES_LEGALIZACION_ASPIRANTE = [
+    'guardar_legalizacion_aspirante',
+    'reenviar_documentos_aspirante',
+  ] as const;
+
+  permisos: Record<string, boolean> = LegalizacionMatriculaAspiranteComponent.OPCIONES_LEGALIZACION_ASPIRANTE
+    .reduce((acc, op) => ({ ...acc, [op]: false }), {} as Record<string, boolean>);
+  permisosListos = false;
   info_persona_id: any;
   infoLegalizacionPersona: any;
   persona: any;
@@ -162,25 +178,72 @@ export class LegalizacionMatriculaAspiranteComponent {
   documentosRechazados: any[] = [];
 
   async ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const personaId = params.get('persona');
-      const periodoId = params.get('periodo');
-      const programaId = params.get('programa');
+    // --- Determinar modo: params (administrador) o sesión (aspirante) ---
+    const params = await firstValueFrom(this.route.paramMap);
+    const personaParam = params.get('persona');
+    const hayParams = personaParam !== null;
 
-      console.log('Persona ID:', personaId);
-      console.log('Periodo ID:', periodoId);
-      console.log('Programa ID:', programaId);
+    if (hayParams) {
+      // Modo administrador: usar parámetros de la URL
+      this.info_persona_id = personaParam;
+      this.periodoId = params.get('periodo');
+      this.proyectoAcademicoId = params.get('programa');
 
-      this.info_persona_id = personaId
-      this.proyectoAcademicoId = programaId
-      this.periodoId = periodoId
-    });
+      // Verificación de identidad: sin rol administrativo solo se puede
+      // abrir la propia legalización
+      const roles = this.usuarioService.getRoles();
+      const esAdmin = roles.some((r: string) => r === ROLES.ADMIN_SGA || r === ROLES.ASISTENTE_ADMISIONES);
+      if (!esAdmin) {
+        const sessionPersonaId = await this.usuarioService.getPersonaId();
+        if (String(this.info_persona_id) !== String(sessionPersonaId)) {
+          this.estaAutorizado = false;
+          return;
+        }
+      }
+    } else {
+      // Modo sesión: resolver datos desde el usuario logueado
+      this.info_persona_id = await this.usuarioService.getPersonaId();
+
+      const roles = this.usuarioService.getRoles();
+      const esAdmin = roles.some((r: string) => r === ROLES.ADMIN_SGA || r === ROLES.ASISTENTE_ADMISIONES);
+      if (esAdmin) {
+        this.sinInscripcion = true;
+        this.mensajeSinInscripcion = 'legalizacion_admision.admin_sin_params';
+        this.popUpManager.showAlert(
+          this.translate.instant('legalizacion_admision.titulo'),
+          this.translate.instant('legalizacion_admision.admin_sin_params')
+        );
+        return;
+      }
+
+      const inscripcionesAdmitidas = await this.buscarInscripcionesAdmitidasPorPersona(this.info_persona_id);
+      if (inscripcionesAdmitidas.length === 0) {
+        this.sinInscripcion = true;
+        this.mensajeSinInscripcion = 'legalizacion_admision.sin_inscripcion_admitida';
+        this.popUpManager.showAlert(
+          this.translate.instant('legalizacion_admision.titulo'),
+          this.translate.instant('legalizacion_admision.sin_inscripcion_admitida')
+        );
+        return;
+      }
+      // Tomar la inscripción más reciente (orden desc por Id)
+      const inscripcionActiva = inscripcionesAdmitidas[0];
+      this.proyectoAcademicoId = inscripcionActiva.ProgramaAcademicoId;
+      this.periodoId = inscripcionActiva.PeriodoId;
+    }
+
+    const roles = this.usuarioService.getRoles();
+    this.permisosUtils.obtenerPermisos(roles, [...LegalizacionMatriculaAspiranteComponent.OPCIONES_LEGALIZACION_ASPIRANTE])
+      .subscribe({
+        next: p => { this.permisos = p; this.permisosListos = true; },
+        error: () => { this.permisosListos = true; }
+      });
+
     this.initFormularios();
     this.cargarDatosFormularios();
 
     await this.cargarSalarioMinimo(this.periodoId)
     this.inscripcion = await this.buscarInscripcionAspirante(this.info_persona_id, this.proyectoAcademicoId, this.periodoId)
-    console.log(this.inscripcion)
     this.estadoInscripcion = this.inscripcion.EstadoInscripcionId.Id
     this.opcionPrograma = this.inscripcion.Opcion
     this.proyectoAcademico = await this.recuperarProyectoPorId(this.proyectoAcademicoId);
@@ -222,7 +285,7 @@ export class LegalizacionMatriculaAspiranteComponent {
             }
           } else if (this.infoLegalizacionPersona == 'No existe legalizacion') {
             this.yaHizoProceso = false;
-          } 
+          }
           this.loading = false;
         } else {
           this.estaAutorizado = false;
@@ -339,6 +402,30 @@ export class LegalizacionMatriculaAspiranteComponent {
     }
   }
 
+  buscarInscripcionesAdmitidasPorPersona(personaId: any): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.inscripcionService
+        .get('inscripcion?query=Activo:true,PersonaId:' + personaId + '&sortby=Id&order=desc&limit=0')
+        .subscribe(
+          (res: any) => {
+            if (!res || !Array.isArray(res)) {
+              resolve([]);
+              return;
+            }
+            const admitidas = res.filter((i: any) =>
+              i.EstadoInscripcionId && [2, 8, 10].includes(i.EstadoInscripcionId.Id)
+            );
+            resolve(admitidas);
+          },
+          (error: any) => {
+            this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.inscripciones_error'));
+            console.error(error);
+            reject([]);
+          }
+        );
+    });
+  }
+
   buscarInscripcionAspirante(personaId: any, programaId: any, periodoId: any) {
     return new Promise((resolve, reject) => {
       this.inscripcionService
@@ -355,20 +442,15 @@ export class LegalizacionMatriculaAspiranteComponent {
     });
   }
 
-  consultarTercero(personaId: any) {
-    // return new Promise((resolve, reject) => {
-    //   this.sgamidService
-    //     .get('persona/consultar_persona/' + personaId)
-    //     .subscribe(
-    //       (res: any) => {
-    //         resolve(res);
-    //       },
-    //       (error: any) => {
-    //         this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
-    //         reject([]);
-    //       }
-    //     );
-    // });
+  async consultarTercero(personaId: any): Promise<any> {
+    try {
+      const response = await this.tercerosMidService.get('personas/' + personaId).toPromise();
+      return response.Data;
+    } catch (error) {
+      console.error(error);
+      this.popUpManager.showErrorAlert(this.translate.instant('legalizacion_admision.tercero_error'));
+      return [];
+    }
   }
 
   async recuperarTerceroId(userEmail: any) {
@@ -424,6 +506,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   // MANJEO ARCHIVOS //
 
   async reEnviarDocumnetos() {
+    if (!this.permisos['reenviar_documentos_aspirante']) return;
     this.popUpManager.showPopUpGeneric(
       this.translate.instant('legalizacion_admision.titulo'),
       this.translate.instant('legalizacion_admision.actualizar_legalizacion'),
@@ -795,6 +878,7 @@ export class LegalizacionMatriculaAspiranteComponent {
   }
 
   guardar() {
+    if (!this.permisos['guardar_legalizacion_aspirante']) return;
     if (this.validarFormulario()) {
       this.popUpManager.showPopUpGeneric(
         this.translate.instant('legalizacion_admision.titulo'),

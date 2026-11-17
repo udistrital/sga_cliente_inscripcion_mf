@@ -56,6 +56,19 @@ export class UserService {
     return payload;
   }
 
+  public getRoles(): string[] {
+    const encoded = window.localStorage.getItem('user');
+    if (!encoded) return [];
+    try {
+      const user = JSON.parse(atob(encoded));
+      const a: string[] = Array.isArray(user?.user?.role) ? user.user.role : (user?.user?.role ? [user.user.role] : []);
+      const b: string[] = Array.isArray(user?.userService?.role) ? user.userService.role : (user?.userService?.role ? [user.userService.role] : []);
+      return [...new Set([...a, ...b])];
+    } catch {
+      return [];
+    }
+  }
+
   public esAutorizado(requiredRoles: string[]): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.getUser().subscribe(

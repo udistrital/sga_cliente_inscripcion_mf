@@ -248,6 +248,20 @@ fieldset {
     padding: 18px;
 }
 
+.contenedor-sin-inscripcion {
+    text-align: center;
+    width: 50%;
+    margin: 100px auto !important;
+}
+
+.contenedor-sin-inscripcion mat-card-header {
+    background-color: rgb(25, 118, 210);
+}
+
+.contenedor-sin-inscripcion mat-card-content {
+    padding: 18px;
+}
+
 .contenedor-archivos-grid {
     display: flex !important;
     flex-direction: column;
