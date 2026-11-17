@@ -7,9 +7,10 @@ import { PopUpManager } from 'src/app/managers/popUpManager';
 import { APROBADO, NO_APROBADO } from '../../preinscripcion/preinscripcion/components/crud-inscripcion-multiple/components/inscripcion-general/tabs/constants';
 
 @Component({
-  selector: 'app-dialogo-documentos',
-  templateUrl: './dialogo-documentos.component.html',
-  styleUrls: ['./dialogo-documentos.component.scss']
+    selector: 'app-dialogo-documentos',
+    templateUrl: './dialogo-documentos.component.html',
+    styleUrls: ['./dialogo-documentos.component.scss'],
+    standalone: false
 })
 export class DialogoDocumentosComponent implements OnInit {
 

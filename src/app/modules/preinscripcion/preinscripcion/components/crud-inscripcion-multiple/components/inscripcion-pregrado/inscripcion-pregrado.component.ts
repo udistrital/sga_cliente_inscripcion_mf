@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } 
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { Inscripcion } from 'src/app/models/inscripcion/inscripcion';
 import { InscripcionService } from 'src/app/services/inscripcion.service';
@@ -29,9 +29,10 @@ import { CrudInfoCaracteristicaPregradoComponent } from '../inscripcion-general/
 import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
-  selector: 'ngx-inscripcion-pregrado',
-  templateUrl: './inscripcion-pregrado.component.html',
-  styleUrls: ['./inscripcion-pregrado.component.scss']
+    selector: 'ngx-inscripcion-pregrado',
+    templateUrl: './inscripcion-pregrado.component.html',
+    styleUrls: ['./inscripcion-pregrado.component.scss'],
+    standalone: false
 })
 export class InscripcionPregradoComponent implements OnInit, OnChanges{
   hide_header_labels!: boolean;

@@ -14,9 +14,10 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { POR_DEFINIR } from '../../constants';
 
 @Component({
-  selector: 'ngx-view-formacion-academica',
-  templateUrl: './view-formacion-academica.component.html',
-  styleUrls: ['./view-formacion-academica.component.scss']
+    selector: 'ngx-view-formacion-academica',
+    templateUrl: './view-formacion-academica.component.html',
+    styleUrls: ['./view-formacion-academica.component.scss'],
+    standalone: false
 })
 export class ViewFormacionAcademicaComponent implements OnInit {
   displayedColumns: string[] = ['institucion', 'programa', 'nivel', 'fechaInicio', 'fechaFin', 'estado', 'observacion', 'soporte'];

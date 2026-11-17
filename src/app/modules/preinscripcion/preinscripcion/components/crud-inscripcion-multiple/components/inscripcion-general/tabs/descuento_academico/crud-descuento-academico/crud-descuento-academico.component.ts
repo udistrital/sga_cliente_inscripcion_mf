@@ -20,9 +20,10 @@ import { UserService } from 'src/app/services/users.service';
 import { decrypt } from 'src/app/utils/util-encrypt';
 
 @Component({
-  selector: 'ngx-crud-descuento-academico',
-  templateUrl: './crud-descuento-academico.component.html',
-  styleUrls: ['./crud-descuento-academico.component.scss']
+    selector: 'ngx-crud-descuento-academico',
+    templateUrl: './crud-descuento-academico.component.html',
+    styleUrls: ['./crud-descuento-academico.component.scss'],
+    standalone: false
 })
 export class CrudDescuentoAcademicoComponent implements OnInit {
   descuento_academico_id!: number;

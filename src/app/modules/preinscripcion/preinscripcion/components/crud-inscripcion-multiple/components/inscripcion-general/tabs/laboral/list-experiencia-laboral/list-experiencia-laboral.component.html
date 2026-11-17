@@ -8,20 +8,20 @@
       fullWidth
       [selectedIndex]="selected"
       (selectedTabChange)="tabChanged($event)"
-    >
+      >
       <mat-tab label="{{ 'GLOBAL.lista' | translate }}">
-        
-        
-          <button
-            mat-flat-button
-            color="accent"
-            (click)="onCreate()"
-            class="margin-y"
+
+
+        <button
+          mat-flat-button
+          color="accent"
+          (click)="onCreate()"
+          class="margin-y"
           >
-            <mat-icon>add</mat-icon>
-            {{ "GLOBAL.agregar" | translate }}
-          </button>
-        
+          <mat-icon>add</mat-icon>
+          {{ "GLOBAL.agregar" | translate }}
+        </button>
+
         <div class="table mat-elevation-z8">
           <mat-table [dataSource]="dataSource" class="demo-table">
             <ng-container matColumnDef="empresa">
@@ -95,13 +95,14 @@
           </mat-table>
         </div>
         <!-- <div class="text-center">
-                              <button (click)="activetab()" class="btn btn-info btn-sm">
-                                <i class="nb-plus"></i> {{ 'GLOBAL.agregar' | translate }}
-                              </button>
-                          </div> -->
-      </mat-tab>
-      <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
-        <div *ngIf="selected == 1">
+        <button (click)="activetab()" class="btn btn-info btn-sm">
+          <i class="nb-plus"></i> {{ 'GLOBAL.agregar' | translate }}
+        </button>
+      </div> -->
+    </mat-tab>
+    <mat-tab label="{{ 'GLOBAL.formulario' | translate }}">
+      @if (selected == 1) {
+        <div>
           <ngx-crud-experiencia-laboral
             [detalle_experiencia_laboral]="detalleExp"
             [index_select]="indexSelect"
@@ -116,12 +117,13 @@
             mat-flat-button
             color="primary"
             class="margin-y"
-          >
+            >
             <mat-icon>arrow_back_ios</mat-icon>
             <p class="mt-1">{{ "GLOBAL.regresar" | translate }}</p>
           </button>
         </div>
-      </mat-tab>
-    </mat-tab-group>
-  </mat-card-content>
+      }
+    </mat-tab>
+  </mat-tab-group>
+</mat-card-content>
 </mat-card>

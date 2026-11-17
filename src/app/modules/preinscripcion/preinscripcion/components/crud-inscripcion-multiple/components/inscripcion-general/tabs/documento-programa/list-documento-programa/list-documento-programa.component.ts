@@ -14,9 +14,10 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
-  selector: 'ngx-list-documento-programa',
-  templateUrl: './list-documento-programa.component.html',
-  styleUrls: ['./list-documento-programa.component.scss'],
+    selector: 'ngx-list-documento-programa',
+    templateUrl: './list-documento-programa.component.html',
+    styleUrls: ['./list-documento-programa.component.scss'],
+    standalone: false
 })
 export class ListDocumentoProgramaComponent implements OnInit {
   uid!: number;

@@ -19,9 +19,10 @@ import { decrypt } from 'src/app/utils/util-encrypt';
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
-  selector: 'ngx-list-descuento-academico',
-  templateUrl: './list-descuento-academico.component.html',
-  styleUrls: ['./list-descuento-academico.component.scss'],
+    selector: 'ngx-list-descuento-academico',
+    templateUrl: './list-descuento-academico.component.html',
+    styleUrls: ['./list-descuento-academico.component.scss'],
+    standalone: false
 })
 export class ListDescuentoAcademicoComponent implements OnInit {
   uid!: number;

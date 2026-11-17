@@ -18,9 +18,10 @@ import Swal from 'sweetalert2/dist/sweetalert2';
 import { POR_DEFINIR } from '../../constants';
 
 @Component({
-  selector: 'ngx-view-descuento-academico',
-  templateUrl: './view-descuento-academico.component.html',
-  styleUrls: ['./view-descuento-academico.component.scss']
+    selector: 'ngx-view-descuento-academico',
+    templateUrl: './view-descuento-academico.component.html',
+    styleUrls: ['./view-descuento-academico.component.scss'],
+    standalone: false
 })
 export class ViewDescuentoAcademicoComponent implements OnInit {
   persona!: number;

@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { PopUpManager } from 'src/app/managers/popUpManager';
 import { TransferenciaInternaReintegro } from 'src/app/models/inscripcion/transferencia_reintegro';
 import { NewNuxeoService } from 'src/app/services/new_nuxeo.service';
@@ -16,9 +16,10 @@ import { InscripcionMidService } from 'src/app/services/sga_inscripcion_mid.serv
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
-  selector: 'app-solicitud-transferencia',
-  templateUrl: './solicitud-transferencia.component.html',
-  styleUrls: ['./solicitud-transferencia.component.scss']
+    selector: 'app-solicitud-transferencia',
+    templateUrl: './solicitud-transferencia.component.html',
+    styleUrls: ['./solicitud-transferencia.component.scss'],
+    standalone: false
 })
 export class SolicitudTransferenciaComponent implements OnInit {
   formTransferencia: any;

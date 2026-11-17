@@ -17,9 +17,10 @@ import { UtilidadesService } from 'src/app/services/utilidades.service';
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 @Component({
-  selector: 'ngx-list-experiencia-laboral',
-  templateUrl: './list-experiencia-laboral.component.html',
-  styleUrls: ['./list-experiencia-laboral.component.scss'],
+    selector: 'ngx-list-experiencia-laboral',
+    templateUrl: './list-experiencia-laboral.component.html',
+    styleUrls: ['./list-experiencia-laboral.component.scss'],
+    standalone: false
 })
 export class ListExperienciaLaboralComponent implements OnInit {
   uid!: number;

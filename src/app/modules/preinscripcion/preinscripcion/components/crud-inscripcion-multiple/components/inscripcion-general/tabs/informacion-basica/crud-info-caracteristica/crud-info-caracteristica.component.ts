@@ -18,9 +18,10 @@ import { FORM_INFO_CARACTERISTICA } from './form-info_caracteristica';
 import { TerceroMidService } from 'src/app/services/sga_tercero_mid.service';
 
 @Component({
-  selector: 'ngx-crud-info-caracteristica',
-  templateUrl: './crud-info-caracteristica.component.html',
-  styleUrls: ['./crud-info-caracteristica.component.scss'],
+    selector: 'ngx-crud-info-caracteristica',
+    templateUrl: './crud-info-caracteristica.component.html',
+    styleUrls: ['./crud-info-caracteristica.component.scss'],
+    standalone: false
 })
 export class CrudInfoCaracteristicaComponent implements OnInit {
   info_caracteristica_id!: number;

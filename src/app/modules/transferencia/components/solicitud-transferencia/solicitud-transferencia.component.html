@@ -1,57 +1,65 @@
 <mat-card>
-    <mat-card-header>
-        <mat-card-title>{{ 'inscripcion.solicitud_transferencia' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <div class="contenedor-inscripcion">
-            <mat-card-title>{{ 'inscripcion.inscripcion_general'| translate}}</mat-card-title>
-            <div class="contenedor-parametros">
-                <div>
-                    <b>{{ 'inscripcion.periodo' | translate }}</b>: {{ periodo }}
-                </div>
-                <div>
-                    <b>{{ 'inscripcion.nivel' | translate }}:</b> {{ nivelNombre }}
-                </div>
-                <div>
-                    <b>{{ 'inscripcion.tipo' | translate }}:</b> {{ tipo }}
-                </div>
-            </div>
+  <mat-card-header>
+    <mat-card-title>{{ 'inscripcion.solicitud_transferencia' | translate }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="contenedor-inscripcion">
+      <mat-card-title>{{ 'inscripcion.inscripcion_general'| translate}}</mat-card-title>
+      <div class="contenedor-parametros">
+        <div>
+          <b>{{ 'inscripcion.periodo' | translate }}</b>: {{ periodo }}
         </div>
-
-        <div *ngIf="!mostrarDocumento" class="contenedor-inscripcion">
-            <mat-card-title>{{ 'inscripcion.respuesta_solicitud'| translate}}</mat-card-title>
-            <mat-form-field class="form-group" floatLabel="always">
-                <textarea matInput placeholder="{{ 'inscripcion.comentarios' | translate }}" matTextareaAutosize matAutosizeMinRows="3" matAutosizeMaxRows="6" [(ngModel)]="comentario" [ngModelOptions]="{standalone: true}" type="text" class="col-sm-12 col-xs-12" [disabled]="true"></textarea>
-            </mat-form-field>
+        <div>
+          <b>{{ 'inscripcion.nivel' | translate }}:</b> {{ nivelNombre }}
         </div>
-
-        <!-- <ngx-dinamicform [normalform]="formTransferencia" [modeloData]="dataTransferencia"
-            (result)="validarForm($event)"> -->
-        <ngx-dinamicform *ngIf="tipo === 'Reingreso'" [normalform]="formReintegro" [modeloData]="dataReintegro" (result)="validarForm($event)">
-            <div *ngIf="solicitudCreada && mostrarDocumento" class="files-container">
-                <ngx-download-file-nuxeo [idDoc]="file.id" [label]="file.label">
-                </ngx-download-file-nuxeo>
-            </div>
-        </ngx-dinamicform>
-
-        <div style="padding: 0.5rem;">
-            <fieldset class="fieldseter" *ngIf="solicitudCreada">
-                <ngx-inscripcion-general [inscripcion_id]="id"
-                    (result)="terminadaInscripcion = $event === 100 ? true : false"
-                    [inscriptionSettings]="inscriptionSettings">
-                </ngx-inscripcion-general>
-            </fieldset>
+        <div>
+          <b>{{ 'inscripcion.tipo' | translate }}:</b> {{ tipo }}
         </div>
-    </mat-card-content>
+      </div>
+    </div>
 
-    <mat-card-footer class="mb-4">
-        <div class="text-center">
-            <button class="btn boton-primary" type="button" (click)="goback()">
-                {{ 'GLOBAL.cancelar' | translate }}
-            </button>
-            <!-- <button [disabled]="!terminadaInscripcion" class="btn boton-primary" type="button" (click)="send()">
-                {{ 'GLOBAL.enviar' | translate }}
-            </button> -->
-        </div>
-    </mat-card-footer>
+    @if (!mostrarDocumento) {
+      <div class="contenedor-inscripcion">
+        <mat-card-title>{{ 'inscripcion.respuesta_solicitud'| translate}}</mat-card-title>
+        <mat-form-field class="form-group" floatLabel="always">
+          <textarea matInput placeholder="{{ 'inscripcion.comentarios' | translate }}" matTextareaAutosize matAutosizeMinRows="3" matAutosizeMaxRows="6" [(ngModel)]="comentario" [ngModelOptions]="{standalone: true}" type="text" class="col-sm-12 col-xs-12" [disabled]="true"></textarea>
+        </mat-form-field>
+      </div>
+    }
+
+    <!-- <ngx-dinamicform [normalform]="formTransferencia" [modeloData]="dataTransferencia"
+    (result)="validarForm($event)"> -->
+    @if (tipo === 'Reingreso') {
+      <ngx-dinamicform [normalform]="formReintegro" [modeloData]="dataReintegro" (result)="validarForm($event)">
+        @if (solicitudCreada && mostrarDocumento) {
+          <div class="files-container">
+            <ngx-download-file-nuxeo [idDoc]="file.id" [label]="file.label">
+            </ngx-download-file-nuxeo>
+          </div>
+        }
+      </ngx-dinamicform>
+    }
+
+    <div style="padding: 0.5rem;">
+      @if (solicitudCreada) {
+        <fieldset class="fieldseter">
+          <ngx-inscripcion-general [inscripcion_id]="id"
+            (result)="terminadaInscripcion = $event === 100 ? true : false"
+            [inscriptionSettings]="inscriptionSettings">
+          </ngx-inscripcion-general>
+        </fieldset>
+      }
+    </div>
+  </mat-card-content>
+
+  <mat-card-footer class="mb-4">
+    <div class="text-center">
+      <button class="btn boton-primary" type="button" (click)="goback()">
+        {{ 'GLOBAL.cancelar' | translate }}
+      </button>
+      <!-- <button [disabled]="!terminadaInscripcion" class="btn boton-primary" type="button" (click)="send()">
+      {{ 'GLOBAL.enviar' | translate }}
+    </button> -->
+  </div>
+</mat-card-footer>
 </mat-card>
